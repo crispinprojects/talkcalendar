@@ -1,6 +1,6 @@
-# Talk Calendar (GTK4, Sqlite3, Diphone version)
+# Talking Calendar
 
-Talk Calendar is a talking desktop calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for Linux. It uses a built-in diphone speech synthesizer. 
+Talking Calendar is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) and uses a built-in diphone speech synthesizer. 
 
 ###### ![](talkcalendar.png)
 
@@ -18,19 +18,19 @@ Talk Calendar is a talking desktop calendar developed using C and [GTK4](https:/
 
 ### Prebuilt Binary
 
-A 64 bit prebuilt binary is available and can be downloaded from the binary directory and can be used with Linux distributions that have GTK4 in their repositories such as Ubuntu 22.04, Debian Bookworm, Fedora 35 onwards etc.
+A 64 bit prebuilt binary is available and can be downloaded from the binary directory and can be used with Linux distributions that have GTK4 in their repositories such as Ubuntu 22.04, Debian 12 Bookworm, Fedora 35 onwards etc.
 
-Extract the downloaded file which contains the Talk Calendar executable and diphones directory which should be located in the working directory.
+Extract the downloaded file which contains the Talking Calendar executable and diphones directory which should be located in the working directory.
 
-Talk Calendar version 0.5 and above uses an Sqlite3 database for storing events rather than a csv file. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
+Talking Calendar version 0.5 and above uses an Sqlite3 database for storing events rather than a csv file. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
 
 ```
 apt list sqlite3 -a
 ```
 
-Talk Calendar can also display this information. Use menu->Information. 
+Talking Calendar can also display this information. Use menu->Information. 
 
-Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
+Assuming that the GTK4 base libraries are installed the Talking Calendar binary can be run from the terminal using:
 
 ```
 ./talkcalendar
@@ -38,9 +38,9 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 
 or double click on the talkcalendar file. Make sure it has executable permissions. Right click on it, then select permissions and ensure "Allow executing file as program" is selected. Audio output requires that the alsa-utils package is installed (this is usually installed by default). 
 
-Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen.
+Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talking Calendar which allows the working directory to be chosen.
 
-The database called "calendar.db" is located in the working directory. With Talk Calendar you can use the  information menu item to show the current working directory where the events database should be located.
+The database called "calendar.db" is located in the working directory. With Talking Calendar you can use the  information menu item to show the current working directory where the events database should be located.
 
 ## Calendar Usage
 
@@ -91,9 +91,9 @@ Today           Home Key
 
 ## Startup Applications
 
-Add Talk Calendar to your start-up programs to read out the date and any event details when the computer is switched on.
+Add Talking Calendar to your start-up programs to read out the date and any event details when the computer is switched on.
 
-With GNOME based desktops use the GNOME "Tweak Tool" to add Talk Calendar to your startup applications if required.
+With GNOME based desktops use the GNOME "Tweak Tool" to add Talking Calendar to your startup applications if required.
 
 ## How is Speech Generated?
 
@@ -109,15 +109,15 @@ Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQ
 
 ### Backup Restore Events Database
 
-A first attempt of a backup and restore system has been implemented in case the Sqlite events database becomes corrupted (e.g. by using another external program to open it or by attempting to vacuum it). You should backup your events by using the export to CSV file menu item which will create an events.csv file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events from the Sqlite database and then use the import from  CSV restore option. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this. 
+A first attempt of a backup and restore system has been implemented in case the Sqlite events database becomes corrupted (e.g. by using another external program to open it or by attempting to vacuum it). You should backup your events by using the export to CSV file menu item which will create an events.csv file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events from the Sqlite database and then use the import from  CSV restore option. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talking Calendar which will create a new empty database and restore into this. 
 
-I have not tested what will happen if you attempt to vacuum your database externally and then restart Talk Calendar with this.
+I have not tested what will happen if you attempt to vacuum your database externally and then restart Talking Calendar with this.
 
 ## Build From Source
 
-The C source code for the Talk Calendar project is provided in the src directory.
+The C source code for the Talking Calendar project is provided in the src directory. The code base has been completely re-written and so is not compatible with earlier versions.
 
-[Geany](https://www.geany.org/) can be used as a source code editor for opening, viewing and then compiling the Talk Calendar C code. Geany is lightweight and has an integrated terminal for building the application.
+[Geany](https://www.geany.org/) can be used as a source code editor for opening, viewing and then compiling the Talking Calendar C code. Geany is lightweight and has an integrated terminal for building the application.
 
 You need the GTK4 development libraries and the gcc compiler. The code has been compiled using GTK 4.6.9 amd64 (Ubuntu 22.04). To determine which version of GTK4 is running on a Linux system use the following terminal command.
 
@@ -125,7 +125,7 @@ You need the GTK4 development libraries and the gcc compiler. The code has been 
 dpkg -l | grep libgtk*
 ```
 
-To build Talk Calendar you also need the Sqlite3 development libraries. With Debian and Ubuntu you install these using the commands below.
+To build Talking Calendar you also need the Sqlite3 development libraries. With Debian and Ubuntu you install these using the commands below.
 
 ```
 sudo apt install sqlite3
@@ -140,7 +140,7 @@ sqlite3 --version
 
 ### Building on Ubuntu and Debian Bookworm
 
-With both  Debian Bookworm and Ubuntu and you need to install the following packages to compile Talk Calendar.
+With both  Debian Bookworm and Ubuntu and you need to install the following packages to compile Talking Calendar.
 
 ```
 apt install build-essential
@@ -174,7 +174,7 @@ Audio requires that the diphone directory containing the diphone wav files be lo
 
 ### Building on Fedora
 
-With Fedora you need to install the following packages to compile Talk Calendar.
+With Fedora you need to install the following packages to compile Talking Calendar.
 
 ```
 sudo dnf install gtk4-devel
@@ -188,7 +188,7 @@ sudo dnf install alsa-lib-devel
 * ~~backend sqlite database (done)~~
 * ~~backup and restore database (export/import csv file) (done)~~
 * remove GTK4 classes being depreciated (ongoing - see below)
-* check and read out upcoming events (basic code structure completed but flakey)
+* check and read out upcoming events (basic code structure completed)
 * ~~public holiday calendar marks~~
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
@@ -199,17 +199,19 @@ sudo dnf install alsa-lib-devel
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
 * GTK desktop distro testing (ongoing see below)
+* bug testing (ongoing)
+* compile test with GTK 4.12 (now in the Ubuntu 23.10 package respositories)
 * packaging
 
 ### GTK4 Deprecating Classes
 
-GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 depreciations. Most current Linux distributions are using GTK4.6. Talk Calendar had been using a number of these classes and so recent work has involved going through the source code line-by-line removing class functions that will be depreciated. 
+GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 or GTK4.12 depreciations. Most current Linux distributions are using GTK4.8. Talking Calendar had been using a number of these classes and so recent work has involved going through the source code line-by-line removing class functions that will be depreciated. 
 
 GTK developers are planning the [GTK5](https://www.phoronix.com/news/GTK5-Likely-After-GTK-4.12) toolkit discussing making it a Wayland only [release](https://www.phoronix.com/news/GTK5-Might-Drop-X11).
 
 ### Calendar Style
 
-Currently, Talk Calendar uses Pango attributes and markup for adding some style to the calendar. Pango is the text layout system used by GDK and GTK.
+Currently, Talking Calendar uses Pango attributes and markup for adding some style to the calendar. Pango is the text layout system used by GDK and GTK.
 
 The platform library [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/style-classes.html) used by GNOME desktops uses style classes such as “title-1”, "title-2", and “dim-label” etc. which can be used by GTK4 applications with the gtk_widget_add_css_class() function. An example is shown below.
 
@@ -221,7 +223,7 @@ As I understand it, GTK4 does not define style classes and this is left to the p
 
 I need to do more research into GTK4 styling with a platform library. Consequently, I have placed app styling lower down in the road map as I need to learn how to do this and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
 
- The [gtk_css_provider_load_from_data()](https://docs.gtk.org/gtk4/method.CssProvider.load_from_data.html) function which I used previously is being depreciated and so all code using it has been [removed](https://gitlab.gnome.org/GNOME/gtk/-/commit/f2a297f56d7b0f749ae8b5ef5b853951ff30a89d). I believe gtk_css_provider_load_from_string() could be used instead in GTK 4.12. However, I am using GTK 4.6.9 for developing this application which is found in Ubuntu and Debian package repositories. It appears that you can still use an application-specific styling css file (e.g. styles.css) but although I developed some test code I have not gone down this route in case this approach is depreciated further down the line.
+The [gtk_css_provider_load_from_data()](https://docs.gtk.org/gtk4/method.CssProvider.load_from_data.html) function which I used previously in the GTK3 version of the application is being depreciated and so all code using it has been [removed](https://gitlab.gnome.org/GNOME/gtk/-/commit/f2a297f56d7b0f749ae8b5ef5b853951ff30a89d). I believe gtk_css_provider_load_from_string() could be used instead in GTK 4.12. However, I am using GTK 4.8.3 for developing this application which is found in the Debian 12 package repositories. It appears that you can still use an application-specific styling css file (e.g. styles.css) but although I developed some test code I have not gone down this route in case this approach is depreciated further down the line.
 
 I need to add a feature to allow the user to choose the event and today colours.
 
@@ -229,12 +231,11 @@ Hopefully this all makes some sense to anyone reading this.
 
 ### Wayland
 
-GTK4 supports [Wayland](https://wayland.freedesktop.org/) which is a replacement for the X11 window system protocol. To check if you are running Wayland or X11 use the command below.
+GTK4 supports [Wayland](https://wayland.freedesktop.org/) which is a replacement for the X11 window system protocol. The XDG_SESSION_TYPE variable stores the type of display server the system is using. To check if you are running Wayland or X11 use the command below.
 
 ```
 echo $XDG_SESSION_TYPE
 ```
-
 It will output either "wayland" or "x11".
 
 The GNOME desktop environment (GNOME Shell written in C and GTK) uses the Mutter compositor which supports both Xorg and Wayland and defaults to Wayland when the environment variable is set as shown below.
@@ -249,11 +250,11 @@ To use the X11 back-end you would use.
 export GDK_BACKEND=x11
 ```
 
-Talk Calendar runs on both Debian and Ubuntu (GNOME desktops) which use Wayland by default. I have also tested Talk Calendar on Debian Xfce which uses the X11 Xfwm window manager by default. In these specific use cases Intel® HD Graphics 530 and Intel® HD Graphics 630 integrated graphics units have been used.
+Talking Calendar runs on both Debian and Ubuntu (GNOME desktops) which use Wayland by default. I have also tested Talking Calendar on Debian Xfce which uses the X11 Xfwm window manager by default. In these specific use cases Intel® HD Graphics 530 and Intel® HD Graphics 630 integrated graphics units have been used.
 
-Regarding Xfce, I believe they plan to move to Wayland and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). There is an article entitled [Xfce can be run on Wayland by simply swapping out the xfwm Window Manager for a Wayland Compositor](https://www.reddit.com/r/linux/comments/qek696/xfce_can_be_run_on_wayland_by_simply_swapping_out/). At this stage it is not clear to me what Wayland compositor<sup>1</sup> Xfce will use but they are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. Anyway the Gtk4 version of Talk Calendar runs on both X11 and Wayland compositors without any known issues.
+Regarding Xfce, I believe they plan to move to Wayland and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). There is an article entitled [Xfce can be run on Wayland by simply swapping out the xfwm Window Manager for a Wayland Compositor](https://www.reddit.com/r/linux/comments/qek696/xfce_can_be_run_on_wayland_by_simply_swapping_out/). At this stage it is not clear to me what Wayland compositor<sup>1</sup> Xfce will use but they are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. Anyway the Gtk4 version of Talking Calendar runs on both X11 and Wayland compositors without any known issues.
 
-<sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talk Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations.
+<sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations.
 
 ## Versioning
 
@@ -265,7 +266,7 @@ Regarding Xfce, I believe they plan to move to Wayland and progress can be found
 
 ## License
 
-Talk Calendar is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
+Talking Calendar is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
 
 ## Project Status
 

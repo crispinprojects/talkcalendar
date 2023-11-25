@@ -1643,21 +1643,19 @@ static void callbk_home(GSimpleAction * action, GVariant *parameter, gpointer us
 	m_start_day=m_today_day;
 	m_start_month=m_today_month;
 	m_start_year=m_today_year;
-
 	
+	m_id_selection = -1;	
 	
-	m_id_selection = -1;
-	update_label_date(CUSTOM_CALENDAR(calendar), label_date);
-			
+	//mark up calendar	
+	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
+	update_label_date(CUSTOM_CALENDAR(calendar), label_date);	
+	
 	GArray *evt_arry_month; //add month marks
 	evt_arry_month = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
 	db_get_all_events_year_month(evt_arry_month, m_start_year,m_start_month);
 	//print_array(evt_arry_month);
 	set_marks_on_calendar(CUSTOM_CALENDAR(calendar),evt_arry_month);
 	g_array_free(evt_arry_month, FALSE); //clear the array
-			
-	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-	
 	
 	GArray *evt_arry_day;
 	//g_print("year = %d, month = %d day = %d\n",year,month,day);
@@ -1666,6 +1664,8 @@ static void callbk_home(GSimpleAction * action, GVariant *parameter, gpointer us
 	//print_array(evt_arry_day);	
 	display_event_array(evt_arry_day);
 	g_array_free(evt_arry_day, FALSE); //clear the array 
+	
+	custom_calendar_update(CUSTOM_CALENDAR(calendar));		
 }
 
 //---------------------------------------------------------------------
@@ -2661,9 +2661,35 @@ GArray*  get_upcoming_array(int upcoming_days)
 	
 	//g_print("get_upcomming_array called\n");
 	
-	GArray *evt_arry_upcoming;
-	evt_arry_upcoming = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
+	//GArray *evt_arry_upcoming;
+	//evt_arry_upcoming = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
 	
+	//GDate *today_date;
+	//today_date = g_date_new();
+	//g_date_set_time_t(today_date, time(NULL));
+	//int today = g_date_get_day(today_date);
+	//int month = g_date_get_month(today_date);
+	//int year = g_date_get_year(today_date);
+	//g_date_free(today_date); // freeit quick
+	
+	//guint8 month_days =g_date_get_days_in_month(month,year);
+	
+	//int day1=today+1;
+	//int day2=today+upcoming_days;
+		
+	//if(day1>month_days) return NULL;	
+	//if(day2>month_days) day2=month_days;
+	
+	////g_print("upcoming day1 = %d\n",day1);
+	////g_print("upcoming day2 = %d\n",day2);
+	//db_get_upcoming_events(evt_arry_upcoming,year,month,day1,day2);	
+	//return evt_arry_upcoming;	
+	
+	if(upcoming_days > 7) upcoming_days=7; //clamp
+	
+	int day1=1; //start day
+	int day2=1; //end day
+		
 	GDate *today_date;
 	today_date = g_date_new();
 	g_date_set_time_t(today_date, time(NULL));
@@ -2672,19 +2698,99 @@ GArray*  get_upcoming_array(int upcoming_days)
 	int year = g_date_get_year(today_date);
 	g_date_free(today_date); // freeit quick
 	
-	guint8 month_days =g_date_get_days_in_month(month,year);
+	guint8 month_days =g_date_get_days_in_month(month,year);	
+	//g_print("Days in month = %d\n", month_days);
 	
-	int day1=today+1;
-	int day2=today+upcoming_days;
+	if(((today+1)+upcoming_days)<=month_days)
+	{
+		//Normal case
+		GArray *evt_arry_upcoming;
+	    evt_arry_upcoming = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 	
 		
-	if(day1>month_days) return NULL;	
-	if(day2>month_days) day2=month_days;
+		day1=today+1;
+		day2=today+upcoming_days;
+		db_get_upcoming_events(evt_arry_upcoming,year,month,day1,day2);	
+	    return evt_arry_upcoming;		
+	}
 	
-	//g_print("upcoming day1 = %d\n",day1);
-	//g_print("upcoming day2 = %d\n",day2);
-	db_get_upcoming_events(evt_arry_upcoming,year,month,day1,day2);	
-	return evt_arry_upcoming;	
+	else {
+		//special edge cases 
+		
+		if (today == month_days){
+		//Special case: today is last day of month 
+		//so today+1 will be first day of next month
+		
+		GArray *evt_arry_upcoming;
+		evt_arry_upcoming = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
+			
+		day1=1;
+		day2=upcoming_days;
+		month=month+1; //next month
+		
+		if(month>12) { //december then becomes january
+			month =1; 	
+			year=year+1;
+		}
+		
+		db_get_upcoming_events(evt_arry_upcoming,year,month,day1,day2);	
+		return evt_arry_upcoming;	
+		}
+		else
+		{	
+		//complex two month case
+		int day1=today+1;
+		
+		int day_diff=(today+upcoming_days)-month_days;
+		//g_print("day_diff = %d\n",day_diff);
+		
+		GArray *total_arry;
+	    total_arry= g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
+	    
+	    GArray *month1_arry;
+	    month1_arry= g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
+	    db_get_upcoming_events(month1_arry,year,month,day1,month_days); 
+	    
+	    //return month1_arry;
+	    //Append month1_arry to total_arry
+	    for (int i = 0; i < month1_arry->len; i++)
+	    {
+		CalendarEvent *evt = g_array_index(month1_arry, CalendarEvent *, i);
+		g_array_append_val(total_arry, evt);		
+		}
+	   
+	    int next_month=1;
+	    //find next month and year
+	    if(month+1>12) {
+	    next_month=1;
+	    year=year+1;
+	    } 
+	    else {
+			next_month=month+1;
+		}
+	    
+	    g_print("next_month = %d\n", next_month);
+	    
+	    
+	    GArray *month2_arry;
+	    month2_arry= g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
+	    db_get_upcoming_events(month2_arry,year,next_month,1,day_diff); 
+	    
+	    //Append  month2_arry to total arry	    
+	    for (int j = 0; j < month2_arry->len; j++)
+	    {
+		CalendarEvent *evt = g_array_index(month2_arry, CalendarEvent *, j);
+		g_array_append_val(total_arry, evt);		
+		}	
+		
+		
+		return total_arry;	
+		
+		
+		} //else 2 month edge case
+		
+	}//else special cases
 	
+return NULL; //should never get here but if it does return NULL
 }
 
 
@@ -3817,7 +3923,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (Gtk4 version)");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.2");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.3");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2023");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar. Diphone voice. Sqlite backend.");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
