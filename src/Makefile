@@ -7,17 +7,17 @@ SRC = main.c displayitem.c calendarevent.c customcalendar.c diphone.c wavcat.c d
 
 OBJS = $(SRC:.c=.o)
 
-all: talkcalendar
+all: talkingcalendar
 
 
 %.o: %.c
 	$(CC) -c -o $(@F) $(CFLAGS) $<
 
 
-talkcalendar: $(OBJS)
+talkingcalendar: $(OBJS)
 	$(CC) -o $(@F) $(OBJS) $(LIBS)
 
 clean:
 	rm -f $(OBJS)
-	rm -f talkcalendar
+	rm -f talkingcalendar
 

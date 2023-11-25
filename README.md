@@ -1,8 +1,8 @@
 # Talking Calendar
 
-Talking Calendar is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) and uses a built-in diphone speech synthesizer. 
+Talking Calendar is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for Linux. It uses a built-in diphone speech synthesizer.
 
-###### ![](talkcalendar.png)
+![](talkingcalendar.png)
 
 ## Core Features
 
@@ -22,7 +22,7 @@ A 64 bit prebuilt binary is available and can be downloaded from the binary dire
 
 Extract the downloaded file which contains the Talking Calendar executable and diphones directory which should be located in the working directory.
 
-Talking Calendar version 0.5 and above uses an Sqlite3 database for storing events rather than a csv file. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
+Talking Calendar uses an Sqlite3 database for storing events. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
 
 ```
 apt list sqlite3 -a
@@ -33,14 +33,15 @@ Talking Calendar can also display this information. Use menu->Information.
 Assuming that the GTK4 base libraries are installed the Talking Calendar binary can be run from the terminal using:
 
 ```
-./talkcalendar
+./talkingcalendar
 ```
 
-or double click on the talkcalendar file. Make sure it has executable permissions. Right click on it, then select permissions and ensure "Allow executing file as program" is selected. Audio output requires that the alsa-utils package is installed (this is usually installed by default). 
+or double click on the "talkingcalendar" file. Make sure it has executable permissions. Right click on it, then select permissions and ensure "Allow executing file as program" is selected. Audio output requires that the alsa-utils package is installed (this is usually installed by default). 
 
-Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talking Calendar which allows the working directory to be chosen.
+Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talking Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. You can use the information menu item to show the current working directory where the events database should be located.
 
-The database called "calendar.db" is located in the working directory. With Talking Calendar you can use the  information menu item to show the current working directory where the events database should be located.
+Alternatively modify the "talkingcalendar.desktop" file provided in the download using your user name and application location and copy it to the ***.local/share/applications/*** directory.
+
 
 ## Calendar Usage
 
@@ -55,7 +56,7 @@ The database called "calendar.db" is located in the working directory. With Talk
 * Events are sorted by start time when displayed
 * Navigate through the year using the calendar to add events
 
-![](talkcalendar-new-event.png)
+![](talkingcalendar-new-event.png)
 
 ### Editing Existing Event
 
@@ -66,7 +67,7 @@ The database called "calendar.db" is located in the working directory. With Talk
 
 * Use the Preferences window in the hamburger menu to change  options
 
-![](talkcalendar-preferences.png)
+![](talkingcalendar-preferences.png)
 
 You can use 12 hour format and event end-times can be shown in the list view. If public holidays is selected then the date label shows the public holiday (UK only) which is also spoken.
 
@@ -115,7 +116,7 @@ I have not tested what will happen if you attempt to vacuum your database extern
 
 ## Build From Source
 
-The C source code for the Talking Calendar project is provided in the src directory. The code base has been completely re-written and so is not compatible with earlier versions.
+The C source code for the Talking Calendar project is provided in the src directory.
 
 [Geany](https://www.geany.org/) can be used as a source code editor for opening, viewing and then compiling the Talking Calendar C code. Geany is lightweight and has an integrated terminal for building the application.
 
@@ -167,7 +168,7 @@ Use the MAKEFILE to compile.
 
 ```
 make
-./talkcalendar
+./talkingcalendar
 ```
 
 Audio requires that the diphone directory containing the diphone wav files be located in the working directory. Example diphones are included  but you can create you own.
@@ -201,7 +202,7 @@ sudo dnf install alsa-lib-devel
 * GTK desktop distro testing (ongoing see below)
 * bug testing (ongoing)
 * compile test with GTK 4.12 (now in the Ubuntu 23.10 package respositories)
-* packaging
+* explore packaging options (produce a reference example)
 
 ### GTK4 Deprecating Classes
 
@@ -260,9 +261,12 @@ Regarding Xfce, I believe they plan to move to Wayland and progress can be found
 
 [SemVer](http://semver.org/) is used for versioning. The version number has the form 0.0.0 representing major, minor and bug fix changes.
 
+Please note that this application called Talking Calendar supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The Talking Calendar application uses an Sqlite3 database for storing events rather than a csv file and 
+is maintain with bug fixes while other projects are not.
+
 ## Author
 
-* **Alan Crispin** [Github](https://github.com/crispinalan)
+* **Alan Crispin** [Github](https://github.com/crispinprojects)
 
 ## License
 

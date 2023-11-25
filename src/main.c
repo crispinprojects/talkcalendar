@@ -3922,8 +3922,8 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
-	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (Gtk4 version)");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.3");
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talking Calendar");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.4");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2023");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar. Diphone voice. Sqlite backend.");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4369,7 +4369,7 @@ int main (int  argc, char **argv)
 	GtkApplication *app;
 	int status;
 
-	app = gtk_application_new ("org.gtk.talkcalendar", G_APPLICATION_DEFAULT_FLAGS);
+	app = gtk_application_new ("org.gtk.talkingcalendar", G_APPLICATION_DEFAULT_FLAGS);
 
 	g_signal_connect_swapped(app, "startup", G_CALLBACK (startup),app);
 
