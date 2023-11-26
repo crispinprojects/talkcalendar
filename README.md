@@ -1,6 +1,6 @@
 # Talking Calendar
 
-Talking Calendar is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for Linux. It uses a built-in diphone speech synthesizer.
+Talking Calendar is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). It uses a built-in diphone speech synthesizer.
 
 ![](talkingcalendar.png)
 
@@ -25,7 +25,7 @@ Extract the downloaded file which contains the Talking Calendar executable and d
 Talking Calendar uses an Sqlite3 database for storing events. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
 
 ```
-apt list sqlite3 -a
+apt policy sqlite3
 ```
 
 Talking Calendar can also display this information. Use menu->Information. 
@@ -199,7 +199,8 @@ sudo dnf install alsa-lib-devel
 * calendar styling (see note below -stalled)
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
-* GTK desktop distro testing (ongoing see below)
+* notifications
+* GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
 * compile test with GTK 4.12 (now in the Ubuntu 23.10 package respositories)
 * explore packaging options (produce a reference example)
@@ -212,7 +213,7 @@ GTK developers are planning the [GTK5](https://www.phoronix.com/news/GTK5-Likely
 
 ### Calendar Style
 
-Currently, Talking Calendar uses Pango attributes and markup for adding some style to the calendar. Pango is the text layout system used by GDK and GTK.
+Currently, Talking Calendar uses Pango attributes and markup for adding some style and colour to the calendar. Pango is the text layout system used by GDK and GTK.
 
 The platform library [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/style-classes.html) used by GNOME desktops uses style classes such as “title-1”, "title-2", and “dim-label” etc. which can be used by GTK4 applications with the gtk_widget_add_css_class() function. An example is shown below.
 
@@ -222,24 +223,24 @@ gtk_widget_add_css_class (label, "title-2");
 
 As I understand it, GTK4 does not define style classes and this is left to the platform library (libadwaita). GTK4 gives you "labels", "buttons" and other GUI components while libadwaita is used to style these following GNOME's Human Interface Guidelines (HIG). 
 
-I need to do more research into GTK4 styling with a platform library. Consequently, I have placed app styling lower down in the road map as I need to learn how to do this and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
+I need to do more research into GTK4 styling with a platform library. Consequently, I have placed styling lower down in the road map list as I need to learn how to do this and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
 
 The [gtk_css_provider_load_from_data()](https://docs.gtk.org/gtk4/method.CssProvider.load_from_data.html) function which I used previously in the GTK3 version of the application is being depreciated and so all code using it has been [removed](https://gitlab.gnome.org/GNOME/gtk/-/commit/f2a297f56d7b0f749ae8b5ef5b853951ff30a89d). I believe gtk_css_provider_load_from_string() could be used instead in GTK 4.12. However, I am using GTK 4.8.3 for developing this application which is found in the Debian 12 package repositories. It appears that you can still use an application-specific styling css file (e.g. styles.css) but although I developed some test code I have not gone down this route in case this approach is depreciated further down the line.
 
 I need to add a feature to allow the user to choose the event and today colours.
 
-Hopefully this all makes some sense to anyone reading this.
+Hopefully this all makes some sense to anyone reading this. In summary styling is stalled until I get a better understanding on how best to move forward. I am also monitoring how the Xfce and Budgie desktops move to Wayland as this will help.
 
-### Wayland
+### Wayland and X11 Testing (GNOME, Xfce, Budgie)
 
-GTK4 supports [Wayland](https://wayland.freedesktop.org/) which is a replacement for the X11 window system protocol. The XDG_SESSION_TYPE variable stores the type of display server the system is using. To check if you are running Wayland or X11 use the command below.
+GTK4 supports [Wayland](https://wayland.freedesktop.org/) which is a replacement for the X11 window system protocol. The XDG_SESSION_TYPE variable stores the type of display server the system is using. To check if you are running Wayland or X11 echo the XDG (Cross Desktop Group) session type as shown below.
 
 ```
 echo $XDG_SESSION_TYPE
 ```
 It will output either "wayland" or "x11".
 
-The GNOME desktop environment (GNOME Shell written in C and GTK) uses the Mutter compositor which supports both Xorg and Wayland and defaults to Wayland when the environment variable is set as shown below.
+The GNOME desktop (i.e. GNOME Shell written in C and GTK) uses the Mutter compositor which supports both Xorg and Wayland and defaults to Wayland when the environment variable is set as shown below.
 
 ```
 export GDK_BACKEND=wayland
@@ -251,18 +252,35 @@ To use the X11 back-end you would use.
 export GDK_BACKEND=x11
 ```
 
-Talking Calendar runs on both Debian and Ubuntu (GNOME desktops) which use Wayland by default. I have also tested Talking Calendar on Debian Xfce which uses the X11 Xfwm window manager by default. In these specific use cases Intel® HD Graphics 530 and Intel® HD Graphics 630 integrated graphics units have been used.
+Talking Calendar runs on both Debian GNOME and Ubuntu GNOME. Both use Mutter and Wayland by default. In these specific use cases Intel® HD Graphics 530 and Intel® HD Graphics 630 integrated graphics units have been used.
 
-Regarding Xfce, I believe they plan to move to Wayland and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). There is an article entitled [Xfce can be run on Wayland by simply swapping out the xfwm Window Manager for a Wayland Compositor](https://www.reddit.com/r/linux/comments/qek696/xfce_can_be_run_on_wayland_by_simply_swapping_out/). At this stage it is not clear to me what Wayland compositor<sup>1</sup> Xfce will use but they are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. Anyway the Gtk4 version of Talking Calendar runs on both X11 and Wayland compositors without any known issues.
+I have also tested Talking Calendar on Debian Xfce and Debian Budgie desktops which currently use X11 by default.
 
-<sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations.
+Regarding Xfce, I believe they plan to move to Wayland and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). At this stage it is not clear to me what Wayland compositor<sup>1</sup> Xfce will use but they are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. 
+
+Regarding the [Budgie Desktop](https://github.com/BuddiesOfBudgie/budgie-desktop), running the apt policy command below 
+```
+apt policy budgie-desktop
+```
+shows that Debian Bookworm is using the Budgie desktop version 10.7.1-1. Using
+```
+inxi -Gxx | grep compositor
+```
+reveals that the compositor is "budgie-wm" and the session is X11. 
+
+There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about progress on a Wayland compositor.
+
+In summary testing shows that the GTK4 version of Talking Calendar runs on both X11 and Wayland desktops without any known issues but without theme styling just raw GTK4 (see above).
+
+
+<sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. 
+
 
 ## Versioning
 
 [SemVer](http://semver.org/) is used for versioning. The version number has the form 0.0.0 representing major, minor and bug fix changes.
 
-Please note that this application called Talking Calendar supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The Talking Calendar application uses an Sqlite3 database for storing events rather than a csv file and 
-is maintain with bug fixes while other projects are not.
+Please note that this application called Talking Calendar supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The Talking Calendar application uses an Sqlite3 database for storing events rather than a csv file and is maintained with bug fixes while other projects are not.
 
 ## Author
 
