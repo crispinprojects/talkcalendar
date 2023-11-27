@@ -12,13 +12,13 @@ Talking Calendar is a desktop calendar for Linux which has some speech capabilit
 * priority and is-yearly can be used
 * Sqlite3 database used to store events
 * built-in diphone speech synthesizer
-* binary for 64-bit GTK4 distributions
+* binary for 64-bit GTK4 distributions using GTK4.8 (Debian 12)
 
 ## Deployment
 
 ### Prebuilt Binary
 
-A 64 bit prebuilt binary is available and can be downloaded from the binary directory and can be used with Linux distributions that have GTK4 in their repositories such as Ubuntu 22.04, Debian 12 Bookworm, Fedora 35 onwards etc.
+A 64 bit prebuilt binary is available and can be downloaded from the binary directory and can be used with Linux distributions that have GTK4 4.8 (or below) in their repositories such as Ubuntu 22.04, Debian 12 Bookworm, Fedora 35 onwards etc.
 
 Extract the downloaded file which contains the Talking Calendar executable and diphones directory which should be located in the working directory.
 
@@ -186,8 +186,8 @@ sudo dnf install alsa-lib-devel
 
 ### Roadmap
 
-* ~~backend sqlite database (done)~~
-* ~~backup and restore database (export/import csv file) (done)~~
+* ~~backend sqlite database~~ (done)
+* ~~backup and restore database (export/import csv file)~~ (done)
 * remove GTK4 classes being depreciated (ongoing - see below)
 * check and read out upcoming events (basic code structure completed)
 * ~~public holiday calendar marks~~
@@ -202,12 +202,16 @@ sudo dnf install alsa-lib-devel
 * notifications
 * GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
-* compile test with GTK 4.12 (now in the Ubuntu 23.10 package respositories)
+* ~~test building talkingcalendar with GTK 4.12~~ (see below)
 * explore packaging options (produce a reference example)
 
-### GTK4 Deprecating Classes
+### GTK4 Deprecating Classes (Testing)
 
 GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 or GTK4.12 depreciations. Most current Linux distributions are using GTK4.8. Talking Calendar had been using a number of these classes and so recent work has involved going through the source code line-by-line removing class functions that will be depreciated. 
+
+I have tested building Talking Calendar with ***GTK4.12*** (Ubuntu 23.10). It builds. However, if you take a binary built with GTK4.12 and try to run it on Debain 12 which uses GTK4.8 it fails to run. You need to use a binary built on Debian 12 on Debian 12 and a binary built on Ubuntu 23.10 on Ubuntu 23.10. However, a binary built on Debian 12 with GTK4.8 runs on Ubuntu 23.10. 
+
+The main reason why I am not currently using a file dialog for saving a backup file is because the functions [gtk_file_chooser_dialog_new](https://docs.gtk.org/gtk4/ctor.FileChooserDialog.new.html) and [gtk_dialog_new_with_buttons](https://docs.gtk.org/gtk4/ctor.Dialog.new_with_buttons.html) are being depreciated in GTK4.10. I believe that you will have to use [GtkFileDialog](https://docs.gtk.org/gtk4/class.FileDialog.html) instead.
 
 GTK developers are planning the [GTK5](https://www.phoronix.com/news/GTK5-Likely-After-GTK-4.12) toolkit discussing making it a Wayland only [release](https://www.phoronix.com/news/GTK5-Might-Drop-X11).
 
@@ -266,12 +270,11 @@ shows that Debian Bookworm is using the Budgie desktop version 10.7.1-1. Using
 ```
 inxi -Gxx | grep compositor
 ```
-reveals that the compositor is "budgie-wm" and the session is X11. 
+reveals that the compositor is "budgie-wm". The XDG (Cross Desktop Group) session type is X11. 
 
-There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about progress on a Wayland compositor.
+There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about progress on a Wayland compositor. It seems that their Magpie v1.0 will be a Wayland compositor and because Magpie was originally forked from Mutter I am assuming that they will still be using GTK. However, there have been statements about using the [Enlightenment Window Manager EFL](https://www.enlightenment.org/) or possibly [Qt](https://www.qt.io) but not [IceWM](https://ice-wm.org/). There have also been statements about using the [Rust programming language and GTK4](https://gtk-rs.org/gtk4-rs/stable/latest/book/) rather than the native GTK C programming language. Their goal is to make Budgie 11 Wayland only.
 
-In summary testing shows that the GTK4 version of Talking Calendar runs on both X11 and Wayland desktops without any known issues but without theme styling just raw GTK4 (see above).
-
+In summary testing shows that the GTK 4.8 version of Talking Calendar runs on both X11 and Wayland desktops without any known issues. With this Talking Calendar version there is no css styling. It is just raw GTK4 (see above).
 
 <sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. 
 
