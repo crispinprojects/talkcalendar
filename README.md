@@ -275,6 +275,10 @@ reveals that the compositor is "budgie-wm". The XDG (Cross Desktop Group) sessio
 
 There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about moving to a Wayland only version of Budgie. There is work in progress on a Wayland compositor called Magpie V1.0. As Magpie was originally forked from Mutter I am assuming that they will still be using the GTK4 stack even though there have been statements about using the [Enlightenment Window Manager EFL](https://www.enlightenment.org/) or possibly [Qt](https://www.qt.io) but not [IceWM](https://ice-wm.org/). They are working with libxfce4windowing to replace the [libwnck](https://gitlab.gnome.org/GNOME/libwnck) code. For what I can make out panel management, keyboard input, desktop settings all need to be converted for use with a Wayland compositor and it is planned that all internal communications of these components will be over a [protocol buffer](https://protobuf.dev/overview/) to a centralised daemon.
 
+A screenshot of Talking Calendar running on Budgie 10 (GTK, X11) is shown below.
+
+![](talkingcalendar-budgie10-x11.png)
+
 In summary testing shows that the GTK 4.8 version of Talking Calendar runs on both X11 and Wayland desktops without any known issues. With this Talking Calendar version there is no css styling. It is just raw GTK4 code (see above).
 
 <sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. 
