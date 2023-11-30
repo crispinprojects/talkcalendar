@@ -277,12 +277,15 @@ There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbu
 
 A screenshot of Talking Calendar running on Budgie 10 (GTK, X11) is shown below.
 
-![](talkingcalendar-budgie10-x11.png)
+![](budgie10-x11-gtk.png)
 
 In summary testing shows that the GTK 4.8 version of Talking Calendar runs on both X11 and Wayland desktops without any known issues. With this Talking Calendar version there is no css styling. It is just raw GTK4 code (see above).
 
 <sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talking Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. 
 
+### Notifications
+
+Work in progress. GNotification code tests work on X11 (Budgie) but not on Wayland (GNOME).
 
 ## Versioning
 
