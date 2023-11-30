@@ -200,7 +200,7 @@ sudo dnf install alsa-lib-devel
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
 * read time
-* notifications
+* notifications (see below)
 * GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
 * ~~test building talkingcalendar with GTK 4.12~~ (see below)
@@ -285,7 +285,20 @@ In summary testing shows that the GTK 4.8 version of Talking Calendar runs on bo
 
 ### Notifications
 
-Work in progress. GNotification code tests work on X11 (Budgie) but not on Wayland (GNOME).
+Work in progress. 
+
+GNotification test code works on Debian Budgie (X11) but not on Debian GNOME (Wayland). Why? I don't know. More research needed. To add Talk Calendar to the GNOME notification list in the desktop settings you add the following to the desktop file.
+```
+X-GNOME-UsesNotifications=true
+```
+
+Also exploring the use of libnotify. This is an implementation of the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html) which provides support for GTK and Qt applications and is ***desktop independent***. The library libnotify sends desktop notifications to a notification daemon (server). To use it you need to install the development files for the library i.e. the libnotify-dev package as shown below. 
+
+```
+sudo apt install libnotify-dev
+```
+Notification test code using libnotify works on both Debian GNOME (Wayland) and Debian Budgie(X11).
+
 
 ## Versioning
 
