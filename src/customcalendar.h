@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 /*
-Simple grid calendar for "Talking Calendar" project.
+Simple grid calendar for "Talk Calendar" project.
 pragma once can be used instead of header guards
 */
 

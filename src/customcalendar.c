@@ -17,7 +17,7 @@
 
 /*
 A simple grid calendar for the
-"Talking Calendar" application.
+"Talk Calendar" application.
 
 Removed all code which used gtk_widget_get_style_context()
 gtk_style_context_add_provider() and gtk_color_chooser_get_rgba()
