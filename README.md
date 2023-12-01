@@ -285,20 +285,7 @@ In summary testing shows that the GTK 4.8 version of Talk Calendar runs on both 
 
 ### Notifications
 
-Work in progress. 
-
-GNotification test code works on Debian Budgie (X11) but not on Debian GNOME (Wayland). Why? I don't know. More research needed. To add Talk Calendar to the GNOME notification list in the desktop settings you add the following to the desktop file.
-```
-X-GNOME-UsesNotifications=true
-```
-
-Also exploring the use of libnotify. This is an implementation of the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html) which provides support for GTK and Qt applications and is ***desktop independent***. The library libnotify sends desktop notifications to a notification daemon (server). To use it you need to install the development files for the library i.e. the libnotify-dev package as shown below. 
-
-```
-sudo apt install libnotify-dev
-```
-Notification test code using libnotify works on both Debian GNOME (Wayland) and Debian Budgie(X11).
-
+Work in progress. I have developed a small GTK4 notification tester app which can be found [here](https://github.com/crispinprojects/notification-tester). In summary, test code using libnotify works on both Debian GNOME (Wayland) and Debian Budgie(X11). However, test code using GNotification works on Debian Budgie (X11) but not on Debian GNOME (Wayland). Testing note and screenshots for Debian GNOME (Wayland) and Debian Budgie (X11) can be found on the notification tester github [page](https://github.com/crispinprojects/notification-tester). Using [libnotify](https://gitlab.gnome.org/GNOME/libnotify) seems to the the best way forward for incorporating notifications across different desktops. It is an implementation of the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html) which provides support for GTK and Qt applications and is ***desktop independent***.
 
 ## Versioning
 
