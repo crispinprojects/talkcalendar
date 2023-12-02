@@ -38,6 +38,10 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 
 or double click on the "talkcalendar" file. Make sure it has executable permissions. Right click on it, then select permissions and ensure "Allow executing file as program" is selected. Audio output requires that the alsa-utils package is installed (this is usually installed by default). 
 
+```
+sudo apt install alsa-utils
+```
+
 Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. You can use the information menu item to show the current working directory where the events database should be located.
 
 Alternatively modify the "talkcalendar.desktop" file provided in the download using your user name and application location and copy it to the ***.local/share/applications/*** directory.
