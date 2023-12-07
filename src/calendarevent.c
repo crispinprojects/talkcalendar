@@ -40,6 +40,7 @@ struct _CalendarEvent
     gint    isyearly; //field
     gint    isallday; //field
     gint    ispriority; //field
+    gint    hasnotification; //field
     gint    hasreminder; //field
     gint    remindermin; //field
 };
@@ -66,6 +67,7 @@ enum {
     PROP_ISYEARLY,
     PROP_ISALLDAY,
     PROP_ISPRIORITY,
+    PROP_HASNOTIFICATION,
     PROP_HASREMINDER,
     PROP_REMINDERMIN,
     LAST_PROP
@@ -139,6 +141,9 @@ static void calendar_event_get_property(GObject *object,
          case PROP_ISPRIORITY:
              g_value_set_int(value, calendar_event_get_is_priority(self)); //boxing
             break;
+          case PROP_HASNOTIFICATION:
+             g_value_set_int(value, calendar_event_get_has_notification(self)); //boxing
+            break;
          case PROP_HASREMINDER:
              g_value_set_int(value, calendar_event_get_has_reminder(self)); //boxing
             break;
@@ -211,6 +216,9 @@ static void calendar_event_set_property(GObject *object,
             break;
          case PROP_ISPRIORITY:
             calendar_event_set_is_priority(self, g_value_get_int(value));
+            break;
+         case PROP_HASNOTIFICATION:
+            calendar_event_set_has_notification(self, g_value_get_int(value));
             break;
         case PROP_HASREMINDER:
             calendar_event_set_has_reminder(self, g_value_get_int(value));
@@ -358,7 +366,14 @@ static void calendar_event_class_init (CalendarEventClass *klass)
                      "The event has high priority",
                      0,G_MAXINT,0,
                      G_PARAM_READWRITE);
-
+                     
+	properties[PROP_HASNOTIFICATION] =
+    g_param_spec_int("hasnotification",
+                     "hasnotification",
+                     "The event has a notifcation",
+                     0,G_MAXINT,0,
+                     G_PARAM_READWRITE);
+                     
     properties[PROP_HASREMINDER] =
     g_param_spec_int("hasreminder",
                      "hasreminder",
@@ -560,6 +575,14 @@ gint calendar_event_get_is_priority(CalendarEvent *self){
 void calendar_event_set_is_priority(CalendarEvent *self, gint is_priority)
 {
     self->ispriority =is_priority;
+}
+
+gint calendar_event_get_has_notification(CalendarEvent *self){
+    return self->hasnotification;
+}
+void calendar_event_set_has_notification(CalendarEvent *self, gint has_notification)
+{
+    self->hasnotification =has_notification;
 }
 
 gint calendar_event_get_has_reminder(CalendarEvent *self){

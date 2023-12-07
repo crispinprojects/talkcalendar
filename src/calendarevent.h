@@ -83,6 +83,9 @@ void calendar_event_set_is_allday(CalendarEvent *self, gint is_allday);
 gint calendar_event_get_is_priority(CalendarEvent *self);
 void calendar_event_set_is_priority(CalendarEvent *self, gint is_priority);
 
+gint calendar_event_get_has_notification(CalendarEvent *self);
+void calendar_event_set_has_notification(CalendarEvent *self, gint has_reminder);
+
 gint calendar_event_get_has_reminder(CalendarEvent *self);
 void calendar_event_set_has_reminder(CalendarEvent *self, gint has_reminder);
 

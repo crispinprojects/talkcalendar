@@ -24,6 +24,12 @@
 #include <glib/gstdio.h>  //needed for g_mkdir
 #include <math.h>  //compile with -lm
 
+#include <libnotify/notify.h>  //notifications
+
+//#include <glib.h>
+//#include <gio/gio.h>
+
+
 #include "displayitem.h"
 #include "calendarevent.h"
 #include "customcalendar.h"
@@ -34,8 +40,8 @@
 #include "dictionary.h"
 
 
-#define CONFIG_DIRNAME "tikical-gtk4-050"
-#define CONFIG_FILENAME "tikical-config-050"
+#define CONFIG_DIRNAME "talkcal-gtk4-055"
+#define CONFIG_FILENAME "talkcal-config-055"
 
 static GMutex lock;
 
@@ -115,6 +121,8 @@ static void set_holidays_on_calendar(CustomCalendar *calendar);
 //listbox display
 static void display_event_array(GArray *evt_arry);
 
+static void show_notifications(GArray *evt_arry);
+
 GArray*  get_upcoming_array(int upcoming_days);
 
 
@@ -178,7 +186,7 @@ static int m_end_min=0;
 static int m_priority=0;
 static int m_is_yearly=0;
 static int m_is_allday=0;
-
+static int m_notification=0;
 static int m_has_reminder=0; //plumbing for future updates
 static int m_reminder_min=0; //plumbing for future updates
 
@@ -217,6 +225,7 @@ static void config_load_default()
 	m_show_end_time=0;
 	m_show_location=1;
 	m_holidays=1;
+	
 }
 
 static void config_read()
@@ -239,6 +248,7 @@ static void config_read()
 	m_show_end_time=0;
 	m_show_location=1;
 	m_holidays=1;
+	
 
 	// Load keys from keyfile
 	GKeyFile * kf = g_key_file_new();
@@ -265,6 +275,7 @@ static void config_read()
 	m_show_location = g_key_file_get_integer(kf, "calendar_settings", "show_location", NULL);
 
 	m_holidays = g_key_file_get_integer(kf, "calendar_settings", "holidays", NULL);
+	
 
 	g_key_file_free(kf);
 }
@@ -1719,6 +1730,7 @@ static void callbk_add_event(GtkButton *button, gpointer user_data)
 	GtkWidget *check_button_allday = g_object_get_data(G_OBJECT(button), "check-button-allday-key");
 	GtkWidget *check_button_isyearly = g_object_get_data(G_OBJECT(button), "check-button-isyearly-key");
 	GtkWidget *check_button_priority = g_object_get_data(G_OBJECT(button), "check-button-priority-key");
+	GtkWidget *check_button_notification = g_object_get_data(G_OBJECT(button), "check-button-notification-key");
 
 	buffer_summary = gtk_entry_get_buffer(GTK_ENTRY(entry_summary));
 	m_summary = gtk_entry_buffer_get_text(buffer_summary);
@@ -1755,7 +1767,8 @@ static void callbk_add_event(GtkButton *button, gpointer user_data)
 	int isyearly = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_isyearly));
 	int isallday = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_allday));
 	int priority = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_priority));
-
+	int notification = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_notification));
+	
 	CalendarEvent *evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
 	
 	//g_object_set(evt, "eventid", id_idx, NULL);
@@ -1776,10 +1789,11 @@ static void callbk_add_event(GtkButton *button, gpointer user_data)
 	g_object_set(evt, "isallday", isallday, NULL);
 	//g_print("insert event: isallday = %d\n",isallday);
 	g_object_set(evt, "ispriority", priority, NULL);
+	g_object_set(evt, "hasnotification", notification, NULL);
 	g_object_set(evt, "hasreminder", 0, NULL);
 	g_object_set(evt, "remindermin", 30, NULL);
 
-	db_insert_event(evt);
+	db_insert_event(evt); //insert event into database
 	
 
 	m_id_selection = -1;
@@ -1844,6 +1858,7 @@ static void callbk_new_event(GtkButton *button, gpointer user_data)
 	GtkWidget *check_button_allday;
 	GtkWidget *check_button_isyearly;
 	GtkWidget *check_button_priority;
+	GtkWidget *check_button_notification;
 
 	GtkWidget *button_add;
 
@@ -1942,15 +1957,19 @@ static void callbk_new_event(GtkButton *button, gpointer user_data)
 
 	check_button_isyearly = gtk_check_button_new_with_label("Is Yearly");
 	check_button_priority = gtk_check_button_new_with_label("Is High Priority");
+	check_button_notification = gtk_check_button_new_with_label("Send Notification");
+	
 	gtk_box_append(GTK_BOX(box), check_button_allday);
 	gtk_box_append(GTK_BOX(box), check_button_isyearly);
 	gtk_box_append(GTK_BOX(box), check_button_priority);
+	gtk_box_append(GTK_BOX(box), check_button_notification);
 
 	gtk_box_append(GTK_BOX(box), button_add);
 
 	g_object_set_data(G_OBJECT(button_add), "check-button-allday-key", check_button_allday);
 	g_object_set_data(G_OBJECT(button_add), "check-button-isyearly-key", check_button_isyearly);
 	g_object_set_data(G_OBJECT(button_add), "check-button-priority-key", check_button_priority);
+	g_object_set_data(G_OBJECT(button_add), "check-button-notification-key", check_button_notification);
 
 	gtk_window_present(GTK_WINDOW(dialog));
 }
@@ -1981,7 +2000,9 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	GtkWidget *check_button_allday = g_object_get_data(G_OBJECT(button), "check-button-allday-key");
 	GtkWidget *check_button_isyearly = g_object_get_data(G_OBJECT(button), "check-button-isyearly-key");
 	GtkWidget *check_button_priority = g_object_get_data(G_OBJECT(button), "check-button-priority-key");
+	GtkWidget *check_button_notification = g_object_get_data(G_OBJECT(button), "check-button-notification-key");
 
+	
 	GtkWidget *spin_button_start_time = g_object_get_data(G_OBJECT(button), "spin-start-time-key");
 	GtkWidget *spin_button_end_time = g_object_get_data(G_OBJECT(button), "spin-end-time-key");
 
@@ -2020,6 +2041,7 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	m_is_yearly = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_isyearly));
 	m_is_allday = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_allday));
 	m_priority = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_priority));
+	m_notification = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_notification));
 
 	gint arry_index = 0;
 	
@@ -2040,6 +2062,7 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	g_object_set(selected_evt, "isyearly", m_is_yearly, NULL);
 	g_object_set(selected_evt, "isallday", m_is_allday, NULL);
 	g_object_set(selected_evt, "ispriority", m_priority, NULL);
+	g_object_set(selected_evt, "hasnotification", m_notification, NULL);
 	g_object_set(selected_evt, "hasreminder", m_has_reminder, NULL);
 	g_object_set(selected_evt, "remindermin", m_reminder_min, NULL);
 		
@@ -2116,6 +2139,7 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 	GtkWidget *check_button_allday;
 	GtkWidget *check_button_isyearly;
 	GtkWidget *check_button_priority;
+	GtkWidget *check_button_notification;
 
 	GtkWidget *button_update;
 
@@ -2161,6 +2185,7 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 	gint is_yearly = 0;
 	gint is_allday = 0;
 	gint is_priority = 0;
+	gint has_notification = 0;
 	gint has_reminder = 0;
 	gint reminder_min = 0;
 	
@@ -2182,6 +2207,8 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 	g_object_get(selected_evt, "isyearly", &is_yearly, NULL);
 	g_object_get(selected_evt, "isallday", &is_allday, NULL);
 	g_object_get(selected_evt, "ispriority", &is_priority, NULL);
+	g_object_get (selected_evt, "hasnotification", &has_notification, NULL);
+	g_print("hasnotification = %d\n",has_notification);
 	g_object_get (selected_evt, "hasreminder", &has_reminder, NULL);
 	g_object_get (selected_evt, "remindermin", &reminder_min, NULL);
 	
@@ -2201,6 +2228,7 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 	m_is_yearly = is_yearly;
 	m_is_allday = is_allday;
 	m_priority = is_priority;
+	m_notification=has_notification;
 	
 	label_date = gtk_label_new(date_str);
 
@@ -2305,18 +2333,25 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 
 	check_button_isyearly = gtk_check_button_new_with_label("Is Yearly");
 	check_button_priority = gtk_check_button_new_with_label("Is High Priority");
-	gtk_box_append(GTK_BOX(box), check_button_allday);
-	gtk_box_append(GTK_BOX(box), check_button_isyearly);
-	gtk_box_append(GTK_BOX(box), check_button_priority);
-	gtk_box_append(GTK_BOX(box), button_update);
-
+	check_button_notification = gtk_check_button_new_with_label("Send Notification");
+	
 	gtk_check_button_set_active(GTK_CHECK_BUTTON(check_button_isyearly), m_is_yearly);
 	gtk_check_button_set_active(GTK_CHECK_BUTTON(check_button_allday), m_is_allday);
 	gtk_check_button_set_active(GTK_CHECK_BUTTON(check_button_priority), m_priority);
+	gtk_check_button_set_active(GTK_CHECK_BUTTON(check_button_notification), m_notification);
+	
+	gtk_box_append(GTK_BOX(box), check_button_allday);
+	gtk_box_append(GTK_BOX(box), check_button_isyearly);
+	gtk_box_append(GTK_BOX(box), check_button_priority);
+	gtk_box_append(GTK_BOX(box), check_button_notification);
+	gtk_box_append(GTK_BOX(box), button_update);
+
+	
 
 	g_object_set_data(G_OBJECT(button_update), "check-button-allday-key", check_button_allday);
 	g_object_set_data(G_OBJECT(button_update), "check-button-isyearly-key", check_button_isyearly);
 	g_object_set_data(G_OBJECT(button_update), "check-button-priority-key", check_button_priority);
+	g_object_set_data(G_OBJECT(button_update), "check-button-notification-key", check_button_notification);
 
 	gtk_window_present(GTK_WINDOW(dialog));
 	
@@ -3066,6 +3101,7 @@ static void display_event_array(GArray *evt_arry) {
 	gint is_yearly;
 	gint is_allday;
 	gint is_priority;
+	gint has_notification;
 	gint has_reminder;
 	gint reminder_min;
 	
@@ -3094,6 +3130,7 @@ static void display_event_array(GArray *evt_arry) {
 		g_object_get(evt, "isyearly", &is_yearly, NULL);
 		g_object_get(evt, "isallday", &is_allday, NULL);
 		g_object_get(evt, "ispriority", &is_priority, NULL);
+		g_object_get(evt, "hasnotification", &has_notification, NULL);
 		g_object_get(evt, "hasreminder", &has_reminder, NULL);
 		g_object_get(evt, "remindermin", &reminder_min, NULL);
       
@@ -3605,6 +3642,7 @@ void export_csv_file()
 		gint is_yearly = 0;
 		gint is_allday = 0;
 		gint is_priority = 0;
+		gint has_notification = 0;
 		gint has_reminder = 0;
 		gint reminder_min = 0;
 
@@ -3627,6 +3665,7 @@ void export_csv_file()
 		g_object_get(evt, "isyearly", &is_yearly, NULL);
 		g_object_get(evt, "isallday", &is_allday, NULL);
 		g_object_get(evt, "ispriority", &is_priority, NULL);
+		g_object_get(evt, "hasnotification", &has_notification, NULL);
 		g_object_get(evt, "hasreminder", &has_reminder, NULL);
 		g_object_get(evt, "remindermin", &reminder_min, NULL);
 
@@ -3648,6 +3687,7 @@ void export_csv_file()
 		gchar *isyearly_str = g_strdup_printf("%d", is_yearly);
 		gchar *isallday_str = g_strdup_printf("%d", is_allday);
 		gchar *ispriority_str = g_strdup_printf("%d", is_priority);
+		gchar *hasnotification_str = g_strdup_printf("%d", has_notification);
 		gchar *hasreminder_str = g_strdup_printf("%d", has_reminder);
 		gchar *remindermin_str = g_strdup_printf("%d", reminder_min);
 
@@ -3669,6 +3709,7 @@ void export_csv_file()
 						   isyearly_str, ",",
 						   isallday_str, ",",
 						   ispriority_str, ",",
+						   hasnotification_str, ",",
 						   hasreminder_str, ",",
 						   remindermin_str, ",",
 						   "\n",
@@ -3730,7 +3771,7 @@ void import_csv_file(gpointer user_data) {
 
 	
 	int count = 0;
-	int field_num = 19;		 // fix for now?
+	int field_num = 20;		 // fix for now?
 	char *data[field_num];	 // fields
 	int i = 0;				 // counter
 	int total_num_lines = 0; // total number of lines
@@ -3805,8 +3846,10 @@ void import_csv_file(gpointer user_data) {
 			if (j == 16)
 				g_object_set(evt, "ispriority", atoi(data[j]), NULL);
 			if (j == 17)
-				g_object_set(evt, "hasreminder", atoi(data[j]), NULL);
+				g_object_set(evt, "hasnotification", atoi(data[j]), NULL);
 			if (j == 18)
+				g_object_set(evt, "hasreminder", atoi(data[j]), NULL);
+			if (j == 19)
 				g_object_set(evt, "remindermin", atoi(data[j]), NULL);
 
 			free(data[j]);
@@ -3923,7 +3966,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.4");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.5");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2023");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar. Diphone voice. Sqlite backend.");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4040,6 +4083,124 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	gtk_window_present (GTK_WINDOW (dialog));
 
 }
+//----------------------------------------------------------------------
+// Testing
+//----------------------------------------------------------------------
+
+static void show_notifications(GArray *evt_arry){
+	
+	gint evt_id;
+	const gchar *summary_str;
+	const gchar *location_str;
+	const gchar *description_str;
+
+	gint start_year;
+	gint start_month;
+	gint start_day;
+	gint start_hour;
+	gint start_min;
+
+	gint end_year;
+	gint end_month;
+	gint end_day;
+	gint end_hour;
+	gint end_min;
+
+	gint is_yearly;
+	gint is_allday;
+	gint is_priority;
+	gint has_notification;
+	gint has_reminder;
+	gint reminder_min;
+	
+	// Display
+	
+    gchar *display_str = "";
+	gchar *notify_id ="";
+
+	// loop through the events array adding events to listbox store
+	for (int i = 0; i < evt_arry->len; i++)	{
+
+		CalendarEvent *evt = g_array_index(evt_arry, CalendarEvent *, i);
+		g_object_get(evt, "eventid", &evt_id, NULL);
+		g_object_get(evt, "summary", &summary_str, NULL);
+		g_object_get(evt, "location", &location_str, NULL);
+		g_object_get(evt, "description", &description_str, NULL);
+		g_object_get(evt, "startyear", &start_year, NULL);
+		g_object_get(evt, "startmonth", &start_month, NULL);
+		g_object_get(evt, "startday", &start_day, NULL);
+		g_object_get(evt, "starthour", &start_hour, NULL);
+		g_object_get(evt, "startmin", &start_min, NULL);
+		g_object_get(evt, "endyear", &end_year, NULL);
+		g_object_get(evt, "endmonth", &end_month, NULL);
+		g_object_get(evt, "endday", &end_day, NULL);
+		g_object_get(evt, "endhour", &end_hour, NULL);
+		g_object_get(evt, "endmin", &end_min, NULL);
+		g_object_get(evt, "isyearly", &is_yearly, NULL);
+		g_object_get(evt, "isallday", &is_allday, NULL);
+		g_object_get(evt, "ispriority", &is_priority, NULL);
+		g_object_get(evt, "hasnotification", &has_notification, NULL);
+		g_object_get(evt, "hasreminder", &has_reminder, NULL);
+		g_object_get(evt, "remindermin", &reminder_min, NULL);
+    
+	if(has_notification) {
+    
+    notify_id =g_strdup_printf("%d", i);
+    //create display str   
+    
+    gchar *time_str = "";
+    gchar *starthour_str = "";
+    gchar *startmin_str = "";			
+    gchar *ampm_str = " ";
+    
+	if (m_12hour_format)
+    {
+    
+    if (start_hour >= 13 && start_hour <= 23)
+    {
+    int shour = start_hour;
+    shour = shour - 12;
+    ampm_str = "pm ";
+    starthour_str = g_strdup_printf("%d", shour);
+    }
+    else
+    {
+    ampm_str = "am ";
+    starthour_str = g_strdup_printf("%d", start_hour);
+    }
+    } // 12
+    else
+    {
+    starthour_str = g_strdup_printf("%d", start_hour);
+    } // 24
+    
+    startmin_str = g_strdup_printf("%d", start_min);
+    
+    if (start_min < 10)
+    {
+    time_str = g_strconcat(time_str, starthour_str, ":0", startmin_str, NULL);
+    }
+    else
+    {
+    time_str = g_strconcat(time_str, starthour_str, ":", startmin_str, NULL);
+    }
+    
+    time_str = g_strconcat(time_str, ampm_str, NULL);
+	
+    display_str = g_strconcat(display_str, time_str, summary_str, "\n", NULL);	
+	
+	
+	NotifyNotification *notify;
+	notify_init(notify_id); 
+	notify = notify_notification_new("Talk Calendar Notification",display_str , NULL);
+	notify_notification_set_urgency (notify, NOTIFY_URGENCY_NORMAL);
+	notify_notification_show(notify,NULL);
+	
+	display_str="";
+	
+	} //if notification
+	} //for i events
+}
 
 //---------------------------------------------------------------------
 // create header
@@ -4050,8 +4211,7 @@ static void create_header (GtkWindow *window)
 	GtkWidget *header;
 	GtkWidget *button_new_event;
 	GtkWidget *button_edit_event;
-	GtkWidget *button_delete_selected;
-	GtkWidget *button_test;
+	GtkWidget *button_delete_selected;	
 	GtkWidget *menu_button;
 
 	PangoAttrList *attr;
@@ -4087,6 +4247,8 @@ static void create_header (GtkWindow *window)
 	GtkWidget *label_delete = gtk_button_get_child(GTK_BUTTON(button_delete_selected));
 	gtk_label_set_attributes(GTK_LABEL(label_delete), attr);
 	g_signal_connect(button_delete_selected, "clicked", G_CALLBACK(callbk_delete_selected), window);
+	
+	
 	pango_attr_list_unref (attr);
 	
 	//pango_attr_list_unref(attr);
@@ -4096,7 +4258,6 @@ static void create_header (GtkWindow *window)
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_edit_event);
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_delete_selected);
 	
-
 	// Menu model
 	GMenu *menu, *section;
 	menu = g_menu_new();
@@ -4155,15 +4316,16 @@ static void create_header (GtkWindow *window)
 
 static void startup(GtkApplication *app)
 {
-	 //g_print("startup  called\n");	 
+	 //g_print("startup  called\n");
+	 //evt_arry = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); 
 }
 //----------------------------------------------------------------
 // Callback shutdown
 //-----------------------------------------------------------------
 void callbk_shutdown(GtkWindow *window, gint response_id, gpointer user_data)
 {
-	//g_print("shutdown called\n");	
-	
+	//g_print("shutdown called save data\n");	
+	//g_array_free(evt_arry, FALSE); //?
 }
 
 //----------------------------------------------------------------
@@ -4173,6 +4335,8 @@ static void callbk_quit(GSimpleAction * action,
 							G_GNUC_UNUSED GVariant      *parameter,
 							              gpointer       user_data)
 {
+	//g_print("quit  called save data\n");
+	
 	g_application_quit(G_APPLICATION(user_data));	
 }
 
@@ -4323,11 +4487,9 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	gtk_box_append(GTK_BOX(box), sw); //listbox inside sw
 
 	gtk_window_present (GTK_WINDOW (window));    //use present not show with gtk4
-
 	
 	update_label_date(CUSTOM_CALENDAR(calendar), label_date);
-	
-	
+		
 	//display month events on calendar
 	//custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));		
 	GArray *evt_arry_month; //add month marks
@@ -4347,9 +4509,9 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	evt_arry_day = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); // setup arraylist
 	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);
 	//print_array(evt_arry_day);	
-	display_event_array(evt_arry_day);
+	display_event_array(evt_arry_day);	
+	show_notifications(evt_arry_day);	
 	g_array_free(evt_arry_day, FALSE); //clear the array 
-	
 		
 	if(m_talk && m_talk_at_startup) {
 		speak_events();		

@@ -1,8 +1,60 @@
-# Talk Calendar (Gtk4)
+# Talk Calendar
 
-Talk Calendar (Gtk4) is a desktop calendar for Linux which has some speech capability. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). It uses a built-in diphone speech synthesizer.
+Talk Calendar GTK4 Diphone is a talking desktop calendar for Linux. It uses a built-in diphone speech synthesizer. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/).
 
 ![](talkcalendar.png)
+
+## Installer
+
+A 64 bit prebuilt binary and bash script installer is available and has been released (as alpha).
+
+Extract the alpha release file and then run the bash script installer from the terminal as shown below and then follow the install instructions.
+
+```
+./install-talkcalendar.sh
+```
+
+The installer must have executable permissions. The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
+
+There is also an uninstall bash script
+
+Talk Calendar uses an Sqlite3 database for storing events and the installer will place this in your home directory. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
+
+```
+apt policy sqlite3
+```
+
+
+
+### Installer Troubleshooting
+
+In most cases the installer will just run as the required libraries will be installed by default and the user will be a member of the sudo group.
+
+* Not a member of the sudo group
+
+The installer assumes that you are a member of the sudo group. If you have installed Debian 12 with a root password then you will have to add yourself to the sudo group. The commands below show how to do this.
+
+```
+su -
+adduser your-user-name sudo
+```
+
+Then restart.
+
+* No GTK4 library
+
+The installer assumes that the GTK4 library are installed. These are installed by default on Debian and Ubuntu GTK based distros but sometimes are not installed on some spins or if creating a desktop from a Debian base install. To install it use the command below.
+
+```
+sudo apt install libgtk-4-1
+```
+
+* No ALSA library
+
+The installer assumes that the [Advanced Linux Sound Architecture](https://www.alsa-project.org/wiki/Main_Page) (ALSA) library is installed. This provides audio and MIDI functionality to the Linux operating system and is installed by default in Debian and Ubuntu distros. However if building a desktop from a Debian base install you will need to install ALSA as shown below.
+```
+sudo apt install alsa-utils
+```
 
 ## Core Features
 
@@ -12,39 +64,7 @@ Talk Calendar (Gtk4) is a desktop calendar for Linux which has some speech capab
 * priority and is-yearly can be used
 * Sqlite3 database used to store events
 * built-in diphone speech synthesizer
-* binary for 64-bit GTK4 distributions using GTK4.8 (Debian 12)
-
-## Deployment
-
-### Prebuilt Binary
-
-A 64 bit prebuilt binary is available and can be downloaded from the binary directory and can be used with Linux distributions that have GTK4 4.8 (or below) in their repositories such as Ubuntu 22.04, Debian 12 Bookworm, Fedora 35 onwards etc.
-
-Extract the downloaded file which contains the Talk Calendar executable and diphones directory which should be located in the working directory.
-
-Talk Calendar uses an Sqlite3 database for storing events. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
-
-```
-apt policy sqlite3
-```
-
-Talk Calendar can also display this information. Use menu->Information. 
-
-Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
-
-```
-./talkcalendar
-```
-
-or double click on the "talkcalendar" file. Make sure it has executable permissions. Right click on it, then select permissions and ensure "Allow executing file as program" is selected. Audio output requires that the alsa-utils package is installed (this is usually installed by default). 
-
-```
-sudo apt install alsa-utils
-```
-
-Use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. You can use the information menu item to show the current working directory where the events database should be located.
-
-Alternatively modify the "talkcalendar.desktop" file provided in the download using your user name and application location and copy it to the ***.local/share/applications/*** directory.
+* alpha binary release with bash script installer for 64-bit GTK4 distributions using GTK4 
 
 
 ## Calendar Usage
@@ -62,10 +82,13 @@ Alternatively modify the "talkcalendar.desktop" file provided in the download us
 
 ![](talkcalendar-new-event.png)
 
+When a creating a new event you can check notification which will send a system notification when Talk Calendar is started on the day of the event.
+
 ### Editing Existing Event
 
 * Select the event in the list view and click the Edit button on the header bar to edit
 * Change details as appropriate
+
 
 ### Preferences
 
@@ -83,7 +106,14 @@ Talk options can be changed.
 
 ### Information
 
-* Use the Information window to show the current working directory (in which the sqlite calendar.db file should be stored) and other system information such as the system font being used. 
+```
+menu->Information
+```
+
+The Information dialog to shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+
+![](talkcalendar-information.png)
+
 
 * Use the About dialog to display current version.
 
@@ -187,30 +217,34 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 ```
-
 ### Roadmap
 
 * ~~backend sqlite database~~ (done)
 * ~~backup and restore database (export/import csv file)~~ (done)
-* remove GTK4 classes being depreciated (ongoing - see below)
-* check and read out upcoming events (basic code structure completed)
 * ~~public holiday calendar marks~~
+* ~~startup notifications~~ (done but see note below)
+* ~~check and read out upcoming events~~ (basic code structure completed)
+* ~~test building talkcalendar with GTK 4.12~~ (see note below)
+* ~~alpha release~~ 
+* ~~alpha bash script installer~~ 
+* remove GTK4 classes being depreciated (ongoing - see below)
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
-* refactor startup code (new install)
+* refactor startup code (checks)
 * refactor custom calendar code 
 * multi-day events 
-* calendar styling (see note below -stalled)
+* calendar styling (see note below -***stalled***)
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
 * read time
-* notifications (see below)
 * GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
-* ~~test building talkcalendar with GTK 4.12~~ (see below)
+* beta release
 * explore packaging options (produce a reference example)
 
-### GTK4 Deprecating Classes (Testing)
+## Testing 
+
+### GTK4 Deprecating Classes
 
 GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 or GTK4.12 depreciations. Most current Linux distributions are using GTK4.8. Talk Calendar had been using a number of these classes and so recent work has involved going through the source code line-by-line removing class functions that will be depreciated. 
 
@@ -240,7 +274,7 @@ I need to add a feature to allow the user to choose the event and today colours.
 
 Hopefully this all makes some sense to anyone reading this. In summary styling is stalled until I get a better understanding on how best to move forward. I am also monitoring how the Xfce and Budgie desktops move to Wayland as this will help.
 
-### Wayland and X11 Testing (GNOME, Xfce, Budgie)
+### Wayland and X11 Distros (GNOME, Xfce, Budgie)
 
 GTK4 supports [Wayland](https://wayland.freedesktop.org/) which is a replacement for the X11 window system protocol. The XDG_SESSION_TYPE variable stores the type of display server the system is using. To check if you are running Wayland or X11 echo the XDG (Cross Desktop Group) session type as shown below.
 
@@ -265,7 +299,7 @@ Talk Calendar runs on both Debian GNOME and Ubuntu GNOME. Both use Mutter and Wa
 
 I have also tested Talk Calendar on Debian Xfce and Debian Budgie desktops which currently use X11 by default.
 
-Regarding Xfce, I believe they plan to move to using a Wayland compositor<sup>1</sup> and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). They are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. 
+Regarding Xfce, I believe they plan to move to using a Wayland compositor and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). They are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. 
 
 Regarding the [Budgie Desktop](https://github.com/BuddiesOfBudgie/budgie-desktop), running the apt policy command below 
 ```
@@ -277,7 +311,7 @@ inxi -Gxx | grep compositor
 ```
 reveals that the compositor is "budgie-wm". The XDG (Cross Desktop Group) session type is X11. 
 
-There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about moving to a Wayland only version of Budgie. There is work in progress on a Wayland compositor called Magpie V1.0. As Magpie was originally forked from Mutter I am assuming that they will still be using the GTK4 stack even though there have been statements about using the [Enlightenment Window Manager EFL](https://www.enlightenment.org/) or possibly [Qt](https://www.qt.io) but not [IceWM](https://ice-wm.org/). They are working with libxfce4windowing to replace the [libwnck](https://gitlab.gnome.org/GNOME/libwnck) code. For what I can make out panel management, keyboard input, desktop settings all need to be converted for use with a Wayland compositor and it is planned that all internal communications of these components will be over a [protocol buffer](https://protobuf.dev/overview/) to a centralised daemon.
+There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about moving to a Wayland only version of Budgie using a Wayland compositor called Magpie V1.0 which was originally forked from Mutter.
 
 A screenshot of Talk Calendar running on Budgie 10 (GTK, X11) is shown below.
 
@@ -285,17 +319,17 @@ A screenshot of Talk Calendar running on Budgie 10 (GTK, X11) is shown below.
 
 In summary testing shows that the GTK 4.8 version of Talk Calendar runs on both X11 and Wayland desktops without any known issues. With this Talk Calendar version there is no css styling. It is just raw GTK4 code (see above).
 
-<sup>1</sup>Wayland is a protocol that specifies the communication between a display server and its clients. It is intended to be a replacement for the X11 window system protocol. A Wayland server is called a "compositor". Applications (e.g. Talk Calendar) are Wayland clients. [Weston](https://gitlab.freedesktop.org/wayland/weston) is the reference implementation of a lightweight and functional Wayland compositor. Window decorations are done on the client or window side by a widget toolkit (or natively) and are called client side decorations. Wayland compositors which were written from scratch like Weston or Sway are unlikely to run as a X11 window manager. However, Wayland compositors which were originally X11 window managers (e.g. Kwin, Mutter) can use both X11 and Wayland. 
-
 ### Notifications
 
-Work in progress. I have developed a small GTK4 notification tester app which can be found [here](https://github.com/crispinprojects/notification-tester). In summary, test code using libnotify works on both Debian GNOME (Wayland) and Debian Budgie(X11). However, test code using GNotification works on Debian Budgie (X11) but not on Debian GNOME (Wayland). Testing note and screenshots for Debian GNOME (Wayland) and Debian Budgie (X11) can be found on the notification tester github [page](https://github.com/crispinprojects/notification-tester). Using [libnotify](https://gitlab.gnome.org/GNOME/libnotify) seems to the the best way forward for incorporating notifications across different desktops. It is an implementation of the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html) which provides support for GTK and Qt applications and is ***desktop independent***.
+Startup day event notifications have now been implemented using [libnotify](https://gitlab.gnome.org/GNOME/libnotify). This library is an implementation of the [Desktop Notifications Specification](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html) which provides support for GTK and Qt applications and is ***desktop independent***. 
+
+I have developed a small GTK4 notification tester app which can be found [here](https://github.com/crispinprojects/notification-tester) with screenshots and notes for Debian GNOME (Wayland) and Debian Budgie (X11) testing. I found that GNotification code works on Debian Budgie (X11) but not on Debian GNOME (Wayland). Consequently, I am currently using libnotify for implementing notifications in Talk Calendar.
 
 ## Versioning
 
 [SemVer](http://semver.org/) is used for versioning. The version number has the form 0.0.0 representing major, minor and bug fix changes.
 
-Please note that this version of Talk Calendar supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The new Talk Calendar application uses an Sqlite3 database for storing events rather than a csv file and is maintained with bug fixes while other projects are not.
+Please note that this version of Talk Calendar (Talk Calendar GTK4 Diphone) supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The new Talk Calendar application uses an Sqlite3 database for storing events rather than a csv file and is maintained with bug fixes while other projects are not.
 
 ## Author
 
@@ -303,7 +337,7 @@ Please note that this version of Talk Calendar supercedes my previous and older 
 
 ## License
 
-The GTK4 version of Talk Calendar is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
+Talk Calendar GTK4 Diphone is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
 
 ## Project Status
 

@@ -58,4 +58,21 @@ void db_delete_row(int id);
 void db_delete_all();
 void db_reset_sequence();
 
+
+//int db_get_number_of_isyearly_events_month(int month);
+//int db_get_number_of_rows_less_than(int year, int month, int day);
+
+
+//void db_get_all_events(CalendarEvent *event_buff, int count);
+
+
+
+//void db_get_all_events_year_month(CalendarEvent *event_buff, int year, int month, int count);
+//void db_get_isyearly_events_month(CalendarEvent *event_buff, int month, int count);
+//void db_get_all_events_year_month_day(CalendarEvent *event_buff, int year, int month, int day, int count);
+
+
+
+
+
 #endif // DBMANAGER_H

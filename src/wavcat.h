@@ -18,7 +18,7 @@
 #define WAVCAT_H
 
 /*
- * Talk Calendar wav file concatenation
+ * Talking Calendar wav file concatenation
  * Assumes talk wav files have the format:
  * 
  * Number of channels: 1 (mono)
