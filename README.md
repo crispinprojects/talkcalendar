@@ -6,9 +6,9 @@ Talk Calendar GTK4 Diphone is a talking desktop calendar for Linux. It uses a bu
 
 ## Installer
 
-A 64 bit prebuilt binary and bash script installer is available and has been released (as alpha).
+A 64 bit prebuilt binary and bash script installer is available and has been released.
 
-Extract the alpha release file and then run the bash script installer from the terminal as shown below and then follow the install instructions.
+Download and extract the release file (talkcalendar-release-055.tar.xz) and then run the bash script installer from the terminal as shown below and follow the install instructions.
 
 ```
 ./install-talkcalendar.sh
@@ -82,7 +82,7 @@ sudo apt install alsa-utils
 
 ![](talkcalendar-new-event.png)
 
-When a creating a new event you can check notification which will send a system notification when Talk Calendar is started on the day of the event.
+When a creating a new event you can check "Send Notification" which will send a system notification when Talk Calendar is started on the day in which the event occurs.
 
 ### Editing Existing Event
 
@@ -225,21 +225,21 @@ sudo dnf install alsa-lib-devel
 * ~~startup notifications~~ (done but see note below)
 * ~~check and read out upcoming events~~ (basic code structure completed)
 * ~~test building talkcalendar with GTK 4.12~~ (see note below)
-* ~~alpha release~~ 
-* ~~alpha bash script installer~~ 
+* ~~deployment release with Git tag~~ 
+* ~~bash script installer~~ 
 * remove GTK4 classes being depreciated (ongoing - see below)
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
 * refactor startup code (checks)
 * refactor custom calendar code 
-* multi-day events 
 * calendar styling (see note below -***stalled***)
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
+* multi-day events 
 * read time
 * GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
-* beta release
+* more releases
 * explore packaging options (produce a reference example)
 
 ## Testing 
