@@ -1,6 +1,6 @@
-# Talk Calendar
+# Talk Calendar Diphone
 
-Talk Calendar GTK4 Diphone is a talking desktop calendar for Linux. It uses a built-in diphone speech synthesizer. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/).
+Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-in diphone speech synthesizer. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/).
 
 ![](talkcalendar.png)
 
@@ -14,7 +14,7 @@ Download and extract the release file (talkcalendar-release-055.tar.xz) and then
 ./install-talkcalendar.sh
 ```
 
-The installer must have executable permissions. The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
+The installer must have executable permissions.Right click it and choose Properties->Permissions and tick allow "Executable as Program". The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
 
 There is also an uninstall bash script
 
@@ -64,7 +64,7 @@ sudo apt install alsa-utils
 * priority and is-yearly can be used
 * Sqlite3 database used to store events
 * built-in diphone speech synthesizer
-* alpha binary release with bash script installer for 64-bit GTK4 distributions using GTK4 
+* binary release with bash script installer for 64-bit GTK4 distributions using GTK4 
 
 
 ## Calendar Usage
@@ -337,7 +337,7 @@ Please note that this version of Talk Calendar (Talk Calendar GTK4 Diphone) supe
 
 ## License
 
-Talk Calendar GTK4 Diphone is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
+Talk Calendar Diphone is licensed under LGPL v2.1. GTK is released under the terms of the LGPL v2.1 license.
 
 ## Project Status
 
