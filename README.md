@@ -4,67 +4,47 @@ Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-i
 
 ![](talkcalendar.png)
 
-## Installer
+## Core Features
 
-A 64 bit prebuilt binary and bash script installer is available and has been released.
+* built with C and GTK 4.8.3 (Debian 12)
+* bespoke custom calendar which allows dates with events to be marked up
+* calendar visual colour marks for days with event and holidays
+* event summary, location, start and end time can be entered and edited
+* priority and is-yearly can be used
+* Sqlite3 database used to store events
+* built-in diphone speech synthesizer
 
-Download and extract the release file (talkcalendar-release-055.tar.xz) and then run the bash script installer from the terminal as shown below and follow the install instructions.
+
+## Prebuilt binary
+
+A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaed from the binary directory and can be used with Linux distributions that have GTK4 in their repositories such as Debian 12 Bookworm, Ubuntu 22.04, Fedora 35 onwards.
+
+Extract the downloaded file which contains the Talk Calendar executable and diphones directory which should be located in the working directory.
+
+Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
 
 ```
-./install-talkcalendar.sh
+./talkcalendar
 ```
+or double click on the "talkcalendar" file. 
 
-The installer must have executable permissions.Right click it and choose Properties->Permissions and tick allow "Executable as Program". The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
+Talk Calendar must have executable permissions to execute. Right click it and choose Properties->Permissions and tick allow "Executable as Program".
 
-There is also an uninstall bash script
+Audio output requires that the alsa-utils package is installed (this is usually installed by default).
 
-Talk Calendar uses an Sqlite3 database for storing events and the installer will place this in your home directory. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
+Talk Calendar uses an Sqlite3 database for storing events. Sqlite is normally installed by default. With Debian (Ubuntu) based distributions you can check the version of Sqlite installed on your system using the terminal command below.
 
 ```
 apt policy sqlite3
 ```
 
+Talking Calendar can also display this information. Use menu->Information. 
 
+To add Talk Calendar to the system menu modify the "talkcalendar.desktop" file provided in the download using your user name and application location and copy it to the ***.local/share/applications/*** directory.
 
-### Installer Troubleshooting
+Alternatively use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. You can use the information menu item to show the current working directory where the events database should be located.
 
-In most cases the installer will just run as the required libraries will be installed by default and the user will be a member of the sudo group.
-
-* Not a member of the sudo group
-
-The installer assumes that you are a member of the sudo group. If you have installed Debian 12 with a root password then you will have to add yourself to the sudo group. The commands below show how to do this.
-
-```
-su -
-adduser your-user-name sudo
-```
-
-Then restart.
-
-* No GTK4 library
-
-The installer assumes that the GTK4 library are installed. These are installed by default on Debian and Ubuntu GTK based distros but sometimes are not installed on some spins or if creating a desktop from a Debian base install. To install it use the command below.
-
-```
-sudo apt install libgtk-4-1
-```
-
-* No ALSA library
-
-The installer assumes that the [Advanced Linux Sound Architecture](https://www.alsa-project.org/wiki/Main_Page) (ALSA) library is installed. This provides audio and MIDI functionality to the Linux operating system and is installed by default in Debian and Ubuntu distros. However if building a desktop from a Debian base install you will need to install ALSA as shown below.
-```
-sudo apt install alsa-utils
-```
-
-## Core Features
-
-* built with C and GTK 4.8.3 (Debian 12)
-* bespoke custom calendar which allows dates with events to be marked up
-* event summary, location, start and end time can be entered and edited
-* priority and is-yearly can be used
-* Sqlite3 database used to store events
-* built-in diphone speech synthesizer
-* binary release with bash script installer for 64-bit GTK4 distributions using GTK4 
+For release versions which include an installer please see below.
 
 
 ## Calendar Usage
@@ -148,6 +128,50 @@ A first attempt of a backup and restore system has been implemented in case the 
 
 I have not tested what will happen if you attempt to vacuum your database externally and then restart Talk Calendar with this.
 
+## Release Versions
+
+Release versions contain a 64 bit prebuilt binary and a bash script installer. 
+
+Download and extract the release file and then run the bash script installer from the terminal as shown below and follow the install instructions.
+
+```
+./install-talkcalendar.sh
+```
+
+The installer must have executable permissions. Right click it and choose Properties->Permissions and tick allow "Executable as Program". The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
+
+There is also an uninstall bash script
+
+### Installer Troubleshooting
+
+In most cases the installer will just run as the required libraries will be installed by default and the user will be a member of the sudo group.
+
+* Not a member of the sudo group
+
+The installer assumes that you are a member of the sudo group. If you have installed Debian 12 with a root password then you will have to add yourself to the sudo group. The commands below show how to do this.
+
+```
+su -
+adduser your-user-name sudo
+```
+
+Then restart.
+
+* No GTK4 library
+
+The installer assumes that the GTK4 library are installed. These are installed by default on Debian and Ubuntu GTK based distros but sometimes are not installed on some spins or if creating a desktop from a Debian base install. To install it use the command below.
+
+```
+sudo apt install libgtk-4-1
+```
+
+* No ALSA library
+
+The installer assumes that the [Advanced Linux Sound Architecture](https://www.alsa-project.org/wiki/Main_Page) (ALSA) library is installed. This provides audio and MIDI functionality to the Linux operating system and is installed by default in Debian and Ubuntu distros. However if building a desktop from a Debian base install you will need to install ALSA as shown below.
+```
+sudo apt install alsa-utils
+```
+
 ## Build From Source
 
 The C source code for the Talk Calendar project is provided in the src directory.
@@ -217,7 +241,7 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 ```
-### Roadmap
+## Roadmap
 
 * ~~backend sqlite database~~ (done)
 * ~~backup and restore database (export/import csv file)~~ (done)
@@ -227,6 +251,7 @@ sudo dnf install alsa-lib-devel
 * ~~test building talkcalendar with GTK 4.12~~ (see note below)
 * ~~deployment release with Git tag~~ 
 * ~~bash script installer~~ 
+* speak time (under developmet)
 * remove GTK4 classes being depreciated (ongoing - see below)
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
@@ -236,7 +261,6 @@ sudo dnf install alsa-lib-devel
 * calendar styling: event colour user choice (see note below)
 * calendar styling: public holiday calendar colour
 * multi-day events 
-* read time
 * GTK desktop testing (ongoing see below)
 * bug testing (ongoing)
 * more releases

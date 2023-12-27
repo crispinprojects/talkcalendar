@@ -77,6 +77,8 @@ static void callbk_update_event(GtkButton *button, gpointer  user_data);
 static void callbk_edit_event(GtkButton *button, gpointer  user_data);
 static void callbk_delete_selected(GtkButton *button, gpointer  user_data);
 
+static void callbk_speak_time(GtkButton *button, gpointer user_data);
+static void speak_time(gint hour, gint min);
 
 
 //Speak
@@ -4202,6 +4204,129 @@ static void show_notifications(GArray *evt_arry){
 	} //for i events
 }
 
+//----------------------------------------------------------------------
+// Speak time
+//----------------------------------------------------------------------
+
+static void speak_time(gint hour, gint min) 
+{
+	g_print("speak time = %d:%d\n",hour,min);
+	
+	// Check if diphone directory exists
+	gchar *cur_dir;
+	cur_dir = g_get_current_dir();
+	gchar *diphone_directory = g_build_filename(cur_dir, "diphones", NULL);
+	if (g_file_test(diphone_directory, G_FILE_TEST_IS_DIR) == FALSE)
+	{
+	 g_print("no diphone directory\n");
+	 return;
+	}
+	
+	
+	GList *wavlist=NULL;
+	GList *all_diphones=NULL;
+	
+	GList *hour_list=convert_number_to_diphone_list(hour);
+	GList *min_list =convert_number_to_diphone_list(min);
+	
+	all_diphones =g_list_concat(all_diphones,hour_list);
+	all_diphones =g_list_concat(all_diphones, word_to_diphones("pau"));
+	all_diphones =g_list_concat(all_diphones,min_list);
+	
+	//iterate over GList
+	GList *l;
+    for (l = all_diphones; l != NULL; l = l->next) {
+    
+	//const char *str = l->data;
+    char *str = l->data;
+    //g_print("diphone str=%s\n",str);
+    
+    char* diphone_wav_str =get_diphone_wav_path(str);
+    //g_print("diphone_wav_str =%s\n",diphone_wav_str);
+	
+	if (g_file_test(g_build_filename (cur_dir,diphone_wav_str, NULL), G_FILE_TEST_IS_REGULAR)) {
+	wavlist = g_list_append(wavlist, g_build_filename (cur_dir,diphone_wav_str, NULL));
+	}
+    
+    } //for-loop
+
+	gpointer pt_data;
+	gchar* list_str;
+			  
+	char* merge_file ="/tmp/talkout.wav";	
+	int num_files = g_list_length(wavlist);
+	char* file_names[g_list_length(wavlist)];
+		
+	//-----------------------------------------------------------------
+	//prepare for wavcat  
+	//------------------------------------------------------------------
+	
+	for(int i=0;i<g_list_length(wavlist);i++) //iterate through GList wavlist 
+	{	  
+	pt_data=g_list_nth_data(wavlist,i);
+	list_str=(char *)pt_data;			
+	file_names[i] = list_str;	//populate char* array   
+	}
+		
+	merge_wav_files2(merge_file, num_files, file_names, m_talk_sample_rate,m_talk_amplification);
+	
+	//play audio in a thread
+	GThread *thread_audio; 	
+	gchar* wav_file ="/tmp/talkout.wav"; //wavcat way	
+	g_mutex_lock (&lock);
+    thread_audio = g_thread_new(NULL, thread_playwav, wav_file);  
+	g_thread_unref (thread_audio);
+	
+	//clean up 
+	g_list_free(wavlist);
+	g_free (cur_dir);	
+
+}
+
+
+//---------------------------------------------------------------------
+// speak time test
+//---------------------------------------------------------------------
+static void callbk_speak_time(GtkButton *button, gpointer user_data)
+{
+	
+	GtkWidget *window = user_data;
+	
+	//GDate *today_date;
+    //today_date = g_date_new();
+	//g_date_set_time_t(today_date, time(NULL));
+	//int today = g_date_get_day(today_date);
+	//int month = g_date_get_month(today_date);
+	//int year = g_date_get_year(today_date);
+	//g_date_free(today_date); // freeit quick
+	
+	//dt = g_date_time_new_now_local();   // get local time     
+    //dt_format = g_date_time_format(dt, "%a %e %b %Y");	
+	
+			  
+	GDateTime *dt = g_date_time_new_now_local();        
+	
+	gint hour =g_date_time_get_hour(dt);	
+	gint min= g_date_time_get_minute(dt);
+	
+	speak_time(hour,min);
+	//g_print("time = %d:%d\n",hour,min);
+	
+
+     //gint second =g_date_time_get_second (dt);
+	
+	//gchar* time_str = g_date_time_format (dt, "%l:%M %P");
+	//g_print("time = %s\n",time_str);
+    g_date_time_unref (dt);
+	
+	
+	
+	
+	
+	
+}
+
+
 //---------------------------------------------------------------------
 // create header
 //---------------------------------------------------------------------
@@ -4212,6 +4337,7 @@ static void create_header (GtkWindow *window)
 	GtkWidget *button_new_event;
 	GtkWidget *button_edit_event;
 	GtkWidget *button_delete_selected;	
+	GtkWidget *button_speak_time;
 	GtkWidget *menu_button;
 
 	PangoAttrList *attr;
@@ -4248,6 +4374,12 @@ static void create_header (GtkWindow *window)
 	gtk_label_set_attributes(GTK_LABEL(label_delete), attr);
 	g_signal_connect(button_delete_selected, "clicked", G_CALLBACK(callbk_delete_selected), window);
 	
+	button_speak_time = gtk_button_new_with_label("Speak Time");
+	gtk_widget_set_tooltip_text(button_speak_time, "Speak Time");
+	GtkWidget *label_time = gtk_button_get_child(GTK_BUTTON(button_speak_time));
+	gtk_label_set_attributes(GTK_LABEL(label_time), attr);
+	g_signal_connect(button_speak_time, "clicked", G_CALLBACK(callbk_speak_time), window);
+	
 	
 	pango_attr_list_unref (attr);
 	
@@ -4257,6 +4389,7 @@ static void create_header (GtkWindow *window)
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_new_event);
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_edit_event);
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_delete_selected);
+	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_speak_time);
 	
 	// Menu model
 	GMenu *menu, *section;
@@ -4488,22 +4621,36 @@ static void activate (GtkApplication *app, gpointer  user_data)
 
 	gtk_window_present (GTK_WINDOW (window));    //use present not show with gtk4
 	
-	update_label_date(CUSTOM_CALENDAR(calendar), label_date);
+	//update_label_date(CUSTOM_CALENDAR(calendar), label_date);
 		
-	//display month events on calendar
-	//custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));		
+	////display month events on calendar
+	////custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));		
+	//GArray *evt_arry_month; //add month marks
+	//evt_arry_month = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
+	//db_get_all_events_year_month(evt_arry_month, m_start_year,m_start_month);
+	////print_array(evt_arry_month);
+	//set_marks_on_calendar(CUSTOM_CALENDAR(calendar),evt_arry_month);
+	//g_array_free(evt_arry_month, FALSE); //clear the array
+		
+	//custom_calendar_update(CUSTOM_CALENDAR(calendar));
+	
+	
+	
+	//g_list_store_remove_all(m_store); // clear
+	
+	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
+	update_label_date(CUSTOM_CALENDAR(calendar), label_date);	
+		
 	GArray *evt_arry_month; //add month marks
 	evt_arry_month = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
 	db_get_all_events_year_month(evt_arry_month, m_start_year,m_start_month);
 	//print_array(evt_arry_month);
 	set_marks_on_calendar(CUSTOM_CALENDAR(calendar),evt_arry_month);
 	g_array_free(evt_arry_month, FALSE); //clear the array
-		
+	
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-	
+		
 	custom_calendar_goto_today(CUSTOM_CALENDAR(calendar));
-	
-	//g_list_store_remove_all(m_store); // clear
 	
 	GArray *evt_arry_day; //day events	
 	evt_arry_day = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); // setup arraylist
@@ -4512,6 +4659,8 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	display_event_array(evt_arry_day);	
 	show_notifications(evt_arry_day);	
 	g_array_free(evt_arry_day, FALSE); //clear the array 
+	
+	custom_calendar_update(CUSTOM_CALENDAR(calendar));
 		
 	if(m_talk && m_talk_at_startup) {
 		speak_events();		

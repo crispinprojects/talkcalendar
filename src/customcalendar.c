@@ -667,7 +667,7 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 	// scale week days
 	for (int i = 0; i < 7; i++)
 	{
-		// gtk_widget_add_css_class(label, "day-name"); //no go -> use pango instead
+		
 		PangoAttrList *attr;
 		attr = pango_attr_list_new();
 		pango_attr_list_insert(attr,pango_attr_size_new_absolute(calendar->scale * PANGO_SCALE));
@@ -692,132 +692,66 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 				calendar->days[y][x] = aday;
 				gchar buffer[512];
 				
-				//if (calendar->marked_holiday[aday])
-				//{
-					//gchar *marked_holiday_str ="<b>";
-					//marked_holiday_str = g_strconcat(marked_holiday_str,g_strdup_printf("%i", aday),"</b>",NULL);						
-					//aday_str = g_strdup_printf("%s%s", marked_holiday_str, "<b>#</b>");
-				//}
-				
-
-				// add marks
+				// add mark color
 				if (calendar->marked_day[aday])
 				{
 					
-					// g_strdup_printf("%d%s", day, "*");
+					//if today					
 					if (aday == today_day && calendar->month == today_month && calendar->year == today_year)
 					{
 						//today and marked
-						//aday_str = g_strdup_printf("%s%d%s%s", "[", aday, "]", "*");
-						gchar *marked_day_str ="";
-						
-						if (calendar->marked_holiday[aday])
-						{
-							marked_day_str = g_strconcat(marked_day_str,"[",g_strdup_printf("%i", aday),"]#","",NULL);
-						}
-						else {
-							marked_day_str = g_strconcat(marked_day_str,"[",g_strdup_printf("%i", aday),"]","",NULL);
-						}
-						
-						aday_str = g_strdup_printf("%s%s", marked_day_str, "*");
-						
-						
-	
+						aday_str = g_strdup_printf("%s%s", g_strdup_printf("%i", aday), "*");	
 						g_snprintf(buffer, sizeof(buffer),"<span foreground=\"red\" weight=\"bold\">%s</span>", aday_str);
-						
-						
-											
-						
+					
 					}
 					else
 					{
-						//normal day marked
-						//aday_str = g_strdup_printf("%d%s", aday, "*");
-						gchar *marked_day_str ="<b>";
+						//normal day marked												
+						aday_str = g_strdup_printf("%s%s", g_strdup_printf("%i", aday), "<b>*</b>");
+						
 						if (calendar->marked_holiday[aday])
 						{
-							marked_day_str = g_strconcat(marked_day_str,g_strdup_printf("%i", aday),"#","</b>",NULL);
+							//keep holidays blue
+							g_snprintf(buffer, sizeof(buffer),"<span foreground=\"blue\" weight=\"bold\">%s</span>", aday_str);
 						}
 						else {
-							marked_day_str = g_strconcat(marked_day_str,g_strdup_printf("%i", aday),"</b>",NULL);
-						}
-											
-												
-						aday_str = g_strdup_printf("%s%s", marked_day_str, "<b>*</b>");
-						//g_snprintf(buffer, sizeof(buffer),"<span foreground=\"blue\" weight=\"bold\">%s</span>", aday_str);
-						//g_snprintf(buffer, sizeof(buffer),"<span foreground=\"peru\" weight=\"bold\">%s</span>", aday_str);
-						//g_snprintf(buffer, sizeof(buffer),"<span foreground=\"green\" weight=\"bold\">%s</span>", aday_str);
-						//g_snprintf(buffer, sizeof(buffer),"<span foreground=\"darkcyan\" weight=\"bold\">%s</span>", aday_str);
-						g_snprintf(buffer, sizeof(buffer),"<span foreground=\"brown\" weight=\"bold\">%s</span>", aday_str);
+							g_snprintf(buffer, sizeof(buffer),"<span foreground=\"brown\" weight=\"bold\">%s</span>", aday_str);
+						}				
 						
 					}
 
-					//gtk_widget_add_css_class(GTK_WIDGET(calendar->day_number_labels[y][x]), "title-3");
-					//gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), aday_str);
 					gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), buffer);
 				}
 				else
 				{
 					if (aday == today_day && calendar->month == today_month && calendar->year == today_year)
 					{
-						
-						//gchar *tdate ="today date = ";
-						//tdate=g_strconcat(tdate,g_strdup_printf("%i", aday),"-",
-						//g_strdup_printf("%i", calendar->month),"-",
-						//g_strdup_printf("%i", calendar->year),NULL);
-						//g_print("%s\n",tdate);
-						
-						//today
-						gchar *today_str ="";
-						
-						if (calendar->marked_holiday[aday])
-						{
-							today_str = g_strconcat(today_str,g_strdup_printf("%i", aday),"#",NULL);
-						}
-						else {
-							today_str = g_strconcat(today_str,g_strdup_printf("%i", aday),NULL);
-						}
 												
-						//aday_str = g_strdup_printf("%s%s%s", "<b>[</b>", today_str , "<b>]</b>");
-						
-						//gchar buffer[512];
-	
-						g_snprintf(buffer, sizeof(buffer),"<span foreground=\"red\" weight=\"bold\">%s</span>", today_str);
-	
-						//label = gtk_label_new(buffer);
-						//gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
-						
-												
-						gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), buffer);
-						
-											
-						//PangoAttrList *attr2;
-						//attr2 = pango_attr_list_new();	
-						//pango_attr_list_insert(attr2, pango_attr_background_new(60000,5000,45000));	//redish		
-						//gtk_label_set_attributes(GTK_LABEL(today_label), attr2);							
-						//pango_attr_list_unref(attr2);
-						
+						//today always red
+						gchar *today_str ="";						
+						today_str = g_strconcat(today_str,g_strdup_printf("%i", aday),NULL);
+						g_snprintf(buffer, sizeof(buffer),"<span foreground=\"red\" weight=\"bold\">%s</span>", today_str);													
+						gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), buffer);											
 					
 					}
 					else
 					{
-						//normal day
+						//normal days
 						if (calendar->marked_holiday[aday])
-						{
-							aday_str = g_strdup_printf("%d%s",aday,"#");							
-							//aday_str = g_strconcat(aday_str,g_strdup_printf("%i", aday),"#",NULL);
+						{							
+							//normal no event day but holiday blue day
+							aday_str = g_strdup_printf("%s%s", g_strdup_printf("%i", aday), "");													
+							g_snprintf(buffer, sizeof(buffer),"<span foreground=\"blue\" weight=\"bold\">%s</span>", aday_str);
+							gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), buffer);						
 						}
 						else {
 							aday_str = g_strdup_printf("%d", aday);
-						}				
-						
-						gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), aday_str);
+							gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), aday_str);
+						}			
+												
 					}
 
-					//gtk_widget_remove_css_class(GTK_WIDGET(calendar->day_number_labels[y][x]), "title-3");
-					//gtk_widget_remove_css_class(GTK_WIDGET(calendar->day_number_labels[y][x]), "today");
-					//gtk_widget_remove_css_class (label, "today");
-								
+				
 				}
 				
 				PangoAttrList *attr;
