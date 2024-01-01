@@ -1,6 +1,6 @@
 # Talk Calendar Diphone
 
-Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-in diphone speech synthesizer. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/).
+Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-in diphone speech synthesizer. It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). A screenshot is shown below.
 
 ![](talkcalendar.png)
 
@@ -43,7 +43,7 @@ To add Talk Calendar to the system menu modify the "talkcalendar.desktop" file p
 
 Alternatively use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. 
 
-For release versions which include an installer please see below.
+Release versions include an installer. For more information please see below.
 
 
 ## Calendar Usage
@@ -51,7 +51,7 @@ For release versions which include an installer please see below.
 ### Adding New Event
 
 * Select event date using the calendar
-* Select "New Event" from the menu (or press Ctrl+n) to invoke the "New Event" window
+* Select "Event->New Event" from the menu or press Ctrl+n to invoke the "New Event" window
 * Enter the event summary (e.g. meeting, birthday, anniversary, doctor, dentist etc.)
 * Enter the description (optional)
 * Enter the location (optional)
@@ -65,17 +65,17 @@ When a creating a new event you can check "Send Notification" which will send a 
 
 ### Editing Existing Event
 
-* Select the event in the list view and either select "Edit Selected Event" from the menu or press Ctrl+e
+* Select the event in the list view and either select "Event->Edit Selected Event" from the menu or press Ctrl+e
 * Change details as appropriate
 
 ### Changing Calendar Colours
 
-* Select the calendar colour dialog suing the menu item Calendar->Colours
+* Select the calendar colour window using Calendar->Colours from the menu
 * Enter the HTML colour name for changing the today, event and holiday calendar colour marks
 
 ![](talkcalendar-colours.png)
 
-A list of HTML colour names can be found [here](https://www.w3schools.com/tags/ref_colornames.asp). Most of the major colour names have been implemented (not all tested) as shown below which should be sufficient if using either a dark or light desktop colour scheme.
+A list of HTML colour names can be found [here](https://www.w3schools.com/tags/ref_colornames.asp). Most of the major colour names have been implemented (not all tested) as shown below which should be sufficient if using either a light or dark legacy desktop colour theme.
 
 Red HTML colour names:
 ```
@@ -254,7 +254,8 @@ Note the American spelling of grey (gray).
 
 ### Preferences
 
-* Use the Preferences window using the menu itme Edit->Preferences to change  options
+* Select Edit->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
+* Change options as required
 
 ![](talkcalendar-preferences.png)
 
@@ -264,27 +265,21 @@ Talk options can be changed.
 
 ### Dark Theme
 
-You can use a legacy dark theme with Talk Calendar. The screenshot below which shows how Talk Calendar looks when the Breeze dark theme is being used. Change calendar visual mark colours to math the theme.
+You can use a legacy dark theme with Talk Calendar. The screenshot below which shows how Talk Calendar looks when the Breeze dark theme is being used. Change calendar visual mark colours to match the theme.
 
 ![](talkcalendar-breeze-dark.png)
 
 
-
-
 ## Talking
 
-* Press spacebar to speak the date and event summary.
+* Press spacebar to speak event details.
 
 ### Information
 
-```
-Help->Information (or press F1)
-```
-
-The Information dialog to shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+* Select "Help->Information from the menu or press F1
+* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
 
 ![](talkcalendar-information.png)
-
 
 * Use the About dialog to display current version.
 
@@ -296,8 +291,8 @@ Ctrl+e			Edit Selected Event
 Delete			Delete Selected Event
 Ctrl_Alt+p		Preferences window
 Spacebar		Speak
-t				Speak Time
-F1				Information
+t			Speak Time
+F1			Information
 ```
 
 ## Startup Applications
@@ -320,17 +315,18 @@ Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQ
 
 ### Backup Restore Events Database
 
-A first attempt of a backup and restore system has been implemented in case the Sqlite events database becomes corrupted (e.g. by using another external program to open it or by attempting to vacuum it). You should backup your events by using the export to CSV file menu item which will create an events.csv file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events from the Sqlite database and then use the import from  CSV restore option. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this. 
+A first attempt of a backup and restore system has been implemented in case the Sqlite events database becomes corrupted (e.g. by using another external program to open it or by attempting to vacuum it). You should backup your events by using the export to CSV file menu item which will create an "events.csv" file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events from the Sqlite database and then use the import from  CSV restore option which assumes that the "events.csv" file is in the current working directory. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this. 
 
 I have not tested what will happen if you attempt to vacuum your database externally and then restart Talk Calendar with this.
 
 ## Release Versions
 
-Release versions contain a 64 bit prebuilt binary and a bash script installer and instructions on how to use it with trouble shooting information. Download and extract the release file and then run the bash script installer from the terminal as shown below and follow the install instructions.
+Release versions contain a 64 bit prebuilt binary and a bash script installer and instructions on how to use it with trouble shooting information. Typically these are older versions representing a milestone in the development cycle. Download and extract the release file and then run the bash script installer from the terminal as shown below and follow the install instructions.
 
 ```
 ./install-talkcalendar.sh
 ```
+Use the version in the binary directory for the latest version of Talk Calendar.
 
 ## Build From Source
 
@@ -412,8 +408,8 @@ sudo dnf install alsa-lib-devel
 * ~~deployment release with Git tag~~ 
 * ~~bash script installer~~ 
 * ~~replace GNOME HIG hamburger menu style UI with a traditional based desktop using a top menu bar~~ (done)
-*  ~~colour user choice~~ (done)
 * ~~calendar styling using Pango and markup~~ (done see note below)
+*  ~~colour dialog to allow a user to change today, event and holiday colours~~ (done)
 * ~~speak time~~ (done)
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
@@ -423,7 +419,7 @@ sudo dnf install alsa-lib-devel
 * ~~remove GTK4 classes being depreciated (ongoing - see below)~~
 * bug testing (ongoing)
 * more releases
-* libawaita
+* libawaita (see Calendar Style section below)
 * explore packaging options (produce a reference example)
 
 I will add more features as the project rolls along.
@@ -432,7 +428,7 @@ I will add more features as the project rolls along.
 
 ### GTK4 Deprecating Classes
 
-GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 or GTK4.12 depreciations. Most current Linux distributions are using GTK4.8. Talk Calendar had been using a number of these classes and so recent work has involved going through the source code line-by-line removing class functions that will be depreciated. 
+GTK have announced that they are [deprecating a number of GTK4 classes](https://blog.gtk.org/2022/10/30/on-deprecations/) as an early outlook at changes that will appear in the next major release that will break API compatibility. The full list of depreciated classes can be found in the list of [GTK4 api classes](https://docs.gtk.org/gtk4/#classes) and generally listed as GTK4.10 or GTK4.12 depreciations. Debian based Linux distributions are currently using GTK4.8. Talk Calendar had been using a number of classes which will be depreciated and so recent work has involved going through the source code line-by-line removing class functions on the depreciation hit list. 
 
 I have tested building Talk Calendar with ***GTK4.12*** (Ubuntu 23.10). It builds. However, if you take a binary built with GTK4.12 and try to run it on Debian 12 which uses GTK4.8 it fails to run. You need to use a binary built on Debian 12 on Debian 12 and a binary built on Ubuntu 23.10 on Ubuntu 23.10. However, a binary built on Debian 12 with GTK4.8 runs on Ubuntu 23.10. It appears from my testing that a GTK4 app built on a lower version will run on a higher version but the reverse is not true. 
 
@@ -452,18 +448,20 @@ gtk_widget_add_css_class (label, "title-2");
 
 As I understand it, GTK4 does not define style classes and this is left to the platform library (libadwaita). GTK4 gives you "labels", "buttons" and other GUI components while libadwaita is used to style these following GNOME's Human Interface Guidelines known as [HIG](https://developer.gnome.org/hig/). 
 
-However, if you create a GTK calendar and use for example
+However, if you create a GTK4 calendar and use for example
 
 ```
 gtk_widget_add_css_class (calendar, "title-2");
 ```
-the whole calendar is changed to use "title-2" in this case. I could not find a way to add and remove visual marks to the GTK4 Calendar using "gtk_calendar_mark_day" and "gtk_calendar_unmark_day" and so I ended up writing my own custom calendar class so that I could add visual colour marks for event days and holidays. I need to do more research into GTK4 styling with a platform library. Consequently, I have placed the use of libadwaita lower down in the road map list as I need to learn how to use it and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
+the whole calendar is changed to use "title-2" in this case. I could not find a way to add and remove visual marks to the GTK4 Calendar using "gtk_calendar_mark_day" and "gtk_calendar_unmark_day" and so I ended up writing my own custom calendar class so that I could add visual colour marks for event days and holidays. See my [GTK4 Simple Calendar](https://github.com/crispinprojects/gtk4-simple-calendar) application for more details.
+
+I need to do more research into GTK4 styling with a platform library. Consequently, I have placed the use of libadwaita lower down in the road map list as I need to learn how to use it and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
 
 The [gtk_css_provider_load_from_data()](https://docs.gtk.org/gtk4/method.CssProvider.load_from_data.html) function which I used previously in the GTK3 version of the application is being depreciated and so all code using it has been [removed](https://gitlab.gnome.org/GNOME/gtk/-/commit/f2a297f56d7b0f749ae8b5ef5b853951ff30a89d). I believe gtk_css_provider_load_from_string() could be used instead in GTK 4.12. However, I am using GTK 4.8.3 for developing this application which is found in the Debian 12 package repositories. It appears that you can still load and parse an application-specific styling css file (e.g. styles.css) but although I developed some test code I have not gone down this route in case this approach is depreciated further down the line.
 
 Hopefully this all makes some sense to anyone reading this. In summary libadwaita styling is stalled until I get a better understanding on how best to move forward but my custom calendar does allow visual colour marks to be used.
 
-I am also monitoring how the Xfce and Budgie desktops move to Wayland and how they will use HIG as this may help. Talk Calendar version 0.6 (onwards) has replaced the GNOME hamburger style HIG UI with a traditional based desktop using a top menu bar. Gtk4 still allows you to do this. I know GNOME have said that the “traditional desktop” is dead, and it’s not coming back, [Community Power Part 4: The GNOME Way](https://blogs.gnome.org/tbernard/2021/07/13/community-power-4/) but this application is best suited to a traditional desktop experience especially if using desktops such as Xfce and Budgie. 
+I am also monitoring how the Xfce and Budgie desktops move to Wayland and how they will use GNOME HIG as this may help. Talk Calendar version 0.6 (and onwards) has replaced the GNOME hamburger style HIG UI with a traditional based desktop using a top menu bar. Gtk4 still allows you to do this. I know GNOME have said that the “traditional desktop” is dead, and it’s not coming back, [Community Power Part 4: The GNOME Way](https://blogs.gnome.org/tbernard/2021/07/13/community-power-4/) but I feel that this application is best suited to a traditional desktop experience especially if using desktops such as Xfce and Budgie. 
 
 ### Wayland and X11 Distros (GNOME, Xfce, Budgie)
 
@@ -488,7 +486,7 @@ export GDK_BACKEND=x11
 
 Talk Calendar runs on both Debian GNOME and Ubuntu GNOME. Both use Mutter and Wayland by default. In these specific use cases Intel® HD Graphics 530 and Intel® HD Graphics 630 integrated graphics units have been used.
 
-I have also tested Talk Calendar on Debian Xfce and Debian Budgie desktops which currently use X11 by default.
+I have also tested Talk Calendar on the Debian Xfce and Debian Budgie desktops which currently use X11 by default.
 
 Regarding Xfce, I believe they plan to move to using a Wayland compositor and progress can be found in their [roadmap](https://wiki.xfce.org/releng/wayland_roadmap). They are working on a library called [libxfce4windowing](https://gitlab.xfce.org/xfce/libxfce4windowing) which they describe as a windowing concept abstraction library for X11 and Wayland. 
 
