@@ -8,12 +8,11 @@ Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-i
 
 * built with C and GTK 4.8.3 (Debian 12)
 * bespoke custom calendar which allows dates with events to be marked up
-* calendar visual colour marks for days with event and holidays
+* calendar visual colour marks for days with events and holidays
 * event summary, location, start and end time can be entered and edited
-* priority and is-yearly can be used
+* priority, is-yearly and notifications can be used
 * Sqlite3 database used to store events
 * built-in diphone speech synthesizer
-
 
 ## Prebuilt binary
 
@@ -42,7 +41,7 @@ Talking Calendar can also display this information. Use menu->Information.
 
 To add Talk Calendar to the system menu modify the "talkcalendar.desktop" file provided in the download using your user name and application location and copy it to the ***.local/share/applications/*** directory.
 
-Alternatively use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. You can use the information menu item to show the current working directory where the events database should be located.
+Alternatively use a menu editor such as [MenuLibre](https://github.com/bluesabre/menulibre) to create a launcher for Talk Calendar which allows the working directory to be chosen. The calendar database called "calendar.db" is located in the working directory. 
 
 For release versions which include an installer please see below.
 
@@ -52,8 +51,8 @@ For release versions which include an installer please see below.
 ### Adding New Event
 
 * Select event date using the calendar
-* Click the New button on the header bar to invoke the "New Event" window
-* Enter the event summary (e.g. birthday, anniversary, doctor, dentist etc.)
+* Select "New Event" from the menu (or press Ctrl+n) to invoke the "New Event" window
+* Enter the event summary (e.g. meeting, birthday, anniversary, doctor, dentist etc.)
 * Enter the description (optional)
 * Enter the location (optional)
 * Enter start and end times (or all day)
@@ -66,19 +65,211 @@ When a creating a new event you can check "Send Notification" which will send a 
 
 ### Editing Existing Event
 
-* Select the event in the list view and click the Edit button on the header bar to edit
+* Select the event in the list view and either select "Edit Selected Event" from the menu or press Ctrl+e
 * Change details as appropriate
 
+### Changing Calendar Colours
+
+* Select the calendar colour dialog suing the menu item Calendar->Colours
+* Enter the HTML colour name for changing the today, event and holiday calendar colour marks
+
+![](talkcalendar-colours.png)
+
+A list of HTML colour names can be found [here](https://www.w3schools.com/tags/ref_colornames.asp). Most of the major colour names have been implemented (not all tested) as shown below which should be sufficient if using either a dark or light desktop colour scheme.
+
+Red HTML colour names:
+```
+indianred 	
+lightcoral 	
+salmon 	
+darksalmon 	
+lightsalmon 	
+crimson 	
+red 	
+firebrick 	
+darkred 
+```
+Pink HTML colour names:
+```
+pink 	
+lightpink 	
+hotpink 	
+deeppink 	
+mediumvioletred 	
+palevioletred
+```
+Orange HTML colour names:
+```
+lightsalmon 	
+coral 	
+tomato 	
+orangered 
+darkorange 
+orange
+```
+Yellow HTML colour names:
+```
+gold 	
+yellow 	
+lightyellow 	
+lemonchiffon 	
+lightgoldenrodyellow 	
+papayawhip 	
+moccasin 	
+peachpuff 	
+palegoldenrod 	
+khaki 	
+darkkhaki 
+```
+Purple HTML colour names:
+```
+lavender 	
+thistle 	
+plum 	
+violet 	
+orchid 	
+fuchsia 	
+magenta 	
+mediumorchid 	
+mediumpurple 	
+rebeccapurple 	
+blueviolet 	
+darkviolet 	
+darkorchid 	
+darkmagenta 	
+purple 	
+indigo 
+slateblue 	
+darkslateblue 
+mediumslateblue
+```
+Green HTML colour names:
+```
+greenyellow 	
+chartreuse 	
+lawngreen 	
+lime 	
+limegreen 	
+palegreen 	
+lightgreen 	
+mediumspringgreen 	
+springgreen 	
+mediumseagreen 
+seagreen 	
+forestgreen 
+green 
+darkgreen 
+yellowgreen 
+olivedrab 
+olive 
+darkolivegreen 	
+mediumaquamarine 
+darkseagreen 
+lightseagreen
+darkcyan 
+teal 
+```
+Blue HTML colour names:
+```
+aqua 	
+cyan 	
+lightcyan 	
+paleturquoise 	
+aquamarine 	
+turquoise 	
+mediumturquoise 
+darkturquoise 	
+cadetblue 	
+steelblue 	
+lightsteelblue 	
+powderblue 	
+lightblue 	
+skyblue 	
+lightskyblue 	
+deepskyblue 	
+dodgerblue 	
+cornflowerblue 	
+mediumslateblue 
+royalblue 	
+blue 	
+mediumblue 	
+darkblue 
+navy 	
+midnightblue 
+```
+Brown HTML colour names:
+```
+cornsilk 	
+blanchedalmond 	
+bisque 
+navajowhite 
+wheat 	
+burlywood 
+tan 
+rosybrown 
+sandybrown 
+goldenrod 
+darkgoldenrod 
+peru 
+chocolate 
+saddlebrown 
+sienna 	
+brown 	
+maroon 
+```
+White HTML colour names:
+```
+white 	
+snow 	
+honeydew 	
+mintcream 	
+azure 	
+aliceblue 	
+ghostwhite 	
+whitesmoke 
+seashell 	
+beige 	
+oldlace 
+floralwhite 	
+ivory 	
+antiquewhite 	
+linen 
+lavenderblush 	
+mistyrose 
+```
+Grey HTML colour names:
+```
+gainsboro 	
+lightgray 	
+silver 	
+darkgray 	
+gray 	
+dimgray 	
+lightslategray 	
+slategray 	
+darkslategray 	
+black 	
+```
+Note the American spelling of grey (gray).
 
 ### Preferences
 
-* Use the Preferences window in the hamburger menu to change  options
+* Use the Preferences window using the menu itme Edit->Preferences to change  options
 
 ![](talkcalendar-preferences.png)
 
-You can use 12 hour format and event end-times can be shown in the list view. If public holidays is selected then the date label shows the public holiday (UK only) which is also spoken.
+You can use 12 hour format. Event end-times can also be shown in the list view. If public holidays is selected then the date label shows the public holiday (UK only) which is also spoken.
 
 Talk options can be changed.
+
+### Dark Theme
+
+You can use a legacy dark theme with Talk Calendar. The screenshot below which shows how Talk Calendar looks when the Breeze dark theme is being used. Change calendar visual mark colours to math the theme.
+
+![](talkcalendar-breeze-dark.png)
+
+
+
 
 ## Talking
 
@@ -87,7 +278,7 @@ Talk options can be changed.
 ### Information
 
 ```
-menu->Information
+Help->Information (or press F1)
 ```
 
 The Information dialog to shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
@@ -100,8 +291,13 @@ The Information dialog to shows the keyboard shoutcuts, how many records are in 
 ### Keyboard Shortcuts
 
 ```
-Speak           Spacebar
-Today           Home Key
+Ctrl+N			New Event
+Ctrl+e			Edit Selected Event
+Delete			Delete Selected Event
+Ctrl_Alt+p		Preferences window
+Spacebar		Speak
+t				Speak Time
+F1				Information
 ```
 
 ## Startup Applications
@@ -130,55 +326,19 @@ I have not tested what will happen if you attempt to vacuum your database extern
 
 ## Release Versions
 
-Release versions contain a 64 bit prebuilt binary and a bash script installer. 
-
-Download and extract the release file and then run the bash script installer from the terminal as shown below and follow the install instructions.
+Release versions contain a 64 bit prebuilt binary and a bash script installer and instructions on how to use it with trouble shooting information. Download and extract the release file and then run the bash script installer from the terminal as shown below and follow the install instructions.
 
 ```
 ./install-talkcalendar.sh
 ```
 
-The installer must have executable permissions. Right click it and choose Properties->Permissions and tick allow "Executable as Program". The installer assumes that you are a member of the sudo group. It also assumes that the GTK4 and the ALSA libraries are installed. These are installed by default in Debian and Ubuntu GTK distros. Please see the release notes for more information. It also explains how to fix any of these issues. The installer has been tested with Linux distributions that have GTK4 in their repositories such as Debian 12 and Ubuntu.
-
-There is also an uninstall bash script
-
-### Installer Troubleshooting
-
-In most cases the installer will just run as the required libraries will be installed by default and the user will be a member of the sudo group.
-
-* Not a member of the sudo group
-
-The installer assumes that you are a member of the sudo group. If you have installed Debian 12 with a root password then you will have to add yourself to the sudo group. The commands below show how to do this.
-
-```
-su -
-adduser your-user-name sudo
-```
-
-Then restart.
-
-* No GTK4 library
-
-The installer assumes that the GTK4 library are installed. These are installed by default on Debian and Ubuntu GTK based distros but sometimes are not installed on some spins or if creating a desktop from a Debian base install. To install it use the command below.
-
-```
-sudo apt install libgtk-4-1
-```
-
-* No ALSA library
-
-The installer assumes that the [Advanced Linux Sound Architecture](https://www.alsa-project.org/wiki/Main_Page) (ALSA) library is installed. This provides audio and MIDI functionality to the Linux operating system and is installed by default in Debian and Ubuntu distros. However if building a desktop from a Debian base install you will need to install ALSA as shown below.
-```
-sudo apt install alsa-utils
-```
-
 ## Build From Source
 
-The C source code for the Talk Calendar project is provided in the src directory.
+The C source code for the Talk Calendar application is provided in the src directory.
 
 [Geany](https://www.geany.org/) can be used as a source code editor for opening, viewing and then compiling the Talk Calendar C code. Geany is lightweight and has an integrated terminal for building the application.
 
-You need the GTK4 development libraries and the gcc compiler. The code has been compiled using GTK 4.6.9 amd64 (Ubuntu 22.04). To determine which version of GTK4 is running on a Linux system use the following terminal command.
+You need the GTK4 development libraries and the gcc compiler. The code has been compiled using GTK 4.8.3 amd64 (Debian 12). To determine which version of GTK4 is running on a Linux system use the following terminal command.
 
 ```
 dpkg -l | grep libgtk*
@@ -245,29 +405,30 @@ sudo dnf install alsa-lib-devel
 
 * ~~backend sqlite database~~ (done)
 * ~~backup and restore database (export/import csv file)~~ (done)
-* ~~public holiday calendar marks~~
+* ~~public holiday calendar colour marks~~ (done)
 * ~~startup notifications~~ (done but see note below)
 * ~~check and read out upcoming events~~ (basic code structure completed)
 * ~~test building talkcalendar with GTK 4.12~~ (see note below)
 * ~~deployment release with Git tag~~ 
 * ~~bash script installer~~ 
-* speak time (under development)
-* revamp user interface
-* remove GTK4 classes being depreciated (ongoing - see below)
+* ~~replace GNOME HIG hamburger menu style UI with a traditional based desktop using a top menu bar~~ (done)
+*  ~~colour user choice~~ (done)
+* ~~calendar styling using Pango and markup~~ (done see note below)
+* ~~speak time~~ (done)
 * expand speech dictionary (ongoing)
 * refactor preferences dialog code
-* refactor startup code (checks)
-* refactor custom calendar code 
-* calendar styling (see note below -***stalled***)
-* calendar styling: event colour user choice (see note below)
-* calendar styling: public holiday calendar colour
+* refactor startup code (checking)
 * multi-day events 
 * GTK desktop testing (ongoing see below)
+* ~~remove GTK4 classes being depreciated (ongoing - see below)~~
 * bug testing (ongoing)
 * more releases
+* libawaita
 * explore packaging options (produce a reference example)
 
-## Testing 
+I will add more features as the project rolls along.
+
+## Notes & Testing 
 
 ### GTK4 Deprecating Classes
 
@@ -296,13 +457,13 @@ However, if you create a GTK calendar and use for example
 ```
 gtk_widget_add_css_class (calendar, "title-2");
 ```
-the whole calendar is changed to use "title-2" in this case. I could not find a way to add and remove visual marks to the GTK4 Calendar using "gtk_calendar_mark_day" and "gtk_calendar_unmark_day" and so I ended up writing my own custom calendar class so that I could add visual colour marks for event days and holidays. I need to do more research into GTK4 styling with a platform library. Consequently, I have placed styling lower down in the road map list as I need to learn how to do this and decide if it is a good idea to lock in the application to a platform library or not. 
+the whole calendar is changed to use "title-2" in this case. I could not find a way to add and remove visual marks to the GTK4 Calendar using "gtk_calendar_mark_day" and "gtk_calendar_unmark_day" and so I ended up writing my own custom calendar class so that I could add visual colour marks for event days and holidays. I need to do more research into GTK4 styling with a platform library. Consequently, I have placed the use of libadwaita lower down in the road map list as I need to learn how to use it and decide if it is a good idea to lock in the application to a platform library or not. There is a Github discussion on this topic entitled ["Please don't use LibAdwaita library"](https://github.com/xournalpp/xournalpp/discussions/5301).
 
 The [gtk_css_provider_load_from_data()](https://docs.gtk.org/gtk4/method.CssProvider.load_from_data.html) function which I used previously in the GTK3 version of the application is being depreciated and so all code using it has been [removed](https://gitlab.gnome.org/GNOME/gtk/-/commit/f2a297f56d7b0f749ae8b5ef5b853951ff30a89d). I believe gtk_css_provider_load_from_string() could be used instead in GTK 4.12. However, I am using GTK 4.8.3 for developing this application which is found in the Debian 12 package repositories. It appears that you can still load and parse an application-specific styling css file (e.g. styles.css) but although I developed some test code I have not gone down this route in case this approach is depreciated further down the line.
 
-Hopefully this all makes some sense to anyone reading this. In summary styling is stalled until I get a better understanding on how best to move forward but my custom calendar does allow visual colour marks to be used but needs more work.
+Hopefully this all makes some sense to anyone reading this. In summary libadwaita styling is stalled until I get a better understanding on how best to move forward but my custom calendar does allow visual colour marks to be used.
 
-I am also monitoring how the Xfce and Budgie desktops move to Wayland and how they will use HIG as this may help.
+I am also monitoring how the Xfce and Budgie desktops move to Wayland and how they will use HIG as this may help. Talk Calendar version 0.6 (onwards) has replaced the GNOME hamburger style HIG UI with a traditional based desktop using a top menu bar. Gtk4 still allows you to do this. I know GNOME have said that the “traditional desktop” is dead, and it’s not coming back, [Community Power Part 4: The GNOME Way](https://blogs.gnome.org/tbernard/2021/07/13/community-power-4/) but this application is best suited to a traditional desktop experience especially if using desktops such as Xfce and Budgie. 
 
 ### Wayland and X11 Distros (GNOME, Xfce, Budgie)
 
@@ -343,11 +504,7 @@ reveals that the compositor is "budgie-wm". The XDG (Cross Desktop Group) sessio
 
 There is information on the Buddies of Budgie [Wayland blog](https://buddiesofbudgie.org/blog/wayland) about moving to a Wayland only version of Budgie using a Wayland compositor called Magpie V1.0 which was originally forked from Mutter.
 
-A screenshot of Talk Calendar running on Budgie 10 (GTK, X11) is shown below.
-
-![](budgie10-x11-gtk.png)
-
-In summary testing shows that the GTK 4.8 version of Talk Calendar runs on both X11 and Wayland desktops without any known issues. With this Talk Calendar version there is no css styling. It is just raw GTK4 code (see above).
+In summary testing shows that the GTK 4.8 version of Talk Calendar runs on both X11 and Wayland desktops without any known issues. With this Talk Calendar version there is no css styling. It is just a raw GTK4 application styled using Pango and markup.
 
 ### Notifications
 
@@ -358,8 +515,6 @@ I have developed a small GTK4 notification tester app which can be found [here](
 ## Versioning
 
 [SemVer](http://semver.org/) is used for versioning. The version number has the form 0.0.0 representing major, minor and bug fix changes.
-
-Please note that this version of Talk Calendar (Talk Calendar GTK4 Diphone) supercedes my previous and older Talk Calendar programs which have been forked. The code base has been completely re-written and so is not compatible with earlier versions. The new Talk Calendar application uses an Sqlite3 database for storing events rather than a csv file and is maintained with bug fixes while other projects are not.
 
 ## Author
 

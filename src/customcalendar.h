@@ -16,8 +16,8 @@
  ***************************************************************************/
 
 /*
-Simple grid calendar for "Talking Calendar" project.
-pragma once can be used instead of header guards
+GTK4 Simple Calendar which uses a grid of day labels for each month
+pragma once used instead of header guards
 */
 
 #pragma once
@@ -47,8 +47,6 @@ GDK_AVAILABLE_IN_ALL void custom_calendar_mark_holiday(CustomCalendar *calendar,
 GDK_AVAILABLE_IN_ALL void  custom_calendar_unmark_holiday(CustomCalendar *calendar,guint day);
 GDK_AVAILABLE_IN_ALL void custom_calendar_reset_holidays (CustomCalendar *calendar);
 
-
-
 GDK_AVAILABLE_IN_ALL void custom_calendar_goto_today (CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL void custom_calendar_update (CustomCalendar *calendar);
 
@@ -56,9 +54,16 @@ GDK_AVAILABLE_IN_ALL int custom_calendar_get_day(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_month(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_year(CustomCalendar *calendar);
 
-//property
-void custom_calendar_set_scale(CustomCalendar *self, gint value);
-gint custom_calendar_get_scale(CustomCalendar *self);
+//properties
+
+void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colourname);
+const gchar* custom_calendar_get_today_colour(CustomCalendar *self);
+
+void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colourname);
+const gchar* custom_calendar_get_event_colour(CustomCalendar *self);
+
+void custom_calendar_set_holiday_colour(CustomCalendar *self, const gchar* colourname);
+const gchar* custom_calendar_get_holiday_colour(CustomCalendar *self);
 
 //not public
 static void custom_calendar_select_day (CustomCalendar *calendar, guint day, guint month, guint year);

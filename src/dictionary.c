@@ -1559,7 +1559,8 @@ pair_t table[] = {
 {"amistad","ae-m m-ih ih-s s-t t-ae ae-d"},
 {"amitabha","ae-m m-ih ih-t t-ae ae-b b-hh hh-ah"},
 {"amity","ae-m m-ih ih-t t-iy"},
-{"amm","ey-ey ey-ae ae-m m-m"}, 
+//{"amm","ey-ey ey-ey ey-ae ae-m m-m m-m"}, 
+{"amm","ey-ey ey-ae ae-m m-m m-m"}, 
 {"ammon","ae-m m-ah ah-n"},
 {"ammonia","ah-m m-ao ao-uh uh-n n-y y-ah"},
 {"ammoniacal","ah-m m-ao ao-uh uh-n n-y y-ah ah-k k-ah ah-l"},
@@ -33758,7 +33759,7 @@ pair_t table[] = {
 {"neville","n-eh eh-v v-ih ih-l"},
 {"nevis","n-eh eh-v v-ih ih-s"},
 {"nevsky","n-eh eh-f f-s s-k k-iy"},
-{"new","n-uw"},
+{"new","n-n n-uw uw-uw"},
 {"newark","n-uw uw-uh uh-r r-k"},
 {"newberry","n-uw uw-b b-eh eh-r r-iy"},
 {"newborn","n-uw uw-b b-ao ao-r r-n"},
@@ -37943,8 +37944,8 @@ pair_t table[] = {
 {"plyed","p-l l-aa aa-iy iy-d"},
 {"plying","p-l l-aa aa-iy iy-ih ih-ng"},
 {"plymouth","p-l l-ih ih-m m-ah ah-th"},
-
-{"pmm","p-iy iy-m m-eh eh-m m-m"},
+//{"pmm","p-iy iy-m m-eh eh-m m-m"},
+{"pmm","p-iy iy-iy iy-m m-eh eh-m m-m m-m"},
 
 {"pneumatic","n-uw uw-m m-ae ae-t t-ih ih-k"},
 {"pneumonia","n-uw uw-m m-ao ao-uh uh-n n-y y-ah"},
@@ -46355,8 +46356,8 @@ pair_t table[] = {
 {"snorts","s-n n-ao ao-r r-t t-s"},
 {"snout","s-n n-aa aa-uh uh-t"},
 {"snouts","s-n n-aa aa-uh uh-t t-s"},
-{"snow","s-n n-ao ao-uh"},
-{"snow's","s-n n-ao ao-uh uh-z"},
+{"snow","s-s s-n n-ao ao-uh"},
+{"snow's","s-s s-n n-ao ao-uh uh-z"},
 {"snowball","s-n n-ao ao-uh uh-b b-ao ao-l"},
 {"snowballing","s-n n-ao ao-uh uh-b b-ao ao-l l-ih ih-ng"},
 {"snowballs","s-n n-ao ao-uh uh-b b-ao ao-l l-z"},
@@ -56661,12 +56662,8 @@ GList* word_to_diphones(const char* word_str) {
 	//diphone_list =g_list_concat(diphone_list,"pau-pau");
 	char* word = g_ascii_strdown(word_str, -1); //convert to lower case
     //g_print("word_to_diphones: word =%s\n",word);
-    
-    
     char* dp_str ="";
-    dp_str=get_value(word);
-    //printf("dict: word = %s   diphones = %s\n",word, dp_str);
-		
+    dp_str=get_value(word); 
 	char buf[256];	
 	strcpy(buf, dp_str);
 	char *tok_str =strtok(buf, " ");	//space delimiter
@@ -56677,5 +56674,4 @@ GList* word_to_diphones(const char* word_str) {
 		tok_str =strtok(NULL, " ");	
 	}		
 	return diphone_list;
-
 }	
