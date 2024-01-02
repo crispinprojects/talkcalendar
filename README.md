@@ -14,6 +14,8 @@ Talk Calendar Diphone is a talking desktop calendar for Linux. It uses a built-i
 * Sqlite3 database used to store events
 * built-in diphone speech synthesizer
 
+A release version is available with an installer and can downloaded [here](https://github.com/crispinprojects/talkcalendar/releases/tag/v0.6.2).
+
 ## Prebuilt binary
 
 A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaed from the binary directory and can be used with Linux distributions that have GTK4 in their repositories such as Debian 12 Bookworm, Ubuntu 22.04, Fedora 35 onwards.
