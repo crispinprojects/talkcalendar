@@ -2813,7 +2813,12 @@ static void speak_events() {
 					ampm_str = "pmm";					
 					hour_list =convert_number_to_diphone_list(s_hour);
 				}
-			   if(start_hour <=12)
+			   if(start_hour ==12)
+				{
+					ampm_str = "pmm";					
+					hour_list =convert_number_to_diphone_list(start_hour);
+				}
+			   if(start_hour <12)
 				{
 					ampm_str = "amm";					
 					hour_list =convert_number_to_diphone_list(start_hour);
@@ -4202,7 +4207,12 @@ static void speak_time(gint hour, gint min)
 					ampm_str = "pmm";					
 					hour_list =convert_number_to_diphone_list(s_hour);
 				}
-			   if(hour <=12)
+				if(hour == 12)
+				{
+					ampm_str = "pmm";					
+					hour_list =convert_number_to_diphone_list(hour);
+				}
+			   if(hour <12)
 				{
 					ampm_str = "amm";					
 					hour_list =convert_number_to_diphone_list(hour);
