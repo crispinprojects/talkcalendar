@@ -866,7 +866,7 @@ static void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, 
 	day_month = calendar->day_month[row][col];
 	aday = calendar->days[row][col];	
 	calendar->day = aday;	
-	g_print("day = %d\n",aday);
+	//g_print("day = %d\n",aday);
 
 	if (!gtk_widget_has_focus(widget))
 		gtk_widget_grab_focus(widget);

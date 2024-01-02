@@ -254,7 +254,7 @@ Note the American spelling of grey (gray).
 
 ### Preferences
 
-* Select Edit->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
+* Select Calendar->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
 * Change options as required
 
 ![](talkcalendar-preferences.png)
@@ -286,7 +286,7 @@ You can use a legacy dark theme with Talk Calendar. The screenshot below which s
 ### Keyboard Shortcuts
 
 ```
-Ctrl+N			New Event
+Ctrl+n			New Event
 Ctrl+e			Edit Selected Event
 Delete			Delete Selected Event
 Ctrl_Alt+p		Preferences window

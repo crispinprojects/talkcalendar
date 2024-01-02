@@ -3209,6 +3209,8 @@ pair_t table[] = {
 {"authentic","ah-th th-eh eh-n n-t t-ih ih-k"},
 {"authenticated","ao-th th-eh eh-n n-t t-ah ah-k k-eh eh-iy iy-t t-ah ah-d"},
 {"authenticating","ao-th th-eh eh-n n-t t-ah ah-k k-eh eh-iy iy-t t-ih ih-ng"},
+//authentication
+{"authentication","ao-th th-eh eh-n n-t t-ah ah-k k-eh eh-iy iy-sh sh-ah ah-n"},
 {"authenticity","ao-th th-ah ah-n n-t t-ih ih-s s-ih ih-t t-iy"},
 {"author","ao-th th-uh uh-r"},
 {"author's","ao-th th-uh uh-r r-z"},
@@ -21169,6 +21171,8 @@ pair_t table[] = {
 {"gist","jh-ih ih-s s-t"},
 {"git","jh-ih ih-t"},
 {"gitanas","jh-iy iy-t t-ae ae-n n-ah ah-z"},
+{"github","jh-ih ih-t t-hh hh-ah ah-b"},
+{"gitlab","jh-ih ih-t t-l l-ae ae-b"},
 {"gits","g-ih ih-t t-s"},
 {"gittin","jh-ih ih-t t-ih ih-n"},
 {"giv'st","g-ih ih-v v-s s-t"},

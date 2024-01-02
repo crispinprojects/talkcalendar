@@ -3796,7 +3796,7 @@ static void callbk_about(GSimpleAction* action, GVariant *parameter, gpointer us
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.6.0");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.6.1");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2024");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar. Diphone voice. Sqlite backend.");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4289,16 +4289,14 @@ static GMenu *create_menu(const GtkApplication *app) {
 	
 		
 	GMenu *menu;
-    GMenu *file_menu;
-    GMenu *edit_menu;
+    GMenu *file_menu;   
     GMenu *event_menu;
     GMenu *calendar_menu;
     GMenu *help_menu;
     GMenuItem *item;
 
 	menu =g_menu_new();
-	file_menu =g_menu_new();
-	edit_menu =g_menu_new();
+	file_menu =g_menu_new();	
 	event_menu =g_menu_new();
 	calendar_menu =g_menu_new();
 	help_menu =g_menu_new();
@@ -4315,11 +4313,7 @@ static GMenu *create_menu(const GtkApplication *app) {
 	item =g_menu_item_new("Quit", "app.quit");
 	g_menu_append_item(file_menu,item);
 	g_object_unref(item);
-	
-	//Edit items
-	item =g_menu_item_new("Preferences", "app.preferences");
-	g_menu_append_item(edit_menu,item);
-	g_object_unref(item);
+		
 		
 	//Event items
 	item =g_menu_item_new("New Event", "app.newevent");
@@ -4347,13 +4341,17 @@ static GMenu *create_menu(const GtkApplication *app) {
 	g_menu_append_item(calendar_menu,item);
 	g_object_unref(item);
 	
+	item =g_menu_item_new("Speak Time", "app.speaktime");
+	g_menu_append_item(calendar_menu,item);
+	g_object_unref(item);
+		
 	item =g_menu_item_new("Colour", "app.colour");
 	g_menu_append_item(calendar_menu,item);
 	g_object_unref(item);
 	
-	item =g_menu_item_new("Speak Time", "app.speaktime");
+	item =g_menu_item_new("Preferences", "app.preferences");
 	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
+	g_object_unref(item);	
 		
 	//Help items
 	item =g_menu_item_new("Information", "app.info");
@@ -4365,9 +4363,7 @@ static GMenu *create_menu(const GtkApplication *app) {
 	g_object_unref(item);
 	
 	g_menu_append_submenu(menu, "File", G_MENU_MODEL(file_menu));
-    g_object_unref(file_menu);
-    g_menu_append_submenu(menu, "Edit", G_MENU_MODEL(edit_menu));
-    g_object_unref(edit_menu);
+    g_object_unref(file_menu);   
     g_menu_append_submenu(menu, "Event", G_MENU_MODEL(event_menu));
     g_object_unref(event_menu);
     g_menu_append_submenu(menu, "Calendar", G_MENU_MODEL(calendar_menu));
@@ -4481,6 +4477,7 @@ static void activate (GtkApplication* app, gpointer user_data)
 	newevent_action=g_simple_action_new("newevent",NULL); //app.newevent
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(newevent_action)); //make visible	
 	g_signal_connect(newevent_action, "activate",  G_CALLBACK(callbk_new_event), window);
+	
 	//Edit Event
 	GSimpleAction *editevent_action;	
 	editevent_action=g_simple_action_new("editevent",NULL); //app.editevent
@@ -4557,12 +4554,7 @@ static void activate (GtkApplication* app, gpointer user_data)
     gtk_box_append(GTK_BOX(box), label_date);
 	gtk_box_append(GTK_BOX(box), calendar);
 	gtk_box_append(GTK_BOX(box), sw); //listbox inside sw
-	
 		
-	//g_object_set(calendar, "todaycolour", "red", NULL);
-	//g_object_set(calendar, "eventcolour", "purple", NULL);
-	//g_object_set(calendar, "holidaycolour", "green", NULL);	
-	
 	g_object_set(calendar, "todaycolour", m_todaycolour, NULL);
 	g_object_set(calendar, "eventcolour", m_eventcolour, NULL);
 	g_object_set(calendar, "holidaycolour", m_holidaycolour, NULL);	
@@ -4570,13 +4562,6 @@ static void activate (GtkApplication* app, gpointer user_data)
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
 	custom_calendar_goto_today(CUSTOM_CALENDAR(calendar));
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-	
-	//Testing
-	//custom_calendar_mark_day(CUSTOM_CALENDAR(calendar), 14);
-	//custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));
-	//custom_calendar_mark_holiday(CUSTOM_CALENDAR(calendar),25);
-	//custom_calendar_reset_holidays(CUSTOM_CALENDAR(calendar));	
-	//custom_calendar_update(CUSTOM_CALENDAR(calendar));
 	
 	//start it all up
 	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
@@ -4603,10 +4588,8 @@ static void activate (GtkApplication* app, gpointer user_data)
 	if(m_talk && m_talk_at_startup) {
 		speak_events();		
 	}
-	
 		
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-
 	gtk_window_present (GTK_WINDOW (window));    //use present not show with gtk4
 			
 }

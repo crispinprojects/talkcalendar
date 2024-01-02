@@ -195,7 +195,7 @@ VALUES  ('%s','%s','%s', %d,%d,%d,%d,%d, %d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d);",
 //printf("Length of sql_query =%ld\n",strlen(sql_query));
 
 // Prepare the query
-printf("Preparing the insert query..\n");
+//printf("Preparing the insert query..\n");
 if (sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL) != SQLITE_OK){
      //printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
 }
