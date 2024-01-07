@@ -445,7 +445,7 @@ Currently, Talk Calendar uses Pango attributes and markup for adding some style 
 The platform library [libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/style-classes.html) used by GNOME desktops uses style classes such as “title-1”, "title-2", and “dim-label” etc. which can be used by GTK4 applications with the gtk_widget_add_css_class() function. An example is shown below.
 
 ```
-gtk_widget_add_css_class (label, "title-2");
+gtk_widget_add_css_class (GTK_WIDGET(label), "title-2");
 ```
 
 As I understand it, GTK4 does not define style classes and this is left to the platform library (libadwaita). GTK4 gives you "labels", "buttons" and other GUI components while libadwaita is used to style these following GNOME's Human Interface Guidelines known as [HIG](https://developer.gnome.org/hig/). 
@@ -453,7 +453,7 @@ As I understand it, GTK4 does not define style classes and this is left to the p
 However, if you create a GTK4 calendar and use for example
 
 ```
-gtk_widget_add_css_class (calendar, "title-2");
+gtk_widget_add_css_class (GTK_WIDGET(calendar), "title-2");
 ```
 the whole calendar is changed to use "title-2" in this case. I could not find a way to add and remove visual marks to the GTK4 Calendar using "gtk_calendar_mark_day" and "gtk_calendar_unmark_day" and so I ended up writing my own custom calendar class so that I could add visual colour marks for event days and holidays. See my [GTK4 Simple Calendar](https://github.com/crispinprojects/gtk4-simple-calendar) application for more details.
 
