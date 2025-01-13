@@ -177,7 +177,6 @@ unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size);
 static void play_audio_async (GTask *task,gpointer object,gpointer task_data,GCancellable *cancellable);
 
 //diphone speaking
-static gpointer thread_playraw(gpointer user_data);
 
 GList* convert_date_to_weekday_diphone_list(int day, int month, int year);
 GList* convert_day_number_to_diphone_list(int day_number);
@@ -3725,7 +3724,9 @@ static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data
 //======================================================================
 static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer user_data)
 {
-	speak_hello();
+	
+	if(m_speaking==FALSE) speak_hello();
+		
 	GtkWidget *window = user_data;
 
 	const gchar *authors[] = {"Alan Crispin", NULL};
@@ -3735,7 +3736,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.0");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.1");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3861,7 +3862,7 @@ static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpoint
 	gint min= g_date_time_get_minute(dt);	
 	
 	//g_print("Time: hour =%d min =%d",hour,min);	
-	speak_time(hour,min);
+	if(m_speaking==FALSE) speak_time(hour,min);
     g_date_time_unref (dt);
 }
 
