@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability using a built-in (text-to-speech) diphone speech synthesizer. It can read out current day events and upcoming events (if required) at start up.
 
-It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). A screenshot is shown below.
+It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot is shown below.
 
 ![](talkcalendar.png)
 
@@ -18,7 +18,7 @@ It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). A screensh
 
 ### Local Install Using Prebuilt Binary
 
-A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.16 and compiled using Fedora 41. 
+A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.16 and compiled using Fedora 41 and tested with Ubuntu 24.04 LTS and Debian Trixie (alpha).
 
 Extract the downloaded file which contains the Talk Calendar executable. Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
 
@@ -152,7 +152,11 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-### Building on Ubuntu 24.04 LTS
+### Ubuntu 24.04 LTS
+
+The screenshot below shows Talk Calendar running on Ubuntu 24.04 LTS
+
+![](talkcalendar-ubuntu2404.png)
 
 With Ubuntu and you need to install the following packages to compile Talk Calendar.
 
@@ -175,11 +179,21 @@ are needed but should be installed by default.
 
 You may need to use the [Ubuntu snap store](https://snapcraft.io/) to install things like Geany.
 
-### Building on Debian 12 Bookworm
+### Debian Trixie
 
-Debian 12 Bookworm uses GTK4.8. The Talk Calendar source code was orignally developed using GKT4.14 (Fedora 40) and recently GTK4.16 (Fedora 41) and so will not compile with GTK 4.8 without making a number of changes. These include downgrading "gtk_css_provider_load_from_string" with "gtk_css_provider_load_from_data" as the function gtk_css_provider_load_from_data was depreciated in GTK 4.12. A bigger change is that the GtkFileDialog API is no longer signal based. With GTK4.12 and above it is callback based which should match a GAsyncReadyCallback function (async/await). 
+The screenshot below shows Talk Calendar running on Debian Trixie (Alpha) with the default Wayland GNOME desktop. Trixie will be the next stable release of Debian.
 
-Debian testing (Trixie) will be the next stable Debian distribution. According to the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) Trixie currently has GTK4.16 in its repositories. Now that Trixie is heading towards Alpha and I will explore compiling Talk Calendar with Trixie.
+![](talkcalendar-debian-trixie.png)
+
+The [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) show that Trixie is currently using GTK4.16. 
+
+I also tested Talk Calendar with Debian Trixie XFCE 4.20  with X11 as shown in the screenshot below.
+
+![](talkcalendar-debian-trixie-xfce420.png)
+
+### Debian 12 Bookworm
+
+Debian 12 Bookworm uses GTK4.8. The Talk Calendar source code was orignally developed using GKT4.14 (Fedora 40) and recently with GTK4.16 (Fedora 41) and so will not compile with GTK 4.8 without making a number of code changes. These include downgrading "gtk_css_provider_load_from_string" with "gtk_css_provider_load_from_data" as the function gtk_css_provider_load_from_data was depreciated in GTK 4.12. A bigger change is that the GtkFileDialog API is no longer signal based. With GTK4.12 and above it is callback based which should match a GAsyncReadyCallback function (async/await). In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. With my Debian 12 (GTK4.8) projects I used the older function "gtk_file_chooser_dialog_new" with a response callback but this approach has been depreciated.
 
 To determine which version of GTK4 is running on a Debian system use the following terminal command.
 
@@ -202,6 +216,10 @@ Words are formed as sequences of elementary speech units. A phoneme is the small
 This voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
 
 My diphone speech synthesizer has a number of limitations. Firstly, it uses a small dictionary of approximately 56,600 English words. If a word is not recognised by the dictionary it is skipped over. I have tried to prioritise words which would be used in an event description (e.g. birthday, anniversary, holiday, booking etc.). Secondly it does not support the use of apostrophes and other special characters. This means that you can use "Tiki Birthday" but not "Tiki's Birthday" in the event summary.  The pronunciation of some words is poor as there is very little information online on how to convert words to a diphone list (in many cases I have taken an educated guess). More work is needed on the diphone speech synthesizer but it works and it is all coded from scratch using C and GTK4. It is more versatile than my previous speech synthesizer which was based on concatenating and playing back pre-recorded English words.
+
+## Code Notes
+
+With this version of Talk Calendar playing audio using GThread and GMutex has been replaced with GTask (async/wait pattern). With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). The basic GTask code structure is working but will be updated as I learn more.
 
 ## Versioning
 
