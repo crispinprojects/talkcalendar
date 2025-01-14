@@ -635,22 +635,19 @@ static void custom_calendar_init(CustomCalendar *calendar)
 	attr = pango_attr_list_new();	
 	pango_attr_list_insert(attr, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
 	
-	//calendar->btn_next_month = gtk_button_new_with_label ("Next Month >");
+	
 	calendar->btn_next_month = gtk_button_new_with_label (">");
 	gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_next_month), "Next Month");		
 	g_signal_connect_swapped(calendar->btn_next_month, "clicked", G_CALLBACK(callbk_next_month), calendar);
-	
-	//calendar->btn_next_year=gtk_button_new_with_label ("Next Year >>");	
+		
 	calendar->btn_next_year=gtk_button_new_with_label (">>");	
 	gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_next_year), "Next Year");
 	g_signal_connect_swapped(calendar->btn_next_year, "clicked", G_CALLBACK(callbk_next_year), calendar);
 	
-	//calendar->btn_prev_month=gtk_button_new_with_label ("< Prev Month");
 	calendar->btn_prev_month=gtk_button_new_with_label ("<");
 	gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_prev_month), "Previous Month");
 	g_signal_connect_swapped(calendar->btn_prev_month, "clicked", G_CALLBACK(callbk_prev_month), calendar);
 
-	//calendar->btn_prev_year =gtk_button_new_with_label ("<< Prev Year");
 	calendar->btn_prev_year =gtk_button_new_with_label ("<<");
 	gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_prev_year), "Previous Year");
 	g_signal_connect_swapped(calendar->btn_prev_year, "clicked", G_CALLBACK(callbk_prev_year), calendar);
@@ -786,15 +783,7 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 	gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_next_month), "Next Month");		
 	g_signal_connect_swapped(calendar->btn_next_month, "clicked", G_CALLBACK(callbk_next_month), calendar);
 	
-	//if(calendar->show_tooltips==1)
-    //{
-	//gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_next_year), "Next Year");
-	//gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_next_month), "Next Month");
-	//gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_prev_year), "Previous Year");
-	//gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->btn_prev_month), "Previous Month");
-    //}
-	
-	
+		
 	GDate *today_date;
 	today_date = g_date_new();
 	g_date_set_time_t(today_date, time(NULL));
@@ -840,8 +829,6 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 	gtk_css_provider_load_from_string(provider_holiday,holiday_provider_str);	
 	gtk_style_context_add_provider_for_display (gdk_display_get_default (), GTK_STYLE_PROVIDER (provider_holiday), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
-	//testing	
-	//calendar->tooltip_array[17]="Car";
 	// reset labels
 	for (int y = 0; y < 6; y++)
 		for (int x = 0; x < 7; x++)
@@ -856,8 +843,6 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 			gtk_widget_add_css_class (GTK_WIDGET(calendar->day_number_labels[y][x]), "frame");			
 		}
 		
-	
-	
 	gchar *aday_str = "";
 	//gchar *tooltip_str = "";
 	// update day labels
@@ -875,17 +860,13 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 				char* holiday_str =calendar->holiday_array[aday];
 				
 				char* title_str =calendar->eventday_array[aday];
-							
-								
-				//aday_str = g_strconcat(aday_str ,day_num_str," ", holiday_str, "\n ",title_str, NULL);
-				//aday_str = g_strconcat(aday_str ,day_num_str," ", NULL);
+			
 				aday_str = g_strconcat(aday_str ,day_num_str, NULL);
 				char* tooltip_str ="";
 				
 				if(calendar->show_tooltips==1)
 				{
-				tooltip_str =calendar->tooltip_array[aday];
-				//tooltip_str ="tooltip";
+				tooltip_str =calendar->tooltip_array[aday];				
 				gtk_widget_set_tooltip_text(GTK_WIDGET(calendar->day_number_labels[y][x]), tooltip_str);
 			    }
 			    else{
@@ -894,8 +875,7 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 				}
 				
 				gtk_label_set_label(GTK_LABEL(calendar->day_number_labels[y][x]), aday_str);
-					
-					
+										
 					//if today					
 					if (aday == today_day && calendar->month == today_month && calendar->year == today_year)
 					{												
@@ -1052,10 +1032,9 @@ void custom_calendar_update(CustomCalendar *calendar)
 	g_return_if_fail(CUSTOM_IS_CALENDAR(calendar));
 	custom_calendar_select_day(calendar, calendar->day, calendar->month, calendar->year);
 }
+
 //======================================================================
 //properties
-
-
 //======================================================================
 gboolean custom_calendar_get_show_tooltips(CustomCalendar *self)
 {
@@ -1072,8 +1051,7 @@ void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_toolt
 //======================================================================
 void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colour_str)
 {
-	self->today_colour =colour_str;	
-	
+	self->today_colour =colour_str;		
 }
 //======================================================================
 const gchar* custom_calendar_get_today_colour(CustomCalendar *self){
