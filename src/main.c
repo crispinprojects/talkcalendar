@@ -3710,7 +3710,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.2");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.3");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -5861,6 +5861,14 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	set_marks_on_calendar_multiday(CUSTOM_CALENDAR(calendar));	
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));		
 	custom_calendar_goto_today(CUSTOM_CALENDAR(calendar));
+	
+	//display listview
+	GArray *evt_arry_day; //normal day events
+	evt_arry_day = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); // setup arraylist
+	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);	
+	display_event_array(evt_arry_day); //display listbox day events
+	g_array_free(evt_arry_day, FALSE); //clear the array 
+		
 	
 	if(m_talk && m_talk_at_startup) {
 		speak_events();		

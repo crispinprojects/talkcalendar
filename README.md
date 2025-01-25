@@ -154,11 +154,11 @@ To run Talk Calendar from the terminal use
 
 ### Ubuntu 24.04 LTS
 
-The screenshot below shows Talk Calendar running on Ubuntu 24.04 LTS
+The screenshot below shows Talk Calendar running on Ubuntu 24.04 LTS.
 
 ![](talkcalendar-ubuntu2404.png)
 
-With Ubuntu and you need to install the following packages to compile Talk Calendar.
+To compile Talk Calendar with Ubuntu and you need to install the following packages.
 
 ```
 sudo apt install build-essential
@@ -179,7 +179,7 @@ are needed but should be installed by default.
 
 You may need to use the [Ubuntu snap store](https://snapcraft.io/) to install things like Geany.
 
-### Debian Trixie
+### Debian Trixie (GNOME Wayland)
 
 The screenshot below shows Talk Calendar running on Debian Trixie (Alpha) with the default Wayland GNOME desktop. Trixie will be the next stable release of Debian.
 
@@ -187,13 +187,46 @@ The screenshot below shows Talk Calendar running on Debian Trixie (Alpha) with t
 
 The [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) show that Trixie is currently using GTK4.16. 
 
-I also tested Talk Calendar with Debian Trixie XFCE 4.20  with X11 as shown in the screenshot below.
+To compile Talk Calendar with Debian Trixie and you need to install the following packages.
+
+```
+sudo apt install build-essential
+sudo apt install libgtk-4-dev
+sudo apt install libasound2-dev
+sudo apt install sqlite3
+sudo apt install libsqlite3-dev
+```
+
+The packages:
+
+```
+apt install libglib2.0-dev
+apt install alsa-utils
+```
+
+are needed but should be installed by default.
+
+To check the installed Sqlite 3 version use the command below.
+
+```
+sqlite3 --version
+```
+
+To install the Geany IDE use the command below.
+
+```
+sudo apt install geany
+```
+
+### Debian Trixie XFCE
+
+I have also tested Talk Calendar with Debian Trixie XFCE 4.20 with X11 as shown in the screenshot below.
 
 ![](talkcalendar-debian-trixie-xfce420.png)
 
 ### Debian 12 Bookworm
 
-Debian 12 Bookworm uses GTK4.8. The Talk Calendar source code was orignally developed using GKT4.14 (Fedora 40) and recently with GTK4.16 (Fedora 41) and so will not compile with GTK 4.8 without making a number of code changes. These include downgrading "gtk_css_provider_load_from_string" with "gtk_css_provider_load_from_data" as the function gtk_css_provider_load_from_data was depreciated in GTK 4.12. A bigger change is that the GtkFileDialog API is no longer signal based. With GTK4.12 and above it is callback based which should match a GAsyncReadyCallback function (async/await). In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. With my Debian 12 (GTK4.8) projects I used the older function "gtk_file_chooser_dialog_new" with a response callback but this approach has been depreciated.
+Debian 12 Bookworm uses [GTK4.8](https://packages.debian.org/source/bookworm/gtk4). The Talk Calendar source code was originally developed using GKT4.14 (Fedora 40) and recently with GTK4.16 (Fedora 41) and so will not compile with GTK 4.8 without making a number of code changes. These include downgrading "gtk_css_provider_load_from_string" with "gtk_css_provider_load_from_data" as the function gtk_css_provider_load_from_data was depreciated in GTK 4.12. A bigger change is that the GtkFileDialog API is no longer signal based. With GTK4.12 and above it is callback based which should match a GAsyncReadyCallback function (async/await). In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. With my Debian 12 (GTK4.8) projects I used the older function "gtk_file_chooser_dialog_new" with a response callback but this approach has been depreciated.
 
 To determine which version of GTK4 is running on a Debian system use the following terminal command.
 
