@@ -492,6 +492,8 @@ static void config_read()
 	m_talk = g_key_file_get_integer(kf, "calendar_settings", "talk", NULL);
 	m_talk_at_startup=g_key_file_get_integer(kf, "calendar_settings", "talk_startup", NULL);
 	m_talk_upcoming=g_key_file_get_integer(kf, "calendar_settings", "talk_upcoming", NULL);
+	
+	m_talk_event_number=g_key_file_get_integer(kf, "calendar_settings", "talk_number", NULL);
 	m_talk_location=g_key_file_get_integer(kf, "calendar_settings", "talk_location", NULL);
 	m_talk_description=g_key_file_get_integer(kf, "calendar_settings", "talk_description", NULL);
 	m_talk_time=g_key_file_get_integer(kf, "calendar_settings", "talk_time", NULL);
@@ -525,6 +527,8 @@ void config_write()
 	g_key_file_set_integer(kf, "calendar_settings", "talk", m_talk);
 	g_key_file_set_integer(kf, "calendar_settings", "talk_startup", m_talk_at_startup);
 	g_key_file_set_integer(kf, "calendar_settings", "talk_upcoming", m_talk_upcoming);
+	
+	g_key_file_set_integer(kf, "calendar_settings", "talk_number", m_talk_event_number);
 	g_key_file_set_integer(kf, "calendar_settings", "talk_location", m_talk_location);
 	g_key_file_set_integer(kf, "calendar_settings", "talk_description", m_talk_description);
 	g_key_file_set_integer(kf, "calendar_settings", "talk_time", m_talk_time);
@@ -3710,7 +3714,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.3");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.4");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);

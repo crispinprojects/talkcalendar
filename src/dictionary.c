@@ -61,7 +61,8 @@ typedef struct pair {
 pair_t table[] = {
 
 {"1","w-ah ah-n n-pau"},
-{"2","t-uw uw-pau"},
+{"2","t-t t-uw uw-pau"},
+//{"2","t-t t-uw uw-uw uw-pau"},
 {"3","th-r r-iy iy-pau"},
 {"4","f-ao ao-r r-pau"},
 {"5","f-aa aa-iy iy-v v-pau"},
@@ -27798,7 +27799,8 @@ pair_t table[] = {
 {"keg","k-eh eh-g"},
 {"kegs","k-eh eh-g g-z"},
 {"kehydius","k-eh eh-hh hh-aa aa-iy iy-d d-iy iy-ah ah-s"},
-{"keighley","k-eh eh-iy iy-l l-iy"},
+//{"keighley","k-eh eh-iy iy-l l-iy"},
+{"keighley","k-iy iy-th th-l l-iy"}, //uk place name word pronunciation
 {"keimer","k-aa aa-iy iy-m m-uh uh-r"},
 {"keith","k-iy iy-th"},
 //s","k-iy iy-th th-s"},
@@ -28933,7 +28935,7 @@ pair_t table[] = {
 {"leech","l-iy iy-ch"},
 {"leeches","l-iy iy-ch ch-ih ih-z"},
 {"leeching","l-iy iy-ch ch-ih ih-ng"},
-{"leeds","l-iy iy-d d-z"},
+{"leeds","l-iy iy-d d-z z-z"},
 //s","l-iy iy-d d-z z-ih ih-z"},
 {"leek","l-iy iy-k"},
 {"leeks","l-iy iy-k k-s"},
@@ -32817,6 +32819,7 @@ pair_t table[] = {
 {"moorish","m-uh uh-r r-ih ih-sh"},
 {"moorland","m-uh uh-r r-l l-ae ae-n n-d"},
 {"moors","m-uh uh-r r-z"},
+{"moortown","m-ao ao-r r-t t-aa aa-uh uh-n"}, //uk place pronunciation
 {"moory","m-uh uh-r r-iy"},
 {"moose","m-uw uw-s"},
 {"moot","m-uw uw-t"},
@@ -34810,7 +34813,8 @@ pair_t table[] = {
 {"offered","ao-f f-uh uh-r r-d"},
 {"offering","ao-f f-uh uh-r r-ih ih-ng"},
 {"offerings","ao-f f-uh uh-r r-ih ih-ng ng-z"},
-{"offers","ao-f f-uh uh-r r-z"},
+//{"offers","ao-f f-uh uh-uh uh-r r-r r-z"},
+{"offers","ao-f f-uh uh-r r-z z-z"},
 {"offhand","ao-f f-hh hh-ae ae-n n-d"},
 {"office","ao-f f-ah ah-s"},
 {"officer","ao-f f-ah ah-s s-uh uh-r"},
@@ -52309,7 +52313,10 @@ pair_t table[] = {
 {"twittering","t-w w-ih ih-t t-uh uh-r r-ih ih-ng"},
 {"twitting","t-w w-ih ih-t t-ih ih-ng"},
 {"twixt","t-w w-ih ih-k k-s s-t"},
-{"two","t-uw"},
+//{"two","t-uw"},
+//{"two","t-uw uw-uw uw-pau"},
+{"two","t-t t-uw uw-pau"},
+
 {"twofold","t-uw uw-f f-ao ao-uh uh-l l-d"},
 {"twombly","t-w w-uw uw-m m-b b-l l-iy"},
 //t","t-w w-ao ao-uh uh-n n-t"},
