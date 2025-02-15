@@ -54938,7 +54938,11 @@ pair_t table[] = {
 {"wall","w-ao ao-l"},
 //s","w-ao ao-l l-z"},
 {"wallabout","w-ao ao-l l-ah ah-b b-aa aa-uh uh-t"},
-{"wallace","w-ao ao-l l-ah ah-s"},
+//{"ace","eh-iy iy-s"},
+//{"wallace","w-ao ao-l l-ah ah-s"},
+{"wallace","w-ao ao-l l-eh eh-iy iy-s s-pau"},
+//{"wallace","w-ao ao-l l-ah ah-iy iy-s"},
+
 //s","w-ao ao-l l-ah ah-s s-ah ah-z"},
 {"walled","w-ao ao-l l-d"},
 {"waller","w-ao ao-l l-uh uh-r"},

@@ -23,13 +23,14 @@
 //====================================================================
 
 #include <gtk/gtk.h>
-#include "customcalendar.h"
-#include "calendarevent.h"
-#include "dbmanager.h"
-
+#include <ctype.h> //whitespace
 #include <glib/gstdio.h>  //needed for g_mkdir
 #include <math.h>  //compile with -lm
 #include <libnotify/notify.h>
+
+#include "customcalendar.h"
+#include "calendarevent.h"
+#include "dbmanager.h"
 
 #include "displayitem.h"
 #include "diphone.h"
@@ -144,6 +145,8 @@ static char* remove_punctuations(const char *text);
 static char* replace_hypens(const char *text);
 static char* replace_newlines(const char *text);
 
+char *trim_whitespace(char *s);
+
 static int first_day_of_month(int month, int year);
 
 char* get_time_str(int hour, int min);
@@ -223,7 +226,7 @@ static int m_today_day=0;
 
 static const char* m_summary ="summary";
 static const char* m_location ="";
-static const char* m_description ="todo";
+static const char* m_description ="description";
 
 static int m_start_year=0;
 static int m_start_month=0;
@@ -245,8 +248,6 @@ static int m_has_reminder=0;
 static int m_reminder_hour=0;
 static int m_reminder_min=0;
 
-static gboolean continue_timer = TRUE;
-
 static int m_priority=0;
 
 static int m_is_yearly=0;
@@ -265,7 +266,7 @@ static char* m_holidaycolour="rgb(102,205,170)";
 static int m_talk =1;
 static int m_talk_at_startup =0;
 static int m_talk_time=1;
-static int m_talk_location =1;
+static int m_talk_location =0;
 static int m_talk_description=0;
 
 static int m_talk_rate=16000;
@@ -439,7 +440,7 @@ static void config_load_default()
 	m_talk_upcoming=0;
 	m_talk_event_number=0;		
 	m_talk_time=1;
-	m_talk_location=1;
+	m_talk_location=0;
 	m_talk_description=0;
 	m_talk_rate=16000;
 		
@@ -467,7 +468,7 @@ static void config_read()
 	m_talk_upcoming=0;
 	m_talk_event_number=0;		
 	m_talk_time=1;
-	m_talk_location=1;
+	m_talk_location=0;
 	m_talk_description=0;
 
 	m_talk_rate=16000;		
@@ -578,6 +579,33 @@ void config_initialize()
 
 	g_free(config_dir);
 }
+
+//====================================================================
+
+char *trim_whitespace(char *s) 
+{
+  // returns a pointer to the (shifted) trimmed string
+  char *original = s;
+  size_t len = 0;
+
+  while (isspace((unsigned char) *s)) {
+    s++;
+  } 
+  if (*s) {
+    char *p = s;
+    while (*p) p++;
+    while (isspace((unsigned char) *(--p)));
+    p[1] = '\0';
+    // len = (size_t) (p - s);   // older errant code
+    len = (size_t) (p - s + 1);  // Thanks to @theriver
+  }
+
+  return (s == original) ? s : memmove(original, s, len + 1);
+}
+
+
+
+
 //======================================================================
 static char *ignore_first_zero(char *input)
 {    
@@ -1327,6 +1355,11 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	m_summary="";		
 	buffer_summary = gtk_entry_get_buffer(GTK_ENTRY(entry_summary));
 	m_summary = gtk_entry_buffer_get_text(buffer_summary);
+	
+	char* summary = g_strdup(m_summary);//duplicate as const	
+	//m_summary =g_strchomp(summary); //remove trailing whitespace
+	m_summary =trim_whitespace(summary);
+	
 	m_summary = remove_semicolons(m_summary);
 	m_summary = remove_commas(m_summary);
 	m_summary =remove_punctuations(m_summary);
@@ -1334,6 +1367,10 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	m_description="";		
 	buffer_description = gtk_entry_get_buffer(GTK_ENTRY(entry_description));
 	m_description = gtk_entry_buffer_get_text(buffer_description);
+	
+	char* description = g_strdup(m_description);//duplicate as const	
+	//m_description =g_strchomp(description); //remove trailing whitespace
+	m_description=trim_whitespace(description);
 	
 	m_description = remove_semicolons(m_description);
 	m_description = remove_commas(m_description);
@@ -1343,6 +1380,10 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	buffer_location = gtk_entry_get_buffer(GTK_ENTRY(entry_location));
 	m_location = gtk_entry_buffer_get_text(buffer_location);
 	
+	char* location = g_strdup(m_location);//duplicate as const	
+	//m_location =g_strchomp(location); //remove trailing whitespace
+	m_location=trim_whitespace(location);
+		
 	m_location = remove_semicolons(m_location);
 	m_location = remove_commas(m_location);
 	m_location =remove_punctuations(m_location);
@@ -2148,20 +2189,34 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 
 	buffer_summary = gtk_entry_get_buffer(GTK_ENTRY(entry_summary));
 	m_summary = gtk_entry_buffer_get_text(buffer_summary);
+	
+	char* summary = g_strdup(m_summary);//duplicate as const	
+    //m_summary =g_strchomp(summary); //remove trailing whitespace
+    m_summary =trim_whitespace(summary);
+	
 	m_summary = remove_semicolons(m_summary);
 	m_summary = remove_commas(m_summary);
 	m_summary =remove_punctuations(m_summary);
-	g_print("callbk_update_event: m_summary =%s\n",m_summary);
+	//g_print("callbk_update_event: m_summary =%s\n",m_summary);
 		
 	buffer_description = gtk_entry_get_buffer(GTK_ENTRY(entry_description));
 	m_description = gtk_entry_buffer_get_text(buffer_description);
+	
+	char* description = g_strdup(m_description);//duplicate as const	
+    //m_description =g_strchomp(description); //remove trailing whitespace
+    m_description =trim_whitespace(description);
+    
 	m_description = remove_semicolons(m_description);
 	m_description = remove_commas(m_description);
 	m_description =remove_punctuations(m_description);
 	
 	buffer_location = gtk_entry_get_buffer(GTK_ENTRY(entry_location));
 	m_location = gtk_entry_buffer_get_text(buffer_location);
-	m_location = gtk_entry_buffer_get_text(buffer_location);
+	
+	char* location = g_strdup(m_location);//duplicate as const	
+    //m_location =g_strchomp(location); //remove trailing whitespace
+    m_location =trim_whitespace(location);  
+  
 	m_location = remove_semicolons(m_location);
 	m_location = remove_commas(m_location);
 	m_location =remove_punctuations(m_location);
@@ -3714,7 +3769,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.4");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.5");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
