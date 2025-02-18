@@ -1,6 +1,6 @@
 # Talk Calendar
 
-alk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. This version has been compiled for use with Raspberry Pi OS (64 bit) which is a port of Debian Bookworm for Raspberry Pi desktops. It has been tested with a Pi 4 and the default Wayland compositor used by Raspberry Pi OS called [labwc](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/).
+Talk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. This version has been compiled for use with Raspberry Pi OS (64 bit) which is a port of Debian Bookworm for Raspberry Pi desktops. It has been tested with a Pi 4 and the default Wayland compositor used by Raspberry Pi OS called [labwc](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/).
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
 
@@ -33,10 +33,10 @@ The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this 
 
 ```
 [Desktop Entry]
-Version=0.1.4
+Version=0.2.6
 Type=Application
 Name=Talk Calendar
-Comment=Raspberry Pi Speaking Calendar
+Comment=Speaking Calendar
 Icon=/home/your-user-name/folder/talkcalendar/calendar.png
 Exec=/home/your-user-name/folder/talkcalendar/talkcalendar
 Path=/home/your-user-name/folder/talkcalendar
