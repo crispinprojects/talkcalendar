@@ -1,51 +1,38 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. This version has been compiled for use with Raspberry Pi OS (64 bit) which is a port of Debian Bookworm for Raspberry Pi desktops. It has been tested with a Pi 4 and the default Wayland compositor used by Raspberry Pi OS called [labwc](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/).
+Talk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. 
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
+Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
 ## Core Features
 
-* built with C and GTK 4.8 (Debian Bookworm)
-* month-view calendar 
+* built with C and GTK4 for GTK based desktops
+* month view calendar 
 * event details, location, start and end time can be entered and edited
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
 * built-in word concatenation speech synthesizer (date, time and event word speaker)
+* binary for GTK 4.16.5 (Fedora 41)
 
 ### Local Install Using Prebuilt Binary
 
-A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and tested with Raspberry Pi OS (64-bit) on a Pi 4. 
+A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.16 and compiled using Fedora 41 and tested with Ubuntu 24.04 LTS and Debian Trixie (alpha).
 
-Extract the downloaded file which contains the TalkCalendar executable. Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
+Extract the downloaded file which contains the Talk Calendar executable. Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
 
 ```
 ./talkcalendar
 ```
 
-or double click on the "talkcalendar" file. Talk Calendar must have executable permissions to execute. If it does not then right click on the Talk Calendar binary file and choose Properties->Permissions and tick allow "Executable as Program".
+or double click on the "talkcalendar" file. Talk Calendar must have executable permissions to execute. Right click it and choose Properties->Permissions and tick allow "Executable as Program".
 
-To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ~/.local/share/applications/ directory. Local user entries take precedence over system entries. The desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
+To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For the GNOME desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
 
-The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this using your own user name and directory locations. For example, if your user name is "tiki" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/tiki/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the Talk Calendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
+You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "tiki" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/tiki/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
 
-```
-[Desktop Entry]
-Version=0.2.6
-Type=Application
-Name=Talk Calendar
-Comment=Speaking Calendar
-Icon=/home/your-user-name/folder/talkcalendar/calendar.png
-Exec=/home/your-user-name/folder/talkcalendar/talkcalendar
-Path=/home/your-user-name/folder/talkcalendar
-X-GNOME-UsesNotifications=true
-Categories=Calendar;Office;
-MimeType=text/calendar;
-```
-
-Copy your modified  "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/***  hiden directory (tick the "Show Hidden Files" option in the file explorer). Create the ~/.local/share/applications/ directory if it does not already exist. Talk Calendar is installed locally using this approach. 
+Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
 
 ## Calendar Usage
 
