@@ -1,74 +1,122 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability using a built-in (text-to-speech) diphone speech synthesizer. It can read out current day events and upcoming events (if required) at start up.
+alk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. This version has been compiled for use with Raspberry Pi OS (64 bit) which is a port of Debian Bookworm for Raspberry Pi desktops. It has been tested with a Pi 4 and the default Wayland compositor used by Raspberry Pi OS called [labwc](https://www.raspberrypi.com/news/a-new-release-of-raspberry-pi-os/).
 
-It has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot is shown below.
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
 ## Core Features
 
-* built with C and GTK4 for GTK based desktops
-* month view calendar 
+* built with C and GTK 4.8 (Debian Bookworm)
+* month-view calendar 
 * event details, location, start and end time can be entered and edited
-* multiday events supported
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* built-in diphone speech synthesizer
+* built-in word concatenation speech synthesizer (date, time and event word speaker)
 
 ### Local Install Using Prebuilt Binary
 
-A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.16 and compiled using Fedora 41 and tested with Ubuntu 24.04 LTS and Debian Trixie (alpha).
+A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and tested with Raspberry Pi OS (64-bit) on a Pi 4. 
 
-Extract the downloaded file which contains the Talk Calendar executable. Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
+Extract the downloaded file which contains the TalkCalendar executable. Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
 
 ```
 ./talkcalendar
 ```
 
-or double click on the "talkcalendar" file. Talk Calendar must have executable permissions to execute. Right click it and choose Properties->Permissions and tick allow "Executable as Program".
+or double click on the "talkcalendar" file. Talk Calendar must have executable permissions to execute. If it does not then right click on the Talk Calendar binary file and choose Properties->Permissions and tick allow "Executable as Program".
 
-To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For the GNOME desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
+To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ~/.local/share/applications/ directory. Local user entries take precedence over system entries. The desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
 
-You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "tiki" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/tiki/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
+The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this using your own user name and directory locations. For example, if your user name is "tiki" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/tiki/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the Talk Calendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
 
-Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
+```
+[Desktop Entry]
+Version=0.1.4
+Type=Application
+Name=Talk Calendar
+Comment=Raspberry Pi Speaking Calendar
+Icon=/home/your-user-name/folder/talkcalendar/calendar.png
+Exec=/home/your-user-name/folder/talkcalendar/talkcalendar
+Path=/home/your-user-name/folder/talkcalendar
+X-GNOME-UsesNotifications=true
+Categories=Calendar;Office;
+MimeType=text/calendar;
+```
+
+Copy your modified  "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/***  hiden directory (tick the "Show Hidden Files" option in the file explorer). Create the ~/.local/share/applications/ directory if it does not already exist. Talk Calendar is installed locally using this approach. 
 
 ## Calendar Usage
 
-If you have used a calendar app before then using Talk Calendar will be straight forward. 
+If you have used a calendar application before then using Talk Calendar will be straight forward. 
 
 ### Adding New Event
 
-* Click on the new event button in the header bar or press Ctrl+n to invoke the "New Event" window
-* Enter the event summary (e.g. birthday)
-* Enter description 
+* Click on the "New Event" button in the header bar or press Ctrl+n to invoke the "New Event" window
+* Select the event speech word (summary) using the dropdown
+* Enter the event description 
 * Enter the location
-* Set the start date day month year values 
+* Enter the start date by setting the day, month and year values 
 * Enter start and end times (or tick the all day check box)
+* Times are entered as hour and minute values using the 24-hour time notation
 * Events are sorted by start time when displayed
+* Check the "Is Yearly" check box if the event repeats every year (e.g. birthdays and anniversaries)
 
 A screenshot of the new event dialog is shown below.
 
 ![](talkcalendar-new-event.png)
 
-### Display and Speak Events
+### Editing Existing Event
 
-* Select a date having events and press the spacebar to speak them (assuming talk preferences selected).
-
-* The day events listview allows individual events to be selected so that they can be edited or deleted.
+* Select the event in the list view and either select "Event->Edit Selected Event" from the menu or press Ctrl+e
+* Change details as appropriate
 
 ### Searching For Events
 
-* Select "Event->Search from the menu.
+* Select the Event->Search menu item
 * Enter a search term or location.
 
 ### Preferences
 
-* Select Calendar->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below).
-* Change options as required.
+* Select Calendar->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
+* Change options as required
 
 ![](talkcalendar-preferences.png)
+
+You can use 12 hour format. Event end-times can also be shown in the list view. If notable dates is selected then the date label shows special calendar dates such as some UK public holidays. These are also spoken.
+
+Talk options can be changed.
+
+## Talking
+
+* Press spacebar to speak event details.
+
+### Information
+
+* Select "Help->Information from the menu or press F1
+
+* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, checks if espeak installed, the desktop font and scale factor.
+
+* Use the About dialog to display current version.
+
+### Keyboard Shortcuts
+
+```
+Ctrl+n            New Event
+Ctrl+e            Edit Selected Event
+Delete            Delete Selected Event
+Ctrl_Alt+p        Preferences window
+Spacebar        Speak
+t            Speak Time
+F1            Information
+```
+
+## Startup Applications
+
+Add Talk Calendar to your start-up programs to read out the date and any event details when the computer is switched on.
+
+Use the "Tweak Tool" to add Talk Calendar to your startup applications if required.
 
 ### Information
 
@@ -236,19 +284,9 @@ dpkg -l | grep libgtk*
 
 ## Speech Synthesis
 
-I spend some time investigating how speech synthesis could be incorporated into the calendar application. The [eSpeak](https://espeak.sourceforge.net/) open source speech synthesizer is widely available in most Linux distributions and so I looked into separately installing eSpeak so that commands could be send to it for speech output.  However, I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). Consequently, I decided not to use eSpeak.
+Talk Calendar incorporates a small word-based speech synthesizer used to concatenate and play-back pre-recorded English words using the computer speaker. The voice used by this version of Talk Calendar is based on my own recordings and so is subject to same license as the project. Words are recorded in a headless RAW audio format so that they can be converted to hexadecimal values and stored in an array and added to a voice header file. The voice will be improved and updated in future versions of the project.
 
-Many open source (e.g. eSpeak) and commercial speech synthesizers use the formant speech synthesis approach. I looked into developing a small formant speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/formant-synthesizer). The sound quality is very robotic with buzzing and humming background noise and so I have not used this.
-
-I then developed a diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/talkdp). I have further developed this approach and Talk Calendar uses a built-in diphone speech synthesizer. 
-
-### Diphone Speech Synthesis
-
-Words are formed as sequences of elementary speech units. A phoneme is the smallest unit of sound that distinguishes one word from another word and there are 44 phonemes in the English language. A diphone is a sound unit composed of two adjacent partial phonemes i.e. the second half of the first phoneme and the first half of the second phoneme. The synthesizer uses a set of pre-recorded diphone sound samples and concatenates these to produce speech output for a given text input.
-
-This voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
-
-My diphone speech synthesizer has a number of limitations. Firstly, it uses a small dictionary of approximately 56,600 English words. If a word is not recognised by the dictionary it is skipped over. I have tried to prioritise words which would be used in an event description (e.g. birthday, anniversary, holiday, booking etc.). Secondly it does not support the use of apostrophes and other special characters. This means that you can use "Tiki Birthday" but not "Tiki's Birthday" in the event summary.  The pronunciation of some words is poor as there is very little information online on how to convert words to a diphone list (in many cases I have taken an educated guess). More work is needed on the diphone speech synthesizer but it works and it is all coded from scratch using C and GTK4. It is more versatile than my previous speech synthesizer which was based on concatenating and playing back pre-recorded English words.
+For speech synthesis I explored the possibility of installing and using [eSpeak](https://espeak.sourceforge.net/) so that commands could be send to it for speech output.  However, I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). Consequently, I decided not to use eSpeak.
 
 ## Code Notes
 
@@ -287,10 +325,6 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
-
-* [Diphone License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
-
-* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
 
 * [Fedora](https://fedoraproject.org/)
 
