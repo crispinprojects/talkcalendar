@@ -11,6 +11,7 @@ Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK d
 * built with C and GTK4 for GTK based desktops
 * month view calendar 
 * event details, location, start and end time can be entered and edited
+* calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
 * built-in word concatenation speech synthesizer (date, time and event word speaker)
