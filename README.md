@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for use with Raspberry Pi OS (64 bit) which has some speech capability using its own built-in speech engine for speaking dates, times and event words. 
 
-Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
+Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). The speech synthesizer which is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
@@ -264,7 +264,7 @@ I have also tested Talk Calendar with Debian Trixie XFCE 4.20 with X11 as shown 
 
 Debian 12 Bookworm uses [GTK4.8](https://packages.debian.org/source/bookworm/gtk4). The Talk Calendar source code was originally developed using GKT4.14 (Fedora 40) and recently with GTK4.16 (Fedora 41) and so will not compile with GTK 4.8 without making a number of code changes. These include downgrading "gtk_css_provider_load_from_string" with "gtk_css_provider_load_from_data" as the function gtk_css_provider_load_from_data was depreciated in GTK 4.12. A bigger change is that the GtkFileDialog API is no longer signal based. With GTK4.12 and above it is callback based which should match a GAsyncReadyCallback function (async/await). In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. With my Debian 12 (GTK4.8) projects I used the older function "gtk_file_chooser_dialog_new" with a response callback but this approach has been depreciated. Also GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced with GTK 4.10 and so is not availible with GTK 4.8.
 
-However you can compile my [Pi Calendar](https://github.com/crispinprojects/picalendar) project on Debian Bookworm as Raspberry Pi OS is a port of Debian Bookworm.
+However the source code and binary for Talk Calendar compiled for Debian Bookworm can be found in the binary folder.
 
 To determine which version of GTK4 is running on a Debian system use the following terminal command.
 
