@@ -17,7 +17,7 @@
 
 //====================================================================
 // GTK4 Talk Calendar 
-// compiled using Debian 12 Bookworm (64-bit GTK4.8)
+// compiled using Debian 13 Trixie (64-bit GTK4.17)
 // Author: Alan Crispin <crispinalan@gmail.com> 
 // Date: March 2025
 // use make file to compile
@@ -38,6 +38,7 @@
 #define CONFIG_FILENAME "talkcalendar-flite"
 static char * m_config_file = NULL;
 
+//static GMutex lock;
 
 //Declarations
 
@@ -57,6 +58,8 @@ void export_ical_file();
 
 static void callbk_import(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
 gboolean import_ical_file(gpointer user_data);
+
+gboolean file_exists(const char *file_name);
 
 //Callbks
 static void callbk_about(GSimpleAction* action, GVariant *parameter, gpointer user_data);
@@ -164,6 +167,7 @@ static void play_audio_async (GTask *task,
                           GCancellable *cancellable);
                           
 static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data);
+                         
 
 static char* get_cardinal_string(int number);
 static char* get_day_number_ordinal_string(int day);
@@ -1750,8 +1754,7 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	GtkEntryBuffer *buffer_description;
 	GtkWidget *entry_description = g_object_get_data(G_OBJECT(button), "entry-description-key");
 
-	GtkWidget *check_button_allday = g_object_get_data(G_OBJECT(button), "check-button-allday-key");
-	//GtkWidget *check_button_multiday = g_object_get_data(G_OBJECT(button), "check-button-multiday-key");
+	GtkWidget *check_button_allday = g_object_get_data(G_OBJECT(button), "check-button-allday-key");	
 	GtkWidget *check_button_isyearly = g_object_get_data(G_OBJECT(button), "check-button-isyearly-key");
 	GtkWidget *check_button_priority = g_object_get_data(G_OBJECT(button), "check-button-priority-key");
 	
@@ -2450,7 +2453,6 @@ static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpoin
 	gtk_window_present (GTK_WINDOW (dialog));	
 	
 }
-
 //======================================================================
 // file exists
 //======================================================================
@@ -2466,8 +2468,6 @@ gboolean  file_exists(const char *file_name)
     }
     return FALSE; //file does not exist
 }
-
-
 
 //======================================================================
 //Export ical file
@@ -3137,7 +3137,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
-	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (Trixie)");
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.1");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Personal Calendar");
@@ -3232,6 +3232,7 @@ static void speak_time(gint hour, gint min)
 	}			    				
 	} //24 hour format
 				
+		
 	g_print("speak_str (time) = %s\n",speak_str);
 	 
     GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
@@ -3239,8 +3240,6 @@ static void speak_time(gint hour, gint min)
   
     g_task_run_in_thread(task, play_audio_async);     
     g_object_unref(task);
-	
-		
 	
 	
 }
@@ -3266,7 +3265,7 @@ static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer use
 {	
 	if(m_talking == FALSE) speak_events();	
 }
-//======================================================================
+
 
 //======================================================================
 //GTASK speaking
@@ -3299,7 +3298,7 @@ static void play_audio_async (GTask *task,
 		    
     if (!file_exists("/usr/bin/flite"))
 	{
-	 g_print("Flite not detected. Install Flite.\n");
+	 g_print("flite not detected. Install Flite.\n");
 	 m_talking=FALSE;
      return; 
 	}
@@ -3309,7 +3308,7 @@ static void play_audio_async (GTask *task,
           
    char* text =task_data;
 	gchar * command_str;
-	g_print("Flite detected\n");
+	g_print("flite detected\n");
 
 	
 	if(m_talk_female_voice){
@@ -3326,7 +3325,6 @@ static void play_audio_async (GTask *task,
     g_task_return_boolean(task, TRUE);
 }
 
-//======================================================================
 
 //======================================================================
 
@@ -3955,6 +3953,8 @@ static void speak_events() {
 	g_array_free(evts_upcoming, TRUE);	
 	}//m_talk_upcoming	
 			
+		
+	
 	g_print("speak_str (final) = %s\n",speak_str);
 	 
     GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
@@ -3962,6 +3962,9 @@ static void speak_events() {
   
     g_task_run_in_thread(task, play_audio_async);     
     g_object_unref(task);
+		
+	
+	
 	
 }
 
@@ -4726,6 +4729,16 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 }
 //=====================================================================
 
+static void callbk_replay_speaking(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
+{		
+	GtkWidget *window = user_data;	
+	if(m_talk==0) return;
+	if (m_talking ==TRUE) return;
+	
+	speak_events();	
+	
+}
+
 //======================================================================
 // LISTBOX functions and callbks
 //======================================================================
@@ -5334,13 +5347,13 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	GtkWidget *label_speak_shortcut;
 	GtkWidget *label_time_shortcut;
 	GtkWidget *label_quit_shortcut;
-	
-	GtkWidget *label_speech_synthesizer;
-	GtkWidget *label_flite_detected;
 		
 	GtkWidget *label_record_info;
 	GtkWidget *label_record_number;
 	GtkWidget *label_sqlite_version;
+	
+	GtkWidget *label_speech_synthesizer;
+	GtkWidget *label_flite_detected;
 		
 	GtkWidget *label_font_info;	
 	GtkWidget *label_desktop_font;
