@@ -240,7 +240,7 @@ With GTK4.12 the GtkFileDialog API is no longer signal based but callback based 
 
 With this version of Talk Calendar playing audio using GThread and GMutex has been replaced with GTask (async/wait pattern). With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
 
-The screenshot below shows a development version Talk Calendar running on Debian Trixie (Alpha) with the default Wayland GNOME desktop. This incorporates features only available with GTK toolkit versions above 4.8. 
+The screenshot below shows a development version of Talk Calendar running on Debian Trixie (Alpha) with the default Wayland GNOME desktop. Features only available with GTK toolkit versions above 4.8 are being implemented.
 
 ![](talkcalendar-debian-trixie.png)
 
