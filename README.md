@@ -222,6 +222,18 @@ With GTK4.12 the GtkFileDialog API is no longer signal based but callback based 
 
 With this version of Talk Calendar playing audio using GThread and GMutex has been replaced with GTask (async/wait pattern). With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
 
+A screenshot showing the Trixie version of Talk Calendar under development is shown below.
+
+![](talkcalendar-trixie.png)
+
+The GTK ColorDialogButton is used to set calendar colour preferences as shown in the screenshot below.
+
+![](talkcalendar-trixie-preferences.png)
+
+A file dialog to export an ical backup file is implemented using a GAsyncReadyCallback function.
+
+![](talkcalendar-trixie-export.png)
+
 ### Building on Fedora
 
 With Fedora you need to install the following packages to compile Talk Calendar.
