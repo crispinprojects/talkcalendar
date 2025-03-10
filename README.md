@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability using its own built-in speech engine for speaking dates, times and event words.
 
-Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). The speech synthesizer is based on concatenating and playing back pre-recorded English words. A screenshot of Talk Calendar is shown below.
+Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
@@ -14,7 +14,7 @@ Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK d
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* built-in word concatenation speech synthesizer (date, time and event word speaker)
+* built-in speech synthesizer (date, time and event word reader)
 * binary for GTK 4.8.4 (Debian Bookworm)
 
 ### Local Install Using Prebuilt Binary
@@ -148,7 +148,7 @@ Talk Calendar uses a small word-based speech synthesizer to concatenate and play
 
 The advantage of using a built-in speech engine is that the application can be compiled to a single binary without the dependency of an external speech synthesizer which may or may not be available in a particular Linux distribution at a particular version and subject to a potential license compatibility issue. On the surface this may not seem to be an issue. However, I explored the possibility of installing and using [eSpeak](https://espeak.sourceforge.net/) only to discover a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). Consequently, I decided not to use eSpeak.
 
-I have developed a small diphone speech synthesizer which can be found [here](https://github.com/crispinprojects/talkdp). However, speech quality needs to be improved. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
+I am developing a small diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/talkdp). If speech quality can to be improved then this could replace the current approach to speech synthesis. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
 
 ## Build From Source
 

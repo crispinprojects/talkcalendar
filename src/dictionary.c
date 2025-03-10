@@ -726,6 +726,14 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = hospital_raw;
 		word_arrays_sizes[i]=hospital_raw_len;	
 	    }
+	    
+	    //i words
+	    if (g_strcmp0(word_str_lower,"is")==0) {
+		word_arrays[i] = (unsigned char*)malloc(is_raw_len * sizeof(unsigned char));
+		word_arrays[i] = is_raw;
+		word_arrays_sizes[i]=is_raw_len;	
+	    }
+	    
 	    //M words
 	    if (g_strcmp0(word_str_lower,"medical")==0) {
 		word_arrays[i] = (unsigned char*)malloc(medical_raw_len * sizeof(unsigned char));
@@ -826,6 +834,12 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		}	
 	    
 	    //T words
+	     if (g_strcmp0(word_str_lower,"talk")==0) {
+		word_arrays[i] = (unsigned char*)malloc(talk_raw_len * sizeof(unsigned char));
+		word_arrays[i] = talk_raw;
+		word_arrays_sizes[i]=talk_raw_len;	
+	    }
+	    
 	    if (g_strcmp0(word_str_lower,"task")==0) {
 		word_arrays[i] = (unsigned char*)malloc(task_raw_len * sizeof(unsigned char));
 		word_arrays[i] = task_raw;
@@ -837,10 +851,22 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays_sizes[i]=television_raw_len;	
 	    }
 	    
+	    if (g_strcmp0(word_str_lower,"the")==0) {		
+		word_arrays[i] = (unsigned char*)malloc(the_raw_len * sizeof(unsigned char));
+		word_arrays[i] = the_raw;
+		word_arrays_sizes[i]=the_raw_len;	
+	    }
+	    
 	    if (g_strcmp0(word_str_lower,"theatre")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(theatre_raw_len * sizeof(unsigned char));
 		word_arrays[i] = theatre_raw;
 		word_arrays_sizes[i]=theatre_raw_len;	
+	    }
+	    
+	    if (g_strcmp0(word_str_lower,"time")==0) {		
+		word_arrays[i] = (unsigned char*)malloc(time_raw_len * sizeof(unsigned char));
+		word_arrays[i] = time_raw;
+		word_arrays_sizes[i]=time_raw_len;	
 	    }
 	    
 	    if (g_strcmp0(word_str_lower,"today")==0) {
@@ -878,6 +904,12 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = (unsigned char*)malloc(year_raw_len * sizeof(unsigned char));		
 		word_arrays[i] = year_raw;
 		word_arrays_sizes[i]=year_raw_len;	
+	    }	
+	    //Z words
+	    if (g_strcmp0(word_str_lower,"zero")==0) {
+		word_arrays[i] = (unsigned char*)malloc(zero_raw_len * sizeof(unsigned char));		
+		word_arrays[i] = zero_raw;
+		word_arrays_sizes[i]=zero_raw_len;	
 	    }																													
 	
 	}//for

@@ -3269,7 +3269,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 
 
 	GtkWidget *window = user_data;
-
+	
 	const gchar *authors[] = {"Alan Crispin", NULL};
 	GtkWidget *about_dialog;
 	about_dialog = gtk_about_dialog_new();
@@ -3277,7 +3277,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.2");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.3");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Personal Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3286,6 +3286,30 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about_dialog), authors);
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(about_dialog), "x-office-calendar");
 	gtk_widget_set_visible (about_dialog, TRUE);
+	
+	//g_autoptr(GList) speak_word_list=NULL;	
+	//speak_word_list = g_list_append(speak_word_list, "talk");
+	//speak_word_list = g_list_append(speak_word_list, "calendar");
+	////create word array using list size
+	//gint word_number  =g_list_length(speak_word_list);	
+	//unsigned char *word_arrays[word_number]; 
+	//unsigned int word_arrays_sizes[word_number];
+	////use word dictioary
+	//get_words_array(speak_word_list, word_number,word_arrays,word_arrays_sizes);		
+	////concatenate using raw cat
+	//unsigned char *data = rawcat(word_arrays, word_arrays_sizes, word_number);	
+	//unsigned int data_len = get_merge_size(word_arrays_sizes,word_number);	
+    //FILE* f = fopen(m_raw_file, "w");
+    //fwrite(data, data_len, 1, f);
+    //fclose(f);
+	//GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
+    //g_task_run_in_thread(task, play_audio_async);     
+    //g_object_unref(task);	
+	////clean up 
+	////g_list_free(speak_word_list);	//now an auto pointer
+	//free(data);	//prevent memory leak
+	
+	
 }
 
 //======================================================================
@@ -3305,6 +3329,11 @@ static void speak_time(gint hour, gint min)
 	gchar* min_str="";
 	gchar* ampm_str="";
 	GList *speak_word_list = NULL;
+		
+	
+	speak_word_list = g_list_append(speak_word_list, "the");
+	speak_word_list = g_list_append(speak_word_list, "time");
+	speak_word_list = g_list_append(speak_word_list, "is");	
 		
 	if(m_12hour_format) {
 		
@@ -3329,7 +3358,8 @@ static void speak_time(gint hour, gint min)
 	
 	if (min > 0 && min < 10)
 	{				
-	speak_word_list = g_list_append(speak_word_list, "o");
+	//speak_word_list = g_list_append(speak_word_list, "o");
+	speak_word_list = g_list_append(speak_word_list, "zero");
 	min_str=get_cardinal_string(min);
 	speak_word_list = g_list_append(speak_word_list, min_str);
 	}
@@ -3350,7 +3380,8 @@ static void speak_time(gint hour, gint min)
 	
 	if (min > 0 && min < 10)
 	{				
-	speak_word_list = g_list_append(speak_word_list, "o");
+	//speak_word_list = g_list_append(speak_word_list, "o");
+	speak_word_list = g_list_append(speak_word_list, "zero");
 	min_str=get_cardinal_string(min);
 	speak_word_list = g_list_append(speak_word_list, min_str);
 	}
@@ -4120,7 +4151,8 @@ static void speak_events() {
 		
 		if (start_min > 0 && start_min< 10)
 		{				
-		speak_word_list = g_list_append(speak_word_list, "o");
+		//speak_word_list = g_list_append(speak_word_list, "o");
+		speak_word_list = g_list_append(speak_word_list, "zero");
 		min_str=get_cardinal_string(start_min);
 		speak_word_list = g_list_append(speak_word_list, min_str);
 		}
@@ -4141,7 +4173,8 @@ static void speak_events() {
 		
 		if (start_min > 0 && start_min < 10)
 		{				
-		speak_word_list = g_list_append(speak_word_list, "o");
+		//speak_word_list = g_list_append(speak_word_list, "o");
+		speak_word_list = g_list_append(speak_word_list, "zero");
 		min_str=get_cardinal_string(start_min);
 		speak_word_list = g_list_append(speak_word_list, min_str);
 		}
@@ -5773,6 +5806,9 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	pango_attr_list_unref(attrs);
 	
 	gtk_window_present (GTK_WINDOW (dialog));
+	
+	
+	
 	
 	gtk_window_set_focus(GTK_WINDOW(window), GTK_WIDGET(calendar));
 	
