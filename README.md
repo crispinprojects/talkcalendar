@@ -151,15 +151,11 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU). A TTS engine converts text into spoken audio. The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPLv2, meaning you can combine code licensed under BSD with code licensed under GPLv2 and distribute the combined work under the terms of GPLv2. The BSD licenses are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labeled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis) and so it is used with Talk Calendar. Flite is installed using the terminal command below.
-
-```
-sudo apt install flite
-```
+Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU). A TTS engine converts text into spoken audio. The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPLv2, meaning you can combine code licensed under BSD with code licensed under GPLv2 and distribute the combined work under the terms of GPLv2. The BSD licenses are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labeled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis) and so it is used with Talk Calendar. 
 
 When developing this project I originally planned to use [eSpeak](https://espeak.sourceforge.net/) as the back-end speech synthesizer as it is widely available in the repositories of most Linux distributions and speech quality is excellent.  However, I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). I just don't know if this is something to be concerned about especially as eSpeak is an [Official Debian package License: DFSG free](https://blends.debian.org/accessibility/tasks/speechsynthesis). Anyhow I decided not to use eSpeak and use Flite instead.
 
-As a side note I have been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
+As a side note I have been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). Details of my diphone speech synthesiser can be found [here](https://github.com/crispinprojects/talkdp).
 
 ### Audio Thread
 
