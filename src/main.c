@@ -16,26 +16,31 @@
  ***************************************************************************/
 
 //====================================================================
-// GTK4 Talk Calendar for Debian 12 Bookworm (64-bit) w GTK4.8
+// GTK4 Talk Calendar
+// Flite API used. You need sudo apt install flite1-dev
+// Compiled using Debian 12 Bookworm (64-bit GTK4.8)
 // Author: Alan Crispin <crispinalan@gmail.com> 
-// Date: February 2025
-// use make file to compile
+// Date: March 2025
+// Use make file to compile
 //====================================================================
 
 #include <gtk/gtk.h>
 #include <ctype.h> //whitespace
 #include <glib/gstdio.h>  //needed for g_mkdir
 #include <math.h>  //compile with -lm
+#include <flite/flite.h>
 
 #include "customcalendar.h"
 #include "calendarevent.h"
 #include "dbmanager.h"
 #include "displayitem.h"
-#include "dictionary.h"
 
-#define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar"
+
+#define CONFIG_DIRNAME "talkcalendar-flite"
+#define CONFIG_FILENAME "talkcalendar-flite"
 static char * m_config_file = NULL;
+
+cst_voice *register_cmu_us_rms(void);
 
 //Declarations
 
@@ -47,7 +52,6 @@ static void callbk_update_event(GtkButton *button, gpointer user_data);
 
 
 static void callbk_delete_selected(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
-static void callbk_dropdown_summary(GtkDropDown* self, gpointer user_data); 
 
 //export and import backup
 static void callbk_export(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
@@ -56,8 +60,6 @@ void export_ical_file();
 
 static void callbk_import(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
 gboolean import_ical_file(gpointer user_data);
-
-gboolean file_exists(const char *file_name);
 
 //Callbks
 static void callbk_about(GSimpleAction* action, GVariant *parameter, gpointer user_data);
@@ -94,14 +96,9 @@ static void set_marks_on_calendar_multiday(CustomCalendar * calendar);
 static void set_holidays_on_calendar(CustomCalendar *calendar);
 static void set_tooltips_on_calendar(CustomCalendar *calendar);
 
-gboolean is_colour_name(gchar* colour_name);
-
 gboolean is_public_holiday(int day);
-
-char* get_public_holiday_str(int day); 
 char* get_holiday_str(int day);
 GDate* calculate_easter(gint year);
-GList *get_public_holiday_speak_list();
 
 static void callbk_spin_day_start(GtkSpinButton *button, gpointer user_data);
 static void callbk_dropdown_month_start(GtkDropDown* self, gpointer user_data);
@@ -126,7 +123,6 @@ static void callbk_check_button_upcoming_toggled(GtkCheckButton *check_button, g
 static void callbk_check_button_hasreminder_toggled(GtkCheckButton *check_button, gpointer user_data);
 static void callbk_check_button_hasreminder_toggled2(GtkCheckButton *check_button, gpointer user_data);
 
-gboolean is_colour_name(gchar* colour_name);
 //Day selected
 static void callbk_calendar_day_selected(CustomCalendar *calendar, gpointer user_data);
 static void dialog_header_day_selected(GtkWindow *window);
@@ -158,25 +154,19 @@ static void search_events(const char* search_str);
 
 //Speaking
 static void speak_events();
+static void speak_time(gint hour, gint min);
+
 static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer user_data);
 static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data);
 
-static void callbk_reset_speaking(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
-
-static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data);
-
-static guint get_dropdown_position_summary(const gchar* summary);
-
-unsigned char *rawcat(unsigned char *arrys[], unsigned int arry_size[], int arry_count);
-unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size);
+gboolean file_exists(const char *file_name);
 
 static void play_audio_async (GTask *task,
                           gpointer object,
                           gpointer task_data,
                           GCancellable *cancellable);
-
-static void speak_time(gint hour, gint min);
-
+                          
+static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data);
 
 static char* get_cardinal_string(int number);
 static char* get_day_number_ordinal_string(int day);
@@ -220,9 +210,9 @@ static int m_today_year=0;
 static int m_today_month=0;
 static int m_today_day=0;
 
-
+static const char* m_summary ="";
 static const char* m_location ="";
-static const char* m_description ="todo";
+static const char* m_description ="";
 
 static int m_start_year=0;
 static int m_start_month=0;
@@ -240,16 +230,9 @@ static int m_start_min=0;
 static int m_end_hour=0;
 static int m_end_min=0;
 
-
 static int m_priority=0;
 static int m_is_yearly=0;
-//static int m_is_monthly=0;
-//static int m_is_weekly=0;
 static int m_is_allday=0;
-
-//static const char* m_todaycolour="lightblue";
-//static const char* m_eventcolour="burlywood";
-//static const char* m_holidaycolour="lightseagreen";
 
 static  char* m_todaycolour="rgb(173,216,230)";
 static  char* m_eventcolour="rgb(222,184,135)";
@@ -270,20 +253,15 @@ static int m_holiday_blue=170;
 //Speaking
 //talk preferences
 static int m_talk =1;
-static int m_talk_time=1;
-static int m_talk_event_words=1; 
-static int m_talk_event_number=0;
 static int m_talk_at_startup =0;
 static int m_talk_upcoming=0;
-static int m_talk_rate=7000;
+static int m_talk_event_number=0;
+static int m_talk_time=1;
+static int m_talk_location=0; 
 static int m_reset_preferences=0;
-
-//static int m_talk_overlap=0;
 static int m_talk_priority=0;
 
 gboolean m_talking=FALSE;
-static gchar* m_raw_file ="/tmp/textout.raw";
-
 static int m_upcoming_days=7;
 
 //====================================================================
@@ -295,138 +273,9 @@ const GActionEntry app_actions[] = {
   { "newevent", callbk_new_event},
   { "info", callbk_info},
   { "preferences", callbk_preferences},
+  { "deleteevent", callbk_delete_selected},
   { "quit", callbk_quit}
 };
-
-//======================================================================
-
-const char * const events[] = { 
-	"Activity",	//0
-	"Anniversary",	 //1
-	"Appointment",//2
-	"Birthday",	//3
-	"Cafe",  //4
-	"Car", //5
-	"Delivery", //6
-	"Dentist", //7
-	"Driver", //8
-	"Family", //9
-	"Funeral",	//10
-	"Holiday",//11
-	"Hospital",	//12
-	"Medical", //13
-	"Meeting", //14
-	"Meetup", //15
-	"Memo",//16
-	"Party",//17
-	"Payment",//18
-	"Project",	//19
-	"Restaurant", //20
-	"Sport", //21
-	"Task", //22
-	"Television", //23
-	"Theatre",	//24	
-	"Travel",  //25
-	"Visit",//26
-	"Work", //27 
-	NULL };
-
-const char* m_summary ="Activity";
-
-//===========================================================
-static guint get_dropdown_position_summary(const gchar* summary)
-{
-	
-	guint position=0;
-	gchar* summary_lower= g_ascii_strdown(summary,-1);
-		
-	if (g_strcmp0(summary_lower,"activity")==0) {
-	position=0;
-	}
-	if (g_strcmp0(summary_lower,"anniversary")==0) {
-	position=1;
-	}	
-	if (g_strcmp0(summary_lower,"appointment")==0) {
-	position=2;
-	}
-	if (g_strcmp0(summary_lower,"birthday")==0) {
-	position=3;
-	}
-	
-	if (g_strcmp0(summary_lower,"cafe")==0) {
-	position=4;
-	}
-	if (g_strcmp0(summary_lower,"car")==0) {
-	position=5;
-	}
-	if (g_strcmp0(summary_lower,"delivery")==0) {
-	position=6;
-	}
-	if (g_strcmp0(summary_lower,"dentist")==0) {
-	position=7;
-	}
-	if (g_strcmp0(summary_lower,"driver")==0) {
-	position=8;
-	}
-	if (g_strcmp0(summary_lower,"family")==0) {
-	position=9;
-	}
-	if (g_strcmp0(summary_lower,"funeral")==0) {
-	position=10;
-	}
-	if (g_strcmp0(summary_lower,"holiday")==0) {
-	position=11;
-	}			
-	if (g_strcmp0(summary_lower,"hospital")==0) {
-	position=12;
-	}
-	if (g_strcmp0(summary_lower,"medical")==0) {
-	position=13;
-	}
-	if (g_strcmp0(summary_lower,"meeting")==0) {
-	position=14;
-	}
-	if (g_strcmp0(summary_lower,"meetup")==0) {
-	position=15;
-	}
-	if (g_strcmp0(summary_lower,"memo")==0) {
-	position=16;
-	}
-	if (g_strcmp0(summary_lower,"party")==0) {
-	position=17;
-	}	
-	if (g_strcmp0(summary_lower,"payment")==0) {
-	position=18;
-	}	
-	if (g_strcmp0(summary_lower,"project")==0) {
-	position=19;
-	}
-	if (g_strcmp0(summary_lower,"restaurant")==0) {
-	position=20;
-	}
-	if (g_strcmp0(summary_lower,"sport")==0) {
-	position=21;
-	}
-	if (g_strcmp0(summary_lower,"task")==0) {
-	position=22;
-	}
-	if (g_strcmp0(summary_lower,"television")==0) {
-	position=23;
-	}
-	if (g_strcmp0(summary_lower,"theatre")==0) {
-	position=24;
-	}
-	if (g_strcmp0(summary_lower,"travel")==0) {
-	position=25;
-	}	
-	if (g_strcmp0(summary_lower,"visit")==0) {
-	position=26;
-	}	
-	if (g_strcmp0(summary_lower,"work")==0) {
-	position=27;
-	}	
-	return position;
-}
 
 //===================================================================
 
@@ -546,7 +395,6 @@ char* get_time_str(int hour, int min)
 	
 }
 
-
 //======================================================================
 // Save load config file
 //======================================================================
@@ -555,14 +403,13 @@ static void config_load_default()
 {
 		
 	//speaking	
-	m_talk=1;		
-	m_talk_time=1;
-	m_talk_event_words=1;
-	m_talk_event_number=0;
+	m_talk=1;
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
-	m_talk_rate=7000;
-	m_upcoming_days=7;	
+	m_talk_event_number=0;
+	m_talk_location=0;
+	m_talk_time=1;
+			
 	//calendar
 	m_12hour_format=1;
 	m_show_end_time=0;
@@ -593,13 +440,14 @@ static void config_read()
 {
 	// Clean up previously loaded configuration values	
 	//speaking	
-	m_talk=1;		
-	m_talk_time=1;
-	m_talk_event_words=1;
-	m_talk_event_number=0;
+	m_talk=1;
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
-	m_talk_rate=7000;
+	m_talk_event_number=0;
+	m_talk_location=0;
+	m_talk_time=1;
+	
+	
 	m_upcoming_days=7;
 		
 	//calendar
@@ -636,9 +484,8 @@ static void config_read()
 	m_talk_at_startup=g_key_file_get_integer(kf, "calendar_settings", "speak_startup", NULL);
 	m_talk_upcoming=g_key_file_get_integer(kf, "calendar_settings", "speak_upcoming", NULL);
 	m_talk_event_number=g_key_file_get_integer(kf, "calendar_settings", "speak_event_number", NULL);
-	m_talk_event_words=g_key_file_get_integer(kf, "calendar_settings", "speak_event_words", NULL);
-	m_talk_time=g_key_file_get_integer(kf, "calendar_settings", "speak_time", NULL);
-	m_talk_rate=g_key_file_get_integer(kf, "calendar_settings", "speak_rate", NULL);
+	m_talk_location=g_key_file_get_integer(kf, "calendar_settings", "speak_location", NULL);
+	m_talk_time=g_key_file_get_integer(kf, "calendar_settings", "speak_time", NULL);	
 		
 	m_upcoming_days=g_key_file_get_integer(kf, "calendar_settings", "upcoming_days", NULL);
 		
@@ -681,10 +528,9 @@ void config_write()
 	g_key_file_set_integer(kf, "calendar_settings", "speak_startup", m_talk_at_startup);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_upcoming", m_talk_upcoming);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_event_number", m_talk_event_number);
-	g_key_file_set_integer(kf, "calendar_settings", "speak_event_words", m_talk_event_words);
+	g_key_file_set_integer(kf, "calendar_settings", "speak_location", m_talk_location);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_time", m_talk_time);
-	g_key_file_set_integer(kf, "calendar_settings", "speak_rate", m_talk_rate);
-	
+		
 	g_key_file_set_integer(kf, "calendar_settings", "upcoming_days", m_upcoming_days);	
 		
 	//calendar
@@ -1361,11 +1207,7 @@ static void callbk_check_button_allday_toggled(GtkCheckButton *check_button, gpo
 		gtk_widget_set_sensitive(spin_button_end_min, TRUE);
 	}
 }
-//======================================================================
-static void callbk_dropdown_summary(GtkDropDown* self, gpointer user_data)
-{	
-	m_summary = gtk_string_object_get_string (GTK_STRING_OBJECT (gtk_drop_down_get_selected_item (self)));	
-}
+
 //======================================================================
 
 static void callbk_add_new_event(GtkButton *button, gpointer user_data)
@@ -1376,7 +1218,7 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	GtkWidget *window = user_data;
 	GtkWidget *calendar = g_object_get_data(G_OBJECT(window), "window-calendar-key");
 	GtkWidget *dialog = g_object_get_data(G_OBJECT(button), "dialog-key");
-	
+			
 	GtkEntryBuffer *buffer_summary;
 	GtkWidget *entry_summary = g_object_get_data(G_OBJECT(button), "entry-summary-key");
 	
@@ -1403,7 +1245,30 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	GtkWidget *spin_button_end_min = g_object_get_data(G_OBJECT(button), "spin-end-min-key");
 	
 	
-	//m_summary set by dropdown
+	//m_summary
+	m_summary="";	
+	guint16 summary_str_len =0; 
+	
+	summary_str_len = gtk_entry_get_text_length(GTK_ENTRY(entry_summary));
+	
+	if(summary_str_len ==0)
+	{
+	m_summary ="Unknown event";
+	} //if len
+	else
+	{
+	buffer_summary = gtk_entry_get_buffer(GTK_ENTRY(entry_summary));
+	m_summary = gtk_entry_buffer_get_text(buffer_summary);
+		
+	char* summary = g_strdup(m_summary);//duplicate as m_summary const
+	m_summary=trim_whitespace(summary);
+	
+	m_summary = remove_semicolons(m_summary);
+	m_summary = remove_commas(m_summary);
+	m_summary =remove_punctuations(m_summary);		
+	} //else
+	
+	
 	
 	m_description="";		
 	buffer_description = gtk_entry_get_buffer(GTK_ENTRY(entry_description));
@@ -1532,8 +1397,8 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	
 	GtkWidget *grid;
 	
-	GtkWidget *label_summary;	
-	GtkWidget *dropdown_summary;
+	GtkWidget *label_summary;
+	GtkWidget *entry_summary;
 	
 	GtkWidget *label_description;
 	GtkWidget *entry_description;
@@ -1618,22 +1483,22 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	m_end_min=0;
 	
 	//Summary
-		
-	label_summary = gtk_label_new("Event Speech Word: ");	
-	dropdown_summary =gtk_drop_down_new_from_strings(events);    
-    g_signal_connect(GTK_DROP_DOWN(dropdown_summary), "notify::selected", G_CALLBACK(callbk_dropdown_summary), NULL);
+	label_summary = gtk_label_new("Summary: ");	
+	entry_summary = gtk_entry_new();
+	gtk_entry_set_has_frame(GTK_ENTRY(entry_summary),TRUE); 
+	gtk_entry_set_max_length(GTK_ENTRY(entry_summary), 100);
 	
 	//description
 	label_description = gtk_label_new("Description: ");
 	entry_description = gtk_entry_new();
 	gtk_entry_set_has_frame(GTK_ENTRY(entry_description),TRUE); 
-	gtk_entry_set_max_length(GTK_ENTRY(entry_description), 100);
+	gtk_entry_set_max_length(GTK_ENTRY(entry_description), 200);
 	
 	//location
 	label_location = gtk_label_new("Location: ");
 	entry_location = gtk_entry_new();
 	gtk_entry_set_has_frame(GTK_ENTRY(entry_location),TRUE); 
-	gtk_entry_set_max_length(GTK_ENTRY(entry_location), 25);
+	gtk_entry_set_max_length(GTK_ENTRY(entry_location), 50);
 		
 	//start date
 	label_date_start =gtk_label_new("Start Date: ");	
@@ -1663,7 +1528,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_end_year), m_end_year);
 	g_signal_connect(GTK_SPIN_BUTTON(spin_button_end_year), "value_changed", G_CALLBACK(callbk_spin_year_end), NULL);	
 		
-	
 	//Times
 	//start time
 	label_start_time =gtk_label_new("Start Time: ");	
@@ -1701,8 +1565,9 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	
 	g_object_set_data(G_OBJECT(button_add_event), "dialog-key", dialog);
 
-	g_object_set_data(G_OBJECT(button_add_event), "entry-location-key", entry_location);
 	
+	g_object_set_data(G_OBJECT(button_add_event), "entry-summary-key", entry_summary);
+	g_object_set_data(G_OBJECT(button_add_event), "entry-location-key", entry_location);	
 	g_object_set_data(G_OBJECT(button_add_event), "entry-description-key", entry_description);
 	
 	//need to capture spin button values in case these are typed
@@ -1725,8 +1590,8 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	//gtk_grid_attach (GtkGrid* grid,  GtkWidget* child, int column,  int row,  int width, int height)
 
 	gtk_grid_attach(GTK_GRID(grid), label_summary, 1, 1, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), dropdown_summary, 2, 1, 1, 1);
-	
+	gtk_grid_attach(GTK_GRID(grid), entry_summary, 2, 1, 3, 1);
+		
 	gtk_grid_attach(GTK_GRID(grid), label_description, 1, 2, 1, 1);
 	gtk_grid_attach(GTK_GRID(grid), entry_description, 2, 2, 3, 1);
 	
@@ -1887,6 +1752,9 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	GtkWidget *calendar = g_object_get_data(G_OBJECT(window), "window-calendar-key");
 	GtkWidget *dialog = g_object_get_data(G_OBJECT(button), "dialog-key");
 	
+	GtkEntryBuffer *buffer_summary;
+	GtkWidget *entry_summary = g_object_get_data(G_OBJECT(button), "entry-summary-key");
+	
 	GtkEntryBuffer *buffer_location;
 	GtkWidget *entry_location = g_object_get_data(G_OBJECT(button), "entry-location-key");
 
@@ -1914,7 +1782,30 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	m_end_day= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_day_end));
 	m_end_year= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_year_end));
 	
-	//m_summary set by dropdown
+	//m_summary
+	
+	m_summary="";	
+	guint16 summary_str_len =0; 
+	
+	summary_str_len = gtk_entry_get_text_length(GTK_ENTRY(entry_summary));
+	
+	if(summary_str_len ==0)
+	{
+	m_summary ="Unknown event";
+	} //if len
+	else
+	{
+	buffer_summary = gtk_entry_get_buffer(GTK_ENTRY(entry_summary));
+	m_summary = gtk_entry_buffer_get_text(buffer_summary);
+	
+	char* summary = g_strdup(m_summary);//duplicate as m_summary const
+	m_summary=trim_whitespace(summary);
+	
+	m_summary = remove_semicolons(m_summary);
+	m_summary = remove_commas(m_summary);
+	m_summary =remove_punctuations(m_summary);		
+	} //else
+	
 		
 	buffer_description = gtk_entry_get_buffer(GTK_ENTRY(entry_description));
 	m_description = gtk_entry_buffer_get_text(buffer_description);
@@ -2009,8 +1900,7 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);
 	display_event_array(evt_arry_day);
 	g_array_free(evt_arry_day, FALSE); //clear the array 
-		
-	//custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));	
+	
 	m_start_day = custom_calendar_get_day(CUSTOM_CALENDAR(calendar));
 	m_start_month = custom_calendar_get_month(CUSTOM_CALENDAR(calendar));
 	m_start_year = custom_calendar_get_year(CUSTOM_CALENDAR(calendar));
@@ -2042,7 +1932,7 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	GtkWidget *grid;
 	
 	GtkWidget *label_summary;
-	GtkWidget *dropdown_summary;
+	GtkWidget *entry_summary;
 		
 	GtkWidget *label_description;
 	GtkWidget *entry_description;
@@ -2178,23 +2068,21 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	m_is_yearly = is_yearly;
 	m_is_allday = is_allday;	
 	m_priority = is_priority;
-		
-	//Summary	
-	label_summary = gtk_label_new("Event Speech Word: ");
-	dropdown_summary =gtk_drop_down_new_from_strings(events);    
-	g_signal_connect(GTK_DROP_DOWN(dropdown_summary), "notify::selected", G_CALLBACK(callbk_dropdown_summary), NULL);
 	
-	guint position=0;
+	//summary
+	label_summary = gtk_label_new("Summary: ");
+	entry_summary = gtk_entry_new();
+	gtk_entry_set_has_frame(GTK_ENTRY(entry_summary),TRUE); 
+	gtk_entry_set_max_length(GTK_ENTRY(entry_summary), 100);
+	buffer_summary = gtk_entry_buffer_new(m_summary, -1); // show description
+	gtk_entry_set_buffer(GTK_ENTRY(entry_summary), buffer_summary);
 	
-	position = get_dropdown_position_summary(m_summary);
-	
-	gtk_drop_down_set_selected(GTK_DROP_DOWN(dropdown_summary),position);
 		
 	//description
 	label_description = gtk_label_new("Description: ");
 	entry_description = gtk_entry_new();
 	gtk_entry_set_has_frame(GTK_ENTRY(entry_description),TRUE); 
-	gtk_entry_set_max_length(GTK_ENTRY(entry_description), 100);
+	gtk_entry_set_max_length(GTK_ENTRY(entry_description), 200);
 	buffer_description = gtk_entry_buffer_new(m_description, -1); // show description
 	gtk_entry_set_buffer(GTK_ENTRY(entry_description), buffer_description);
 
@@ -2202,7 +2090,7 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	label_location = gtk_label_new("Location: ");
 	entry_location = gtk_entry_new();
 	gtk_entry_set_has_frame(GTK_ENTRY(entry_location),TRUE); 
-	gtk_entry_set_max_length(GTK_ENTRY(entry_location), 25);
+	gtk_entry_set_max_length(GTK_ENTRY(entry_location), 50);
 	buffer_location = gtk_entry_buffer_new(m_location, -1); // show location
 	gtk_entry_set_buffer(GTK_ENTRY(entry_location), buffer_location);
 
@@ -2295,6 +2183,8 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	
 	g_object_set_data(G_OBJECT(button_update), "dialog-key", dialog);	
 	//g_object_set_data(G_OBJECT(button_update), "dropdown-summary-key", dropdown_summary);
+	
+	g_object_set_data(G_OBJECT(button_update), "entry-summary-key", entry_summary);
 	g_object_set_data(G_OBJECT(button_update), "entry-location-key", entry_location);	
 	g_object_set_data(G_OBJECT(button_update), "entry-description-key", entry_description);
 	
@@ -2314,7 +2204,7 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	
 	//grid layout
 	gtk_grid_attach(GTK_GRID(grid), label_summary, 1, 1, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), dropdown_summary, 2, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), entry_summary, 2, 1, 3, 1);
 	
 	gtk_grid_attach(GTK_GRID(grid), label_description, 1, 2, 1, 1);
 	gtk_grid_attach(GTK_GRID(grid), entry_description, 2, 2, 3, 1);
@@ -2549,9 +2439,7 @@ static void callbk_confirm_delete_all(GtkButton *button, gpointer  user_data)
 	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);		
 	display_event_array(evt_arry_day);
 	g_array_free(evt_arry_day, FALSE); //clear the array 
-	
-	 		
-	//custom_calendar_update(CUSTOM_CALENDAR(calendar));
+		
 	gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
@@ -2585,6 +2473,24 @@ static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpoin
 	gtk_window_present (GTK_WINDOW (dialog));	
 	
 }
+
+//======================================================================
+// file exists
+//======================================================================
+
+
+gboolean  file_exists(const char *file_name)
+{
+    FILE *file;
+    file = fopen(file_name, "r");
+    if (file){       
+        fclose(file);
+        return TRUE; //file exists return 1
+    }
+    return FALSE; //file does not exist
+}
+
+
 
 //======================================================================
 //Export ical file
@@ -2782,10 +2688,6 @@ static void callbk_import(GSimpleAction *action, GVariant *parameter,  gpointer 
 {
 	//g_print("import events.ical backup file from local directory\n");
 	import_ical_file(user_data);
-	
-		
-	
-	
 	
 }
 
@@ -3238,10 +3140,7 @@ gboolean import_ical_file(gpointer user_data)
    	set_marks_on_calendar_multiday(CUSTOM_CALENDAR(calendar));
 	set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-    
-	//set_titles_on_calendar(CUSTOM_CALENDAR(calendar));	
-	//custom_calendar_update(CUSTOM_CALENDAR(calendar));	
-   	 
+  
    	g_object_unref(file);   	
 	g_object_unref (input_stream);
 	g_object_unref (file_stream);
@@ -3250,26 +3149,11 @@ gboolean import_ical_file(gpointer user_data)
 }
 
 //======================================================================
-
-static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data)
-{		
-	//the task callbk function is called back when the 
-	//play_audio_async function has completed
-	//m_talking is reset to false so that we can speak again
-		
-    m_talking=FALSE; 
-    //g_print("gtask finished reset m_talking = %d\n",m_talking);	
-    
-}
-
-//======================================================================
-
-//======================================================================
 static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer user_data){
 
 
 	GtkWidget *window = user_data;
-	
+
 	const gchar *authors[] = {"Alan Crispin", NULL};
 	GtkWidget *about_dialog;
 	about_dialog = gtk_about_dialog_new();
@@ -3277,7 +3161,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.3");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.0");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Personal Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3286,30 +3170,6 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about_dialog), authors);
 	gtk_about_dialog_set_logo_icon_name(GTK_ABOUT_DIALOG(about_dialog), "x-office-calendar");
 	gtk_widget_set_visible (about_dialog, TRUE);
-	
-	//g_autoptr(GList) speak_word_list=NULL;	
-	//speak_word_list = g_list_append(speak_word_list, "talk");
-	//speak_word_list = g_list_append(speak_word_list, "calendar");
-	////create word array using list size
-	//gint word_number  =g_list_length(speak_word_list);	
-	//unsigned char *word_arrays[word_number]; 
-	//unsigned int word_arrays_sizes[word_number];
-	////use word dictioary
-	//get_words_array(speak_word_list, word_number,word_arrays,word_arrays_sizes);		
-	////concatenate using raw cat
-	//unsigned char *data = rawcat(word_arrays, word_arrays_sizes, word_number);	
-	//unsigned int data_len = get_merge_size(word_arrays_sizes,word_number);	
-    //FILE* f = fopen(m_raw_file, "w");
-    //fwrite(data, data_len, 1, f);
-    //fclose(f);
-	//GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-    //g_task_run_in_thread(task, play_audio_async);     
-    //g_object_unref(task);	
-	////clean up 
-	////g_list_free(speak_word_list);	//now an auto pointer
-	//free(data);	//prevent memory leak
-	
-	
 }
 
 //======================================================================
@@ -3325,97 +3185,86 @@ static void speak_time(gint hour, gint min)
 	if(m_talk==0) return;
 	if (m_talking ==TRUE) return;
 	
+	//g_print("speak time called\n");	
+	
+	char* speak_str ="";
+	
+	speak_str= g_strconcat(speak_str, " the time is ", NULL);
+	
+		
 	gchar* hour_str="";
 	gchar* min_str="";
 	gchar* ampm_str="";
 	GList *speak_word_list = NULL;
-		
-	
-	speak_word_list = g_list_append(speak_word_list, "the");
-	speak_word_list = g_list_append(speak_word_list, "time");
-	speak_word_list = g_list_append(speak_word_list, "is");	
 		
 	if(m_12hour_format) {
 		
 	if (hour >= 13 && hour <= 23)
 	{
 	int s_hour = hour - 12;
-	ampm_str = "pm";					
+	ampm_str = " p.m. ";					
 	hour_str =get_cardinal_string(s_hour);
 	}
 	if(hour == 12)
 	{
-	ampm_str = "pm";					
+	ampm_str = " p.m. ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	if(hour <12)
 	{
-	ampm_str = "am";					
+	ampm_str = " a.m. ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	
-	speak_word_list = g_list_append(speak_word_list, hour_str);
+	//speak_word_list = g_list_append(speak_word_list, hour_str);
+	speak_str= g_strconcat(speak_str, hour_str, " ", NULL);
 	
 	if (min > 0 && min < 10)
-	{				
-	//speak_word_list = g_list_append(speak_word_list, "o");
-	speak_word_list = g_list_append(speak_word_list, "zero");
-	min_str=get_cardinal_string(min);
-	speak_word_list = g_list_append(speak_word_list, min_str);
+	{	
+	//speak_str= g_strconcat(speak_str, "zero ", NULL);
+	speak_str= g_strconcat(speak_str, "O ", NULL);
+	min_str=get_cardinal_string(min);	
+	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
 	}
 	else if(min >=10)
 	{
 	min_str=get_cardinal_string(min);
-	speak_word_list = g_list_append(speak_word_list, min_str);
-	}
 	
-	speak_word_list = g_list_append(speak_word_list,ampm_str);
+	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
+	}	
+	
+	speak_str= g_strconcat(speak_str, ampm_str, " ", NULL);
 		
 	} //12hour format
 	
 	else
 	{				
 	hour_str =get_cardinal_string(hour);	
-	speak_word_list = g_list_append(speak_word_list, hour_str);
+	speak_str= g_strconcat(speak_str, hour_str, " ", NULL);
 	
 	if (min > 0 && min < 10)
-	{				
-	//speak_word_list = g_list_append(speak_word_list, "o");
-	speak_word_list = g_list_append(speak_word_list, "zero");
-	min_str=get_cardinal_string(min);
-	speak_word_list = g_list_append(speak_word_list, min_str);
+	{	
+	speak_str= g_strconcat(speak_str, " o ", NULL);
+	min_str=get_cardinal_string(min);	
+	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
 	}
 	else if(min >=10)
 	{
-	min_str=get_cardinal_string(min);
-	speak_word_list = g_list_append(speak_word_list, min_str);
+	min_str=get_cardinal_string(min);	
+	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
 	}			    				
 	} //24 hour format
 				
-		
-	int word_number  =g_list_length(speak_word_list);
-	
-	unsigned char *word_arrays[word_number]; 
-	unsigned int word_arrays_sizes[word_number];
-			
-	get_words_array(speak_word_list, word_number,word_arrays,word_arrays_sizes);
-	
-	//concatenate using raw cat
-	unsigned char *data = rawcat(word_arrays, word_arrays_sizes, word_number);	
-	unsigned int data_len = get_merge_size(word_arrays_sizes,word_number);
-	
-    FILE* f = fopen(m_raw_file, "w");
-    fwrite(data, data_len, 1, f);
-    fclose(f); 
-    
+	//g_print("speak_str (time) = %s\n",speak_str);
+	 
     GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-	//GTask* task = g_task_new(NULL, NULL, NULL, NULL);
+    g_task_set_task_data (task,speak_str,NULL);
+  
     g_task_run_in_thread(task, play_audio_async);     
     g_object_unref(task);
 	
-	//clean up 
-	g_list_free(speak_word_list);	
-	free(data);	//prevent memory leak
+		
+	
 	
 }
 //======================================================================
@@ -3443,68 +3292,50 @@ static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer use
 //======================================================================
 
 //======================================================================
+//GTASK speaking
+//======================================================================
+
+static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data)
+{		
+	//the task callbk function is called back when the 
+	//play_audio_async function has completed
+	//m_talking is reset to false so that we can speak again
+		
+    m_talking=FALSE; 
+    //g_print("gtask finished reset m_talking = %d\n",m_talking);	
+    
+}
+//======================================================================
+
 static void play_audio_async (GTask *task,
                           gpointer object,
                           gpointer task_data,
                           GCancellable *cancellable)
 {
    
+    
+    if (m_talk ==0) 
+	{
+	m_talking=FALSE;
+	return;
+	}
+    
     m_talking=TRUE; //stop any new speaking 
           
-    gchar *m_sample_rate_str = g_strdup_printf("%i", m_talk_rate); 
-    gchar *sample_rate_str ="-r ";    
-    sample_rate_str= g_strconcat(sample_rate_str,m_sample_rate_str, NULL);     
-    //gchar * command_str ="aplay -c 1 -f S16_LE";
-    gchar * command_str ="aplay -c 1 -f U8";
-    command_str =g_strconcat(command_str," ",sample_rate_str, " ", m_raw_file, NULL);     
-    system(command_str);   
-   
-    //m_talking=FALSE;   
+   char* text =task_data;
+	
+	cst_voice *v;	
+	flite_init();
+	v=register_cmu_us_rms();
+	flite_text_to_speech(text,v,"play");
+	  
     g_task_return_boolean(task, TRUE);
 }
 
-
-//======================================================================
-// Concatentation
 //======================================================================
 
-unsigned char *rawcat(unsigned char *arrys[], unsigned int arry_size[], int arry_count) {
-		
-	
-	if (arry_count<2) return NULL;	
-	
-	unsigned int  total_samples=0;
-	for (int c = 0; c < arry_count; c++) 
-	{  
-    unsigned int count =arry_size[c]; 
-    total_samples=total_samples+count;	
-    }        
-	unsigned char *data = (unsigned char*)malloc(total_samples * sizeof(unsigned char));
-	
-	unsigned int offset=0;
-	for(int k=0; k<arry_count; k++)
-	{
-		//loop through each arry	
-		for(int i = 0; i < arry_size[k]; i++) 
-		{		
-		data[i+offset]=arrys[k][i];
-		}		
-		offset =offset+arry_size[k];
-	}//k kount
-	return data;
-}
-//=====================================================================
-unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size){
-	
-	unsigned int total_samples=0;
-	for (int i = 0; i < arry_size; i++) 
-	{  
-    unsigned int count =sizes_arry[i]; 
-    total_samples=total_samples+count;	
-    }
-	return total_samples;
-}
-//=====================================================================
+//======================================================================
+
 static char* get_day_of_week(int day, int month, int year) 
 {
 
@@ -3543,6 +3374,54 @@ static char* get_day_of_week(int day, int month, int year)
 
 	return weekday_str;
 }
+//=====================================================================
+char* get_month_string(int month) {
+
+	char* result ="";
+	
+	switch(month) {
+	case 1:
+		result = "january";
+		break;
+	case 2:
+		result = "february";
+		break;
+	case 3:
+		result= "march";
+		break;
+	case 4:
+		result = "april";
+		break;
+	case 5:
+		result ="may";
+		break;
+	case 6:
+		result = "june";
+		break;
+	case 7:
+		result ="july";
+		break;
+	case 8:
+		result ="august";
+		break;
+	case 9:
+		result= "september";
+		break;
+	case 10:
+		result = "october";
+		break;
+	case 11:
+		result = "november";
+		break;
+	case 12:
+		result = "december";
+		break;
+	default:
+		result = "unknown";
+	}
+	return result;
+}
+
 //=====================================================================
 static char* get_day_number_ordinal_string(int day) 
 {
@@ -3609,40 +3488,40 @@ static char* get_day_number_ordinal_string(int day)
 		day_str="nineteenth";
 		break;
 		case 20:
-		day_str="twentieth";
+		day_str="twentieth"; //twentieth
 		break;
 		case 21:
-		day_str="twentyfirst";
+		day_str="twenty first";
 		break;
 		case 22:
-		day_str="twentysecond";
+		day_str="twenty second";
 		break;
 		case 23:
-		day_str="twentythird";
+		day_str="twenty third";
 		break;
 		case 24:
-		day_str="twentyfourth";
+		day_str="twenty fourth";
 		break;
 		case 25:
-		day_str="twentyfifth";
+		day_str="twenty fifth";
 		break;
 		case 26:
-		day_str="twentysixth";
+		day_str="twenty sixth";
 		break;
 		case 27:
-		day_str="twentyseventh";
+		day_str="twenty seventh";
 		break;
 		case 28:
-		day_str="twentyeighth";
+		day_str="twenty eighth";
 		break;
 		case 29:
-		day_str="twentynineth";
+		day_str="twenty ninth";
 		break;
 		case 30:
 		day_str="thirtieth";
 		break;
 		case 31:
-		day_str="thirtyfirst";
+		day_str="thirty first";
 		break;
 		default:
 		//Unknown day ordinal
@@ -3651,55 +3530,8 @@ static char* get_day_number_ordinal_string(int day)
 	  } //day switch
 	return day_str;
 }
-//=====================================================================
-char* get_month_string(int month) {
 
-	char* result ="";
-	
-	switch(month) {
-	case 1:
-		result = "january";
-		break;
-	case 2:
-		result = "february";
-		break;
-	case 3:
-		result= "march";
-		break;
-	case 4:
-		result = "april";
-		break;
-	case 5:
-		result ="may";
-		break;
-	case 6:
-		result = "june";
-		break;
-	case 7:
-		result ="july";
-		break;
-	case 8:
-		result ="august";
-		break;
-	case 9:
-		result= "september";
-		break;
-	case 10:
-		result = "october";
-		break;
-	case 11:
-		result = "november";
-		break;
-	case 12:
-		result = "december";
-		break;
-	default:
-		result = "unknown";
-	}
-	return result;
-}
 //======================================================================
-
 static char* get_cardinal_string(int number)
 {
 
@@ -3770,121 +3602,121 @@ static char* get_cardinal_string(int number)
 		 result ="twenty";
 		 break;
 		 case 21:
-		 result="twentyone";
+		 result="twenty one";
 		 break;
 		 case 22:
-		 result="twentytwo";
+		 result="twenty two";
 		 break;
 		 case 23:
-		 result="twentythree";
+		 result="twenty three";
 		 break;
 		 case 24:
-		 result="twentyfour";
+		 result="twenty four";
 		 break;
 		 case 25:
-		 result="twentyfive";
+		 result="twenty five";
 		 break;
 		 case 26:
-		 result="twentysix";
+		 result="twenty six";
 		 break;
 		 case 27:
-		 result="twentyseven";
+		 result="twenty seven";
 		 break;
 		 case 28:
-		 result="twentyeight";
+		 result="twenty eight";
 		 break;
 		 case 29:
-		 result="twentynine";
+		 result="twenty nine";
 		 break;
 		 case 30:
 		 result="thirty";
 		 break;
 		 case 31:
-		 result="thirtyone";
+		 result="thirty one";
 		 break;
 		 case 32:
-		 result="thirtytwo";
+		 result="thirty two";
 		 break;
 		 case 33:
-		 result="thirtythree";
+		 result="thirty three";
 		 break;
 		 case 34:
 		 result="thirtyfour";
 		 break;
 		 case 35:
-		 result="thirtyfive";
+		 result="thirty five";
 		 break;
 		 case 36:
-		 result="thirtysix";
+		 result="thirty six";
 		 break;
 		 case 37:
-		 result="thirtyseven";
+		 result="thirty seven";
 		 break;
 		 case 38:
-		 result="thirtyeight";
+		 result="thirty eight";
 		 break;
 		 case 39:
-		 result="thirtynine";
+		 result="thirty nine";
 		 break;
 		 case 40:
 		 result="forty";
 		 break;
 		 case 41:
-		 result="fortyone";
+		 result="forty one";
 		 break;
 		 case 42:
-		 result="fortytwo";
+		 result="forty two";
 		 break;
 		 case 43:
-		 result="fortythree";
+		 result="forty three";
 		 break;
 		 case 44:
-		 result="fortyfour";
+		 result="forty four";
 		 break;
 		 case 45:
-		 result="fortyfive";
+		 result="forty five";
 		 break;
 		 case 46:
-		 result="fortysix";
+		 result="forty six";
 		 break;
 		 case 47:
-		 result="fortyseven";
+		 result="forty seven";
 		 break;
 		 case 48:
-		 result="fortyeight";
+		 result="forty eight";
 		 break;
 		 case 49:
-		 result="fortynine";
+		 result="forty nine";
 		 break;
 		 case 50:
 		 result="fifty";
 		 break;
 		 case 51:
-		 result="fiftyone";
+		 result="fifty one";
 		 break;
 		 case 52:
-		 result="fiftytwo";
+		 result="fifty two";
 		 break;
 		 case 53:
-		 result="fiftythree";
+		 result="fifty three";
 		 break;
 		 case 54:
-		 result="fiftyfour";
+		 result="fifty four";
 		 break;
 		 case 55:
-		 result="fiftyfive";
+		 result="fifty five";
 		 break;
 		 case 56:
-		 result="fiftysix";
+		 result="fifty six";
 		 break;
 		 case 57:
-		 result="fiftyseven";
+		 result="fifty seven";
 		 break;
 		 case 58:
-		 result="fiftyeight";
+		 result="fifty eight";
 		 break;
 		 case 59:
-		 result="fiftynine";
+		 result="fifty nine";
 		 break;  
          default:
            g_print ("default: number is: %i\n", number);
@@ -3892,220 +3724,65 @@ static char* get_cardinal_string(int number)
 	return result;
 
 }
-//======================================================================
 
-GList *get_public_holiday_speak_list()
-{
-	GList *holiday_word_list = NULL;
-		
-	if (m_start_month==1 && m_start_day ==1) {
-	holiday_word_list = g_list_append(holiday_word_list, "new");
-	holiday_word_list = g_list_append(holiday_word_list, "year");
-	}
-
-	if (m_start_month==12 && m_start_day==25) {
-	//christmas day
-	holiday_word_list = g_list_append(holiday_word_list, "christmas");
-	holiday_word_list = g_list_append(holiday_word_list, "day");
-	}
-
-	if (m_start_month==12 && m_start_day==26) {
-	//boxing day
-	holiday_word_list = g_list_append(holiday_word_list, "boxing");
-	holiday_word_list = g_list_append(holiday_word_list, "day");
-	}
-	//Easter		
-	GDate *easter_date =calculate_easter(m_start_year);
-	int easter_day = g_date_get_day(easter_date);
-	int easter_month =g_date_get_month(easter_date);
-
-	if(m_start_month==easter_month && m_start_day == easter_day)
-	{
-	//easter day
-	holiday_word_list = g_list_append(holiday_word_list, "easter");
-	holiday_word_list = g_list_append(holiday_word_list, "day");
-	}
-	
-	g_date_subtract_days(easter_date,2);
-	int easter_friday = g_date_get_day(easter_date);
-	int easter_friday_month =g_date_get_month(easter_date);
-
-	if(m_start_month==easter_friday_month && m_start_day ==easter_friday)
-	{
-	//easter friday
-	holiday_word_list = g_list_append(holiday_word_list, "easter");
-	holiday_word_list = g_list_append(holiday_word_list, "friday");
-	}
-	g_date_add_days(easter_date,3);
-	int easter_monday = g_date_get_day(easter_date); //easter monday
-	int easter_monday_month =g_date_get_month(easter_date);
-
-	if(m_start_month==easter_monday_month && m_start_day ==easter_monday)
-	{
-	//easter monday
-	holiday_word_list = g_list_append(holiday_word_list, "easter");
-	holiday_word_list = g_list_append(holiday_word_list, "monday");
-	}	
-	
-	//May complicated
-	if (m_start_month == 5) {
-     GDate *first_monday_may;
-     first_monday_may = g_date_new_dmy(1, m_start_month, m_start_year);
-
-     while (g_date_get_weekday(first_monday_may) != G_DATE_MONDAY)
-       g_date_add_days(first_monday_may,1);
-
-     int may_day = g_date_get_day(first_monday_may);
-
-     if( m_start_day==may_day) {		
-		 holiday_word_list = g_list_append(holiday_word_list, "bank");
-	     holiday_word_list = g_list_append(holiday_word_list, "holiday");
-	 }
-      
-     int days_in_may =g_date_get_days_in_month (m_start_month, m_start_year);
-
-     int plus_days = 0;
-
-     if (may_day + 28 <= days_in_may) {
-       plus_days = 28;
-     } else {
-       plus_days = 21;
-     }
-
-     GDate *spring_bank =g_date_new_dmy (may_day, m_start_month, m_start_year);
-     g_date_add_days(spring_bank,plus_days);
-     int spring_bank_day = g_date_get_day(spring_bank);
-     if (g_date_valid_dmy (spring_bank_day,m_start_month,m_start_year) && m_start_day ==spring_bank_day)
-     {
-	 holiday_word_list = g_list_append(holiday_word_list, "spring");
-     holiday_word_list = g_list_append(holiday_word_list, "bank");
-     holiday_word_list = g_list_append(holiday_word_list, "holiday");     
-     }
-	} //m_start_month ==5 (May)
-	
-	//August complicated
-	if (m_start_month == 8) {      
-     GDate *first_monday_august;
-     first_monday_august = g_date_new_dmy(1, m_start_month, m_start_year);
-
-     while (g_date_get_weekday(first_monday_august) != G_DATE_MONDAY)
-       g_date_add_days(first_monday_august,1);
-
-     int august_day = g_date_get_day(first_monday_august);
-
-     int days_in_august =g_date_get_days_in_month (m_start_month, m_start_year);
-     int plus_days = 0;
-
-     if (august_day + 28 <= days_in_august) {
-       plus_days = 28;
-     } else {
-       plus_days = 21;
-     }
-
-     GDate *august_bank =g_date_new_dmy (august_day, m_start_month, m_start_year);
-
-     g_date_add_days(august_bank,plus_days);
-
-     int august_bank_day = g_date_get_day(august_bank);
-
-	if (g_date_valid_dmy (august_bank_day,m_start_month,m_start_year) && m_start_day ==august_bank_day)
-	{
-	//return " August Bank Holiday ";   //august bank holiday	
-	holiday_word_list = g_list_append(holiday_word_list, "bank");
-	holiday_word_list = g_list_append(holiday_word_list, "holiday"); 
-	}
-
-    } //m_start_month==8 (august)
-	
-	return holiday_word_list;
-}
 //======================================================================
 // speak events
 //======================================================================
 static void speak_events() {
 
 	if(m_talk==0) return;
-	if (m_talking ==TRUE) return;
+	//if (m_talking ==TRUE) return;
 	
-	//GList *speak_word_list = NULL;
-	g_autoptr(GList) speak_word_list=NULL;
-	//---------------------------------------------------------------
+	char* speak_str ="";
 	
-	gchar *dow_str=get_day_of_week(m_start_day, m_start_month, m_start_year);	//get day of week
-	
-	
+	gchar *dow_str=get_day_of_week(m_start_day, m_start_month, m_start_year);	//get day of week	
 	gchar *day_number_str=get_day_number_ordinal_string(m_start_day); //get day number
 	gchar *month_str=get_month_string(m_start_month); //get month
 	
-	speak_word_list = g_list_append(speak_word_list, dow_str);
-	speak_word_list = g_list_append(speak_word_list, day_number_str);
-	speak_word_list = g_list_append(speak_word_list, month_str);
-		
+	//g_print("date is %s %s %s\n",dow_str, day_number_str,month_str);
 	
-	//Check for public holidays and special days (Christmas, Easter, Fathers etc,.)
-	//---------------------------------------------------------------
+	speak_str= g_strconcat(speak_str, dow_str," ", NULL);
+	speak_str= g_strconcat(speak_str, day_number_str," ", NULL);
+	speak_str= g_strconcat(speak_str, month_str,". ", NULL);
+	
+	//g_print("speak_str (date) = %s\n",speak_str);
+	
 	if ((m_holidays ==1) && (is_public_holiday(m_start_day)))	
 	{
-		//markup public holidays
-		gpointer word_list_pointer;
-	    gchar* word_str;  
 		
-		GList *holiday_word_list = get_public_holiday_speak_list();
-		
-		for (int i =0; i < g_list_length(holiday_word_list); i++){		
-			word_list_pointer=g_list_nth_data(holiday_word_list,i);
-		    word_str=(gchar *)word_list_pointer;
-		    //gchar* word_str_lower= g_ascii_strdown(word_str,-1);
-		    speak_word_list = g_list_append(speak_word_list, word_str);			
-		}	
-		g_list_free(holiday_word_list);	
+		char* hol_str=get_holiday_str(m_start_day);
+		speak_str= g_strconcat(speak_str, hol_str,". ", NULL);
+			
 	} //if public holidays 
 	
+		
 	//cycle through day events adding event titles
 	GArray *day_events_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
 	db_get_all_events_year_month_day(day_events_arry , m_start_year,m_start_month, m_start_day);
-	int event_count = day_events_arry->len;
+	int event_number = day_events_arry->len;
 	
-	//Speak event number if required
 	
-	if(m_talk_event_number) {
-	int event_number = day_events_arry->len;		
-	if (event_number ==0) {			
-	speak_word_list = g_list_append(speak_word_list, "no");
-	speak_word_list = g_list_append(speak_word_list, "events");			
-	} //if count=0		
-	else if(event_number ==1){		
-	speak_word_list = g_list_append(speak_word_list, "one");
-	speak_word_list = g_list_append(speak_word_list, "event");
+	if(m_talk_event_number) {	
+		if (event_number==0) {	
+		speak_str =g_strconcat(speak_str, " No events. ", NULL);	
+		}
+		else if(event_number==1){
+		//char* event_number_str = g_strdup_printf("%d", event_number); 
+		speak_str =g_strconcat(speak_str, " You have one event. ", NULL);
+		}	
+		else{
+		char* event_number_str = g_strdup_printf("%d", event_number); 
+		speak_str =g_strconcat(speak_str, " You have ",event_number_str, " events. ", NULL);
+		}	
 	}
-	else if(event_number ==2){		
-	speak_word_list = g_list_append(speak_word_list, "two");
-	speak_word_list = g_list_append(speak_word_list, "events");
-	}
-	else if(event_number ==3){
-	speak_word_list = g_list_append(speak_word_list, "three");
-	speak_word_list = g_list_append(speak_word_list, "events"); 
-	}
-	else if(event_number ==4){
-	speak_word_list = g_list_append(speak_word_list, "four");
-	speak_word_list = g_list_append(speak_word_list, "events");
-	}
-	else if(event_number ==5){ 
-	speak_word_list = g_list_append(speak_word_list, "five");
-	speak_word_list = g_list_append(speak_word_list, "events");		
-	}		
-	else {
-	speak_word_list = g_list_append(speak_word_list, "many");
-	speak_word_list = g_list_append(speak_word_list, "events");
-	}	    	
-	} //m_talk_event_number
 	
-	//Speak time and event word if required	
+	//cycle through day events
 	for (int i = 0; i < day_events_arry->len; i++)
 	{
 		gint evt_id = 0;
 		gchar *summary_str = "";
-		gchar *event_number_str="";
+		gchar *location_str = "";
+		//gchar *event_number_str="";
 		gint start_hour = 0;
 		gint start_min = 0;
 		gint is_allday = 0;
@@ -4113,7 +3790,8 @@ static void speak_events() {
 		
 		CalendarEvent *evt = g_array_index(day_events_arry, CalendarEvent *, i);
 		
-		g_object_get(evt, "summary", &summary_str, NULL);		
+		g_object_get(evt, "summary", &summary_str, NULL);
+		g_object_get(evt, "location", &location_str, NULL);		
 		g_object_get(evt, "starthour", &start_hour, NULL);
 		g_object_get(evt, "startmin", &start_min, NULL);		
 		g_object_get(evt, "isallday", &is_allday, NULL);
@@ -4133,55 +3811,55 @@ static void speak_events() {
 		if (start_hour >= 13 && start_hour <= 23)
 		{
 		int s_hour = start_hour - 12;
-		ampm_str = "pm";					
+		ampm_str = " p.m. ";					
 		hour_str =get_cardinal_string(s_hour);
 		}
 		if(start_hour == 12)
 		{
-		ampm_str = "pm";					
+		ampm_str = " p.m. ";					
 		hour_str =get_cardinal_string(start_hour);
 		}
 		if(start_hour <12)
 		{
-		ampm_str = "am";					
+		ampm_str = " a.m. ";					
 		hour_str =get_cardinal_string(start_hour);
 		}
-		
-		speak_word_list = g_list_append(speak_word_list, hour_str);
+				
+		speak_str= g_strconcat(speak_str, hour_str," ", NULL);
 		
 		if (start_min > 0 && start_min< 10)
 		{				
-		//speak_word_list = g_list_append(speak_word_list, "o");
-		speak_word_list = g_list_append(speak_word_list, "zero");
-		min_str=get_cardinal_string(start_min);
-		speak_word_list = g_list_append(speak_word_list, min_str);
+		
+		//speak_str= g_strconcat(speak_str, "zero ", NULL);
+		speak_str= g_strconcat(speak_str, "O ", NULL);
+		min_str=get_cardinal_string(start_min);		
+		speak_str= g_strconcat(speak_str, min_str," ", NULL);
 		}
 		else if(start_min >=10)
 		{
-		min_str=get_cardinal_string(start_min);
-		speak_word_list = g_list_append(speak_word_list, min_str);
+		min_str=get_cardinal_string(start_min);	
+		speak_str= g_strconcat(speak_str, min_str," ", NULL);
 		}
 		
-		speak_word_list = g_list_append(speak_word_list,ampm_str);
+		speak_str= g_strconcat(speak_str, ampm_str," ", NULL);
 		
 		} //12hour format
 		
 		else
 		{				
-		hour_str =get_cardinal_string(start_hour);	
-		speak_word_list = g_list_append(speak_word_list, hour_str);
+		hour_str =get_cardinal_string(start_hour);		
+		speak_str= g_strconcat(speak_str, hour_str," ", NULL);
 		
 		if (start_min > 0 && start_min < 10)
-		{				
-		//speak_word_list = g_list_append(speak_word_list, "o");
-		speak_word_list = g_list_append(speak_word_list, "zero");
-		min_str=get_cardinal_string(start_min);
-		speak_word_list = g_list_append(speak_word_list, min_str);
+		{
+		speak_str= g_strconcat(speak_str, "zero ", NULL);
+		min_str=get_cardinal_string(start_min);		
+		speak_str= g_strconcat(speak_str, min_str," ", NULL);
 		}
 		else if(start_min >=10)
 		{
-		min_str=get_cardinal_string(start_min);
-		speak_word_list = g_list_append(speak_word_list, min_str);
+		min_str=get_cardinal_string(start_min);		
+		speak_str= g_strconcat(speak_str, min_str," ", NULL);
 		}			    				
 		} //24 hour format
 				
@@ -4189,139 +3867,113 @@ static void speak_events() {
 		}//m_talk_time
 	
 		
-		//now add event title
-		if(m_talk_event_words) {
-		gchar* summary_lower= g_ascii_strdown(summary_str,-1);		
-		//gchar *event_title =get_event_title_word(summary_lower);		
-		speak_word_list = g_list_append(speak_word_list, summary_str);
-		}//m_talk_event_words	
+		//now add event summary	to speak str		
+		speak_str= g_strconcat(speak_str,summary_str,". ", NULL);
 		
-		if(is_priority) {
-		speak_word_list = g_list_append(speak_word_list, "high");
-		speak_word_list = g_list_append(speak_word_list, "priority");
-		}		
+		if(m_talk_location)
+		{
+			speak_str= g_strconcat(speak_str,location_str,". ", NULL);
+		}
 		
-		speak_word_list = g_list_append(speak_word_list, "space"); //space between events
+		if(is_priority) {		
+		speak_str= g_strconcat(speak_str,"  high priority ", NULL);
+		}
+		
+		speak_str= g_strconcat(speak_str," ", NULL);//space between events
 		
 	} //for
 	
-	    //upcoming
-	    GDate *today_date;
-		today_date = g_date_new();
-		g_date_set_time_t(today_date, time(NULL));
-		int today = g_date_get_day(today_date);
-		int month = g_date_get_month(today_date);
-		int year = g_date_get_year(today_date);
-		g_date_free(today_date); // freeit quick
-		
-		//find upcoming for today
-		if(m_talk_upcoming && m_start_day==today && m_start_month ==month && m_start_year==year)  
-		{		
+	g_array_free(day_events_arry, TRUE);
+	
+	//upcoming events
+	GDate *today_date;
+	today_date = g_date_new();
+	g_date_set_time_t(today_date, time(NULL));
+	int today = g_date_get_day(today_date);
+	int month = g_date_get_month(today_date);
+	int year = g_date_get_year(today_date);
+	g_date_free(today_date); // freeit quick
+	
+	//find upcoming for today
+	if(m_talk_upcoming && m_start_day==today && m_start_month ==month && m_start_year==year)  
+	{		
+	
+	GArray *evts_upcoming = get_upcoming_array(m_upcoming_days); //next days		
+	int num_upcoming = evts_upcoming->len;	
+	
+		if (num_upcoming ==0) {	
+		speak_str= g_strconcat(speak_str,"  no upcoming events. ", NULL);	
+		} //if count=0		
+		else if(num_upcoming ==1){
+		speak_str= g_strconcat(speak_str,"  one upcoming event. ", NULL);
+		}
+		else if(num_upcoming ==2){		
+		speak_str= g_strconcat(speak_str,"  two upcoming events. ", NULL);
+		}
+		else if(num_upcoming ==3){
+		speak_str= g_strconcat(speak_str,"  three upcoming events. ", NULL);
+		}
+		else if(num_upcoming ==4){
+		speak_str= g_strconcat(speak_str,"  four upcoming events. ", NULL);
+		}
+		else if(num_upcoming ==5){ 
+		speak_str= g_strconcat(speak_str,"  five upcoming events. ", NULL);		
+		}		
+		else {
+		speak_str= g_strconcat(speak_str,"  many upcoming events. ", NULL);
+		}	    	
+	
+	for (int i = 0; i < evts_upcoming->len; i++)
+	{
+	//find titles
+	gchar *summary_str = "";
+	int start_year=0;
+	int start_month=0;
+	int start_day =0;
+	gint is_priority;
+	
+	CalendarEvent *evt = g_array_index(evts_upcoming, CalendarEvent *, i);
+	
+	g_object_get(evt, "summary", &summary_str, NULL);
+	g_object_get(evt, "startyear", &start_year, NULL);
+	g_object_get(evt, "startmonth", &start_month, NULL);
+	g_object_get(evt, "startday", &start_day, NULL);
+	//g_object_get(evt, "starthour", &start_hour, NULL);
+	//g_object_get(evt, "startmin", &start_min, NULL);						
+	//g_object_get(evt, "isallday", &is_allday, NULL);
+	g_object_get(evt, "ispriority", &is_priority, NULL);	
+	
+	gchar *dow_str=get_day_of_week(start_day, start_month, start_year);	//get day of week
+	gchar *day_number_str=get_day_number_ordinal_string(start_day); //get day number
+	gchar *month_str=get_month_string(start_month); //get month
+	
+	speak_str= g_strconcat(speak_str, dow_str," ", NULL);
+	speak_str= g_strconcat(speak_str, day_number_str," ", NULL);
+	speak_str= g_strconcat(speak_str, month_str,". ", NULL);
+	speak_str= g_strconcat(speak_str, summary_str,". ", NULL);
+	
+	if(is_priority) {
+	speak_str= g_strconcat(speak_str, "High Priority. ", NULL);					
+	}
+	speak_str= g_strconcat(speak_str, ". ", NULL); //wait between event
+	
+	}
+	g_array_free(evts_upcoming, TRUE);	
+	}//m_talk_upcoming	
 			
-			GArray *evts_upcoming = get_upcoming_array(m_upcoming_days); //next days		
-			int num_upcoming = evts_upcoming->len;	
-						
-			if (num_upcoming ==0) {			
-			speak_word_list = g_list_append(speak_word_list, "no");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events");		
-			} //if count=0		
-			else if(num_upcoming ==1){		
-			speak_word_list = g_list_append(speak_word_list, "one");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "event");
-			}
-			else if(num_upcoming ==2){		
-			speak_word_list = g_list_append(speak_word_list, "two");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events");
-			}
-			else if(num_upcoming ==3){
-			speak_word_list = g_list_append(speak_word_list, "three");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events"); 
-			}
-			else if(num_upcoming ==4){
-			speak_word_list = g_list_append(speak_word_list, "four");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events");
-			}
-			else if(num_upcoming ==5){ 
-			speak_word_list = g_list_append(speak_word_list, "five");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events");		
-			}		
-			else {
-			speak_word_list = g_list_append(speak_word_list, "many");
-			speak_word_list = g_list_append(speak_word_list, "upcoming");
-			speak_word_list = g_list_append(speak_word_list, "events");
-			}	    	
-						
-			for (int i = 0; i < evts_upcoming->len; i++)
-	        {
-				//find titles
-				gchar *summary_str = "";
-				int start_year=0;
-				int start_month=0;
-				int start_day =0;
-				gint is_priority;
-				
-				CalendarEvent *evt = g_array_index(evts_upcoming, CalendarEvent *, i);
-				
-				g_object_get(evt, "summary", &summary_str, NULL);
-				g_object_get(evt, "startyear", &start_year, NULL);
-				g_object_get(evt, "startmonth", &start_month, NULL);
-				g_object_get(evt, "startday", &start_day, NULL);
-				//g_object_get(evt, "starthour", &start_hour, NULL);
-				//g_object_get(evt, "startmin", &start_min, NULL);						
-				//g_object_get(evt, "isallday", &is_allday, NULL);
-				g_object_get(evt, "ispriority", &is_priority, NULL);	
-				
-				
-				
-				gchar *dow_str=get_day_of_week(start_day, start_month, start_year);	//get day of week
-				gchar *day_number_str=get_day_number_ordinal_string(start_day); //get day number
-				gchar *month_str=get_month_string(start_month); //get month
-				
-				speak_word_list = g_list_append(speak_word_list, dow_str);
-				speak_word_list = g_list_append(speak_word_list, day_number_str);
-				speak_word_list = g_list_append(speak_word_list, month_str);
-				speak_word_list = g_list_append(speak_word_list, summary_str);
-								
-				if(is_priority) {
-					speak_word_list = g_list_append(speak_word_list, "high");
-					speak_word_list = g_list_append(speak_word_list, "priority");
-				}
-			 speak_word_list = g_list_append(speak_word_list, "space"); //space between events	
-			 speak_word_list = g_list_append(speak_word_list, "space");			
-			}
-			 g_array_free(evts_upcoming, TRUE);	
-		}//m_talk_upcoming	
+	//g_print("speak_str (final) = %s\n",speak_str);
 	
-	
-	gint word_number  =g_list_length(speak_word_list);
-		
-	//create word array using list size
-	unsigned char *word_arrays[word_number]; 
-	unsigned int word_arrays_sizes[word_number];
-	//use word dictioary
-	get_words_array(speak_word_list, word_number,word_arrays,word_arrays_sizes);
-		
-	//concatenate using raw cat
-	unsigned char *data = rawcat(word_arrays, word_arrays_sizes, word_number);	
-	unsigned int data_len = get_merge_size(word_arrays_sizes,word_number);	
-    
-    FILE* f = fopen(m_raw_file, "w");
-    fwrite(data, data_len, 1, f);
-    fclose(f); 
-    
-	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
+	//cst_voice *v;	
+	//flite_init();
+	//v=register_cmu_us_rms();
+	//flite_text_to_speech(speak_str,v,"play");
+	 
+    GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
+    g_task_set_task_data (task,speak_str,NULL);
+  
     g_task_run_in_thread(task, play_audio_async);     
     g_object_unref(task);
 	
-	//clean up 
-	//g_list_free(speak_word_list);	//now an auto pointer
-	free(data);	//prevent memory leak	
 }
 
 //=====================================================================
@@ -4382,11 +4034,9 @@ static void search_events(const char* search_str)
 	dialog_search_results =gtk_window_new(); 
 	gtk_window_set_title (GTK_WINDOW (dialog_search_results), "Search Results");
 	gtk_window_set_default_size(GTK_WINDOW(dialog_search_results),400,300);
-	//g_signal_connect (GTK_WINDOW(dialog_search_results), "destroy", G_CALLBACK (dialog_search_shutdown), NULL);
 	
 	listbox = gtk_list_box_new ();
 	gtk_list_box_set_selection_mode(GTK_LIST_BOX(listbox), GTK_SELECTION_SINGLE);
-	//g_signal_connect (listbox, "row-activated", G_CALLBACK (callbk_row_activated),NULL);
 		
 	for (int i = 0; i < search_events_arry->len; i++)
 	{
@@ -4560,8 +4210,7 @@ static void callbk_search_events(GtkButton *button, gpointer user_data)
 	buffer_search = gtk_entry_get_buffer(GTK_ENTRY(entry_search));
 	
 	const char* search_str=gtk_entry_buffer_get_text(buffer_search);
-	
-	//search_str = gtk_entry_buffer_get_text(search_str);
+		
 	search_str = remove_semicolons(search_str);
 	search_str = remove_commas(search_str);
 	search_str =remove_punctuations(search_str);
@@ -4574,8 +4223,7 @@ static void callbk_search_events(GtkButton *button, gpointer user_data)
 
 static void callbk_search(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
 {
-	//search_events("dentist");
-	
+		
 	GtkWidget *window = user_data;
 
 	GtkWidget *dialog_search;
@@ -4742,9 +4390,9 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
     GtkWidget *check_button_speak_upcoming= g_object_get_data(G_OBJECT(button), "check-button-speak-upcoming-key");
     GtkWidget *check_button_speak_event_number= g_object_get_data(G_OBJECT(button), "check-button-speak-event-number-key");
 	GtkWidget *check_button_speak_time= g_object_get_data(G_OBJECT(button), "check-button-speak-time-key");
-	GtkWidget *check_button_speak_event_words=g_object_get_data(G_OBJECT(button), "check-button-speak-event-words-key");	
-	GtkWidget *spin_button_speak_rate = g_object_get_data(G_OBJECT(button), "spin-speak-rate-key");	
-	
+	GtkWidget *check_button_speak_location=g_object_get_data(G_OBJECT(button), "check-button-speak-location-key");	
+	GtkWidget *check_button_speak_female=g_object_get_data(G_OBJECT(button), "check-button-speak-female-key");	
+			
 	GtkWidget *spin_button_upcoming_days = g_object_get_data(G_OBJECT(button), "spin-upcoming-days-key");
 		
     GtkWidget *check_button_reset_all= g_object_get_data(G_OBJECT(button), "check-button-reset-all-key");
@@ -4760,10 +4408,9 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_talk_upcoming =gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_speak_upcoming));
 	m_talk_event_number=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_speak_event_number));
 	m_talk_time =gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_speak_time));
-	m_talk_event_words =gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_speak_event_words));
+	m_talk_location =gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_speak_location));
 			
-	//capture these in case typed
-	m_talk_rate = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_speak_rate));	
+	//capture these in case they are typed		
 	m_upcoming_days = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_upcoming_days));
 		
 	m_reset_preferences=gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_reset_all));
@@ -4790,15 +4437,12 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_holiday_blue=170;	
 	
 	//speaking
-	m_talk=1;	
-	m_talk_rate=7000;	
-	m_talk_time=1;
-	m_talk_event_words=1;
-	m_talk_event_number=0;	
+	m_talk=1;		
+	m_talk_location=0;
+	m_talk_time=1;	
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
-	m_upcoming_days=7;
-	
+	m_talk_event_number=0;	
 	m_window_width=600;
     m_window_height=500;
 	m_reset_preferences=0; //toggle
@@ -4843,11 +4487,9 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	GtkWidget *check_button_speak_upcoming;
 	GtkWidget *check_button_speak_event_number;
 	GtkWidget *check_button_speak_time;
-	GtkWidget *check_button_speak_event_words;	
+	GtkWidget *check_button_speak_location;
 		
-	GtkWidget *label_speak_rate;
-	GtkWidget *spin_button_speak_rate;
-
+		
 	GtkWidget *label_upcoming_days;
 	GtkWidget *spin_button_upcoming_days;
 		
@@ -4960,20 +4602,11 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	check_button_speak_startup = gtk_check_button_new_with_label ("Speak At Startup");
 	check_button_speak_upcoming= gtk_check_button_new_with_label ("Speak Upcoming");
 	check_button_speak_event_number = gtk_check_button_new_with_label ("Speak Event Number");
-	check_button_speak_time= gtk_check_button_new_with_label ("Speak Time");
-	check_button_speak_event_words= gtk_check_button_new_with_label ("Speak Event Words");
+	check_button_speak_time= gtk_check_button_new_with_label ("Speak Event Time");
+	check_button_speak_location= gtk_check_button_new_with_label ("Speak Location");
 		
 	check_button_reset_all = gtk_check_button_new_with_label ("Reset All");
-	
-	//sample rate
-	GtkAdjustment *adjustment_speech_rate;
-	// value,lower,upper,step_increment,page_increment,page_size	
-	adjustment_speech_rate = gtk_adjustment_new(7000.00, 5000.00, 20000.00, 1000.0, 1000.0, 0.0);
-	// start time spin
-	label_speak_rate = gtk_label_new("Speech Rate ");
-	spin_button_speak_rate = gtk_spin_button_new(adjustment_speech_rate, 7000, 0);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_speak_rate), m_talk_rate);
-	
+		
 	//upcoming days
 	GtkAdjustment *adjustment_upcoming_days;
 	// value,lower,upper,step_increment,page_increment,page_size
@@ -5005,8 +4638,8 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_speak_upcoming), m_talk_upcoming);
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_speak_event_number), m_talk_event_number);
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_speak_time), m_talk_time);
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_speak_event_words), m_talk_event_words);	
-		
+	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_speak_location), m_talk_location);
+			
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_reset_all), m_reset_preferences);
 
 	//data setters
@@ -5023,9 +4656,9 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	g_object_set_data(G_OBJECT(button_set), "check-button-speak-upcoming-key",check_button_speak_upcoming);
 	g_object_set_data(G_OBJECT(button_set), "check-button-speak-event-number-key",check_button_speak_event_number);
 	g_object_set_data(G_OBJECT(button_set), "check-button-speak-time-key",check_button_speak_time);
-	g_object_set_data(G_OBJECT(button_set), "check-button-speak-event-words-key",check_button_speak_event_words);
-	g_object_set_data(G_OBJECT(button_set), "spin-speak-rate-key", spin_button_speak_rate);
-		
+	g_object_set_data(G_OBJECT(button_set), "check-button-speak-location-key",check_button_speak_location);
+	
+			
 	g_object_set_data(G_OBJECT(button_set), "spin-upcoming-days-key", spin_button_upcoming_days);
 	
 	//colours
@@ -5073,14 +4706,12 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	gtk_grid_attach(GTK_GRID(grid), label_spacer2,       1, 7, 1, 1);
 	
 	//speak preferences
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak,      1, 8, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), label_speak_rate,        2, 8, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), spin_button_speak_rate,  3, 8, 1, 1);	
-			
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak_startup,       1, 9, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak_time,          2, 9, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak_event_words,   3, 9, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak_event_number,  4, 9, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak,      		1, 8, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak_startup,     2, 8, 1, 1);
+	
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak_time,          1, 9, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak_location,     2, 9, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak_event_number,  3, 9, 1, 1);	
 	
 	gtk_grid_attach(GTK_GRID(grid), check_button_speak_upcoming,      1, 10, 1, 1);	
 	gtk_grid_attach(GTK_GRID(grid), label_upcoming_days,             2, 10, 1, 1);		
@@ -5099,16 +4730,6 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 		
 }
 //=====================================================================
-
-static void callbk_replay_speaking(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
-{		
-	GtkWidget *window = user_data;	
-	if(m_talk==0) return;
-	if (m_talking ==TRUE) return;
-	
-	speak_events();	
-	
-}
 
 //======================================================================
 // LISTBOX functions and callbks
@@ -5145,8 +4766,7 @@ static void callbk_row_activated (GtkListBox *listbox,GtkListBoxRow *row, gpoint
 	//g_print("m_id_selection = %d\n",m_id_selection);
 	gint evt_id=0;
 	gchar *summary_str="";
-	gchar *location_str="";		
-	//CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);	
+	gchar *location_str="";			
 	selected_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
 	db_get_event(m_id_selection, selected_evt);
 	
@@ -5178,9 +4798,9 @@ static void display_event_array(GArray *evt_arry) {
 	gint end_min;
 	gint is_yearly;
 	gint is_allday;
+	gint is_multiday;
 	gint is_priority;
-
-	
+		
 	// Display
 	g_list_store_remove_all(m_store); // clear
 
@@ -5204,7 +4824,7 @@ static void display_event_array(GArray *evt_arry) {
 		g_object_get(evt, "isyearly", &is_yearly, NULL);
 		g_object_get(evt, "isallday", &is_allday, NULL);	
 		g_object_get(evt, "ispriority", &is_priority, NULL);
-	     
+		      
       //create display str      
       gchar *display_str = "";
 			gchar *time_str = "";
@@ -5311,31 +4931,33 @@ static void display_event_array(GArray *evt_arry) {
 				//time_str = g_strconcat(time_str, NULL);
 			}
 			
-			display_str = g_strconcat(display_str, summary_str, ". ", NULL);
-			
-			display_str = g_strconcat(display_str, "\n",  time_str, NULL);
-			
-			if (!strlen(description_str) == 0){
-			display_str = g_strconcat(display_str, description_str, NULL);
-			}
-						
 			if (m_show_location)
 			{
-				if (!strlen(location_str) == 0)
-				{					
-					display_str = g_strconcat(display_str, ". ",location_str, ".", NULL);
+				if (strlen(location_str) == 0)
+				{
+					//db sorted
+					display_str = g_strconcat(display_str, time_str, summary_str, ". ", NULL);
 				}
-				
+				else
+				{
+					display_str = g_strconcat(display_str, time_str, summary_str, ". ",location_str, ".", NULL);
+				}
 			}
-			
+			else
+			{
+				display_str = g_strconcat(display_str, time_str, summary_str, ".", NULL);
+			}
+
 			if (is_priority)
 			{
-				display_str = g_strconcat(display_str, "\n","High Priority.", NULL);
+				display_str = g_strconcat(display_str, " High Priority.", NULL);
 			}
 
-			
+			if (!strlen(description_str) == 0){
+			display_str = g_strconcat(display_str, "\n", description_str, NULL);
+			}
 
-			// Display day events db sorted
+			// Display day events
 
 			if (is_allday)
 			{
@@ -5354,7 +4976,6 @@ static void display_event_array(GArray *evt_arry) {
 			g_object_unref(item);		
 		}//evt_arry loop
 }
-
 //=====================================================================
 
 static void set_holidays_on_calendar(CustomCalendar *calendar){
@@ -5372,9 +4993,7 @@ static void set_holidays_on_calendar(CustomCalendar *calendar){
 			custom_calendar_mark_holiday(CUSTOM_CALENDAR(calendar),day);
 		}
 	}
-	
-	//set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
-	//custom_calendar_update(CUSTOM_CALENDAR(calendar));	
+		
 }
 
 //====================================================================
@@ -5444,14 +5063,12 @@ static void set_tooltips_on_calendar(CustomCalendar *calendar)
 	{		
 	time_str =get_time_str(start_hour,start_min);   	
     //tooltip_str = g_strconcat(tooltip_str, time_str, summary_str, "\n",location_str, NULL);
-    //tooltip_str = g_strconcat(tooltip_str, time_str, summary_str, "\n", description_str, "\n",location_str, NULL);
-    tooltip_str = g_strconcat(tooltip_str, time_str, ", ", summary_str, ", ", description_str, ", ",location_str, NULL);
+    tooltip_str = g_strconcat(tooltip_str, time_str, " ",summary_str, ". ",location_str, ".", NULL);
    } //if !all_day	
    else
    {	   
 	   //tooltip_str = g_strconcat(tooltip_str, summary_str, "\n",location_str, NULL);
-	   //tooltip_str = g_strconcat(tooltip_str, summary_str, "\n", description_str, "\n",location_str, NULL);
-	   tooltip_str = g_strconcat(tooltip_str, summary_str, ", ", description_str, ", ",location_str, NULL);
+	   tooltip_str = g_strconcat(tooltip_str, " ", summary_str, ". ",location_str, ".",  NULL);
     }
 	custom_calendar_set_tooltip_str(CUSTOM_CALENDAR(calendar), start_day, tooltip_str); 		
 	
@@ -5717,6 +5334,8 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	GtkWidget *label_keyboard_shortcuts;	
 	GtkWidget *label_home_shortcut;
 	GtkWidget *label_newevent_shortcut;
+	GtkWidget *label_editevent_shortcut;
+	GtkWidget *label_deleteevent_shortcut;
 	GtkWidget *label_preferences_shortcut;
 	GtkWidget *label_info_shortcut;
 	GtkWidget *label_speak_shortcut;
@@ -5750,6 +5369,8 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 		
 	label_home_shortcut=gtk_label_new("Home: Go to today");	
 	label_newevent_shortcut=gtk_label_new("Ctrl+n: New event");
+	label_editevent_shortcut=gtk_label_new("Ctrl+e: Edit selected event");	
+	label_deleteevent_shortcut=gtk_label_new("Delete: Delete selected event");
 	
 	label_preferences_shortcut=gtk_label_new("Ctrl+Alt+P: Preferences");
 	label_info_shortcut=gtk_label_new("F1: Information");
@@ -5785,10 +5406,14 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	char* font_scale_value_str = g_strdup_printf("%0.2lf", sf);
 	gnome_text_scale_factor=g_strconcat(gnome_text_scale_factor, font_scale_value_str,NULL);
 	label_gnome_text_scale=gtk_label_new(gnome_text_scale_factor);
+	
+	
 
 	gtk_box_append(GTK_BOX(box),label_keyboard_shortcuts);
 	gtk_box_append(GTK_BOX(box),label_home_shortcut);
-	gtk_box_append(GTK_BOX(box),label_newevent_shortcut);	
+	gtk_box_append(GTK_BOX(box),label_newevent_shortcut);
+	gtk_box_append(GTK_BOX(box),label_editevent_shortcut);
+	gtk_box_append(GTK_BOX(box),label_deleteevent_shortcut);	
 	gtk_box_append(GTK_BOX(box),label_preferences_shortcut);
 	gtk_box_append(GTK_BOX(box),label_info_shortcut);
 	gtk_box_append(GTK_BOX(box), label_speak_shortcut);	
@@ -5798,6 +5423,8 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	gtk_box_append(GTK_BOX(box), label_record_info);
 	gtk_box_append(GTK_BOX(box), label_record_number);
 	gtk_box_append(GTK_BOX(box), label_sqlite_version);	
+	
+	
 		
 	gtk_box_append(GTK_BOX(box),label_font_info);
 	gtk_box_append(GTK_BOX(box),label_desktop_font);
@@ -5806,9 +5433,6 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	pango_attr_list_unref(attrs);
 	
 	gtk_window_present (GTK_WINDOW (dialog));
-	
-	
-	
 	
 	gtk_window_set_focus(GTK_WINDOW(window), GTK_WIDGET(calendar));
 	
@@ -5954,7 +5578,7 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	const gchar *editevent_accels[2] = {"<Ctrl>e", NULL };
 	const gchar *time_accels[2] = {"t", NULL };
 	const gchar *info_accels[2] = {"F1", NULL };
-	//const gchar *delete_accels[2] = {"Delete", NULL };	
+	const gchar *delete_accels[2] = {"Delete", NULL };	
 	const gchar * preferences_accels[2] = { "<Ctrl><Alt>P", NULL };
 	const gchar * quit_accels[2] = { "<Ctrl>Q", NULL };
 		
@@ -5964,9 +5588,7 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	m_start_month = custom_calendar_get_month(CUSTOM_CALENDAR(calendar));
 	m_start_year = custom_calendar_get_year(CUSTOM_CALENDAR(calendar));
 	//g_print("Custom Calendar Date: %d-%d-%d \n", m_start_day, m_start_month, m_start_year);	
-	
-	
-	
+		
 	g_signal_connect(CUSTOM_CALENDAR(calendar), "day-selected", G_CALLBACK(callbk_calendar_day_selected), label_date);
 	g_signal_connect(CUSTOM_CALENDAR(calendar), "next-month", G_CALLBACK(callbk_calendar_next_month), label_date);
 	g_signal_connect(CUSTOM_CALENDAR(calendar), "prev-month", G_CALLBACK(callbk_calendar_prev_month), label_date);
@@ -6097,6 +5719,7 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.home", home_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.newevent", newevent_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.editevent", editevent_accels);
+	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.deleteevent", delete_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speak", speak_accels);		
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speaktime", time_accels);	
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.info", info_accels);
