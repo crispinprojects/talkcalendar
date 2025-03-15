@@ -20,7 +20,7 @@ Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) 
 
 ### Local Install Using Pre-built Binary
 
-A 64-bit pre-built binary for the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm.
+A pre-built 64-bit x86 binary of the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm on Intel hardware.
 
 Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  Change Talk Calendar file permissions so that it can run as an executable as shown below.
 
@@ -172,7 +172,7 @@ sudo apt install geany
 ```
 Alternatively, the latest version of Geany can be built from source using autotools.
 
-### Building on Debian Bookworm
+### Building on Debian 12 Bookworm x86 Hardware
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
@@ -186,14 +186,6 @@ sudo apt install flite1-dev
 sudo apt install flite
 ```
 
-The packages:
-
-```
-sudo apt install libglib2.0-dev
-sudo apt install alsa-utils
-```
-
-are needed but should be installed by default. 
 
 To check the installed Sqlite 3 version use the command below.
 
@@ -219,7 +211,17 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
+### Raspberry Pi OS
 
+Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above for Debian 12 Bookworm. 
+
+Again you need to install the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis library on the Raspberry Pi using the terminal command below.
+
+```
+sudo apt install flite1-dev
+```
+
+A prebuilt ARM64 Raspberry Pi binary of the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and tested with Raspberry Pi OS (64-bit) on a Pi 500.
 
 ### Debian Trixie 
 
