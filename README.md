@@ -2,8 +2,7 @@
 
 Talk Calendar is a speaking calendar for Linux.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.).  It uses the [Flite](http://www.festvox.org/flite/) text-to-speech (TTS) engine.  A screenshot of Talk Calendar is shown below.
-
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.).  It uses the [Flite](http://www.festvox.org/flite/) speech synthesizer. A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
@@ -15,12 +14,21 @@ Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) 
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* integrated speech synthesizer
+* uses the Flite speech synthesizer
 * binary for GTK 4.8.4 (Debian Bookworm)
 
-### Local Install Using Pre-built Binary
+## Flite Speech Synthesis Shared Library
 
-A pre-built 64-bit x86 binary of the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm on Intel hardware.
+Talk Calendar uses the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library which needs to be installed before running Talk Calendar. With Debian you install this using the terminal command below.
+
+```
+sudo apt install libflite1
+```
+The shared library "libflite.so.1" should be the only Talk Calendar  dependency which needs to be installed before using the pre-built binaries for x86 and ARM64 hardware found in the binaries folder.
+
+## Local Install Using Pre-built Binary (x86 Intel PCs)
+
+A pre-built 64-bit x86 binary of the Debian Bookworm version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm on Intel hardware.
 
 Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  Change Talk Calendar file permissions so that it can run as an executable as shown below.
 
@@ -39,12 +47,6 @@ To add Talk Calendar to the system menu modify the Talk Calendar desktop file pr
 You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
 
 Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
-
-Talk Calendar uses the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis library. With Debian you install this using the terminal command below.
-
-```
-sudo apt install flite1-dev
-```
 
 ## Autostart Talk Calendar
 
@@ -151,7 +153,7 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU). A TTS engine converts text into spoken audio. The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPLv2, meaning you can combine code licensed under BSD with code licensed under GPLv2 and distribute the combined work under the terms of GPLv2. The BSD licenses are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labeled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis) and so it is used with Talk Calendar. 
+Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU). A TTS engine converts text into spoken audio. The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPLv2, meaning you can combine code licensed under BSD with code licensed under GPLv2 and distribute the combined work under the terms of GPLv2. The BSD licenses are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis) and so it is used with Talk Calendar. 
 
 When developing this project I originally planned to use [eSpeak](https://espeak.sourceforge.net/) as the back-end speech synthesizer as it is widely available in the repositories of most Linux distributions and speech quality is excellent.  However, I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). I just don't know if this is something to be concerned about especially as eSpeak is an [Official Debian package License: DFSG free](https://blends.debian.org/accessibility/tasks/speechsynthesis). Anyhow I decided not to use eSpeak and use Flite instead.
 
@@ -215,13 +217,13 @@ To run Talk Calendar from the terminal use
 
 Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above for Debian 12 Bookworm. 
 
-Again you need to install the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis library on the Raspberry Pi using the terminal command below.
+Again you need to install the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis development library on the Raspberry Pi using the terminal command below.
 
 ```
 sudo apt install flite1-dev
 ```
 
-A prebuilt ARM64 Raspberry Pi binary of the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and tested with Raspberry Pi OS (64-bit) on a Pi 500.
+A pre-built ARM64 Raspberry Pi binary of the latest version of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and tested with Raspberry Pi OS (64-bit) on a Pi 500.
 
 ### Debian Trixie 
 
@@ -230,12 +232,12 @@ The current code base has been compiled using Debian 12 Bookworm which uses [GTK
 Debian Trixie will be the next stable release of Debian. At the time of writing the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) shows that Debian Trixie is currently using GTK4.17.5. Some changes to the GTK4 toolkit since GTK4.8 which are relevant to the Talk Calendar project are outlined below.
 
 #### GTK 4.10: 
-In GTK 4.10 the GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced. The GTK ColorDialogButton is not available with GTK 4.8. Currently RGB values for the today, calendar event, public holiday colours have to be entered manually. The GTK ColorDialogButton will be used in future Trixie releases.
+In GTK 4.10 the GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced. The GTK ColorDialogButton is not available with GTK 4.8. This means that in the Debian Bookworm version of Talk Calendar the RGB values for the today, calendar event, public holiday colours have to be entered manually. The GTK ColorDialogButton is used in the Trixie development code.
 
 #### GTK 4.12: 
-The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with  "gtk_css_provider_load_from_string". The calendar source code will be updated using "gtk_css_provider_load_from_string".
+The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with  "gtk_css_provider_load_from_string". The Trixie Talk Calendar source code has been updated to use "gtk_css_provider_load_from_string".
 
-With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from Talk Calendar source code.
+With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from Debian Bookworm Talk Calendar source code and ical backup files are saved to the current working directory. The GAsyncReadyCallback function is used in the Trixie development code.
 
 A screenshot showing the Trixie version of Talk Calendar under development is shown below.
 
