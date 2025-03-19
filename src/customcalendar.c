@@ -813,8 +813,8 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 	
 	GtkCssProvider *provider_today; //today provider
 	provider_today = gtk_css_provider_new ();
-	gtk_css_provider_load_from_data (provider_today, today_provider_str,-1); //Debian 12 Bookworm GTK4.8
-	//gtk_css_provider_load_from_string(provider_today, today_provider_str); //Debian 13 Trixie GTK 4.17
+	gtk_css_provider_load_from_data (provider_today, today_provider_str,-1); //Debian 12 GTK4.8
+	//gtk_css_provider_load_from_string(provider_today, today_provider_str); //Fedoar 40 GTK 4.14
 	gtk_style_context_add_provider_for_display (gdk_display_get_default (), GTK_STYLE_PROVIDER (provider_today), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		
 	GtkCssProvider *provider_event; //event provider
