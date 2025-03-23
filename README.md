@@ -51,13 +51,15 @@ If you have used a calendar application before then using Talk Calendar will be 
 ### Adding New Event
 
 * Click on the "New Event" button in the header bar or press Ctrl+n to invoke the "New Event" window
-* Select the event summary (e.g birthday, anniversary, dentist etc.) 
-* Enter the description and location
+* Enter the event summary (e.g. birthday, anniversary, dentist etc.) 
+* Enter the description of the event and location
 * Enter the start date by setting the day, month and year values 
 * Enter start and end times (or tick the all day check box)
 * Times are entered as hour and minute values using the 24-hour time notation
 * Events are sorted by start time when displayed
 * Check the "Is Yearly" check box if the event repeats every year (e.g. birthdays and anniversaries)
+
+Talk Calendar uses a small dictionary to read out the event summary.
 
 A screenshot of the new event dialog is shown below.
 
@@ -144,15 +146,15 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-I have explored various approaches to incorporating speech into the calendar so that dates, time and event text can be converted into spoken audio. The current version of Talk Calendar uses a word concatenation speech synthesizer to play-back pre-recorded English words. Words were recorded in a headless RAW audio format and converted to hexadecimal values. The voice used by this version of Talk Calendar is based on my own recordings and so is subject to same license as the project.  
+I have explored various approaches to incorporating speech into the calendar so that dates, time and event text can be converted into spoken audio. The first versions of Talk Calendar used a word concatenation speech synthesizer to play-back pre-recorded English words using common generic words for the event summary (e.g. birthday, anniversary, dentist etc.). I have attempted to move away from this approach by using recorded diphones and constructing words from these. This is known as diphone speech synthesis and used by speech synthesizers such as [Flite](http://www.festvox.org/flite/).
 
-The [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU) and the University of Edinburgh is available in the Debian repositories.  However, I discovered using [pkgs.org](https://pkgs.org/) that a number of distributions do not have Flite in their repositories and so it cannot be assumed that the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library is always available and the Flite [API](http://cmuflite.org/doc/flite_7.html#C-example) can be used. 
+The event summary can be read out with this version of Talk Calendar but the number of words recognised is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service" etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. The audio speech rate (speed) can be changed to help with speech audibility.
 
-In an attempt to get around this issue I compiled  flite_cmu_us_kal16  from [source](https://github.com/festvox/flite) on x86 hardware and used it locally. I soon discovered that the disadvantage of this approach in that the Flite voice "flite_cmu_us_kal16" would have to be compiled on different x86, ARM64 hardware for this approach to be universal and that the application would have to provide these binaries (not ideal). With the current version of Talk Calendar  the speech synthesizer is part of the code base and so you can compile it on both x86 and ARM64 hardware. Speech does not rely on an external library which may or may not be present.
+The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin A Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s). Further details of my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker).
 
-I explored the possibility of using [eSpeak](https://espeak.sourceforge.net/) which is widely available in Linux distributions. I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). Consequently, I decided not to use eSpeak.
+I have been considering using the [Flite](http://www.festvox.org/flite/) free open-source text-to-speech (TTS) engine developed at Carnegie Mellon University (CMU) and the University of Edinburgh. Although it is available in the Debian repositories I discovered using [pkgs.org](https://pkgs.org/) that a number of distributions do not have Flite in their repositories and so it cannot be assumed that the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library is always available and the Flite [API](http://cmuflite.org/doc/flite_7.html#C-example) can be used. Currently, Talk Calendar does not reply on the Flite library which may or may not be present in a particular Linux distribution using its own speech synthesizer instead.
 
-Flite uses the diphone speech synthesis method. I have been developing a small diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/diphone-talker). Unfortunately, speech quality is poor compared to using flite_cmu_us_kal16 and so more work is needed before it could be used to replace the current word concatenation approach. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
+I explored the possibility of using [eSpeak](https://espeak.sourceforge.net/) which is widely available in Linux distributions. I discovered a potential eSpeak license compatibility issue in that some of its components may not be compatible with the GTK LGPL v2.1 license. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). Consequently, I decided not to use eSpeak.  I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
 
 ### Audio Thread
 
@@ -236,14 +238,6 @@ A screenshot showing the Trixie version of Talk Calendar under development is sh
 
 ![](talkcalendar-trixie.png)
 
-The GTK ColorDialogButton is used to set calendar colour preferences as shown in the screenshot below.
-
-![](talkcalendar-trixie-preferences.png)
-
-A file dialog to export an ical backup file is implemented using a GAsyncReadyCallback function.
-
-![](talkcalendar-trixie-export.png)
-
 When Trixie is released I will move the Talk Calendar code based to the updated GTK version and put the Bookworm version into maintenance mode. 
 
 ### Building on Fedora
@@ -306,7 +300,9 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. The core Flite library was originally developed by Professor Alan W Black and Kevin A.Lenzo. The history of the project together with other contributors can be found [here](https://github.com/festvox/flite). Flite is free software and the core code has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING).  The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis) and so it is used with Talk Calendar.
+* [Diphone Source and License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
+
+* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
 
 * [Diphone speech synthesizer](https://github.com/crispinprojects/diphone-talker)
 

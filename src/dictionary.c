@@ -16,903 +16,550 @@
  ***************************************************************************/
 #include <gtk/gtk.h> 
 #include "dictionary.h"
-#include "voice2.h"
 
-//Word dictionary
+//talk calendar dictionary
 
-void get_words_array(GList *speak_word_list, int word_number,unsigned char **word_arrays, unsigned int *word_arrays_sizes)
-{
-		
-	gpointer word_list_pointer;
-	gchar* word_str;
-	gchar* word_str_lower;	
+//dictionary key value pair
+typedef struct pair {
+  char *key;
+  char *value;
+} pair_t;
+
+
+// Key strings must be in strcmp() sorted order!
+pair_t table[] = {
+
+//a-words
+{"a","ey-ey ey-ey"}, 
+{"accountant","ah-k k-aa aa-uh uh-n n-t t-ah ah-n n-t"},
+{"activity","ae-k k-t t-ih ih-ih ih-v v-ah ah-t t-iy iy-pau"},
+{"afternoon","ae-ae ae-ae ae-f f-t t-er er-pau pau-er er-n n-uw uw-uw uw-n"},
+{"airport","eh-eh eh-r r-p p-ao ao-ao ao-r r-t"},
+{"alan","ae-ae ae-l l-ah ah-n"}, 
+{"alans","ae-ae ae-l l-ah ah-n n-z"}, 
+{"alec","ae-ae ae-l l-ih ih-k"},
+{"alex","ae-ae ae-l l-ah ah-k k-s"},
+{"alexander","ae-ae ae-l l-ah ah-g g-z z-ae ae-n n-d d-uh uh-r"},
+{"alexanders","ae-ae ae-l l-ih ih-g g-z z-ae ae-n n-d d-uh uh-r r-z"},
+{"alexs","ae-ae ae-l l-ah ah-k k-s s-ih ih-z"},
+{"alf","ae-ae ae-l l-f"},
+{"alfred","ae-ae ae-l l-f f-r r-ah ah-d"},
+{"alfreds","ae-ae ae-l l-f f-r r-ih ih-d d-z"},
+{"alice","ae-ae ae-l l-ih ih-s"},
+{"alices","ae-ae ae-l l-ih ih-s s-ah ah-z"},
+{"alison","ae-ae ae-l l-ih ih-s s-ah ah-n"},
+{"alisons","ae-ae ae-l l-ih ih-s s-ah ah-n n-z"},
+{"alister","ae-ae ae-l l-ih ih-s s-t t-uh uh-r"},
+{"allan","ae-ae ae-l l-ah ah-n"},
+{"allans","ae-ae ae-l l-ah ah-n n-z"},
+{"allen","ae-ae ae-l l-ah ah-n"},
+{"allison","ae-ae ae-l l-ah ah-s s-ah ah-n"},
+{"allisons","ae-ae ae-l l-ih ih-s s-ah ah-n n-z"},
+{"allister","ao-ao ao-l l-ih ih-s s-t t-er er-pau"},
+{"allotment","ah-l l-aa aa-aa aa-t t-m m-ah ah-n n-t"},
+{"amazon","ae-ae ae-m m-ah ah-z z-aa aa-aa aa-n"},
+{"amber","ae-ae ae-m m-b b-er er-pau"},
+{"ambulance","ae-ae ae-m m-b b-y y-ah ah-l l-ah ah-n n-s"},
+{"amelia","ah-m m-iy iy-iy iy-l l-y y-ah"},
+{"amelias","ah-m m-iy iy-iy iy-l l-y y-ah ah-z"},
+{"amm","ey-ey ey-ae ae-m m-m m-m"}, //a.m.
+{"and","ah-n n-d"},
+{"andora","ae-ae ae-n d-ao ao-ao ao-r r-ah ah-pau"},
+{"andre","aa-aa aa-n n-d d-r r-ey ey-ey"},
+{"andrea","ae-ae ae-n n-d d-r r-iy iy-iy iy-ah"},
+{"andreas","ae-ae aa-n n-d d-r r-eh eh-iy iy-iy iy-ah ah-z"},
+{"andrew","ae-ae ae-n n-d d-r r-uw uw-pau"},
+{"andrews","ae-ae ae-n n-d d-r r-uw uw-uw uw-z"},
+{"andy","ae-ae ae-n n-d d-iy iy-pau"},
+{"andys","ae-ae ae-n n-d d-iy iy-pau pau-iy iy-z"},
+{"angela","ae-ae ae-n n-jh jh-ah ah-l l-ah"},
+{"angelina","ae-n n-jh jh-eh eh-l l-iy iy-n n-ah"},
+{"anna","ae-ae ae-n n-ah"},
+{"annabel","ae-ae ae-n n-ah ah-b b-eh eh-eh eh-l"},
+{"anne","ae-ae ae-n"},
+{"anniversary","ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
+{"anthony","ae-ae ae-n n-th th-ao ao-n n-iy iy-iy"},
+{"anthony","ae-ae ae-n n-th th-ao ao-n n-iy iy-iy iy-z"},
+{"appointment","pau-ah ah-p p-oy oy-oy oy-n n-t t-m m-ah ah-n n-t"},
+{"april","ey-ey ey-p p-r r-ah ah-l"},
+{"art","aa-aa aa-aa aa-r r-t"},
+{"assessment","ah-s s-eh eh-eh eh-s s-m m-ah ah-pau pau-ah ah-n n-t"},
+{"aubrey","ao-ao ao-b b-r r-iy iy-pau"},
+{"audrey","ao-ao ao-d d-r r-iy iy-pau"},
+{"audreys","ao-ao ao-uh uh-d d-r r-iy iy-z"},
+{"august","aa-aa aa-g g-ah ah-s s-t t-pau"},
+{"aunt","ae-ae ae-n n-t"},
+{"auntie","ae-ae ae-n n-t t-iy iy-pau"},
+{"aunts","ae-ae ae-n n-t t-s"},
+{"aunty","ae-ae ae-n n-t t-iy iy-pau"},
+
+
+//b-words
+{"bank","b-ae ae-ae ae-ng ng-k"},
+{"banking","b-ae ae-ae ae-ng ng-k k-ih ih-ng"},
+{"barber","b-aa aa-aa aa-r r-b b-er er-pau"},
+{"barbers","b-aa  aa-aa aa-r r-b b-er er-z z-pau"},
+{"beth","b-eh eh-eh eh-th"},
+{"bethany","b-eh eh-eh eh-th th-ah ah-n n-iy iy-pau"},
+{"betsy","b-eh eh-eh eh-t t-s s-iy iy-pau"},
+{"betsys","b-eh eh-eh eh-t t-s s-iy iy-z z-pau"},
+{"bike","b-ay ay-ay ay-k"},
+{"billy","b-ih ih-ih ih-l l-iy iy-pau"},
+{"bin","b-ih ih-ih ih-n"},
+{"birthday","b-er er-er er-th th-d d-ey ey-ey ey-pau"},
+{"boxing","b-aa aa-aa aa-k k-s s-ih ih-ng"},
+{"breakfast","b-r r-eh eh-eh eh-k k-f f-ah ah-s s-t t-pau"},
+{"bus","b-ah ah-ah ah-s s-s"},
+
+//c-words
+{"cafe","k-ah ah-f f-ey ey-ey"},
+{"calendar","k-ae ae-ae ae-l l-ah ah-n n-d d-er er-pau"},
+{"car","k-aa aa-aa aa-r"},
+{"catherine","k-ae ae-ae ae-th th-er er-ah ah-n"},
+{"charles","ch-aa aa-aa aa-r r-l l-z"},
+{"charlotte","sh-aa  aa-aa aa-r r-l l-ah ah-t"},
+{"chips","ch-ih ih-ih ih-p p-s s-pau"}, //dog name - walk chips
+{"chore","ch-ao ao-ao ao-r r-pau"},
+{"christmas","k-r r-ih ih-ih ih-s s-m m-ah ah-s"},
+{"church","ch-er er-er er-ch"},
+{"cinema","s-ih ih-ih ih-n n-ah ah-m m-ah ah-pau"},
+{"claire","k-l l-eh eh-eh eh-r"},
+{"clara","k-l l-ae ae-ae ae-r r-ah"},  //aunt clara
+{"clarence","k-l l-eh eh-eh eh-r r-ah ah-n n-s"},
+{"clarissa","k-l l-er er-ih ih-ih ih-s s-ah"},
+{"claude","k-l l-ao ao-ao ao-d"},
+{"clinic","k-l l-ih ih-ih ih-n n-ih ih-k"},
+{"coach","k-ow ow-ow ow-ch ch-ch"},
+{"cottage","k-aa  aa-aa aa-t t-ah ah-jh"},
+
+//d-words
+{"dad","d-ae ae-ae ae-d"},
+{"dads","d-ae ae-ae ae-d d-z"},
+{"daisy","d-ey ey-ey ey-z z-iy iy-pau"},
+{"daniel","d-ae ae-ae ae-n n-y y-ah ah-l"},
+{"danielle","d-ae ae-ae ae-n n-iy iy-eh eh-eh eh-l"},
+{"danny","d-ae ae-ae ae-n n-iy"},
+{"date","d-ey ey-ey ey-t"},
+{"dates","d-ey ey-ey ey-t t-s s-pau"},
+{"dave","d-ey ey-ey ey-v"},
+{"david","d-ey ey-ey ey-v v-ih ih-d"},
+{"day","d-ey ey-ey"},
+{"deadline","d-eh eh-eh eh-d d-l l-ay ay-ay ay-n"},
+{"debbie","d-eh eh-eh eh-b b-iy iy-pau"},
+{"debby","d-eh eh-eh eh-b b-iy iy-pau"},
+{"deborah","d-eh eh-eh eh-b b-er er-ah ah-pau"},
+{"december","d-ih ih-s s-eh eh-eh eh-m m-b b-er er-pau"},
+{"delivery","d-ih ih-l l-ih ih-ih ih-v v-er er-iy iy-pau"},
+{"dentist","d-eh eh-eh eh-n n-t t-ah ah-s s-t"},
+{"dinner","d-ih ih-ih ih-n n-er er-pau"},
+{"diphone","d-ih ih-ih ih-f f-ow ow-ow ow-n n-pau"}, //bad pronouciation
+{"doctor","d-aa aa-aa aa-k k-t t-er er-pau"},
+{"doctors","d-aa aa-aa aa-k k-t t-er r-z z-pau"},
+{"don","d-aa aa-aa aa-n"},
+{"donald","d-aa aa-aa aa-n n-ah ah-l l-d"},
+{"donalds","d-aa aa-aa aa-n n-ah ah-l l-d d-z"},
+{"dons","d-aa aa-aa aa-n n-z"},
+{"dora","d-ao ao-ao ao-r r-ah ah-pau"},
+{"driver","d-r r-ay ay-ay ay-v v-er er-pau"},
+
+//e-words
+{"ear","iy-iy iy-r"},
+{"easter","iy-iy iy-s s-t t-er er-pau"},
+{"eight","ey-ey ey-t"},
+{"eighteen","eh-ey ey-t t-iy iy-iy iy-n n-pau"},
+{"eighteenth","ey-ey ey-t t-iy iy-iy iy-n n-th th-pau"},
+{"eighth","eh-ey ey-t t-th th-pau"},
+{"electrician","ih-ih ih-l l-eh eh-k k-t t-r r-ih ih-ih ih-sh sh-ah ah-n"},
+{"eleven","ih-l l-eh eh-eh eh-v v-ah ah-n"},
+{"eleventh","ih-l l-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
+{"elisha","eh-eh eh-l l-ih ih-sh sh-ah ah-pau"},
+{"eliza","ih-l l-ay ay-ay ay-z z-ah ah-pau"},
+{"elizabeth","ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th"},
+{"elizabeths","ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th th-s"},
+{"elizas","ih-l l-ay ay-ay ay-z z-ah ah-z"},
+{"elliot","eh-eh eh-l l-iy iy-ah ah-t"},
+{"elliott","eh-eh eh-l l-iy iy-ah ah-t"},
+{"emma","eh-eh eh-m m-ah"},
+{"evan","eh-eh eh-v v-ah ah-n"},
+{"evening","iy-iy iy-v v-n n-ih ih-ng ng-pau"},
+{"event","ih-v v-eh eh-eh eh-n n-t"},
+{"eye","aa-iy"},
+
+//f-words
+{"family","f-ae ae-ae ae-m m-ah ah-l l-iy iy-pau"},
+{"farm","f-aa aa-aa aa-r r-m"},
+{"father","f-aa aa-aa aa-dh dh-er er-pau"},
+{"fathers","f-aa aa-aa aa-dh dh-er er-pau pau-er er-z"},
+{"february","f-eh eh-eh eh-b b-y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
+{"fifteen","f-ih ih-ih ih-f f-t t-iy iy-iy iy-n n-pau"},
+{"fifteenth","f-ih ih-f f-t t-iy iy-iy iy-n n-th th-pau"},
+{"fifth","f-ih ih-ih ih-f f-th th-pau"},
+{"fifty","f-ih ih-ih ih-f f-t t-iy iy-pau"},
+{"film","f-ih ih-ih ih-l l-m m-pau"},
+{"fiona","f-iy iy-ow ow-ow ow-n n-ah ah-pau"},
+{"first","f-er er-er er-s s-t t-pau pau-t"},
+{"fish","f-ih ih-ih ih-sh"},
+{"five","f-ay ay-ay ay-v"},
+{"forty","f-ao ao-ao ao-r r-t t-iy iy-pau"},
+{"four","f-ao ao-ao ao-r"},
+{"fourteen","f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-pau"},
+{"fourteenth","f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-th th-pau pau-th"},
+{"fourth","f-ao ao-ao ao-r r-th th-pau"},
+{"frances","f-r r-ae ae-ae ae-n n-s s-ih ih-s"},
+{"francesca","f-r r-ae ae-n n-ch ch-eh eh-eh eh-s s-k k-ah"},
+{"francis","f-r r-ae ae-ae ae-n n-s s-ah ah-s"},
+{"frank","f-r r-ae ae-ae ae-ng ng-k"},
+{"fred","f-r r-eh eh-eh eh-d"},
+{"freddie","f-r r-eh eh-eh eh-d d-iy iy-pau"},
+{"freddy","f-r r-eh eh-eh eh-d d-iy iy-pau"},
+{"frederic","f-r r-eh eh-d d-r r-ih ih-k"},
+{"frederick","f-r r-eh eh-eh eh-d d-er er-ih ih-k"},
+{"freds","f-r r-eh eh-eh eh-d d-z z-pau"},
+{"friday","f-r r-ay ay-ay ay-d d-iy iy-pau"},
+{"friend","f-r r-eh eh-eh eh-n n-d"},
+{"funeral","f-y y-uw uw-uw uw-n n-er er-ah ah-l"},
+
+//g-words
+{"gale","g-ey ey-ey ey-l"},
+{"gallery","g-ae ae-ae ae-l l-er er-iy iy-pau"},
+{"garden","g-aa aa-aa aa-r r-d d-ah ah-n"},
+{"gas","g-ae ae-ae ae-s s-s"},
+{"geoffrey","jh-eh eh-eh eh-f f-r r-iy iy-pau"},
+{"george","jh-ao ao-ao ao-r r-jh"},
+{"georges","jh-ao ao-ao ao-r r-jh jh-ah ah-z z-pau"},
+{"georgina","jh-ao ao-ao ao-r r-jh jh-iy iy-n n-ah ah-pau"},
+{"glasses","g-l l-ae ae-ae ae-s s-ah ah-z"},
+{"grandad","g-r r-ae ae-ae ae-n n-d d-ae ae-ae ae-d"},
+{"granny","g-r r-ae ae-ae ae-n n-iy iy-pau"},
+
+//h-words
+{"hairdressing","hh-eh eh-eh eh-r r-d d-r r-eh eh-eh eh-s s-ih ih-ng"},
+{"halloween","hh-ae ae-ae ae-l l-ah ah-w w-iy iy-iy iy-n"},
+{"hanna","hh-ae ae-ae ae-n n-ah"},
+{"hannah","hh-ae ae-ae ae-n n-ah"},
+{"harold","hh-eh eh-eh eh-r r-ah ah-d"},
+{"harolds","hh-eh eh-eh eh-r r-ah ah-d d-z"},
+{"harry","hh-eh eh-eh eh-r r-iy"},
+{"health","hh-eh eh-eh eh-l l-th"},
+{"heating","hh-iy iy-iy iy-t t-ih ih-ng"},
+{"hector","hh-eh eh-eh eh-k k-t t-er er-pau"},
+{"helen","hh-eh eh-eh eh-l l-ah ah-n"},
+{"hello","hh-ah ah-l l-ow ow-ow ow-pau"},
+{"help","hh-eh eh-eh eh-l l-p"},
+{"herbert","hh-er er-er er-b b-t"},
+{"herbert","hh-er er-er er-b b-t t-s"},
+{"holiday","hh-aa aa-aa aa-l l-ah ah-d d-ey ey-ey"},
+{"hospital","hh-aa aa-aa aa-s s-p p-ih ih-ih ih-t t-ah ah-l"},
+{"hotel","hh-ow ow-t t-eh eh-eh eh-l"},
+{"hour","aw-aw aw-r r-pau"},
+{"hours","aw-aw aw-r r-z"},
+{"house","hh-hh hh-aw aw-aw aw-s s-s"},
+{"humanoid","hh-y y-uw uw-uw uw-m m-ah ah-n n-oy oy-oy oy-d"},
+{"humphrey","hh-ah  ah-ah ah-m m-f f-r r-iy iy-pau"},
+{"husband","hh-ah  ah-ah ah-z z-b b-ah ah-n n-d"},
+{"husbands","hh-ah  ah-ah ah-z z-b b-ah ah-n n-d d-z"},
+
+//i-words
+{"i","ay-ay ay-pau"},
+{"ian","iy-iy iy-ah ah-n"},
+{"irene","ay-r r-iy iy-iy iy-n"},
+{"is","pau-ih ih-z"},
+{"isaac","ih-ih ih-s s-ah ah-k"},
+{"isaacs","ih-ih ih-s s-ah ah-k k-s"},
+{"isabel","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l"},
+{"isabella","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-pau"},
+{"isabellas","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-z"},
+{"isabelle","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l"},
+{"isabels","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-z"},
+{"ivan","ay-ay ay-v v-ah ah-n"},
+{"ivans","ay-ay ay-v v-ah ah-n n-z"},
+{"ivy","ay-ay ay-v v-iy iy-pau"},
+
+//j-words
+{"jack","jh-ae ae-ae ae-k"},
+{"jackie","jh-ae ae-ae ae-k k-iy iy-pau"},
+{"jacks","jh-ae ae-ae ae-k k-s"},
+{"jacky","jh-ae ae-ae ae-k k-iy"},
+{"jacob","jh-eh ey-ey ey-k k-ah ah-b"},
+{"jacobs","jh-eh ey-ey ey-k k-ah ah-b b-z"},
+{"jacqueline","jh-ae ae-ae ae-k k-w w-ah ah-l l-ih ih-n"},
+{"james","jh-ey ey-ey ey-m m-z"},
+{"jamie","jh-ey ey-ey ey-m m-iy iy-pau"},
+{"january","jh-ae ae-ae ae-n n-y y-uw uw-eh eh-eh eh-r r-iy iy-pau"},
+{"jason","jh-ey ey-ey ey-s s-ah ah-n"},
+{"jeff","jh-eh eh-eh eh-f"},
+{"jeffrey","jh-eh eh-eh eh-f f-r r-iy iy-pau"},
+{"job","jh-aa aa-aa aa-b b-b"},
+{"john","jh-aa aa-aa aa-n"},
+{"johns","jh-aa aa-aa aa-n n-z"},
+{"journey","jh-er er-er er-n n-iy iy-pau"},
+{"july","jh-uw uw-uw uw-l l-ay ay-ay ay-pau"},
+{"june","jh-uw uw-uw uw-n n-pau"},
+
+//k-word
+{"karen","k-eh eh-eh eh-r r-ah ah-n"},
+{"kate","k-ey ey-ey ey-t"},
+{"katherine","k-ae ae-ae ae-th th-er er-ih ih-n"},
+{"ken","k-eh eh-eh eh-n"},
+
+//l-words
+{"lecture","l-eh eh-eh eh-k k-ch ch-er er-pau"},
+{"lift","l-ih ih-ih ih-f f-t"},
+{"lilly","l-ih ih-ih ih-l l-iy iy-pau"},
+{"linux","l-ih ih-ih ih-n n-ah ah-k k-s"},
+{"louisa","l-uw uw-iy iy-iy iy-z z-ah ah-pau"},
+{"lunch","l-ah ah-ah ah-n n-ch ch-pau"},
+
+//m-words
+{"madeline","m-ae ae-ae ae-d d-ah ah-l l-ih ih-n"},
+{"maintenance","m-ey ey-ey ey-n n-t t-ah ah-n n-ah ah-n n-s s-s"},
+{"management","m-ae ae-ae ae-n n-ah ah-jh jh-m m-ah ah-n n-t"},
+{"march","m-aa aa-aa aa-r r-ch ch-pau"},
+{"mary","m-eh eh-eh eh-r r-iy iy-pau"},
+{"marys","m-eh eh-eh eh-r r-iy iy-z"},
+{"master","m-ae ae-ae ae-s s-t t-er er-pau"},
+{"matt","m-ae ae-ae ae-t"},
+{"matthew","m-ae ae-ae ae-th th-y y-uw uw-pau"},
+{"matthews","m-ae ae-ae ae-th th-y y-uw uw-z"},
+{"matthias","m-ah ah-th th-ay ay-ay ay-ah ah-s"},
+{"may","m-ey ey-ey ey-pau"},
+{"meal","m-iy iy-iy iy-l l-pau"},
+{"medical","m-eh eh-eh eh-d d-ah ah-k k-ah ah-l"},
+{"meet","m-iy iy-iy iy-t"},
+{"meeting","m-iy iy-iy iy-t t-ih ih-ng"},
+{"memorandum","m-eh eh-eh eh-m m-er er-ae ae-ae ae-n n-d d-ah ah-m"},
+////MINI  M IH1 N IY0
+{"mini","m-ih ih-ih ih-n n-iy iy-iy iy-pau"},
+
+{"monday","m-ah ah-ah ah-n n-d d-iy iy-pau"},
+{"morning","m-ao ao-ao ao-r r-n n-ih ih-ng"},
+{"mother","m-ah ah-ah ah-dh dh-er er-pau"},
+{"mothers","m-ah ah-ah ah-dh dh-er er-z"},
+{"motorcycle","m-ow ow-ow ow-t t-er er-s s-ay ay-ay ay-k k-ah ah-l"},
+{"movie","m-uw uw-uw uw-v v-iy iy-pau"},
+{"mum","m-ah ah-ah ah-m"},
+{"mums","m-ah ah-ah ah-m m-z"},
+{"music","m-y y-uw uw-uw uw-z z-ih ih-k"},
+{"my","m-ay ay-ay"},
+
+//n-words
+{"naomi","n-ey ey-ow ow-ow ow-m m-iy iy-pau"},
+{"netflix","n-eh eh-eh eh-t t-f f-l l-ih ih-ih ih-k k-k"},
+{"new","n-uw uw-uw"},
+{"nine","n-ay ay-ay ay-n"},
+{"nineteen","n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-pau"},
+{"nineteenth","n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-th th-pau pau-th"},
+{"ninth","n-ay ay-ay ay-n n-th th-pau"},
+{"norman","n-ao ao-r r-m m-ah ah-n"},
+{"normans","n-ao ao-r r-m m-ah ah-n n-z"},
+{"november","n-ow ow-v v-eh eh-eh eh-m m-b b-er er-pau"},
+{"now","n-aw aw-aw aw-pau"},
+{"nursery","n-er er-er er-s s-er er-iy"},
+
+//o-words
+{"o","ao-uh uh-ao ao-uh"},
+{"october","aa-k k-t t-ow ow-ow ow-b b-er"},
+{"office","ao-ao ao-f f-ah ah-s"},
+{"oliver","aa-aa aa-l l-ih ih-v v-er"},
+{"olivia","ow-l l-ih ih-ih ih-v v-iy iy-ah ah-pau"},
+{"olivias","ow-l l-ih ih-ih ih-v v-iy iy-ah ah-z"},
+{"on","aa-aa aa-n n-n"},
+{"one","w-ah ah-ah ah-n"},
+{"own","ow-ow-ow-ow ow-n n-pau"},
+
+//p-words
+{"pam","p-ae ae-ae ae-m"},
+{"pamela","p-ae ae-ae ae-m m-ah ah-l l-ah"},
+{"pams","p-ae ae-ae ae-m m-z"},
+{"pancake","p-ae ae-ae ae-n n-k k-ey ey-ey ey-k"},
+{"party","p-aa aa-aa aa-r r-t t-iy iy-pau"},
+{"passport","p-ae ae-ae ae-s s-p p-ao ao-ao ao-r r-t"},
+{"pau","pau-pau"},
+{"paul","p-ao ao-ao ao-l"},
+{"paula","p-ao ao-ao ao-l l-ah ah-pau"},
+{"pauline","p-ao ao-l l-iy iy-iy iy-n"},
+{"pause","pau-pau"},
+{"payment","p-ey ey-ey ey-m m-ah ah-n n-t"},
+{"penelope","p-ah ah-n n-eh eh-eh eh-l l-ah ah-p p-iy iy-pau"},
+{"penny","p-eh eh-eh eh-n n-iy iy-pau"},
+{"pension","p-eh eh-eh eh-n n-sh sh-ah ah-n"},
+{"percy","p-er er-er er-s s-iy iy-pau"},
+{"perry","p-eh eh-eh eh-r r-iy iy-pau"},
+{"peter","p-iy iy-iy iy-t t-er er-pau"},
+{"peters","p-iy iy-iy iy-t t-er er-z"},
+{"phebe","f-iy iy-iy iy-b b-iy iy-pau"},
+{"phoebe","f-iy iy-iy iy-b b-iy iy-pau"},
+{"pmm","p-iy iy-iy iy-m m-eh eh-m m-m m-m"},
+{"point","p-oy oy-oy oy-n n-t t-pau"},
+{"program","p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
+{"programme","p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
+{"project","p-r r-aa aa-aa aa-jh jh-eh eh-k k-t"},
+{"prunella","p-r r-uw uw-n n-eh eh-eh eh-l l-ah"},
+{"pub","p-ah ah-ah ah-b b-pau"},
+{"public","p-ah ah-ah ah-b b-l l-ih ih-k k-pau"},
+
+//q-words
+{"quiz","k-w w-ih ih-ih ih-z z-pau"},
+{"quote","k-w w-w w-ow ow-ow ow-t t-pau"},
+//r-words
+{"radio","r-ey ey-ey ey-d d-iy iy-ow ow-ow ow-pau"},
+{"reminder","r-iy iy-m m-ay ay-ay ay-n n-d d-er er-pau"},
+{"rest","r-eh eh-eh eh-s s-t"},
+{"restaurant","r-eh eh-eh eh-s s-t t-er er-aa aa-aa aa-n n-t"},
+{"retirement","r-iy iy-t t-ay ay-er er-m m-ah ah-n n-t"},
+{"rose","r-ow ow-ow ow-z"},
+{"rosemary","r-ow ow-ow ow-z z-m m-eh eh-eh eh-r r-iy iy-pau"},
+
+//s-words
+{"sabrina","s-ah ah-b b-r r-iy iy-iy iy-n n-ah ah-pau"},
+{"saint","s-ey ey-ey ey-n n-t t-pau"},
+{"saturday","s-ae ae-ae ae-t t-ih ih-ih ih-d d-ey ey-ey"},
+{"school","s-k k-uw uw-l"},
+{"second","s-eh eh-eh eh-k k-ah ah-n n-d d-pau"},
+{"self","s-eh eh-eh eh-l l-f"},
+{"seminar","s-eh eh-eh eh-m m-ah ah-n n-aa aa-aa aa-r r-r"},
+{"september","s-eh eh-p p-t t-eh eh-eh eh-m m-b b-er er-pau"},
+{"service","s-er er-er er-v v-ah ah-s"},
+{"seven","s-eh eh-eh eh-v v-ah ah-n"},
+{"seventeen","s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-pau"},
+{"seventeenth","s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-th th-pau"},
+{"seventh","s-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
+{"shop","sh-aa aa-aa aa-p"},
+{"shopping","sh-aa aa-aa aa-p p-ih ih-ng"},
+{"show","sh-ow ow-ow ow-pau"},
+{"six","s-ih ih-ih ih-k k-s s-pau"},
+{"sixteen","s-ih ih-k k-s s-t t-iy iy-iy iy-n n-pau"},
+{"sixteenth","s-ih ih-k k-s s-t t-iy iy-iy iy-n n-th th-pau"},
+{"sixth","s-ih ih-ih ih-k k-s s-th th-pau"},
+{"society","s-ow ow-s s-ay ay-ay ay-ih ih-t t-iy iy-pau"},
+{"speech","s-p p-iy iy-iy iy-ch ch-ch"},
+{"sport","s-p p-ao ao-ao ao-r r-t"},
+{"spring","s-p p-r r-ih ih-ih ih-ng"},
+{"stephen","s-t t-iy iy-iy iy-v v-ah ah-n"},
+{"steve","s-t t-iy iy-iy iy-v"},
+{"steven","s-t t-iy iy-iy iy-v v-ah ah-n"},
+{"sunday","s-ah ah-ah ah-n n-d d-ey ey-ey ey-pau pau-ey"},
+{"susan","s-uw uw-uw uw-z z-ah ah-n"},
+{"susans","s-uw uw-uw uw-z z-ah ah-n n-z"},
+{"synthesizer","s-ih ih-ih ih-n n-th th-ah th-z z-s s-ay ay-ay ay-ay ay-er er-pau"},
+//{"synthesizer","s-ih ih-ih ih-n n-th th-ah ah-ah ah-s s-s s-ay ay-er er-er"},
+
+
+//t-words
+{"talk","t-ao ao-ao ao-k"},
+{"talking","t-ao ao-ao ao-k k-ih ih-ng"},
+{"task","t-ae ae-ae ae-s s-k"},
+{"tax","t-ae ae-ae ae-k k-s"},
+{"taxi","t-ae ae-ae ae-k k-s s-iy iy-pau"},
+{"television","t-eh eh-eh eh-l l-ah ah-v v-ih ih-ih ih-zh zh-ah ah-n"},
+{"ten","t-eh eh-eh eh-n"},
+{"tenth","t-eh eh-eh eh-n n-th th-pau"},
+{"the","dh-ah ah-ah"},
+{"theater","th-iy iy-iy iy-ey ey-t t-er er-pau"},
+{"third","pau-th th-er er-er er-d d-pau"},
+{"thirteen","th-er er-er er-t t-iy iy-iy iy-n n-pau"},
+{"thirteenth","th-er er-er er-t t-iy iy-iy iy-n n-th th-pau"},
+{"thirtieth","th-er er-er er-t t-iy iy-eh eh-eh eh-th th-pau"},
+{"thirty","th-er er-er er-d d-iy iy-iy iy-pau"},
+{"thomas","t-aa aa-aa aa-m m-ah ah-s"},
+{"thomases","t-aa aa-aa aa-m m-ah ah-s s-ih ih-z"},
+{"three","th-r r-iy iy-iy"},
+{"thursday","th-er er-er er-z z-d d-iy iy-pau"},
+{"tiffany","t-ih ih-f ih-f f-ah ah-n n-iy iy-pau"},
+{"tilda","t-ih ih-ih ih-l l-d d-ah"},
+{"tim","t-ih ih-ih ih-m"},
+{"time","t-ay ay-ay ay-m"},
+{"timothy","t-ih ih-ih ih-m m-ah ah-th th-iy iy-pau"},
+{"tims","t-ih ih-ih ih-m m-z"},
+{"to","t-uw uw-uw"},
+{"today","t-ah ah-d d-ey ey-ey"},
+{"tom","t-aa aa-aa aa-m"},
+{"toms","t-aa aa-aa aa-m m-z"},
+{"travel","t-r r-ae ae-ae ae-v v-ah ah-l"},
+{"trevor","t-r r-eh eh-eh eh-v v-er er-pau"},
+{"trevors","t-r r-eh eh-eh eh-v v-er er-z z-pau pau-z"},
+{"trip","t-r r-ih ih-ih ih-p p-p"},
+{"tuesday","t-uw uw-uw uw-z z-d d-iy iy-pau"},
+{"tunnel","t-ah ah-n n-ah ah-l"},
+{"twelfth","t-w w-eh eh-eh eh-l l-f f-th th-pau pau-th"},
+{"twelve","t-w w-eh eh-eh eh-l l-v"},
+{"twentieth","t-w w-eh eh-eh eh-n n-t t-iy iy-eh eh-eh eh-th th-pau"},
+{"twenty","t-w w-eh eh-eh eh-n n-t t-iy iy-pau"},
+{"two","t-uw uw-uw uw-pau"},
+
+//u-words
+{"uncle","ah-ah ah-ng ng-k k-ah ah-l"},
+{"unknown","ah-n n-n n-ow ow-ow ow-n n-n"},
+{"upcoming","ah-p p-k k-ah ah-ah ah-m m-ih ih-ng"},
+{"use","y-uw uw-uw uw-z z-pau"},
+{"user","y-uw uw-uw uw-z z-er er-pau"},
+//v-words
+{"vacation","v-ey ey-k k-ey ey-ey ey-sh sh-ah ah-n"},
+{"valentine","v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n"},
+{"valentines","v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n n-z"},
+{"valerie","v-ae ae-ae ae-l l-er er-iy iy-pau"},
+{"vehicle","v-iy iy-iy iy-hh hh-ih ih-k k-ah ah-l"},
+{"version","v-er er-er er-zh zh-ah ah-n"},
+{"visit","v-ih ih-ih ih-z z-ih ih-t t-pau"},
+
+//w-words
+{"walk","w-w w-ao ao-ao ao-k k-k"},
+{"web","w-eh eh-eh eh-b b-b"},
+{"wedding","w-eh eh-eh eh-d d-ih ih-ng"},
+{"wednesday","w-eh eh-eh eh-n n-z z-d d-iy iy-pau"}, //or iy-iy
+{"wife","w-ay ay-ay ay-f"},
+{"winnie","w-ih ih-ih ih-n n-iy iy-pau"},
+{"winnifred","w-ih ih-ih ih-n n-ih ih-f f-r r-ih ih-d"},
+{"winston","w-ih ih-ih ih-n n-s s-t t-ah ah-n"},
+{"winter","w-ih ih-ih ih-n n-t t-er er-pau"},
+{"work","w-uh uh-r r-k k-pau"},
+{"world","w-er er-er er-l l-d"},
+
+//x-words
+
+//y-words
+{"yacht","y-aa  aa-aa aa-t"},
+{"year","y-ih ih-ih ih-r"},
+{"yearly","y-ih ih-ih ih-r r-l l-iy iy-pau"},
+
+//z-words
+{"zero","z-iy iy-iy iy-r r-ow ow-pau"},
 	
-	
-	//words
-	for(int i=0; i < word_number; i++)
-	{
-		word_list_pointer=g_list_nth_data(speak_word_list,i);
-		word_str=(gchar *)word_list_pointer;
-		gchar* word_str_lower= g_ascii_strdown(word_str,-1);	//make sure lower			
-				
-		word_arrays[i] = (unsigned char*)malloc(empty_raw_len * sizeof(unsigned char));
-		word_arrays[i] =  empty_raw;		
-		word_arrays_sizes[i]=empty_raw_len; 
-				
-		if (g_strcmp0(word_str_lower,"monday")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(monday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = monday_raw;		
-		word_arrays_sizes[i]=monday_raw_len;
-	    } 
-	    	    
-		if (g_strcmp0(word_str_lower,"tuesday")==0) {			
-		word_arrays[i] = (unsigned char*)malloc(tuesday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = tuesday_raw;
-		word_arrays_sizes[i]=tuesday_raw_len; 	
-	    }
-	    
-		if (g_strcmp0(word_str_lower,"wednesday")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(wednesday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = wednesday_raw;
-		word_arrays_sizes[i]=wednesday_raw_len; 
-	    }
-		if (g_strcmp0(word_str_lower,"thursday")==0) {	
-		word_arrays[i] = (unsigned char*)malloc(thursday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thursday_raw;
-		word_arrays_sizes[i]=thursday_raw_len; 
-	    }
-	    if (g_strcmp0(word_str_lower,"friday")==0) {	
-		word_arrays[i] = (unsigned char*)malloc(friday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = friday_raw;
-		word_arrays_sizes[i]=friday_raw_len;  
-	    }
-		if (g_strcmp0(word_str_lower,"saturday")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(saturday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = saturday_raw;
-		word_arrays_sizes[i]=saturday_raw_len; 
-	    }
-	    if (g_strcmp0(word_str_lower,"sunday")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(sunday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = sunday_raw;
-		word_arrays_sizes[i]=sunday_raw_len;
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"first")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(first_raw_len * sizeof(unsigned char));
-		word_arrays[i] = first_raw;
-		word_arrays_sizes[i]=first_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"second")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(second_raw_len * sizeof(unsigned char));
-		word_arrays[i] = second_raw;
-		word_arrays_sizes[i]=second_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"third")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(third_raw_len * sizeof(unsigned char));
-		word_arrays[i] = third_raw;
-		word_arrays_sizes[i]=third_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"fourth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fourth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fourth_raw;
-		word_arrays_sizes[i]=fourth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"fifth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fifth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fifth_raw;
-		word_arrays_sizes[i]=fifth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"sixth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(sixth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = sixth_raw;
-		word_arrays_sizes[i]=sixth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"seventh")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(seventh_raw_len * sizeof(unsigned char));
-		word_arrays[i] = seventh_raw;
-		word_arrays_sizes[i]=seventh_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"eighth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eighth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eighth_raw;
-		word_arrays_sizes[i]=eighth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"ninth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(ninth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = ninth_raw;
-		word_arrays_sizes[i]=ninth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"tenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(tenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = tenth_raw;
-		word_arrays_sizes[i]=tenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"eleventh")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eleventh_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eleventh_raw;
-		word_arrays_sizes[i]=eleventh_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twelfth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twelfth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twelfth_raw;
-		word_arrays_sizes[i]=twelfth_raw_len;	
-	    }
-		if (g_strcmp0(word_str_lower,"thirteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirteenth_raw;;
-		word_arrays_sizes[i]=thirteenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"fourteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fourteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fourteenth_raw;
-		word_arrays_sizes[i]=fourteenth_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"fifteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fifteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fifteenth_raw;;
-		word_arrays_sizes[i]=fifteenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"sixteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(sixteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = sixteenth_raw;
-		word_arrays_sizes[i]=sixteenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"seventeenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(seventeenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = seventeenth_raw;
-		word_arrays_sizes[i]=seventeenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"eighteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eighteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eighteenth_raw;
-		word_arrays_sizes[i]=eighteenth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"nineteenth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(nineteenth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = nineteenth_raw;
-		word_arrays_sizes[i]=nineteenth_raw_len;	
-	    }						
-		if (g_strcmp0(word_str_lower,"twentieth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentieth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentieth_raw;
-		word_arrays_sizes[i]=twentieth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyfirst")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfirst_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfirst_raw;
-		word_arrays_sizes[i]=twentyfirst_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentysecond")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysecond_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysecond_raw;
-		word_arrays_sizes[i]=twentysecond_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentythird")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentythird_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentythird_raw;
-		word_arrays_sizes[i]=twentythird_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyfourth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfourth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfourth_raw;
-		word_arrays_sizes[i]=twentyfourth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyfifth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfifth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfifth_raw;
-		word_arrays_sizes[i]=twentyfifth_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentysixth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysixth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysixth_raw;
-		word_arrays_sizes[i]=twentysixth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyseventh")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyseventh_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyseventh_raw;
-		word_arrays_sizes[i]=twentyseventh_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentyeighth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyeighth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyeighth_raw;
-		word_arrays_sizes[i]=twentyeighth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentynineth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentynineth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentynineth_raw;
-		word_arrays_sizes[i]=twentynineth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"thirtieth")==0) {	
-		word_arrays[i] = (unsigned char*)malloc(thirtieth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtieth_raw;
-		word_arrays_sizes[i]=thirtieth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"thirtyfirst")==0) {
-		word_arrays[i] = (unsigned char*)malloc(thirtyfirst_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfirst_raw;
-		word_arrays_sizes[i]=thirtyfirst_raw_len;	
-	    }						
-		
-		if (g_strcmp0(word_str_lower,"january")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(january_raw_len * sizeof(unsigned char));
-		word_arrays[i] = january_raw;
-		word_arrays_sizes[i]=january_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"february")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(february_raw_len * sizeof(unsigned char));
-		word_arrays[i] = february_raw;
-		word_arrays_sizes[i]=february_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"march")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(march_raw_len * sizeof(unsigned char));
-		word_arrays[i] = march_raw;
-		word_arrays_sizes[i]=march_raw_len;	
-	    }	
-		if (g_strcmp0(word_str_lower,"april")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(april_raw_len * sizeof(unsigned char));
-		word_arrays[i] = april_raw;
-		word_arrays_sizes[i]=april_raw_len;	
-	    }	
-		if (g_strcmp0(word_str_lower,"may")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(may_raw_len * sizeof(unsigned char));
-		word_arrays[i] = may_raw;
-		word_arrays_sizes[i]=may_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"june")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(june_raw_len * sizeof(unsigned char));
-		word_arrays[i] = june_raw;
-		word_arrays_sizes[i]=june_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"july")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(july_raw_len * sizeof(unsigned char));
-		word_arrays[i] = july_raw;
-		word_arrays_sizes[i]=july_raw_len;	
-	    }	
-		if (g_strcmp0(word_str_lower,"august")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(august_raw_len * sizeof(unsigned char));
-		word_arrays[i] = august_raw;
-		word_arrays_sizes[i]=august_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"september")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(september_raw_len * sizeof(unsigned char));
-		word_arrays[i] = september_raw;
-		word_arrays_sizes[i]=september_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"october")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(october_raw_len * sizeof(unsigned char));
-		word_arrays[i] = october_raw;
-		word_arrays_sizes[i]=october_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"november")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(november_raw_len * sizeof(unsigned char));
-		word_arrays[i] = november_raw;
-		word_arrays_sizes[i]=november_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"december")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(december_raw_len * sizeof(unsigned char));
-		word_arrays[i] = december_raw;
-		word_arrays_sizes[i]=december_raw_len;	
-	    }					
-		
-	    //cardinals
-	    if (g_strcmp0(word_str_lower,"one")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(one_raw_len * sizeof(unsigned char));
-		word_arrays[i] = one_raw;
-		word_arrays_sizes[i]=one_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"two")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(two_raw_len * sizeof(unsigned char));
-		word_arrays[i] = two_raw;
-		word_arrays_sizes[i]=two_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"three")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(three_raw_len * sizeof(unsigned char));
-		word_arrays[i] = three_raw;
-		word_arrays_sizes[i]=three_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"four")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(four_raw_len * sizeof(unsigned char));
-		word_arrays[i] = four_raw;
-		word_arrays_sizes[i]=four_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"five")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(five_raw_len * sizeof(unsigned char));
-		word_arrays[i] = five_raw;
-		word_arrays_sizes[i]=five_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"six")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(six_raw_len * sizeof(unsigned char));
-		word_arrays[i] = six_raw;
-		word_arrays_sizes[i]=six_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"seven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(seven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = seven_raw;
-		word_arrays_sizes[i]=seven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"eight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eight_raw;
-		word_arrays_sizes[i]=eight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"nine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(nine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = nine_raw;
-		word_arrays_sizes[i]=nine_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"ten")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(ten_raw_len * sizeof(unsigned char));
-		word_arrays[i] = ten_raw;
-		word_arrays_sizes[i]=ten_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"eleven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eleven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eleven_raw;
-		word_arrays_sizes[i]=eleven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twelve")==0) {
-		word_arrays[i] = (unsigned char*)malloc(twelve_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twelve_raw;
-		word_arrays_sizes[i]=twelve_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirteen_raw;
-		word_arrays_sizes[i]=thirteen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fourteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fourteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fourteen_raw;
-		word_arrays_sizes[i]=fourteen_raw_len;
-	    }	
-	     if (g_strcmp0(word_str_lower,"fifteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fifteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fifteen_raw;
-		word_arrays_sizes[i]=fifteen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"sixteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(sixteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = sixteen_raw;
-		word_arrays_sizes[i]=sixteen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"seventeen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(seventeen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = seventeen_raw;
-		word_arrays_sizes[i]=seventeen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"eighteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(eighteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = eighteen_raw;
-		word_arrays_sizes[i]=eighteen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"nineteen")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(nineteen_raw_len * sizeof(unsigned char));
-		word_arrays[i] = nineteen_raw;
-		word_arrays_sizes[i]=nineteen_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twenty")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twenty_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twenty_raw;
-		word_arrays_sizes[i]=twenty_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyone_raw;
-		word_arrays_sizes[i]=twentyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentytwo_raw;
-		word_arrays_sizes[i]=twentytwo_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentythree_raw;
-		word_arrays_sizes[i]=twentythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyfour")==0) {
-		word_arrays[i] = (unsigned char*)malloc(twentyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfour_raw;
-		word_arrays_sizes[i]=twentyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfive_raw;
-		word_arrays_sizes[i]=twentyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysix_raw;
-		word_arrays_sizes[i]=twentysix_raw_len;
-	    }	
-	     if (g_strcmp0(word_str_lower,"twentyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyseven_raw;
-		word_arrays_sizes[i]=twentyseven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyeight_raw;
-		word_arrays_sizes[i]=twentyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentynine_raw;
-		word_arrays_sizes[i]=twentynine_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirty")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirty_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirty_raw;
-		word_arrays_sizes[i]=thirty_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyone_raw;
-		word_arrays_sizes[i]=thirtyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtytwo_raw;
-		word_arrays_sizes[i]=thirtytwo_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtythree_raw;
-		word_arrays_sizes[i]=thirtythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfour_raw;
-		word_arrays_sizes[i]=thirtyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfive_raw;
-		word_arrays_sizes[i]=thirtyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtysix_raw;
-		word_arrays_sizes[i]=thirtysix_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyseven_raw;
-		word_arrays_sizes[i]=thirtyseven_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"thirtyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyeight_raw;
-		word_arrays_sizes[i]=thirtyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtynine_raw;
-		word_arrays_sizes[i]=thirtynine_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"forty")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(forty_raw_len * sizeof(unsigned char));
-		word_arrays[i] = forty_raw;
-		word_arrays_sizes[i]=forty_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyone_raw;
-		word_arrays_sizes[i]=fortyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortytwo_raw;
-		word_arrays_sizes[i]=fortythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortythree_raw;
-		word_arrays_sizes[i]=fortythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyfour_raw;
-		word_arrays_sizes[i]=fortyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyfive_raw;
-		word_arrays_sizes[i]=fortyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortysix_raw;
-		word_arrays_sizes[i]=fortysix_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyseven_raw;
-		word_arrays_sizes[i]=fortyseven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyeight_raw;
-		word_arrays_sizes[i]=fortyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortynine_raw;
-		word_arrays_sizes[i]=fortynine_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fifty")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fifty_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fifty_raw;
-		word_arrays_sizes[i]=fifty_raw_len;
-	    }																																																																																																
-	      if (g_strcmp0(word_str_lower,"fiftyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyone_raw;
-		word_arrays_sizes[i]=fiftyone_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftytwo_raw;
-		word_arrays_sizes[i]=fiftytwo_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftythree_raw;
-		word_arrays_sizes[i]=fiftythree_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyfour_raw;
-		word_arrays_sizes[i]=fiftyfour_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyfive_raw;
-		word_arrays_sizes[i]=fiftyfive_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftysix_raw;
-		word_arrays_sizes[i]=fiftysix_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyseven_raw;
-		word_arrays_sizes[i]=fiftyseven_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyeight_raw;
-		word_arrays_sizes[i]=fiftyeight_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftynine_raw;
-		word_arrays_sizes[i]=fiftynine_raw_len;
-	    }
-	    
-	    
-	    //words
-	     //A words   
-	    if (g_strcmp0(word_str_lower,"all")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(all_raw_len * sizeof(unsigned char));
-		word_arrays[i] = all_raw;
-		word_arrays_sizes[i]=all_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"am")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(am_raw_len * sizeof(unsigned char));
-		word_arrays[i] = am_raw;
-		word_arrays_sizes[i]=am_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"activity")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(activity_raw_len * sizeof(unsigned char));
-		word_arrays[i] = activity_raw;
-		word_arrays_sizes[i]=activity_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"anniversary")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(anniversary_raw_len * sizeof(unsigned char));
-		word_arrays[i] = anniversary_raw;
-		word_arrays_sizes[i]=anniversary_raw_len;	
-	    }		
-	    if (g_strcmp0(word_str_lower,"appointment")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(appointment_raw_len * sizeof(unsigned char));
-		word_arrays[i] = appointment_raw;
-		word_arrays_sizes[i]=appointment_raw_len;	
-	    }	
-	    
-	    //B words
-	     if (g_strcmp0(word_str_lower,"bank")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(bank_raw_len * sizeof(unsigned char));
-		word_arrays[i] = bank_raw;
-		word_arrays_sizes[i]=bank_raw_len;	
-	    }
-	     if (g_strcmp0(word_str_lower,"birthday")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(birthday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = birthday_raw;
-		word_arrays_sizes[i]=birthday_raw_len;	
-	    }
-	     if (g_strcmp0(word_str_lower,"boxing")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(boxing_raw_len * sizeof(unsigned char));
-		word_arrays[i] = boxing_raw;
-		word_arrays_sizes[i]=boxing_raw_len;	
-	    }		
-	    //c-words
-	    
-	    if (g_strcmp0(word_str_lower,"cafe")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(cafe_raw_len * sizeof(unsigned char));
-		word_arrays[i] = cafe_raw;
-		word_arrays_sizes[i]=cafe_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"calendar")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(calendar_raw_len * sizeof(unsigned char));
-		word_arrays[i] = calendar_raw;
-		word_arrays_sizes[i]=calendar_raw_len;	
-	    }
-	     if (g_strcmp0(word_str_lower,"car")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(car_raw_len * sizeof(unsigned char));
-		word_arrays[i] = car_raw;
-		word_arrays_sizes[i]=car_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"christmas")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(christmas_raw_len * sizeof(unsigned char));
-		word_arrays[i] = christmas_raw;
-		word_arrays_sizes[i]=christmas_raw_len;	
-	    }				
-	    
-	    //D words
-	    if (g_strcmp0(word_str_lower,"day")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(day_raw_len * sizeof(unsigned char));
-		word_arrays[i] = day_raw;
-		word_arrays_sizes[i]=day_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"delivery")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(delivery_raw_len * sizeof(unsigned char));
-		word_arrays[i] = delivery_raw;
-		word_arrays_sizes[i]=delivery_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"dentist")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(dentist_raw_len * sizeof(unsigned char));
-		word_arrays[i] = dentist_raw;
-		word_arrays_sizes[i]=dentist_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"driver")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(driver_raw_len * sizeof(unsigned char));
-		word_arrays[i] = driver_raw;
-		word_arrays_sizes[i]=driver_raw_len;	
-	    }
-	    
-	    // E words
-	    if (g_strcmp0(word_str_lower,"easter")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(easter_raw_len * sizeof(unsigned char));
-		word_arrays[i] = easter_raw;
-		word_arrays_sizes[i]=easter_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"event")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(event_raw_len * sizeof(unsigned char));
-		word_arrays[i] = event_raw;
-		word_arrays_sizes[i]=event_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"events")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(events_raw_len * sizeof(unsigned char));
-		word_arrays[i] = events_raw;
-		word_arrays_sizes[i]=events_raw_len;
-	    }
-	    //F words
-	    
-	    if (g_strcmp0(word_str_lower,"family")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(family_raw_len * sizeof(unsigned char));
-		word_arrays[i] = family_raw;
-		word_arrays_sizes[i]=family_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"funeral")==0) {
-		g_print("funeral detected\n");		
-		word_arrays[i] = (unsigned char*)malloc(funeral_raw_len  * sizeof(unsigned char));
-		word_arrays[i] = funeral_raw;
-		word_arrays_sizes[i]=funeral_raw_len;	
-	    }			
-	    //H words
-	     if (g_strcmp0(word_str_lower,"high")==0) {
-		word_arrays[i] = (unsigned char*)malloc(high_raw_len * sizeof(unsigned char));
-		word_arrays[i] = high_raw;
-		word_arrays_sizes[i]=high_raw_len;	
-	    }	   
-	     if (g_strcmp0(word_str_lower,"holiday")==0) {
-		word_arrays[i] = (unsigned char*)malloc(holiday_raw_len * sizeof(unsigned char));
-		word_arrays[i] = holiday_raw;
-		word_arrays_sizes[i]=holiday_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"hospital")==0) {
-		word_arrays[i] = (unsigned char*)malloc(hospital_raw_len * sizeof(unsigned char));
-		word_arrays[i] = hospital_raw;
-		word_arrays_sizes[i]=hospital_raw_len;	
-	    }
-	    
-	    //i words
-	    if (g_strcmp0(word_str_lower,"is")==0) {
-		word_arrays[i] = (unsigned char*)malloc(is_raw_len * sizeof(unsigned char));
-		word_arrays[i] = is_raw;
-		word_arrays_sizes[i]=is_raw_len;	
-	    }
-	    
-	    //M words
-	    if (g_strcmp0(word_str_lower,"medical")==0) {
-		word_arrays[i] = (unsigned char*)malloc(medical_raw_len * sizeof(unsigned char));
-		word_arrays[i] = medical_raw;
-		word_arrays_sizes[i]=medical_raw_len;	
-	    } 
-	    	    
-	    if (g_strcmp0(word_str_lower,"meeting")==0) {
-		word_arrays[i] = (unsigned char*)malloc(meeting_raw_len * sizeof(unsigned char));
-		word_arrays[i] = meeting_raw;
-		word_arrays_sizes[i]=meeting_raw_len;	
-	    } 
-	     if (g_strcmp0(word_str_lower,"meetup")==0) {
-		word_arrays[i] = (unsigned char*)malloc(meetup_raw_len * sizeof(unsigned char));
-		word_arrays[i] = meetup_raw;
-		word_arrays_sizes[i]=meetup_raw_len;	
-	    } 
-	    if (g_strcmp0(word_str_lower,"memo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(memo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = memo_raw;
-		word_arrays_sizes[i]=memo_raw_len;	
-	    }
-	    	    	    
-	    //N words
-	    if (g_strcmp0(word_str_lower,"new")==0) {
-		word_arrays[i] = (unsigned char*)malloc(new_raw_len * sizeof(unsigned char));
-		word_arrays[i] = new_raw;
-		word_arrays_sizes[i]=new_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"no")==0) {
-		word_arrays[i] = (unsigned char*)malloc(no_raw_len * sizeof(unsigned char));
-		word_arrays[i] = no_raw;
-		word_arrays_sizes[i]=no_raw_len;	
-	    }
-	    //o words
-	    if (g_strcmp0(word_str_lower,"o")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(o_raw_len * sizeof(unsigned char));
-		word_arrays[i] = o_raw;
-		word_arrays_sizes[i]=o_raw_len;	
-	    }
-	     
-	     //P words
-	    if (g_strcmp0(word_str_lower,"party")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(party_raw_len * sizeof(unsigned char));
-		word_arrays[i] = party_raw;
-		word_arrays_sizes[i]=party_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"payment")==0) {
-		word_arrays[i] = (unsigned char*)malloc(payment_raw_len * sizeof(unsigned char));
-		word_arrays[i] = payment_raw;
-		word_arrays_sizes[i]=payment_raw_len;	
-	    } 
-	    if (g_strcmp0(word_str_lower,"pm")==0) {
-		word_arrays[i] = (unsigned char*)malloc(pm_raw_len * sizeof(unsigned char));
-		word_arrays[i] = pm_raw;
-		word_arrays_sizes[i]=pm_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"priority")==0) {
-		word_arrays[i] = (unsigned char*)malloc(priority_raw_len * sizeof(unsigned char));
-		word_arrays[i] = priority_raw;
-		word_arrays_sizes[i]=priority_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"project")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(project_raw_len * sizeof(unsigned char));
-		word_arrays[i] = project_raw;
-		word_arrays_sizes[i]=project_raw_len;	
-	    }
-	    //R words
-	    if (g_strcmp0(word_str_lower,"reminder")==0) {
-		word_arrays[i] = (unsigned char*)malloc(reminder_raw_len * sizeof(unsigned char));
-		word_arrays[i] = reminder_raw;
-		word_arrays_sizes[i]=reminder_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"restaurant")==0) {
-		word_arrays[i] = (unsigned char*)malloc(restaurant_raw_len * sizeof(unsigned char));
-		word_arrays[i] = restaurant_raw;
-		word_arrays_sizes[i]=restaurant_raw_len;	
-	    }
-	    //S words
-	    if (g_strcmp0(word_str_lower,"space")==0) {
-	    word_arrays[i] = (unsigned char*)malloc(empty_raw_len * sizeof(unsigned char));
-		word_arrays[i] =  empty_raw;		
-		word_arrays_sizes[i]=empty_raw_len; 
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"sport")==0) {
-		word_arrays[i] = (unsigned char*)malloc(sport_raw_len * sizeof(unsigned char));
-		word_arrays[i] = sport_raw;
-		word_arrays_sizes[i]=sport_raw_len;
-		}	
-	    
-	    if (g_strcmp0(word_str_lower,"spring")==0) {
-		word_arrays[i] = (unsigned char*)malloc(spring_raw_len * sizeof(unsigned char));
-		word_arrays[i] = spring_raw;
-		word_arrays_sizes[i]=spring_raw_len;
-		}	
-	    
-	    //T words
-	     if (g_strcmp0(word_str_lower,"talk")==0) {
-		word_arrays[i] = (unsigned char*)malloc(talk_raw_len * sizeof(unsigned char));
-		word_arrays[i] = talk_raw;
-		word_arrays_sizes[i]=talk_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"task")==0) {
-		word_arrays[i] = (unsigned char*)malloc(task_raw_len * sizeof(unsigned char));
-		word_arrays[i] = task_raw;
-		word_arrays_sizes[i]=task_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"television")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(television_raw_len * sizeof(unsigned char));
-		word_arrays[i] = television_raw;
-		word_arrays_sizes[i]=television_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"the")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(the_raw_len * sizeof(unsigned char));
-		word_arrays[i] = the_raw;
-		word_arrays_sizes[i]=the_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"theatre")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(theatre_raw_len * sizeof(unsigned char));
-		word_arrays[i] = theatre_raw;
-		word_arrays_sizes[i]=theatre_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"time")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(time_raw_len * sizeof(unsigned char));
-		word_arrays[i] = time_raw;
-		word_arrays_sizes[i]=time_raw_len;	
-	    }
-	    
-	    if (g_strcmp0(word_str_lower,"today")==0) {
-		word_arrays[i] = (unsigned char*)malloc(today_raw_len * sizeof(unsigned char));
-		word_arrays[i] = today_raw;
-		word_arrays_sizes[i]=today_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"travel")==0) {
-		word_arrays[i] = (unsigned char*)malloc(travel_raw_len * sizeof(unsigned char));
-		word_arrays[i] = travel_raw;
-		word_arrays_sizes[i]=travel_raw_len;	
-	    }
-	    //U words	    
-	    if (g_strcmp0(word_str_lower,"upcoming")==0) {
-		word_arrays[i] = (unsigned char*)malloc(upcoming_raw_len * sizeof(unsigned char));
-		word_arrays[i] = upcoming_raw;
-		word_arrays_sizes[i]=upcoming_raw_len;
-	    }	
-	    
-	    //V words
-	    
-	    if (g_strcmp0(word_str_lower,"visit")==0) {
-		word_arrays[i] = (unsigned char*)malloc(visit_raw_len * sizeof(unsigned char));
-		word_arrays[i] = visit_raw;
-		word_arrays_sizes[i]=visit_raw_len;	
-	    }
-	    //W words
-	    if (g_strcmp0(word_str_lower,"work")==0) {
-		word_arrays[i] = (unsigned char*)malloc(work_raw_len * sizeof(unsigned char));
-		word_arrays[i] = work_raw;
-		word_arrays_sizes[i]=work_raw_len;	
-	    }
-	     //Y words
-	    if (g_strcmp0(word_str_lower,"year")==0) {
-		word_arrays[i] = (unsigned char*)malloc(year_raw_len * sizeof(unsigned char));		
-		word_arrays[i] = year_raw;
-		word_arrays_sizes[i]=year_raw_len;	
-	    }	
-	    //Z words
-	    if (g_strcmp0(word_str_lower,"zero")==0) {
-		word_arrays[i] = (unsigned char*)malloc(zero_raw_len * sizeof(unsigned char));		
-		word_arrays[i] = zero_raw;
-		word_arrays_sizes[i]=zero_raw_len;	
-	    }																													
-	
-	}//for
+};
 
-} //get word arrays
+static int compare_keys(const void *va, const void *vb) {
+  const pair_t *a = va, *b = vb;
+  return strcmp(a->key, b->key);
+}
 
+char* get_value(char *key) {
+  pair_t key_pair[1] = {{key}};
+  pair_t *pair = bsearch(key_pair, table,
+      sizeof table / sizeof table[0], sizeof table[0], compare_keys);  
+  
+  if (pair ==NULL) return ""; //word not found
+  else   return pair->value;
+}
+
+
+GList* word_to_diphones(const char* word_str) {
+	
+	//g_print("word_to_diphone: word_str =%s\n",word_str);
+	
+	GList *diphone_list=NULL;	//{"pau","pau-pau"},
+	//diphone_list =g_list_concat(diphone_list,"pau-pau");
+	char* word = g_ascii_strdown(word_str, -1); //convert to lower case
+    //g_print("word_to_diphones: word =%s\n",word);
+    char* dp_str ="";
+    dp_str=get_value(word); 
+	char buf[256];	
+	strcpy(buf, dp_str);
+	char *tok_str =strtok(buf, " ");	//space delimiter
+	while(tok_str != NULL) {
+		//g_print("tok_str = %s\n",tok_str);		
+		char *copy_str = strdup(tok_str); //duplicate
+		diphone_list = g_list_append(diphone_list, copy_str);		
+		tok_str =strtok(NULL, " ");	
+	}		
+	return diphone_list;
+}	
