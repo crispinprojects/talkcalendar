@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event words.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event text.
 
 Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot of Talk Calendar is shown below.
 
@@ -42,10 +42,6 @@ Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applicatio
 ## Autostart Talk Calendar
 
 Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to start Talk Calendar when the computer is switched on. Talk Calendar can then read out the current date and day events and any future upcoming events (see preferences settings) when the computer is switched on.
-
-## Talk Calendar (Diphone Version)
-
-A diphone version of Talk Calendar for Debian x86 distributions can be downloaded from the binary folder. This uses a built-in diphone speech synthesizer and is experimental.
 
 ## Calendar Usage
 
@@ -91,17 +87,18 @@ Colours have to be entered manually using RGB values.You can use the w3Schools [
 
 Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
 
+The "Use eSpeak" turns Talk Calendar into a speech-dispatcher as it sends  text-to-speech  output to the eSpeak speech synthesizer which has to be installed separately on the user system. With Debian use the command below to install eSpeak.
+
+```
+sudo apt install espeak
+```
+
+More options will be made available in future updates.
+
 ## Talking
 
 * Press spacebar to speak event details.
 
-### Information
-
-* Select "Help->Information from the menu or press F1
-
-* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
-
-* Use the About dialog to display the Talk Calendar current version.
 
 ### Keyboard Shortcuts
 
@@ -118,7 +115,11 @@ F1			Information
 
 * Select "Information"  from the help menu or press F1
 
-* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+* The information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+
+* It also shows if eSpeak is available for the speech dispatcher as shown below.
+
+![](talkcalendar-info.png)
 
 * Use the About dialog to display current version.
 
@@ -149,16 +150,21 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-I have explored various approaches to incorporating speech into Talk Calendar so that dates, time and event text can be converted into spoken audio. The original version of Talk Calendar uses a built-in word concatenation speech synthesizer to play-back pre-recorded English words using common generic words for the event summary (e.g. birthday, anniversary, dentist etc.). 
+I have explored various approaches to incorporating speech into Talk Calendar so that dates, time and event text can be converted into spoken audio. The current version of Talk Calendar uses a built-in word concatenation speech synthesizer to read out the date and time. It also has a speech dispatcher. If you select "Use eSpeak" then Talk Calendar becomes a speech dispatcher and sends text-to-speech  output to the eSpeak speech synthesizer which has to be installed separately on the user system. With Debian use the command below to install eSpeak. 
 
-The experimental diphone version of Talk Calendar uses my [diphone speech synthesizer](https://github.com/crispinprojects/diphone-talker). Diphone concatenation is used to construct words to read out the date, time and event summary. However, the number of words recognised as the event summary is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service" etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over.
+```
+sudo apt install espeak
+```
 
-The voice used by Talk Calendar is derivative work based on the diphone collection created by Professor Alan W. Black and Kevin A. Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W. Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
+If eSpeak is not available with your Linux distribution then use the built-in word concatenation speech synthesizer.
+ 
+[eSpeak](https://espeak.sourceforge.net/) is an open source speech synthesizer which uses a formant synthesis method and is widely available in Linux distributions. It produces good quality speech with clear articulation. The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with other licenses found. eSpeak is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). 
 
-The [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library is available in the Debian repositories and provides an elegant method of incorporating speech synthesis into a C application using the Flite [API](http://cmuflite.org/doc/flite_7.html#C-example). Unfortunately, the [pkgs.org](https://pkgs.org/) website shows that the Flite speech synthesis shared library is not always available in other Linux distributions and so I have moved away from using it. 
+For more information on the formant speech synthesis method see my [formant speech synthesizer](https://github.com/crispinprojects/formant-synthesizer) project. 
 
-I explored the possibility of using Talk Calendar to dispatch speech text to [eSpeak](https://espeak.sourceforge.net/) installed separately on the user system.  The eSpeak speech synthesizer is widely available in Linux distributions and produces good quality speech with clear articulation. However, I am not clear about the license situation regarding some of the eSpeak components. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). See my [formant speech synthesizer](https://github.com/crispinprojects/formant-synthesizer) project for more details of this approach. 
+[Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. Flite is free software and has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). Unfortunately, the [pkgs.org](https://pkgs.org/) website shows that the Flite speech synthesis is not always available in other Linux distributions. Future Talk Calendar updates will explore providing a Flite speech dispatcher  as an alternative to eSpeak.
 
+The experimental version of Talk Calendar using a built-in diphone speech synthesizer has been dropped as I could not achieve good quality speech. More information on my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker).
 
 ### Audio Thread
 
@@ -313,9 +319,9 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. The core Flite library was originally developed by Professor Alan W. Black and Kevin A. Lenzo and the history of the project together with other contributors can be found [here](https://github.com/festvox/flite). Flite is free software and has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis).
+* [eSpeak](https://espeak.sourceforge.net/) is an open source speech synthesizer which uses a formant synthesis method. The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with other licenses found. eSpeak is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). 
 
-* [Diphone License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
+* [Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. The core Flite library was originally developed by Professor Alan W. Black and Kevin A. Lenzo and the history of the project together with other contributors can be found [here](https://github.com/festvox/flite). Flite is free software and has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis).
 
 * [Diphone speech synthesizer](https://github.com/crispinprojects/diphone-talker)
 
