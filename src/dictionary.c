@@ -16,7 +16,7 @@
  ***************************************************************************/
 #include <gtk/gtk.h> 
 #include "dictionary.h"
-#include "voice2.h"
+#include "voice3.h"
 
 //Word dictionary
 
@@ -27,14 +27,14 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 	gchar* word_str;
 	gchar* word_str_lower;	
 	
-	
 	//words
 	for(int i=0; i < word_number; i++)
 	{
 		word_list_pointer=g_list_nth_data(speak_word_list,i);
 		word_str=(gchar *)word_list_pointer;
 		gchar* word_str_lower= g_ascii_strdown(word_str,-1);	//make sure lower			
-				
+		
+		//add empty for any word not found		
 		word_arrays[i] = (unsigned char*)malloc(empty_raw_len * sizeof(unsigned char));
 		word_arrays[i] =  empty_raw;		
 		word_arrays_sizes[i]=empty_raw_len; 
@@ -177,61 +177,13 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = twentieth_raw;
 		word_arrays_sizes[i]=twentieth_raw_len;	
 	    }
-	    if (g_strcmp0(word_str_lower,"twentyfirst")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfirst_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfirst_raw;
-		word_arrays_sizes[i]=twentyfirst_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentysecond")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysecond_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysecond_raw;
-		word_arrays_sizes[i]=twentysecond_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentythird")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentythird_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentythird_raw;
-		word_arrays_sizes[i]=twentythird_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyfourth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfourth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfourth_raw;
-		word_arrays_sizes[i]=twentyfourth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyfifth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfifth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfifth_raw;
-		word_arrays_sizes[i]=twentyfifth_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentysixth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysixth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysixth_raw;
-		word_arrays_sizes[i]=twentysixth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentyseventh")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyseventh_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyseventh_raw;
-		word_arrays_sizes[i]=twentyseventh_raw_len;	
-	    }		
-		if (g_strcmp0(word_str_lower,"twentyeighth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyeighth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyeighth_raw;
-		word_arrays_sizes[i]=twentyeighth_raw_len;	
-	    }
-	    if (g_strcmp0(word_str_lower,"twentynineth")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentynineth_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentynineth_raw;
-		word_arrays_sizes[i]=twentynineth_raw_len;	
-	    }
+	  
 	    if (g_strcmp0(word_str_lower,"thirtieth")==0) {	
 		word_arrays[i] = (unsigned char*)malloc(thirtieth_raw_len * sizeof(unsigned char));
 		word_arrays[i] = thirtieth_raw;
 		word_arrays_sizes[i]=thirtieth_raw_len;	
 	    }
-	    if (g_strcmp0(word_str_lower,"thirtyfirst")==0) {
-		word_arrays[i] = (unsigned char*)malloc(thirtyfirst_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfirst_raw;
-		word_arrays_sizes[i]=thirtyfirst_raw_len;	
-	    }						
+	   					
 		
 		if (g_strcmp0(word_str_lower,"january")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(january_raw_len * sizeof(unsigned char));
@@ -395,203 +347,26 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = twenty_raw;
 		word_arrays_sizes[i]=twenty_raw_len;
 	    }
-	     if (g_strcmp0(word_str_lower,"twentyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyone_raw;
-		word_arrays_sizes[i]=twentyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentytwo_raw;
-		word_arrays_sizes[i]=twentytwo_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentythree_raw;
-		word_arrays_sizes[i]=twentythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyfour")==0) {
-		word_arrays[i] = (unsigned char*)malloc(twentyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfour_raw;
-		word_arrays_sizes[i]=twentyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyfive_raw;
-		word_arrays_sizes[i]=twentyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentysix_raw;
-		word_arrays_sizes[i]=twentysix_raw_len;
-	    }	
-	     if (g_strcmp0(word_str_lower,"twentyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyseven_raw;
-		word_arrays_sizes[i]=twentyseven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentyeight_raw;
-		word_arrays_sizes[i]=twentyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"twentynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(twentynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = twentynine_raw;
-		word_arrays_sizes[i]=twentynine_raw_len;
-	    }
+	   
 	     if (g_strcmp0(word_str_lower,"thirty")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(thirty_raw_len * sizeof(unsigned char));
 		word_arrays[i] = thirty_raw;
 		word_arrays_sizes[i]=thirty_raw_len;
 	    }
-	     if (g_strcmp0(word_str_lower,"thirtyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyone_raw;
-		word_arrays_sizes[i]=thirtyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtytwo_raw;
-		word_arrays_sizes[i]=thirtytwo_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtythree_raw;
-		word_arrays_sizes[i]=thirtythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfour_raw;
-		word_arrays_sizes[i]=thirtyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyfive_raw;
-		word_arrays_sizes[i]=thirtyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtysix_raw;
-		word_arrays_sizes[i]=thirtysix_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyseven_raw;
-		word_arrays_sizes[i]=thirtyseven_raw_len;
-	    }
-	    if (g_strcmp0(word_str_lower,"thirtyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtyeight_raw;
-		word_arrays_sizes[i]=thirtyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"thirtynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(thirtynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = thirtynine_raw;
-		word_arrays_sizes[i]=thirtynine_raw_len;
-	    }
+	    
+	   
 	     if (g_strcmp0(word_str_lower,"forty")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(forty_raw_len * sizeof(unsigned char));
 		word_arrays[i] = forty_raw;
 		word_arrays_sizes[i]=forty_raw_len;
 	    }
-	     if (g_strcmp0(word_str_lower,"fortyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyone_raw;
-		word_arrays_sizes[i]=fortyone_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortytwo_raw;
-		word_arrays_sizes[i]=fortythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortythree_raw;
-		word_arrays_sizes[i]=fortythree_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyfour_raw;
-		word_arrays_sizes[i]=fortyfour_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyfive_raw;
-		word_arrays_sizes[i]=fortyfive_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortysix_raw;
-		word_arrays_sizes[i]=fortysix_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyseven_raw;
-		word_arrays_sizes[i]=fortyseven_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortyeight_raw;
-		word_arrays_sizes[i]=fortyeight_raw_len;
-	    }
-	     if (g_strcmp0(word_str_lower,"fortynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fortynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fortynine_raw;
-		word_arrays_sizes[i]=fortynine_raw_len;
-	    }
+	     
 	     if (g_strcmp0(word_str_lower,"fifty")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(fifty_raw_len * sizeof(unsigned char));
 		word_arrays[i] = fifty_raw;
 		word_arrays_sizes[i]=fifty_raw_len;
 	    }																																																																																																
-	      if (g_strcmp0(word_str_lower,"fiftyone")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyone_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyone_raw;
-		word_arrays_sizes[i]=fiftyone_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftytwo")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftytwo_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftytwo_raw;
-		word_arrays_sizes[i]=fiftytwo_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftythree")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftythree_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftythree_raw;
-		word_arrays_sizes[i]=fiftythree_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyfour")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyfour_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyfour_raw;
-		word_arrays_sizes[i]=fiftyfour_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyfive")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyfive_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyfive_raw;
-		word_arrays_sizes[i]=fiftyfive_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftysix")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftysix_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftysix_raw;
-		word_arrays_sizes[i]=fiftysix_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyseven")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyseven_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyseven_raw;
-		word_arrays_sizes[i]=fiftyseven_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftyeight")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftyeight_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftyeight_raw;
-		word_arrays_sizes[i]=fiftyeight_raw_len;
-	    }
-	      if (g_strcmp0(word_str_lower,"fiftynine")==0) {		
-		word_arrays[i] = (unsigned char*)malloc(fiftynine_raw_len * sizeof(unsigned char));
-		word_arrays[i] = fiftynine_raw;
-		word_arrays_sizes[i]=fiftynine_raw_len;
-	    }
-	    
-	    
+	    	    
 	    //words
 	     //A words   
 	    if (g_strcmp0(word_str_lower,"all")==0) {		
@@ -608,7 +383,12 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = (unsigned char*)malloc(activity_raw_len * sizeof(unsigned char));
 		word_arrays[i] = activity_raw;
 		word_arrays_sizes[i]=activity_raw_len;	
-	    }
+	    }	    
+	    if (g_strcmp0(word_str_lower,"and")==0) {		
+		word_arrays[i] = (unsigned char*)malloc(and_raw_len * sizeof(unsigned char));
+		word_arrays[i] = and_raw;
+		word_arrays_sizes[i]=and_raw_len;	
+	    }	
 	    if (g_strcmp0(word_str_lower,"anniversary")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(anniversary_raw_len * sizeof(unsigned char));
 		word_arrays[i] = anniversary_raw;
@@ -862,6 +642,12 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = theatre_raw;
 		word_arrays_sizes[i]=theatre_raw_len;	
 	    }
+	    
+	    //if (g_strcmp0(word_str_lower,"then")==0) {		
+		//word_arrays[i] = (unsigned char*)malloc(then_raw_len * sizeof(unsigned char));
+		//word_arrays[i] = then_raw;
+		//word_arrays_sizes[i]=then_raw_len;	
+	    //}
 	    
 	    if (g_strcmp0(word_str_lower,"time")==0) {		
 		word_arrays[i] = (unsigned char*)malloc(time_raw_len * sizeof(unsigned char));
