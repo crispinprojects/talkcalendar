@@ -43,18 +43,6 @@ Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applicatio
 
 Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to start Talk Calendar when the computer is switched on. Talk Calendar can then read out the current date and day events and any future upcoming events (see preferences settings) when the computer is switched on.
 
-## Speech 
-
-Talk Calendar has a built-in word concatenation speech synthesizer called VoiceTalker which can be used to read out dates, times and common generic words for the event summary (e.g. anniversary, appointment, meeting, birthday, dentist etc.). It also incorporates a speech dispatcher which allows text-to-speech output to be sent to the espeak speech synthesizer which has to be installed on the user system.
-
-With Debian use the command below to install eSpeak.
-
-```
-sudo apt install espeak
-```
-
-Use the Preferences dialog to select between VoiceTalker and the eSpeak dispatcher and what you want to be read out.
-
 ## Calendar Usage
 
 If you have used a calendar application before then using Talk Calendar will be straight forward. 
@@ -75,6 +63,10 @@ Talk Calendar uses a small dictionary to read out the event summary.
 A screenshot of the new event dialog is shown below.
 
 ![](talkcalendar-new-event.png)
+
+* If using the built-in VoiceTalker then pressing F2 shows the current list of words which can be used for reading out the event summary.
+
+![](talkcalendar-voicetalker-dictionary.png)
 
 ### Editing Existing Event
 
@@ -99,11 +91,13 @@ Colours have to be entered manually using RGB values.You can use the w3Schools [
 
 Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
 
-Speech synthesis options for both VoiceTalker and eSpeak such as talking speed can be changed.
+You can select between either the built-in VoiceTalker speech synthesizer or the eSpeak speech dispatcher. Options such as talking speed can be changed for both.
 
 ## Talking
 
-* Press spacebar to speak event details.
+* Press the *t key* to read out the current time.
+
+* Press *spacebar* to read out event details for the date selected.
 
 
 ### Keyboard Shortcuts
@@ -156,13 +150,17 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar has a built-in word concatenation speech synthesizer called VoiceTalker to play-back pre-recorded English words for reading out dates, times and common generic words used to summarise a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, meetup, party, payment, reminder, restaurant, task, television, travel, visit, work, workshop*. You can use two or more words for the event summary such as "birthday party". If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. The number of upcoming events and titles can be read out if required. 
+Talk Calendar has a built-in word concatenation speech synthesizer which I have called VoiceTalker. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event such as *anniversary, appointment, birthday, cafe, car, day, dentist, doctor, driver, family, fathers, funeral, holiday, hospital, meeting, meetup, mothers, party, payment, reminder, restaurant, task, television, travel, visit, work, workshop*. You can use two or more words for the event summary such as "birthday party", "mothers day" "fathers day"  etc. If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. The number of upcoming events and titles can be read out if required. 
 
-Talk Calendar also incorporates a speech dispatcher. If you select "Use eSpeak" then Talk Calendar  sends text-to-speech output to the eSpeak speech synthesizer which has to be installed separately on the user system. With Debian use the command below to install eSpeak.
+Talk Calendar also incorporates a speech dispatcher which allows text-to-speech output to be sent to the espeak speech synthesizer which has to be installed separately on the user system.
+
+With Debian use the command below to install eSpeak.
 
 ```
 sudo apt install espeak
 ```
+
+Use the Preferences dialog to select between VoiceTalker and the eSpeak dispatcher and what you want to be spoken.
 
 The [eSpeak](https://espeak.sourceforge.net/) speech synthesizer is an open source speech synthesizer which uses a formant synthesis method and is widely available in Linux distributions. It produces good quality speech with clear articulation. It is more versatile than than the built-in VoiceTalker allowing the event summary, description and location to be spoken if required. 
 
@@ -170,7 +168,7 @@ The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with oth
 
 For more information on the formant speech synthesis method see my [formant speech synthesizer](https://github.com/crispinprojects/formant-synthesizer) project. 
 
-The experimental version of Talk Calendar which used a built-in diphone speech synthesizer has been dropped as I could not achieve good quality speech articulation. The development code for my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker).
+The experimental version of Talk Calendar which used a built-in diphone speech synthesizer has been dropped as I could not achieve good quality speech articulation. It has been replaced with the speech dispatcher. For anyone interested the development code for my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker).
 
 ### Audio Thread
 
@@ -264,7 +262,7 @@ A file dialog to export an ical backup file is implemented using a GAsyncReadyCa
 
 ![](talkcalendar-trixie-export.png)
 
-When Trixie is released I will move the Talk Calendar code based to the updated GTK version and put the Bookworm version into maintenance mode. At the moment the Bookworm version has the latest speech synthesis code base.  
+When Trixie is released I will move the Talk Calendar code based to the updated GTK version and put the Bookworm version into maintenance mode. At the moment the Bookworm version has the latest speech synthesis code base. Use the Bookword version of Talk Calendar until Trixie is released. The screenshots above just show what is possible with later versions of the GTK toolkit.
 
 ### Building on Fedora
 

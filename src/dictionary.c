@@ -484,6 +484,11 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = family_raw;
 		word_arrays_sizes[i]=family_raw_len;	
 	    }
+	    if (g_strcmp0(word_str_lower,"fathers")==0) {		
+		word_arrays[i] = (unsigned char*)malloc(fathers_raw_len * sizeof(unsigned char));
+		word_arrays[i] = fathers_raw;
+		word_arrays_sizes[i]=fathers_raw_len;	
+	    }
 	    if (g_strcmp0(word_str_lower,"funeral")==0) {
 		g_print("funeral detected\n");		
 		word_arrays[i] = (unsigned char*)malloc(funeral_raw_len  * sizeof(unsigned char));
@@ -491,11 +496,23 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays_sizes[i]=funeral_raw_len;	
 	    }			
 	    //H words
+	    if (g_strcmp0(word_str_lower,"hello")==0) {
+		word_arrays[i] = (unsigned char*)malloc(hello_raw_len * sizeof(unsigned char));
+		word_arrays[i] = hello_raw;
+		word_arrays_sizes[i]=hello_raw_len;	
+	    }
+	    	   
 	     if (g_strcmp0(word_str_lower,"high")==0) {
 		word_arrays[i] = (unsigned char*)malloc(high_raw_len * sizeof(unsigned char));
 		word_arrays[i] = high_raw;
 		word_arrays_sizes[i]=high_raw_len;	
-	    }	   
+	    }
+	    
+	    if (g_strcmp0(word_str_lower,"hobby")==0) {
+		word_arrays[i] = (unsigned char*)malloc(hobby_raw_len * sizeof(unsigned char));
+		word_arrays[i] = hobby_raw;
+		word_arrays_sizes[i]=hobby_raw_len;	
+	    }	     
 	     if (g_strcmp0(word_str_lower,"holiday")==0) {
 		word_arrays[i] = (unsigned char*)malloc(holiday_raw_len * sizeof(unsigned char));
 		word_arrays[i] = holiday_raw;
@@ -535,6 +552,11 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = (unsigned char*)malloc(memo_raw_len * sizeof(unsigned char));
 		word_arrays[i] = memo_raw;
 		word_arrays_sizes[i]=memo_raw_len;	
+	    }
+	    if (g_strcmp0(word_str_lower,"mothers")==0) {		
+		word_arrays[i] = (unsigned char*)malloc(mothers_raw_len * sizeof(unsigned char));
+		word_arrays[i] = mothers_raw;
+		word_arrays_sizes[i]=mothers_raw_len;	
 	    }
 	    	    	    
 	    //N words
@@ -673,6 +695,11 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 	    }	
 	    
 	    //V words
+	    if (g_strcmp0(word_str_lower,"version")==0) {
+		word_arrays[i] = (unsigned char*)malloc(version_raw_len * sizeof(unsigned char));
+		word_arrays[i] = version_raw;
+		word_arrays_sizes[i]=version_raw_len;	
+	    }
 	    
 	    if (g_strcmp0(word_str_lower,"visit")==0) {
 		word_arrays[i] = (unsigned char*)malloc(visit_raw_len * sizeof(unsigned char));
@@ -684,6 +711,16 @@ void get_words_array(GList *speak_word_list, int word_number,unsigned char **wor
 		word_arrays[i] = (unsigned char*)malloc(work_raw_len * sizeof(unsigned char));
 		word_arrays[i] = work_raw;
 		word_arrays_sizes[i]=work_raw_len;	
+	    }
+	    if (g_strcmp0(word_str_lower,"workshop")==0) {
+		word_arrays[i] = (unsigned char*)malloc(workshop_raw_len * sizeof(unsigned char));
+		word_arrays[i] = workshop_raw;
+		word_arrays_sizes[i]=workshop_raw_len;	
+	    }
+	    if (g_strcmp0(word_str_lower,"world")==0) {
+		word_arrays[i] = (unsigned char*)malloc(world_raw_len * sizeof(unsigned char));
+		word_arrays[i] = world_raw;
+		word_arrays_sizes[i]=world_raw_len;	
 	    }
 	     //Y words
 	    if (g_strcmp0(word_str_lower,"year")==0) {
