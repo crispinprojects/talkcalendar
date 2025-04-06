@@ -66,7 +66,7 @@ A screenshot of the new event dialog is shown below.
 
 * If using the built-in VoiceTalker then pressing F2 shows the current list of words which can be used for reading out the event summary.
 
-![](talkcalendar-voicetalker-dictionary.png)
+![](voicetalker-words.png)
 
 ### Editing Existing Event
 
@@ -89,7 +89,7 @@ You can use 12 hour format. Event end-times can also be shown in the list view. 
 
 Colours have to be entered manually using RGB values.You can use the w3Schools [RGB calcuator](https://www.w3schools.com/colors/colors_rgb.asp) for selecting a RGB colour. 
 
-Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
+Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started. The number of upcoming events and titles can be read out if required. 
 
 You can select between either the built-in VoiceTalker speech synthesizer or the eSpeak speech dispatcher. Options such as talking speed can be changed for both.
 
@@ -150,7 +150,7 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar has a built-in word concatenation speech synthesizer which I have called VoiceTalker. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event such as *anniversary, appointment, birthday, cafe, car, day, dentist, doctor, driver, family, fathers, funeral, holiday, hospital, meeting, meetup, mothers, party, payment, reminder, restaurant, task, television, travel, visit, work, workshop*. You can use two or more words for the event summary such as "birthday party", "mothers day" "fathers day"  etc. If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. The number of upcoming events and titles can be read out if required. 
+Talk Calendar has a built-in word concatenation speech synthesizer which I have called VoiceTalker. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event such as *anniversary, appointment, birthday, cafe, calendar, car, day, dentist, doctor, driver, event, family, fathers, funeral, holiday, hospital, meeting, meetup, mothers, party, payment, reminder, restaurant, task, television, travel, visit, work, workshop*. You can use two or more words for the event summary such as "Birthday party", "Mothers day", "Fathers day", "Travel and visit" or just "Calendar event". If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
 
 Talk Calendar also incorporates a speech dispatcher which allows text-to-speech output to be sent to the espeak speech synthesizer which has to be installed separately on the user system.
 
@@ -262,7 +262,7 @@ A file dialog to export an ical backup file is implemented using a GAsyncReadyCa
 
 ![](talkcalendar-trixie-export.png)
 
-When Trixie is released I will move the Talk Calendar code based to the updated GTK version and put the Bookworm version into maintenance mode. At the moment the Bookworm version has the latest speech synthesis code base. Use the Bookword version of Talk Calendar until Trixie is released. The screenshots above just show what is possible with later versions of the GTK toolkit.
+When Trixie is released I will move the Talk Calendar code based to the updated GTK version and put the Bookworm version into maintenance mode. At the moment the Bookworm version has the latest speech synthesis code base. Use the Bookworm version of Talk Calendar until Trixie is released. The screenshots above just show what is possible with later versions of the GTK toolkit.
 
 ### Building on Fedora
 

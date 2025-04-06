@@ -3334,7 +3334,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.7");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.2.8");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Personal Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3375,17 +3375,22 @@ static void speak_time(gint hour, gint min)
 	if (hour >= 13 && hour <= 23)
 	{
 	int s_hour = hour - 12;
-	ampm_str = " pm ";					
+	
+	if (m_espeak) ampm_str = " P. M. ";
+	else ampm_str = " pm ";	
+					
 	hour_str =get_cardinal_string(s_hour);
 	}
 	if(hour == 12)
 	{
-	ampm_str = " pm ";					
+	if (m_espeak) ampm_str = " P. M. ";
+	else ampm_str = " pm ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	if(hour <12)
 	{
-	ampm_str = " am ";					
+	if (m_espeak) ampm_str = " A. M. ";
+	else ampm_str = " am ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	
@@ -5068,11 +5073,19 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	
 	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
 	else custom_calendar_reset_holidays(CUSTOM_CALENDAR(calendar));
+		
+	//reload listbox day events	in case of 24h/12h change
+	GArray *evt_arry_day;	
+	evt_arry_day = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); // setup arraylist
+	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);		
+	display_event_array(evt_arry_day);
+	g_array_free(evt_arry_day, FALSE); //clear the array 
 	
+	//update calendar
 	set_marks_on_calendar_multiday(CUSTOM_CALENDAR(calendar));
 	set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
-	
+		
 	gtk_window_destroy(GTK_WINDOW(dialog));	
 }
 
@@ -6079,24 +6092,27 @@ static void callbk_voicetalker(GSimpleAction *action, GVariant *parameter,  gpoi
 	gtk_window_set_default_size(GTK_WINDOW(dialog),380,100);
 	gtk_window_set_title (GTK_WINDOW (dialog), "VoiceTalker Dictionary");
 	
-	char* a_words ="anniversary, appointment";
-	char* b_words ="birthday";
-	char* c_words ="cafe, car";
+	char* a_words ="activity, and, anniversary, appointment";
+	char* b_words ="bank, birthday";
+	char* c_words ="cafe, calendar, car, christmas";
 	char* d_words ="day, dentist, doctor, driver";
+	char* e_words ="easter,event, events";
 	char* f_words = "family, fathers, funeral";
-	char* h_words = "hello, holiday, hospital";
+	char* h_words = "hello, hobby, holiday, hospital";
 	char* m_words ="meeting, meetup, mothers";
 	char* p_words ="party, payment";
 	char* r_words ="reminder, restaurant";
 	char* t_words ="task, television, travel";
 	char* v_words ="visit";
 	char* w_words ="work, world, workshop";
+	char* y_words ="year";
 	
 	char* dict_str="";		
 	dict_str =g_strconcat(dict_str, a_words, "\n",NULL); 
 	dict_str =g_strconcat(dict_str, b_words, "\n",NULL); 
 	dict_str =g_strconcat(dict_str, c_words, "\n",NULL); 
-	dict_str =g_strconcat(dict_str, d_words, "\n",NULL); 
+	dict_str =g_strconcat(dict_str, d_words, "\n",NULL);
+	dict_str =g_strconcat(dict_str, e_words, "\n",NULL);  
 	dict_str =g_strconcat(dict_str, f_words, "\n",NULL); 
 	dict_str =g_strconcat(dict_str, h_words, "\n",NULL); 
 	dict_str =g_strconcat(dict_str, m_words, "\n",NULL); 
@@ -6104,7 +6120,8 @@ static void callbk_voicetalker(GSimpleAction *action, GVariant *parameter,  gpoi
 	dict_str =g_strconcat(dict_str, r_words, "\n",NULL);
 	dict_str =g_strconcat(dict_str, t_words, "\n",NULL);
 	dict_str =g_strconcat(dict_str, v_words, "\n",NULL); 
-	dict_str =g_strconcat(dict_str, w_words, "\n",NULL);   
+	dict_str =g_strconcat(dict_str, w_words, "\n",NULL); 
+	dict_str =g_strconcat(dict_str, y_words, NULL);  
 		
 	textview = gtk_text_view_new ();
 	textbuffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (textview));
@@ -6569,9 +6586,17 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	if(m_talk && m_talk_at_startup) {
 		speak_events();		
 	}
-	//custom_calendar_set_show_tooltips(CUSTOM_CALENDAR(calendar),TRUE);
+	
+	//startup everything
+	
+	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
+	else custom_calendar_reset_holidays(CUSTOM_CALENDAR(calendar));
+		
+	//update calendar
+	set_marks_on_calendar_multiday(CUSTOM_CALENDAR(calendar));
 	set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
-    custom_calendar_update(CUSTOM_CALENDAR(calendar));
+	custom_calendar_update(CUSTOM_CALENDAR(calendar));
+	
 	gtk_window_present (GTK_WINDOW (window)); 
 	
 }
