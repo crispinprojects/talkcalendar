@@ -3360,6 +3360,8 @@ static void speak_time(gint hour, gint min)
 	if(m_talk==0) return;
 	if (m_talking ==TRUE) return;
 	
+	//g_print("speak_time: hour = %d min =%d\n",hour,min);
+	
 	char* speak_str ="";
 	
 	speak_str= g_strconcat(speak_str, " the time is ", NULL);
@@ -3907,7 +3909,7 @@ static char* get_cardinal_string(int number)
 		 result="thirty three";
 		 break;
 		 case 34:
-		 result="thirtyfour";
+		 result="thirty four";
 		 break;
 		 case 35:
 		 result="thirty five";
