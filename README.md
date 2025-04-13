@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event text.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event title text.
 
 Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot of Talk Calendar is shown below.
 
@@ -14,7 +14,7 @@ Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK d
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* speech sythesizer and dispatcher
+* built-in speech synthesizer
 * binary for GTK 4.8.4 (Debian Bookworm)
 
 ### Local Install Using Pre-built Binary
@@ -66,7 +66,7 @@ A screenshot of the new event dialog is shown below.
 
 * If using the built-in VoiceTalker then pressing F2 shows the current list of words which can be used for reading out the event summary.
 
-![](voicetalker-words.png)
+![](talkcalendar-dictionary.png)
 
 ### Editing Existing Event
 
@@ -91,7 +91,6 @@ Colours have to be entered manually using RGB values.You can use the w3Schools [
 
 Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started. The number of upcoming events and titles can be read out if required. 
 
-You can select between either the built-in VoiceTalker speech synthesizer or the eSpeak speech dispatcher. Options such as talking speed can be changed for both.
 
 ## Talking
 
@@ -116,8 +115,6 @@ F1			Information
 * Select "Information"  from the help menu or press F1
 
 * The information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
-
-* It also shows if eSpeak is available for the speech dispatcher as shown below.
 
 ![](talkcalendar-info.png)
 
@@ -150,25 +147,9 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar has a built-in word concatenation speech synthesizer which I have called VoiceTalker. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event such as *anniversary, appointment, birthday, cafe, calendar, car, day, dentist, doctor, driver, event, family, fathers, funeral, holiday, hospital, meeting, meetup, mothers, party, payment, reminder, restaurant, task, television, travel, visit, work, workshop*. You can use two or more words for the event summary such as "Birthday party", "Mothers day", "Fathers day", "Travel and visit" or just "Calendar event". If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
+Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. Press F2 to show the current list of words which can be used for an event title. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
 
-Talk Calendar also incorporates a speech dispatcher which allows text-to-speech output to be sent to the espeak speech synthesizer which has to be installed separately on the user system.
-
-With Debian use the command below to install eSpeak.
-
-```
-sudo apt install espeak
-```
-
-Use the Preferences dialog to select between VoiceTalker and the eSpeak dispatcher and what you want to be spoken.
-
-The [eSpeak](https://espeak.sourceforge.net/) speech synthesizer is an open source speech synthesizer which uses a formant synthesis method and is widely available in Linux distributions. It produces good quality speech with clear articulation. It is more versatile than than the built-in VoiceTalker allowing the event summary, description and location to be spoken if required. 
-
-The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with other licenses found. eSpeak is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). If eSpeak is not available on your Linux system then use VoiceTalker.
-
-For more information on the formant speech synthesis method see my [formant speech synthesizer](https://github.com/crispinprojects/formant-synthesizer) project. 
-
-The experimental version of Talk Calendar which used a built-in diphone speech synthesizer has been dropped as I could not achieve good quality speech articulation. It has been replaced with the speech dispatcher. For anyone interested the development code for my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker).
+The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer  dependencies.
 
 ### Audio Thread
 
@@ -322,12 +303,6 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
-
-* [eSpeak](https://espeak.sourceforge.net/) is an open source speech synthesizer which uses a formant synthesis method and is widely available in Linux distributions. It produces good quality speech with clear articulation. The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with other licenses found. eSpeak is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). 
-
-* For more information on the diphone speech synthesis method see my [Diphone speech synthesizer](https://github.com/crispinprojects/diphone-talker) project.
-
-* For more information on the formant speech synthesis method see my [formant speech synthesizer](https://github.com/crispinprojects/formant-synthesizer) project. 
 
 * [Debian](https://www.debian.org/)
 
