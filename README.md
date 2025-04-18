@@ -16,13 +16,12 @@ Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK d
 * Sqlite3 database used to store events
 * reads out dates, times and event title text
 * talking clock
-* binary for GTK 4.8.4 (Debian Bookworm)
 
 ### Local Install Using Pre-built Binary
 
-A 64-bit pre-built binary of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm.
+A 64-bit pre-built binary of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled using Ubuntu 24.04.
 
-Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  Change Talk Calendar file permissions so that it can run as an executable as shown below.
+Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
 ```
 sudo chmod +x talkcalendar
@@ -150,13 +149,15 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. Press F2 to show the current list of words which can be used for an event title. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". You can be creative with the current list of dictionary words. If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. Currently a "chipmunk" voice generated using an [Audacity](https://www.audacityteam.org/) macro is used.
 
-The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer  dependencies.
+The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies. 
 
-With previous versions of Talk Calendar I experimented with using [Flite](http://www.festvox.org/flite/). This is a small run-time speech synthesis engine available in many (not all) Linux distributions which uses diphone concatenation for speech output. Speech tended to lack [clarity](https://en.wikipedia.org/wiki/Speech_synthesis) compared to my word concatenation approach which stores and plays back entire words and so can provide clearer articulation in some use cases. The disadvantage of my approach is the limited number of words available for the event title description
+With previous versions of Talk Calendar I experimented with using [Flite](http://www.festvox.org/flite/). This is a small run-time speech synthesis engine which uses diphone concatenation for speech output. Speech tended to lack [clarity](https://en.wikipedia.org/wiki/Speech_synthesis) compared to [eSpeak](https://espeak.sourceforge.net/) which uses the formant speech synthesis method and produces good quality speech with clear articulation (although the standard voices are robotic). Also [packages.org](https://pkgs.org/) shows that Flite is not available in a number of Linux distributions. I discovered this when trying to compile Talk Calendar on some other Linux distributions and so reverted to using my own built-in speech synthesizer. 
 
-The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. eSpeak uses the formant speech synthesis method and produces good quality speech with clear articulation but the standard voices are robotic. I am confused about the eSpeak license situation. eSpeak is said to have a GPL v3 [license](https://espeak.sourceforge.net/license.html). However, it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). 
+The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. I am confused about the eSpeak license situation. eSpeak is said to have a GPL v3 [license](https://espeak.sourceforge.net/license.html). However, it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). 
 
-As a side note I have investigating the feasibility of developing my own diphone speech synthesiser the details of which can be found [here](https://github.com/crispinprojects/diphone-talker) but currently speech articulation is poor compared to the wrod concatenation approach. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
+As a side note I have investigating the feasibility of developing my own diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/diphone-talker). Currently speech articulation is poor compared to the word concatenation approach that I am currently using with Talk Calendar. The disadvantage of the word concatenation approach is the limited number of words which can be used for an event title but I have been regularly adding new words to the dictionary. 
+
+I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
 
 ### Audio Thread
 
@@ -218,7 +219,7 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-
+I have tried to keep the current code base compatible with Debian 12 which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to that used with Ubuntun 24.04 which is GTK 4.14. Because of this you will get some depreciation warnings when compiling using Ubuntu 24.04. See Debian compile notes below.
 
 ### Building on Fedora
 
