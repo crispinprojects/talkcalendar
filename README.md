@@ -1,8 +1,8 @@
 # Talk Calendar
 
-Talk Calendar is a speaking calendar for Linux.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event title text.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, Cinnamon, XFCE etc.).  It uses the [Flite](http://www.festvox.org/flite/) speech synthesizer library for reading out dates, times and event text. A screenshot of Talk Calendar is shown below.
+Talk Calendar developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, XFCE etc.). A screenshot of Talk Calendar is shown below.
 
 ![](talkcalendar.png)
 
@@ -14,35 +14,21 @@ Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) 
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* reads out dates, times and event text
+* reads out dates, times and event title text
 * talking clock
-* binary for GTK 4.14.2 (Ubuntu 24.04)
+* binary for GTK 4.8.4 (Debian Bookworm)
 
-## Flite Speech Synthesis Shared Library
+### Local Install Using Pre-built Binary
 
-Talk Calendar uses the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library. This is normally installed by default.  With Ubuntu and Debian you can use the ***checkflite.sh*** file in the binary download to check if the Flite library is installed. If not it will install it. 
+A 64-bit pre-built binary of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian Bookworm.
 
-```
-./checkflite.sh
-```
-
-Alternatively you can just install the Flite library using the terminal command below.
-
-```
-sudo apt install libflite1
-```
-
-## Install Talk Calendar Locally Using Pre-built Binary 
-
-A pre-built 64-bit x86 binary of Talk Calendar is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled using Ubuntu 24.04 on Intel hardware.
-
-Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
+Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  Change Talk Calendar file permissions so that it can run as an executable as shown below.
 
 ```
 sudo chmod +x talkcalendar
 ```
 
-Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
+Use the command shown below to run Talk Calendar.
 
 ```
 ./talkcalendar
@@ -50,7 +36,7 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 
 To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For the GNOME desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
 
-You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
+You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths. 
 
 Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
 
@@ -65,18 +51,23 @@ If you have used a calendar application before then using Talk Calendar will be 
 ### Adding New Event
 
 * Click on the "New Event" button in the header bar or press Ctrl+n to invoke the "New Event" window
-* Enter the event summary
-* Enter the event description 
-* Enter the location
+* Enter the event summary (e.g. birthday, anniversary, dentist etc.) 
+* Enter the description of the event and location
 * Enter the start date by setting the day, month and year values 
 * Enter start and end times (or tick the all day check box)
 * Times are entered as hour and minute values using the 24-hour time notation
 * Events are sorted by start time when displayed
 * Check the "Is Yearly" check box if the event repeats every year (e.g. birthdays and anniversaries)
 
+Talk Calendar uses a small dictionary to read out the event summary.
+
 A screenshot of the new event dialog is shown below.
 
 ![](talkcalendar-new-event.png)
+
+* If using the built-in VoiceTalker then pressing F2 shows the current list of words which can be used for reading out the event summary.
+
+![](talkcalendar-dictionary.png)
 
 ### Editing Existing Event
 
@@ -99,19 +90,15 @@ You can use 12 hour format. Event end-times can also be shown in the list view. 
 
 Colours have to be entered manually using RGB values.You can use the w3Schools [RGB calcuator](https://www.w3schools.com/colors/colors_rgb.asp) for selecting a RGB colour. 
 
-Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
+Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started. The number of upcoming events and titles can be read out if required. 
+
 
 ## Talking
 
-* Press spacebar to speak event details.
+* Press the *t key* to read out the current time.
 
-### Information
+* Press *spacebar* to read out event details for the date selected.
 
-* Select "Help->Information from the menu or press F1
-
-* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
-
-* Use the About dialog to display the Talk Calendar current version.
 
 ### Keyboard Shortcuts
 
@@ -128,7 +115,9 @@ F1			Information
 
 * Select "Information"  from the help menu or press F1
 
-* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+* The information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
+
+![](talkcalendar-info.png)
 
 * Use the About dialog to display current version.
 
@@ -159,13 +148,15 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar uses [Flite](http://www.festvox.org/flite/). This is a small run-time speech synthesis engine available in most Linux distributions. Use [packages.org](https://pkgs.org/) to check availability by searching "flite". A speech synthesis engine converts text into spoken audio. The core Flite library was originally developed by Professor Alan W Black (voice awb) and  Kevin A Lenzoa (voice kal16). The history of the project together with other contributors can be found [here](https://github.com/festvox/flite).
+Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. Press F2 to show the current list of words which can be used for an event title. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". You can be creative with the current list of dictionary words. If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. Currently a "chipmunk" voice generated using an [Audacity](https://www.audacityteam.org/) macro is used.
 
-The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPLv2, meaning you can combine code licensed under BSD with code licensed under GPLv2 and distribute the combined work under the terms of GPLv2. The BSD licenses are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. With this version of Talk Calendar I am using the  Flite [API](http://cmuflite.org/doc/flite_7.html#C-example).
+The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer  dependencies.
 
-The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. I am super confused about the eSpeak license situation. eSpeak has a GPL v3 [license](https://espeak.sourceforge.net/license.html). However, it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). I just don't know if this is something to be concerned about especially as eSpeak is an [Official Debian package License: DFSG free](https://blends.debian.org/accessibility/tasks/speechsynthesis). Anyhow I decided not to use eSpeak and use Flite instead.
+With previous versions of Talk Calendar I experimented with using [Flite](http://www.festvox.org/flite/). This is a small run-time speech synthesis engine available in many (not all) Linux distributions which uses diphone concatenation for speech output. Speech tended to lack [clarity](https://en.wikipedia.org/wiki/Speech_synthesis) compared to my word concatenation approach which stores and plays back entire words and so can provide clearer articulation in some use cases. The disadvantage of my approach is the limited number of words available for the event title description
 
-As a side note I have investigating the feasibility of developing my own diphone speech synthesiser the details of which can be found [here](https://github.com/crispinprojects/diphone-talker). The diphone speech synthesis approach is used by Flite. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
+The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. eSpeak uses the formant speech synthesis method and produces good quality speech with clear articulation but the standard voices are robotic. I am confused about the eSpeak license situation. eSpeak is said to have a GPL v3 [license](https://espeak.sourceforge.net/license.html). However, it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game). 
+
+As a side note I have investigating the feasibility of developing my own diphone speech synthesiser the details of which can be found [here](https://github.com/crispinprojects/diphone-talker) but currently speech articulation is poor compared to the wrod concatenation approach. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). 
 
 ### Audio Thread
 
@@ -173,7 +164,8 @@ Talk Calendar now uses GTask (async/wait pattern) to play audio in a thread rath
 
 ## Build From Source
 
-The C source code for the Talk Calendar application is provided in the src directory. 
+The C source code for the Talk Calendar application is provided in the src directory. Debian Bookworm which uses GTK 4.8  has been used to compile the project. 
+
 [Geany](https://www.geany.org/) can be used as a source code editor for opening, viewing and then compiling the Talk Calendar C code. Geany is lightweight and has an integrated terminal for building the application. To install the Geany IDE use the command below.
 
 ```
@@ -181,7 +173,7 @@ sudo apt install geany
 ```
 Alternatively, the latest version of Geany can be built from source using autotools.
 
-### Building on Ubuntu 24.04 x86 Hardware
+### Building on Ubuntu 24.04
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
@@ -191,8 +183,16 @@ sudo apt install libgtk-4-dev
 sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
-sudo apt install flite1-dev
 ```
+
+The packages:
+
+```
+sudo apt install libglib2.0-dev
+sudo apt install alsa-utils
+```
+
+are needed but should be installed by default. 
 
 To check the installed Sqlite 3 version use the command below.
 
@@ -218,6 +218,8 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
+
+
 ### Building on Fedora
 
 With Fedora you need to install the following packages to compile Talk Calendar.
@@ -229,7 +231,6 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 sudo dnf install sqlite-devel
-sudo dnf install flite-devel
 ```
 
 To check the installed Sqlite 3 version use the command below.
@@ -243,7 +244,6 @@ To check the installed version of the GTK4 development libraries use the command
 ```
 dnf list gtk4-devel
 ```
-
 ## Debian Compile Notes
 
 I have tried to keep the current code base compatible with Debian 12 which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to that used with Ubuntun 24.04 which is GTK 4.14. Consequently, with the current version of Talk Calendar the RGB values for the today, calendar event, public holiday colours have to be entered manually to be compatible with GTK 4.8. However, the GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced in GTK4.10 and will be used in future updates.
@@ -254,15 +254,13 @@ With GTK4.12 the GtkFileDialog API is no longer signal based but callback based 
 
 Debian Trixie will be the next stable release of Debian. At the time of writing the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) shows that Debian Trixie is currently using GTK4.18.2. 
 
+
 ### Raspberry Pi OS
 
 Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above for Debian 12 Bookworm. 
 
-Again you need to install the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis development library on the Raspberry Pi using the terminal command below.
+Talk Calendar has been tested on a Raspberry Pi 500 with the Raspberry Pi monitor which has two front-facing speakers for producing audio output.
 
-```
-sudo apt install flite1-dev
-```
 
 ## Versioning
 
@@ -279,8 +277,6 @@ Active and under development.
 ## License
 
 GTK is released under the terms of the [GNU Lesser General Public License version 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html). Consequently, Talk Calendar is licensed under the same LGPL v2.1 license.
-
-The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING).
 
 ## Acknowledgements
 
@@ -299,12 +295,6 @@ The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://gi
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
-
-* [Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. The core Flite library was originally developed by Alan W Black and the history of the project together with other contributors can be found [here](https://github.com/festvox/flite). Flite is free software and has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis).
-
-* Flite [API](http://cmuflite.org/doc/flite_7.html#C-example)
-
-* [eSpeak](https://espeak.sourceforge.net/) is an open source speech synthesizer which uses a formant synthesis method and is widely available in Linux distributions. It produces good quality speech with clear articulation. The eSpeak [license](https://github.com/espeak-ng/espeak-ng) is GPL-3.0 with other licenses found.
 
 * [Debian](https://www.debian.org/)
 
