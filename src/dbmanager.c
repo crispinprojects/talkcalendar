@@ -45,7 +45,7 @@ set so that all users can read and write but cannot execute the db
 
 */
 
-#define SQLITE_DEFAULT_FILE_PERMISSIONS = 0666 //does not work
+#define SQLITE_DEFAULT_FILE_PERMISSIONS = 0666 //does this work?
 
 //use chmod 666 calendar.db if issues
 
