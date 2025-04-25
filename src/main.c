@@ -3450,7 +3450,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.2");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.3");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Personal Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4068,9 +4068,6 @@ static void speak_events() {
 			
 	} //if notable dates
 	
-	
-	
-	
 		
 	//cycle through day events adding event titles
 	GArray *day_events_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
@@ -4124,8 +4121,17 @@ static void speak_events() {
 		
 		if(!is_allday) {		
 		
+				
 		if(m_12hour_format) {
 		
+		if(start_hour ==0) //12am midnight
+		{
+		//g_print("speak events: starthour ==0\n"); 
+		ampm_str = " a.m. ";	
+		int midnight_hour = start_hour+12;				
+		hour_str =get_cardinal_string(midnight_hour);				
+		}
+				
 		if (start_hour >= 13 && start_hour <= 23)
 		{
 		int s_hour = start_hour - 12;
@@ -4137,7 +4143,7 @@ static void speak_events() {
 		ampm_str = " p.m. ";					
 		hour_str =get_cardinal_string(start_hour);
 		}
-		if(start_hour <12)
+		if(start_hour <12 && start_hour >0)
 		{
 		ampm_str = " a.m. ";					
 		hour_str =get_cardinal_string(start_hour);
@@ -4803,6 +4809,13 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	if(m_holidays) set_holidays_on_calendar(CUSTOM_CALENDAR(calendar));
 	else custom_calendar_reset_holidays(CUSTOM_CALENDAR(calendar));
 	
+	//reload listbox day events	in case of 24h/12h change
+	GArray *evt_arry_day;	
+	evt_arry_day = g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT)); // setup arraylist
+	db_get_all_events_year_month_day(evt_arry_day, m_start_year,m_start_month, m_start_day);		
+	display_event_array(evt_arry_day);
+	g_array_free(evt_arry_day, FALSE); //clear the array 
+	
 	set_marks_on_calendar_multiday(CUSTOM_CALENDAR(calendar));
 	set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
 	custom_calendar_update(CUSTOM_CALENDAR(calendar));
@@ -5257,20 +5270,32 @@ static void display_event_array(GArray *evt_arry) {
 			{
 
 				if (m_12hour_format)
+				{					
+				ampm_str = "";
+				
+				if(end_hour ==0) //12am midnight
 				{
-					ampm_str = "";
-
-					if (end_hour >= 13 && end_hour <= 23)
-					{
-						end_hour = end_hour - 12;
-						ampm_str = "pm ";
-						endhour_str = g_strdup_printf("%d", end_hour);
-					}
-					else
-					{
-						ampm_str = "am ";
-						endhour_str = g_strdup_printf("%d", end_hour);
-					}
+				ampm_str = "am ";	
+				endhour_str = g_strdup_printf("%d", 12);
+				}				
+				
+				if (end_hour >= 13 && end_hour <= 23)
+				{
+				end_hour = end_hour - 12;
+				ampm_str = "pm ";
+				endhour_str = g_strdup_printf("%d", end_hour);
+				}				
+				if(end_hour  == 12)
+				{
+				ampm_str = "pm ";					
+				endhour_str = g_strdup_printf("%d", end_hour);
+				}				
+				if(end_hour <12 && end_hour >0)
+				{
+				ampm_str = "am ";
+				endhour_str = g_strdup_printf("%d", end_hour);
+				}		
+					
 				} // 12
 				else
 				{
