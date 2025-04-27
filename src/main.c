@@ -16,10 +16,12 @@
  ***************************************************************************/
 
 //====================================================================
-// GTK4 Talk Calendar
-// Flite API used. You need sudo apt install flite1-dev
-// Compiled assuming GTK4.8
-// Should compile with both Ubuntu 24.04 and Debian 12 Bookworm 
+// GTK4 Talk Calendar GTK 4 compiled using Ubuntu 24.04 x86
+// This version of Talk Calendar uses a compiled version of flite
+// which must be located in the working directory.
+// Flite can be compiled using the code located at
+// https://github.com/festvox/flite
+// Using rms voice
 // Author: Alan Crispin <crispinalan@gmail.com> 
 // Date: April 2025
 // Use make file to compile
@@ -37,12 +39,9 @@
 #include "displayitem.h"
 
 
-#define CONFIG_DIRNAME "talkcalendar-flite"
-#define CONFIG_FILENAME "talkcalendar-flite"
+#define CONFIG_DIRNAME "talkcalendar-flite-local"
+#define CONFIG_FILENAME "talkcalendar-flite-local"
 static char * m_config_file = NULL;
-
-cst_voice *register_cmu_us_kal16(void);
-cst_voice *register_cmu_us_rms(void);
 
 //Declarations
 
@@ -171,8 +170,7 @@ static void play_audio_async (GTask *task,
                           
 static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data);
 
-static void callbk_dropdown_flite_voice(GtkDropDown* self, gpointer user_data);
-static guint get_dropdown_position_flite_voice(const gchar* voice);
+
 
 static char* get_cardinal_string(int number);
 static char* get_day_number_ordinal_string(int day);
@@ -268,7 +266,6 @@ static int m_talk_upcoming=0;
 static int m_reset_preferences=0;
 static int m_talk_priority=0;
 
-static char* m_flite_voice="rms"; //rms, kal16
 
 gboolean m_talking=FALSE;
 static int m_upcoming_days=7;
@@ -286,47 +283,6 @@ const GActionEntry app_actions[] = {
 };
 
 //===================================================================
-
-//======================================================================
-//Voice selection
-//======================================================================
-const char * const flite_voices[] = { 
-	"rms",	//0
-	"kal16",	 //1		
-	NULL };
-
-//======================================================================
-static guint get_dropdown_position_flite_voice(const gchar* voice)
-{
-	
-	guint dropdown_position=0;
-	//gchar* voice_lower= g_ascii_strdown(voice,-1);
-	
-	if (g_strcmp0(voice,"rms")==0) {
-	dropdown_position=0;
-	}
-	if (g_strcmp0(voice,"kal16")==0) {
-	dropdown_position=1;
-	}
-    	
-	return dropdown_position;
-			
-}
-
-//======================================================================
-
-static char*  get_flite_voice_str(const char* selected_voice) 
-{	
-	char* voice= g_ascii_strdown(selected_voice,-1);	
-	if(g_strcmp0(voice,"rms")==0) return "rms";
-	else if(g_strcmp0(voice,"kal16")==0) return "kal16";
-	else return "kal16";		
-}
-
-//======================================================================
-
-
-
 
 const char * const month_strs[] = { 
 	"January",	
@@ -465,7 +421,6 @@ static void config_load_default()
 	m_talk_description=0;
 	m_talk_location=0;
 	m_talk_time=1;
-	m_flite_voice="rms";
 			
 	//calendar
 	m_12hour_format=1;
@@ -504,9 +459,7 @@ static void config_read()
 	m_talk_description=0;
 	m_talk_location=0;
 	m_talk_time=1;
-	m_flite_voice="rms";
-	
-	
+		
 	m_upcoming_days=7;
 		
 	//calendar
@@ -546,10 +499,7 @@ static void config_read()
 	m_talk_description=g_key_file_get_integer(kf, "calendar_settings", "speak_description", NULL);	
 	m_talk_location=g_key_file_get_integer(kf, "calendar_settings", "speak_location", NULL);
 	m_talk_time=g_key_file_get_integer(kf, "calendar_settings", "speak_time", NULL);	
-	
-	m_flite_voice=g_key_file_get_string(kf, "calendar_settings", "flite_voice", NULL);	
-	//g_print("config read: m_flite_voice = %s\n", m_flite_voice);
-	
+		
 	m_upcoming_days=g_key_file_get_integer(kf, "calendar_settings", "upcoming_days", NULL);
 		
 	//calendar
@@ -593,8 +543,8 @@ void config_write()
 	g_key_file_set_integer(kf, "calendar_settings", "speak_event_number", m_talk_event_number);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_description", m_talk_description);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_location", m_talk_location);
-	g_key_file_set_integer(kf, "calendar_settings", "speak_time", m_talk_time);
-	g_key_file_set_string(kf, "calendar_settings", "flite_voice", m_flite_voice);	
+	g_key_file_set_integer(kf, "calendar_settings", "speak_time", m_talk_time);	
+	
 	g_key_file_set_integer(kf, "calendar_settings", "upcoming_days", m_upcoming_days);	
 		
 	//calendar
@@ -3619,26 +3569,26 @@ static void play_audio_async (GTask *task,
           
    char* text =task_data;
    
-   cst_voice *v;	
-   flite_init();
+   g_print("speech text = %s\n",text);
    
-   //g_print("m_flite_voice = %s\n", m_flite_voice);
+   char* command_str ="./flite_cmu_us_rms";
    
-   if (g_strcmp0(m_flite_voice,"kal16")==0) 
-   {		
-   v=register_cmu_us_kal16();
-   flite_text_to_speech(text,v,"play");
-   }    
-   else if (g_strcmp0(m_flite_voice,"rms")==0) 
-   {		
-   v=register_cmu_us_rms();
-   flite_text_to_speech(text,v,"play");
-   }
-   else
-   {
-   v=register_cmu_us_kal16();
-   flite_text_to_speech(text,v,"play");
-   }   
+   gchar *cur_dir;	
+   cur_dir = g_get_current_dir ();	
+   g_print("current directory = %s\n", cur_dir);
+	
+	if (g_file_test(g_build_filename(cur_dir, "flite_cmu_us_rms", NULL), G_FILE_TEST_IS_REGULAR)) {		
+		
+		g_print("flite voice exists\n");
+		command_str= g_strconcat(command_str," -t "," '",text,"' ", NULL);
+		system(command_str);
+	}
+	else {
+		g_print("flite voice does not exist\n");
+	}
+	
+   
+   
   
    g_task_return_boolean(task, TRUE);
 }
@@ -4648,19 +4598,6 @@ static void callbk_spin_button_holiday_blue(GtkSpinButton *button, gpointer user
 //======================================================================
 
 //======================================================================
-
-static void callbk_dropdown_flite_voice(GtkDropDown* self, gpointer user_data)
-{	
-	//g_print("callbk_dropdown_flite_voice invoked\n");
-	
-	const char* selected_voice = gtk_string_object_get_string (GTK_STRING_OBJECT (gtk_drop_down_get_selected_item (self)));
-	
-	m_flite_voice= get_flite_voice_str(selected_voice); 	
-	//g_print("callbk_dropdown_flite_voice: m_flite_voice = %s\n",m_flite_voice);	
-}
-
-
-//======================================================================
 static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 {
 
@@ -4790,7 +4727,6 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_talk_time=1;	
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
-	m_flite_voice="rms";
 				
 	m_window_width=600;
     m_window_height=500;
@@ -4846,9 +4782,6 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	GtkWidget *check_button_speak_time;
 	GtkWidget *check_button_speak_location;
 	GtkWidget *check_button_speak_description;
-	
-	GtkWidget *label_flite_voice;	
-	GtkWidget *dropdown_flite_voice;	
 		
 	GtkWidget *label_upcoming_days;
 	GtkWidget *spin_button_upcoming_days;
@@ -4968,16 +4901,6 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	check_button_speak_location= gtk_check_button_new_with_label ("Speak Location");
 	check_button_speak_description= gtk_check_button_new_with_label ("Speak Description");
 		
-	//flite voice
-	label_flite_voice = gtk_label_new("Flite Voice ");		
-	dropdown_flite_voice =gtk_drop_down_new_from_strings(flite_voices);  
-	
-	guint position=0;	
-	position = get_dropdown_position_flite_voice(m_flite_voice);	
-	//g_print("returned: flite dropdown position = %d\n",position);	
-	gtk_drop_down_set_selected(GTK_DROP_DOWN(dropdown_flite_voice),position);
-	  
-    g_signal_connect(GTK_DROP_DOWN(dropdown_flite_voice), "notify::selected", G_CALLBACK(callbk_dropdown_flite_voice), NULL);
 	
 	check_button_reset_all = gtk_check_button_new_with_label ("Reset All");
 		
@@ -5092,22 +5015,21 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	
 	gtk_grid_attach(GTK_GRID(grid), label_spacer3,       1, 10, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), label_flite_voice,      		  1, 11, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), dropdown_flite_voice,      		  2, 11, 1, 1);	
 	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer4,       1, 12, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), check_button_speak_upcoming,      1, 13, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), label_upcoming_days,             2, 13, 1, 1);		
-	gtk_grid_attach(GTK_GRID(grid), spin_button_upcoming_days,       3, 13, 1, 1);
+	//gtk_grid_attach(GTK_GRID(grid), label_spacer4,       1, 12, 1, 1);
+	
+	gtk_grid_attach(GTK_GRID(grid), check_button_speak_upcoming,      1, 12, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), label_upcoming_days,             2, 12, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), spin_button_upcoming_days,       3, 12, 1, 1);
 		
-	gtk_grid_attach(GTK_GRID(grid), label_spacer5,       1, 14, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), label_spacer4,       1, 13, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  1, 15, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  1, 14, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer6,       1, 16, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), label_spacer5,       1, 15, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), button_set,  1, 17, 4, 1);
+	gtk_grid_attach(GTK_GRID(grid), button_set,  1, 16, 4, 1);
 	
     gtk_window_set_child (GTK_WINDOW (dialog), grid);	
 	gtk_window_present(GTK_WINDOW(dialog));
@@ -5749,6 +5671,9 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	GtkWidget *label_time_shortcut;
 	GtkWidget *label_quit_shortcut;
 		
+	GtkWidget *label_speech_systhesizer;;
+	GtkWidget *label_flite_detected;
+	
 	GtkWidget *label_record_info;
 	GtkWidget *label_record_number;
 	GtkWidget *label_sqlite_version;
@@ -5814,7 +5739,28 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	gnome_text_scale_factor=g_strconcat(gnome_text_scale_factor, font_scale_value_str,NULL);
 	label_gnome_text_scale=gtk_label_new(gnome_text_scale_factor);
 	
+	label_speech_systhesizer=gtk_label_new("Flite Synthesizer");
+	gtk_label_set_attributes (GTK_LABEL (label_speech_systhesizer), attrs);
 	
+	char* flite_str="Flite (local): ";
+	
+	gchar *cur_dir;	
+	cur_dir = g_get_current_dir ();	
+	g_print("current directory = %s\n", cur_dir);
+	
+	if (g_file_test(g_build_filename(cur_dir, "flite_cmu_us_rms", NULL), G_FILE_TEST_IS_REGULAR)) {		
+		
+		//g_print("flite exists\n");
+		flite_str = g_strconcat(flite_str, "detected",NULL);
+		
+	}
+	else {
+		//g_print("flite does not exist\n");
+		flite_str = g_strconcat(flite_str, "not detected. Compile and install",NULL);
+	}
+	
+	label_flite_detected =gtk_label_new(flite_str);
+		
 
 	gtk_box_append(GTK_BOX(box),label_keyboard_shortcuts);
 	gtk_box_append(GTK_BOX(box),label_home_shortcut);
@@ -5831,6 +5777,8 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	gtk_box_append(GTK_BOX(box), label_record_number);
 	gtk_box_append(GTK_BOX(box), label_sqlite_version);	
 	
+	gtk_box_append(GTK_BOX(box), label_speech_systhesizer);		
+	gtk_box_append(GTK_BOX(box), label_flite_detected);
 	
 		
 	gtk_box_append(GTK_BOX(box),label_font_info);

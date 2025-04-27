@@ -14,8 +14,6 @@ Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) 
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
 * Sqlite3 database used to store events
-* uses the Flite speech synthesizer library
-* binary for GTK 4.8.4 (Debian Bookworm)
 
 
 ## Local Install Using Pre-built Binary (x86 Intel PCs)
@@ -34,6 +32,10 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 ./talkcalendar
 ```
 
+The compiled Flite binary called "flite_cmu_us_rms" should be located in the working directory containing the Talk Calendar executable for speech output.
+
+## Desktop System Menu Entry
+
 To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For the GNOME desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
 
 You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
@@ -43,17 +45,6 @@ Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applicatio
 ## Autostart Talk Calendar
 
 Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to start Talk Calendar when the computer is switched on. Talk Calendar can then read out the current date and day events and any future upcoming events (see preferences settings) when the computer is switched on.
-
-## Flite Speech Synthesis Shared Library
-
-The Talk Calendar binary uses the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis shared library which needs to be installed before running Talk Calendar. With Debian and Ubuntu this is normally installed by default but if not you install the Flite library using the terminal command below.
-
-```
-sudo apt install libflite1
-```
-
-Use [packages.org](https://pkgs.org/) to check if your distro supports libFlite. If not you could try using my [Talk Calendar Solo](https://github.com/crispinprojects/talkcalendar-solo) project which uses its own built-in speech engine.
-
 
 ## Calendar Usage
 
@@ -160,14 +151,16 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source [text-to-speech](https://simple.wikipedia.org/wiki/Text_to_speech) synthesizer available in Linux distribution respositories such as Debian and Ubuntu. This is a small run-time speech synthesis engine which uses [diphone](https://en.wikipedia.org/wiki/Diphone) concatenation for speech output. Details of the Flite API can be found [here](http://cmuflite.org/doc/flite_7.html#C-example) and provides an elegant programming solution to integrating speech synthesis into an application. The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPL licenses and are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). Unfortunately, Flite is not available in all Linux distribution repositories and you can use [packages.org](https://pkgs.org/) to check availability.
+Talk Calendar uses the [Flite](http://www.festvox.org/flite/) free open-source [text-to-speech](https://simple.wikipedia.org/wiki/Text_to_speech) synthesizer.
 
-The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. eSpeak uses the formant speech synthesis method and produces good quality speech with clear articulation (although the standard voices are robotic). The Wikipedia section on speech synthesis states that a diphone synthesizer may [lack clarity](https://en.wikipedia.org/wiki/Speech_synthesis) compared to "synthetic" voice output.  eSpeak is said to have a GPL v3 [license](https://espeak.sourceforge.net/license.html). However, I am confused about the eSpeak license situation as it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game).
+I have moved away from using [libFlite](https://packages.debian.org/bookworm/libflite1) and the Flite [API](http://cmuflite.org/doc/flite_7.html#C-example) to using a pre-compiled version of the Flite library which should be located in the working directory of the Talk Calendar executable (this is provided in the binary download). Unfortunately, as I discovered, a number of distros do not have the Flite shared library in their repositories. Use [packages.org](https://pkgs.org/) to check if your distro supports libFlite and if so you can use the libflite version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). Using a pre-compiled version of Flite should make Talk Calendar universal across different distributions.
+
+You can compile the Flite library for yourself using the source code on the [Flite github page](https://github.com/festvox/flite). 
+
+Flite  is a small run-time speech synthesis engine which uses [diphone](https://en.wikipedia.org/wiki/Diphone) concatenation for speech output. It has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). BSD-style licenses are considered compatible with the GPL licenses and are permissive, meaning they place minimal restrictions on how the software can be used, modified and distributed. Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis). 
+
+The [eSpeak](https://espeak.sourceforge.net/) speech dispatcher approach which sent text-to-speech output to the espeak speech synthesizer is not longer used. This approach required that eSpeak is installed separately on the user system. eSpeak uses the formant speech synthesis method and produces good quality speech with clear articulation (although the standard voices are robotic). eSpeak is said to have a GPL v3 [license](https://espeak.sourceforge.net/license.html). I am confused about the eSpeak license situation as it appears that some of its components have other licenses. For example, the IEEE80.c file [license](https://github.com/espeak-ng/espeak-ng/blob/c1d9341f86eee4b7a0da50712b627d8a76e92fea/src/libespeak-ng/ieee80.c) says "Copyright (C) 1989-1991 Apple Computer, Inc." which is very strange given that espeak has a GPL v3 license. This is discussed further in the forum post [here](https://opensource.stackexchange.com/questions/11545/possibilities-to-use-a-gpl-v3-licensed-library-in-a-closed-source-game).
 However, eSpeak is an [Official Debian package License: DFSG free](https://blends.debian.org/accessibility/tasks/speechsynthesis). 
-
-As a side note I have developing a word concatenation based speech synthesizer for Talk Calendar to play back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. The advantage of using a built-in speech synthesizer is that it removes any dependencies on external speech engine libraries. The disadvantage of the word concatenation approach is the limited number of words which can be used for an event title. This project has a separate github page called [Talk Calendar Solo](https://github.com/crispinprojects/talkcalendar-solo). 
-
-I have also investigated developing a diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/diphone-talker). Currently speech output quality is poor compared to libFlite. I have also been working on a formant speech synthesizer the technique used by eSpeak. More details of this formant speech synthesizer approach can be found [here](https://github.com/crispinprojects/formant-synthesizer). Unfortunately, this is proving to be less promising.
 
 
 ### Audio Thread
@@ -195,7 +188,6 @@ sudo apt install libgtk-4-dev
 sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
-sudo apt install flite1-dev
 ```
 
 The packages:
@@ -231,13 +223,14 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-I have tried to keep the current code base compatible with Debian 12 which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to that used with Ubuntu 24.04 which is GTK 4.14. Because of this you will get some depreciation warnings when compiling using Ubuntu 24.04. See Debian compile notes below.
+The compiled Flite binary called "flite_cmu_us_rms"  (rm voice) should be copied into the working directory containing the Talk Calendar executable for speech output. A copy fo the "flite_cmu_us_rms"  compiled on x86 hardware can be found in the binary download.
+
 
 ## Debian Compile Notes
 
 I have tried to keep the current code base compatible with Debian 12 which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to that used with Ubuntu 24.04 which is GTK 4.14. Consequently, with the current version of Talk Calendar the RGB values for the today, calendar event, public holiday colours have to be entered manually to be compatible with GTK 4.8. However, the GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced in GTK4.10 and will be used in future updates.
 
-The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with  "gtk_css_provider_load_from_string". Because I have not replaced gtk_css_provider_load_from_data function you will get a depreciation warning when compiling using Ubuntu 24.04. 
+The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with  "gtk_css_provider_load_from_string". If compiling with Debian 12 you need to use the "gtk_css_provider_load_from_data" function (see notes in the calendar source code). Just comment out "gtk_css_provider_load_from_string" and replace with "gtk_css_provider_load_from_data".
 
 With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from source code and ical backup files are saved to the current working directory. A file dialog to export an ical backup file will be implemented using a GAsyncReadyCallback function and this will not be compatible with GTK4.8.
 
@@ -245,15 +238,10 @@ Debian Trixie will be the next stable release of Debian. At the time of writing 
 
 ### Raspberry Pi OS
 
-Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above for Debian 12 Bookworm. 
+Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above.
 
-Talk Calendar has been tested on a Raspberry Pi 500 with the Raspberry Pi monitor which has two front-facing speakers for producing audio output.
+You will need to the compile Flite file "flite_cmu_us_rms" for ARM64 using the code on the gihub page found [here](https://github.com/festvox/flite).  You will also need to use the "gtk_css_provider_load_from_data" function (see notes in the calendar source code). Just comment out "gtk_css_provider_load_from_string" and replace with "gtk_css_provider_load_from_data".
 
-Again you need to install the [Flite](https://packages.debian.org/bookworm/flite1-dev) speech synthesis development library on the Raspberry Pi using the terminal command below.
-
-```
-sudo apt install flite1-dev
-```
 
 ### Building on Fedora
 
@@ -266,7 +254,6 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 sudo dnf install sqlite-devel
-sudo dnf install flite-devel
 ```
 
 To check the installed Sqlite 3 version use the command below.
@@ -320,8 +307,6 @@ The Flite (Festival Lite) speech synthesizer has a BSD-like [license](https://gi
 * [Flite](http://www.festvox.org/flite/) Flite (festival-lite) is a small fast portable speech synthesis system. The core Flite library was originally developed by Alan W Black and the history of the project together with other contributors can be found [here](https://github.com/festvox/flite). Flite is free software and has a BSD-like [license](https://github.com/festvox/flite/blob/master/COPYING). The BSD license is compatible with most other [open source licenses](https://www.gnu.org/licenses/gpl-faq.en.html#AllCompatibility). Flite is an official Debian package and labelled [DFGS free](https://blends.debian.org/accessibility/tasks/speechsynthesis).
 
 * Flite [API](http://cmuflite.org/doc/flite_7.html#C-example)
-
-* [Talk Calendar Solo](https://github.com/crispinprojects/talkcalendar-solo)
 
 * [Debian](https://www.debian.org/)
 

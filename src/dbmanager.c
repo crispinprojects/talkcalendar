@@ -724,7 +724,8 @@ void db_get_all_enddate_events_year_month(GArray *evt_arry, int year, int month)
 	}
 	
 	//sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i'", year, 1, month);
-	sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month,1);
+	//sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month,1);
+	sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month);
 
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
      printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
