@@ -1,8 +1,12 @@
 # Talk Calendar
 
-Talk Calendar is a speaking calendar for Linux.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability. This version of Talk Calendar uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.).  A screenshot of Talk Calendar is shown below. This version uses it own built-in speech engine. If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides more speech functionality. However, the advantage of using Talk Calendar with its own built-in speech engine is that it can compiled without any external speech synthesizer dependencies and so should be universal across different distributions.
+If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides enhanced speech functionality.
+
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.). 
+
+A screenshot of Talk Calendar is shown below. 
 
 ![](talkcalendar.png)
 
@@ -13,7 +17,7 @@ Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) 
 * event details, location, start and end time can be entered and edited
 * calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
-* built-in speech synthesiser
+* built-in diphone speech synthesiser
 * Sqlite3 database used to store events
 
 
@@ -150,19 +154,17 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play-back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. Press F2 to show the current list of words which can be used for an event title. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". You can be creative with the current list of dictionary words. If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
+This version of Talk Calendar uses a diphone speech synthesizer. This replaces the word concatenation speech synthesizer which played back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. The issue with this approach was that the voice file was becoming increasingly large as more audio word recordings were added to the dictionary. I had to use Signed 16-bit PCM encoding for the audio recordings rather than 8000Hz 8-bit Unsigned PCM encoding to eliminate the audio hiss that could heard on playback but this made audio WAV files larger and so added to the voice file size problem.
 
-I have recently been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Uncle birthday" or "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete. 
+The better approach is to use recorded diphones and construct words from these.  With this approach the audio voice file size remains fixed but words have to be constructed by stitching together diphones in the correct order. The diphone synthesizer uses a set of pre-recorded diphone sound samples converted to raw hexadecimal values and concatenates these to produce speech output for a given text input. Unfortunately, the synthesizer is not as good as other fully fledged systems but it does work for reading out a short descriptive title for an event together with the date and time.
 
-The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies. The disadvantage of the word concatenation approach is the limited number of words which can be used for an event title. The speech engine built into Talk Calendar is not meant to be a fully fledged text-to-speech synthesizer just enough words to put together a descriptive title for an event and readout the date and time.
+The pronunciation of some words is poor as there is very little information online on how to convert words to a diphone list. I have mainly used [The CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) to look up the pronunciation for a word and then made an educated guess at the diphone sequence.
 
-The word concatenation synthesizer does produce reasonably  clear fluent speech when compared to the output of my diphone speech synthesizer the details of which can be found [here](https://github.com/crispinprojects/diphone-talker). However, the word splicing nature of the concenation approach does mean that the natural flow of words (prosody) has a stepping rhythm when mimicking the process of speech formation. Given that the goal is to read out short phrases describing an event title this is not a particular issue in this application and the result is artificial speech that resembles human speech.
+Currently the word to diphone dictionary is small (a few hundred words) focused on common generic words used to summarise a personal calendar event (e.g. birthday, anniversary, holiday, reminder etc.) but has the potential to be expanded. At this stage it just converts event summary text to speech audio output and  does not support the use of apostrophes and other special characters. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder" and "Travel and visit". I have been adding some common English first names to the dictionary so that it is possible, for example, to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete.  If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
 
-The chipmunk voice is now uses 16000Hz Signed 16-bit PCM recordings rather than 8000Hz 8-bit Unsigned PCM which has reduced the audio hiss that could heard on previous versions. However, the voice file is now larger.
+This voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
 
-More words for personal calendar events and notable dates will be added in future updates. 
-
-I have put together a version of Talk Calendar which uses the [Flite API](http://cmuflite.org/doc/flite_7.html#C-example) which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This provides an elegant programming solution to integrating fully fledged speech synthesizer into an application.  Unfortunately, as I discovered, a number of distros do not have the Flite shared library in their repositories. Use [packages.org](https://pkgs.org/) to check if your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1). Because of this issue this project uses it own built-in speech engine in an effort to make it universal across different Linux distributions.
+The diphone speech synthesizer is work in progress. 
 
 ### Audio Thread
 
@@ -297,6 +299,9 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
+* [Diphone Source and License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
+
+* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
 
 * [Debian](https://www.debian.org/)
 

@@ -814,7 +814,7 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 	GtkCssProvider *provider_today; //today provider
 	provider_today = gtk_css_provider_new ();
 	gtk_css_provider_load_from_data (provider_today, today_provider_str,-1); //Debian 12 GTK4.8
-	//gtk_css_provider_load_from_string(provider_today, today_provider_str); //Ubuntu 24.04  GTK 4.14
+	//gtk_css_provider_load_from_string(provider_today, today_provider_str); //Ubuntu GTK 4.14
 	gtk_style_context_add_provider_for_display (gdk_display_get_default (), GTK_STYLE_PROVIDER (provider_today), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		
 	GtkCssProvider *provider_event; //event provider
@@ -825,7 +825,7 @@ static void custom_calendar_select_day(CustomCalendar *calendar, guint dday, gui
 		
 	GtkCssProvider *provider_holiday; //holiday provider
 	provider_holiday = gtk_css_provider_new ();
-	gtk_css_provider_load_from_data (provider_holiday,holiday_provider_str,-1);	//depreciated
+	gtk_css_provider_load_from_data (provider_holiday,holiday_provider_str,-1);	
 	//gtk_css_provider_load_from_string(provider_holiday,holiday_provider_str);	
 	gtk_style_context_add_provider_for_display (gdk_display_get_default (), GTK_STYLE_PROVIDER (provider_holiday), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	
