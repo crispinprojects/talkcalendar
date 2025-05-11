@@ -1,10 +1,12 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability. This version of Talk Calendar uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event titles.
+
+This version of Talk Calendar uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions although I have been developing it using [Debian](https://www.debian.org/) 12 Bookworm.
 
 If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides enhanced speech functionality.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE etc.). 
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE, Ubuntu Desktop, etc.). 
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -15,17 +17,18 @@ A screenshot of Talk Calendar is shown below.
 * built with C and GTK4 for GTK based desktops
 * month view calendar 
 * event details, location, start and end time can be entered and edited
-* calendar tooltips and multiday event display
 * export and import iCalendar files (backup and restore)
-* built-in diphone speech synthesiser
+* built-in speech synthesizer for reading out date, times and event titles
+* talking clock
+* designed for accessibility
 * Sqlite3 database used to store events
 
 
 ## Local Install Using Pre-built Binary (x86 Intel PCs)
 
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4 and compiled using Ubuntu 24.04 on Intel hardware assuming GTK4.8 to be compatible with Debian 12 and Raspberry Pi OS.
+A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian 12 on Intel hardware.
 
-Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  Change Talk Calendar file permissions so that it can run as an executable as shown below.
+Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
 ```
 sudo chmod +x talkcalendar
@@ -43,7 +46,7 @@ To add Talk Calendar to the system menu modify the Talk Calendar desktop file pr
 
 You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
 
-Copy the "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
+Copy your modified "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
 
 ## Autostart Talk Calendar
 
@@ -71,36 +74,36 @@ A screenshot of the new event dialog is shown below.
 
 ### Editing Existing Event
 
-* Select the event in the list view and either select "Event->Edit Selected Event" from the menu or press Ctrl+e
+* Select the event in the list view and either select "Edit Event" button in the header bar or press Ctrl+e
 * Change details as appropriate
+
+![](talkcalendar-hamburger-menu.png)
 
 ### Searching For Events
 
-* Select the Event->Search menu item
+* Select the "Search" menu item in the hamburger menu (see screenshot)
 * Enter a search term or location.
 
 ### Preferences
 
-* Select Calendar->Preferences from the menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
+* Select "Preferences" in the hamburger menu or use Ctrl+Alt+p to invoke the preferences window (see screenshot below)
 * Change options as required
 
 ![](talkcalendar-preferences.png)
 
-You can use 12 hour format. Event end-times can also be shown in the list view. Public holidays can be displayed on the calendar which are also spoken.
-
-Colours have to be entered manually using RGB values. You can use the w3Schools [RGB calcuator](https://www.w3schools.com/colors/colors_rgb.asp) for selecting a RGB colour. 
+You can use 12 hour format. Event end-times can also be shown in the list view. Notable dates (Christmas, Easter, Saint Days etc.) can be displayed on the calendar which are also spoken.
 
 Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
 
 ## Talking
 
-* Press the *t key* to readout the current time.
+* Press the *t key* to readout the current time (talking clock).
 
-* Press *spacebar* to readout event details for the date selected.
+* Press *spacebar* to readout event details for the date selected (see option preferences).
 
 ### Information
 
-* Select "Help->Information from the menu or press F1
+* Select "Information"  from the help menu or press F1
 
 ![](talkcalendar-info.png)
 
@@ -113,19 +116,12 @@ Talk options can be changed. The option "Speak At Startup" allows Talk Calendar 
 ```
 Ctrl+n			New Event
 Ctrl+e			Edit Selected Event
+Delete			Delete Selected Event
 Ctrl_Alt+p		Preferences window
 Spacebar		Speak
 t			Speak Time
 F1			Information
 ```
-
-### Information
-
-* Select "Information"  from the help menu or press F1
-
-* the information window shows the keyboard shoutcuts, how many records are in the database, the Sqlite version being used on the system, the desktop font and scale factor.
-
-* Use the About dialog to display current version.
 
 ### Events Database
 
@@ -154,21 +150,35 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Speech Synthesis
 
-This version of Talk Calendar uses a diphone speech synthesizer. This replaces the word concatenation speech synthesizer which played back pre-recorded English words for reading out dates, times and some common generic words used to summarise a personal calendar event. The issue with this approach was that the voice file was becoming increasingly large as more audio word recordings were added to the dictionary. I had to use Signed 16-bit PCM encoding for the audio recordings rather than 8000Hz 8-bit Unsigned PCM encoding to eliminate the audio hiss that could heard on playback but this made audio WAV files larger and so added to the voice file size problem.
+Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play back recorded English words for reading out dates, times and event titles. Common generic words can used to summarise a personal calendar event (see dictionary word list in the download). You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". If an event summary word is not recognised then it is skipped over.
 
-The better approach is to use recorded diphones and construct words from these.  With this approach the audio voice file size remains fixed but words have to be constructed by stitching together diphones in the correct order. The diphone synthesizer uses a set of pre-recorded diphone sound samples converted to raw hexadecimal values and concatenates these to produce speech output for a given text input. Unfortunately, the synthesizer is not as good as other fully fledged systems but it does work for reading out a short descriptive title for an event together with the date and time.
+Synthesized speech can be created by concatenating pieces of recorded speech. The size of the stored speech units can range from  [phonemes](https://en.wikipedia.org/wiki/Phoneme), [diphones](https://en.wikipedia.org/wiki/Diphone), words or even whole sentences. The use of words and sentences is often used in public announcement services (e.g. train platform announcements) as it can produce high quality output.
 
-The pronunciation of some words is poor as there is very little information online on how to convert words to a diphone list. I have mainly used [The CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict) to look up the pronunciation for a word and then made an educated guess at the diphone sequence.
+I have developed word concatenation and diphone concatenation speech synthesizers. Details of my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker). This project uses my word concatenation speech synthesizer. The quality of a speech synthesizer is judged by its ability to be understood clearly. The word concatenation speech synthesizer approach produces clear fluent speech when compared to the output of my diphone speech synthesizer. The speech output from my diphone sysnthesizer lacks clarity (more work needed). 
 
-Currently the word to diphone dictionary is small (a few hundred words) focused on common generic words used to summarise a personal calendar event (e.g. birthday, anniversary, holiday, reminder etc.) but has the potential to be expanded. At this stage it just converts event summary text to speech audio output and  does not support the use of apostrophes and other special characters. You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder" and "Travel and visit". I have been adding some common English first names to the dictionary so that it is possible, for example, to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete.  If an event summary word is not recognised then it is skipped over. More words for personal calendar events and notable dates will be added in future updates. 
+The main issue with the word concatenation speech synthesizer approach is that the voice file becomes increasingly larger as more audio word recordings are added to the dictionary.  I have had to use Signed 16-bit PCM encoding for the audio recordings rather than 8000Hz 8-bit Unsigned PCM encoding to eliminate the audio hiss that could heard on playback in previous versions of Talk Calendar. However,this makes the audio word files larger and so adds to the voice file size problem. Of course, from a file size perspective, the better approach is to use recorded diphones and construct words from these.  With this approach the audio voice file size remains fixed but words have to be constructed by stitching together diphones in the correct order. 
 
-This voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
+The word dictionary of my word concatenation speech synthesizer  is small (a few hundred words). Generic words have been chosen to enable  short descriptive event titles to be used and readout with the date and time. I have recently been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Uncle birthday" or "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete. 
 
-The diphone speech synthesizer is work in progress. 
+The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies. If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides enhanced speech functionality.
+
+The speech synthesizer code is work in progress and under development. 
 
 ### Audio Thread
 
 Talk Calendar now uses GTask (async/wait pattern) to play audio in a thread rather than GThread and GMutex which were used previously. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
+
+### Accessibility
+
+The main aim of the project has been to produce a calendar with an interface designed for accessibility which allows the dates and times of personal calendar events to be readout with the integration of a talking clock (t-key).
+
+Programs are more accessible for people with visual impairments if they can use large text, high contrast and have a simple design. I have tried make the Talk Calendar interface simple using header buttons for creating a new event, editing a selected event and deleting a selected event.  The interface can be scaled to create large text. High contrast is achived by using black text on a plain white background. The keyboard arrow keys can be used inconjuction with the enter key to move between months and years minimising the use of the mouse if required.
+
+If you are using Debian 12 (Bookworm) GNOME desktop then switching on the screen reader provides audio navigation of the calendar interface using [Orca](https://help.gnome.org/users/orca/stable/introduction.html.en) and the [espeak](https://espeak.sourceforge.net/) text-to-speech engine. The GNOME accessibility settings are available using Settings->Accessibility. You can also use the screen reader to read out a calendar event by selecting it in the list view. The audio output from my speech synthesizer is very different to that produced by eSpeak.
+
+I feel I have been partially successful in my efforts to produce a speaking calendar for Linux with an interface designed for accessibility. Developing a speech synthesizer with human like characteristics has proved more difficult than I originally thought. My diphone speech synthesizer lacked speech clarity. My word concatenation speech synthesizer which produces clear speech output is limited by having a small dictionary of words to describe an event title.
+
+There is more on computer accessibility [here](https://en.wikipedia.org/wiki/Computer_accessibility).
 
 ## Build From Source
 
@@ -228,13 +238,14 @@ To run Talk Calendar from the terminal use
 
 ## Debian Compile Notes
 
-I have tried to keep the current code base compatible with Debian 12 which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to that used with Ubuntu 24.04 which is GTK 4.14. Consequently, with the current version of Talk Calendar the RGB values for the today, calendar event, public holiday colours have to be entered manually to be compatible with GTK 4.8. However, the GTK [ColorDialogButton](https://docs.gtk.org/gtk4/class.ColorDialogButton.html) was introduced in GTK4.10 and will be used in future updates.
+I have tried to keep the current code base compatible with Debian 12 (Bookworm) which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to the latest stable version which is currently [GTK4.18](https://www.gtk.org/). Debian Trixie will be the next stable release of Debian. At the time of writing the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) shows that Debian Trixie is currently using GTK4.18.2. 
 
 The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with "gtk_css_provider_load_from_string". However, I have still used this to be compatible with Debian 12. If compiling with Ubuntu 24.04 you get a series of depreciation warning messages as GTK 4.14 is used. See comments in the calendar source code file to eliminate these.
 
-With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from source code and ical backup files are saved to the current working directory. A file dialog to export an ical backup file will be implemented using a GAsyncReadyCallback function and this will not be compatible with GTK4.8.
+With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from source code and ical backup files are saved to the current working directory. A file dialog to export an ical backup file will be implemented using a GAsyncReadyCallback function in future updates (when Debian 13 is released) and this will not be compatible with GTK4.8.
 
-Debian Trixie will be the next stable release of Debian. At the time of writing the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) shows that Debian Trixie is currently using GTK4.18.2. 
+With GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This is not available in GTK4.8 (Debian 12) and the main reason why I ended up writing my own calendar. Also system colours will be used for the visual markers. When Debian 13 is released I will see if my custom calendar can be swapped out for GTKCalendar and what accessibility features are available.
+
 
 ### Raspberry Pi OS
 
@@ -279,7 +290,7 @@ Active and under development.
 
 ## License
 
-GTK is released under the terms of the [GNU Lesser General Public License version 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html). Consequently, Talk Calendar is licensed under the same LGPL v2.1 license.
+GTK is released under the terms of the [GNU Lesser General Public License version 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html). Talk Calendar is licensed under the same LGPL v2.1 license.
 
 ## Acknowledgements
 
@@ -298,10 +309,6 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
-
-* [Diphone Source and License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
-
-* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
 
 * [Debian](https://www.debian.org/)
 

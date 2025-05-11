@@ -16,14 +16,13 @@
  ***************************************************************************/
 
 /*
-GTK4 simple month view calendar which uses a grid of day labels 
+Simple grid calendar for "Tiki the talking calendar" project.
+pragma once can be used instead of header guards
 */
 
 #pragma once
 
 #include <gtk/gtk.h>
-
-#include <stdio.h>
 
 G_BEGIN_DECLS
 
@@ -42,18 +41,7 @@ GDK_AVAILABLE_IN_ALL void  custom_calendar_unmark_day (CustomCalendar *calendar,
 GDK_AVAILABLE_IN_ALL void custom_calendar_reset_marks (CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL gboolean  custom_calendar_get_day_is_marked (CustomCalendar *calendar, guint day);
 
-GDK_AVAILABLE_IN_ALL void custom_calendar_set_day_str(CustomCalendar *calendar, int day, char* title);
-GDK_AVAILABLE_IN_ALL void custom_calendar_initialise_eventday_array(CustomCalendar *calendar);
-
-GDK_AVAILABLE_IN_ALL void custom_calendar_set_tooltip_str(CustomCalendar *calendar, int day, char* title);
-GDK_AVAILABLE_IN_ALL void custom_calendar_initialise_tooltip_array(CustomCalendar *calendar);
-
-GDK_AVAILABLE_IN_ALL void custom_calendar_mark_holiday(CustomCalendar *calendar,  guint day);
-GDK_AVAILABLE_IN_ALL void  custom_calendar_unmark_holiday(CustomCalendar *calendar,guint day);
-GDK_AVAILABLE_IN_ALL void custom_calendar_reset_holidays (CustomCalendar *calendar);
-
-GDK_AVAILABLE_IN_ALL void custom_calendar_set_holiday_str(CustomCalendar *calendar, int day, char* title);
-GDK_AVAILABLE_IN_ALL void custom_calendar_initialise_holiday_array(CustomCalendar *calendar);
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_pango_scale(CustomCalendar *calendar, double value);
 
 GDK_AVAILABLE_IN_ALL void custom_calendar_goto_today (CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL void custom_calendar_update (CustomCalendar *calendar);
@@ -62,20 +50,9 @@ GDK_AVAILABLE_IN_ALL int custom_calendar_get_day(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_month(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_year(CustomCalendar *calendar);
 
-//properties
-
-void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colourname);
-const gchar* custom_calendar_get_today_colour(CustomCalendar *self);
-
-void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colourname);
-const gchar* custom_calendar_get_event_colour(CustomCalendar *self);
-
-void custom_calendar_set_holiday_colour(CustomCalendar *self, const gchar* colourname);
-const gchar* custom_calendar_get_holiday_colour(CustomCalendar *self);
-
-
-void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_tooltips);
-gboolean custom_calendar_get_show_tooltips(CustomCalendar *self);
+GDK_AVAILABLE_IN_ALL void custom_calendar_mark_notable_day(CustomCalendar *calendar,  guint day);
+GDK_AVAILABLE_IN_ALL void  custom_calendar_unmark_notable_day(CustomCalendar *calendar,guint day);
+GDK_AVAILABLE_IN_ALL void custom_calendar_reset_notable_days(CustomCalendar *calendar);
 
 //not public
 static void custom_calendar_select_day (CustomCalendar *calendar, guint day, guint month, guint year);

@@ -18,6 +18,6 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
-GList* word_to_diphones(const char* word_str); 
+void get_words_array(GList *speak_word_list, int word_number,unsigned char **word_arrays, unsigned int *word_arrays_sizes);
  
 #endif//DICTIONARY_H
