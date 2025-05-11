@@ -2,11 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event titles.
 
-This version of Talk Calendar uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions although I have been developing it using [Debian](https://www.debian.org/) 12 Bookworm.
-
-If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides enhanced speech functionality.
-
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE, Ubuntu Desktop, etc.). 
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE, Ubuntu Desktop, etc.). It uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions. I have been developing it using [Debian 12 Bookworm](https://www.debian.org/) which uses GTK4.8.
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -18,7 +14,7 @@ A screenshot of Talk Calendar is shown below.
 * month view calendar 
 * event details, location, start and end time can be entered and edited
 * export and import iCalendar files (backup and restore)
-* built-in speech synthesizer for reading out date, times and event titles
+* speech synthesizer for reading out date, times and event titles
 * talking clock
 * designed for accessibility
 * Sqlite3 database used to store events
@@ -152,7 +148,7 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 Talk Calendar has a built-in word concatenation speech synthesizer. It is used to play back recorded English words for reading out dates, times and event titles. Common generic words can used to summarise a personal calendar event (see dictionary word list in the download). You can use two or more words for the event summary such as "Birthday party", "Dads birthday", "Television reminder", "Travel and visit" or just "Calendar event". If an event summary word is not recognised then it is skipped over.
 
-Synthesized speech can be created by concatenating pieces of recorded speech. The size of the stored speech units can range from  [phonemes](https://en.wikipedia.org/wiki/Phoneme), [diphones](https://en.wikipedia.org/wiki/Diphone), words or even whole sentences. The use of words and sentences is often used in public announcement services (e.g. train platform announcements) as it can produce high quality output.
+Synthesized speech can be created by concatenating pieces of recorded speech. The size of the stored speech units can range from  [phonemes](https://en.wikipedia.org/wiki/Phoneme), [diphones](https://en.wikipedia.org/wiki/Diphone), [words](https://en.wikipedia.org/wiki/Speech_synthesis) or even whole sentences. The use of words and sentences is often used in public announcement services (e.g. train platform announcements) as it can produce high quality output.
 
 I have developed word concatenation and diphone concatenation speech synthesizers. Details of my diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker). This project uses my word concatenation speech synthesizer. The quality of a speech synthesizer is judged by its ability to be understood clearly. The word concatenation speech synthesizer approach produces clear fluent speech when compared to the output of my diphone speech synthesizer. The speech output from my diphone sysnthesizer lacks clarity (more work needed). 
 
@@ -160,9 +156,7 @@ The main issue with the word concatenation speech synthesizer approach is that t
 
 The word dictionary of my word concatenation speech synthesizer  is small (a few hundred words). Generic words have been chosen to enable  short descriptive event titles to be used and readout with the date and time. I have recently been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Uncle birthday" or "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete. 
 
-The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies. If your distro supports [libFlite](https://packages.debian.org/bookworm/libflite1) you may want to use the Flite shared library version of Talk Calendar which can be found [here](https://github.com/crispinprojects/talkcalendar-libflite). This integrates the Flite speech synthesizer shared library into Talk Calendar and provides enhanced speech functionality.
-
-The speech synthesizer code is work in progress and under development. 
+The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies. I am working on a development version of Talk Calendar which uses eSpeak. The package search site [pkgs.org](https://pkgs.org/) shows that eSpeak and eSpeak-ng are widely available in Linux distributions. I have received github warnings that the chipmunk voice file that is currently used by Talk Calendar exceeds their file upload limits and so using eSpeak maybe the best option for the future development of Talk Calendar.
 
 ### Audio Thread
 
@@ -172,11 +166,11 @@ Talk Calendar now uses GTask (async/wait pattern) to play audio in a thread rath
 
 The main aim of the project has been to produce a calendar with an interface designed for accessibility which allows the dates and times of personal calendar events to be readout with the integration of a talking clock (t-key).
 
-Programs are more accessible for people with visual impairments if they can use large text, high contrast and have a simple design. I have tried make the Talk Calendar interface simple using header buttons for creating a new event, editing a selected event and deleting a selected event.  The interface can be scaled to create large text. High contrast is achived by using black text on a plain white background. The keyboard arrow keys can be used inconjuction with the enter key to move between months and years minimising the use of the mouse if required.
+Accessibility refers to the design of systems to be usable by people with disabilities and elders. Programs are more accessible for people with visual impairments if they can use large text, high contrast and have a simple design. I have tried make the Talk Calendar interface simple using header buttons for creating a new event, editing a selected event and deleting a selected event.  The interface can be scaled to create large text. High contrast is achieved by using black text on a plain white background. The keyboard arrow keys can be used inconjuction with the enter key to move between months and years minimising the use of the mouse if required.
 
 If you are using Debian 12 (Bookworm) GNOME desktop then switching on the screen reader provides audio navigation of the calendar interface using [Orca](https://help.gnome.org/users/orca/stable/introduction.html.en) and the [espeak](https://espeak.sourceforge.net/) text-to-speech engine. The GNOME accessibility settings are available using Settings->Accessibility. You can also use the screen reader to read out a calendar event by selecting it in the list view. The audio output from my speech synthesizer is very different to that produced by eSpeak.
 
-I feel I have been partially successful in my efforts to produce a speaking calendar for Linux with an interface designed for accessibility. Developing a speech synthesizer with human like characteristics has proved more difficult than I originally thought. My diphone speech synthesizer lacked speech clarity. My word concatenation speech synthesizer which produces clear speech output is limited by having a small dictionary of words to describe an event title.
+I feel I have been partially successful in my efforts to produce a speaking calendar for Linux with an interface designed for accessibility. Developing a speech synthesizer with human like characteristics has proved more difficult than I originally thought. My diphone speech synthesizer lacked speech clarity. My word concatenation speech synthesizer produces clear speech output but is limited by having a small dictionary of words due to file size (see section above on speech synthesis). I have received github warnings that the chipmunk voice file that is currently used by Talk Calendar exceeds their file upload limits and so using eSpeak maybe the best option for the future development of Talk Calendar.
 
 There is more on computer accessibility [here](https://en.wikipedia.org/wiki/Computer_accessibility).
 
@@ -286,7 +280,7 @@ dnf list gtk4-devel
 
 ## Project Status
 
-Active and under development.
+Maintenance mode.
 
 ## License
 
