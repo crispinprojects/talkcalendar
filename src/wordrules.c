@@ -19,7 +19,7 @@
 
 char *word_rules(char *input_str)
 {
-	
+	//TODO
 	//g_print("word substitution rules called\n");	
 	char* out_str="";
 	gchar** word_str;		 
@@ -29,469 +29,19 @@ char *word_rules(char *input_str)
 	{
 	char* word = g_ascii_strdown(word_str[j], -1); //convert to lower case
 	
-	//a-words
-	
-	if (g_strcmp0(word,"accounting")==0)
-	{
-		word ="account ing";
-	}
-	if (g_strcmp0(word,"accountable")==0)
-	{
-		word ="account able";
-	}
-	if (g_strcmp0(word,"agreement")==0)
-	{
-		word ="agree ment";
-	}
-		
-	
 	if (g_strcmp0(word,"antifreeze")==0)
 	{
 		word ="anti freeze";
 	}
-	
-	if (g_strcmp0(word,"appointments")==0)
-	{
-		word ="appointment";
-	}
-	
-	if (g_strcmp0(word,"aunts")==0)
-	{
-		word ="aunt";
-		
-	}	
-	if (g_strcmp0(word,"aunty")==0)
-	{
-		word ="auntie";
-	}
-	
-	//b words
-	if (g_strcmp0(word,"bankable")==0)
-	{
-		word ="bank able";
-	}
-	
-	if (g_strcmp0(word,"bedroom")==0)
-	{
-		word ="bed room";
-	}
-	if (g_strcmp0(word,"books")==0)
-	{
-		word ="book";
-	}
-	
-	if (g_strcmp0(word,"bookable")==0)
-	{
-		word ="book able";
-	}
-	
-	if (g_strcmp0(word,"booking")==0)
-	{
-		//word ="book ing";
-		word ="book ing";
-	}
-	
-	if (g_strcmp0(word,"boyfriend")==0)
-	{
-		
-		word ="boy friend";
-	}
-	//c-words
-		
-	if (g_strcmp0(word,"careful")==0)
-	{
-		word ="care";
-	}
-	if (g_strcmp0(word,"childrens")==0)
-	{
-		word ="children";
-	}
-	if (g_strcmp0(word,"contacts")==0)
-	{
-		word ="contact";
-	}
-	if (g_strcmp0(word,"cousins")==0)
-	{
-		word ="cousin";
-	}
-	
-	//d-words
-	
-	if (g_strcmp0(word,"dateline")==0)
-	{
-		word ="date line";
-	}
-		
-	if (g_strcmp0(word,"dating")==0)
-	{
-		word ="date ing";
-	}
-	
-	if (g_strcmp0(word,"daybook")==0)
-	{
-		word ="day book";
-	}
-	
-	if (g_strcmp0(word,"daycare")==0)
-	{
-		word ="day care";
-	}
-	
-	if (g_strcmp0(word,"daytime")==0)
-	{
-		word ="day time";
-	}
-	
-	if (g_strcmp0(word,"daystar")==0)
-	{
-		word ="day star";
-	}
-	
-	if (g_strcmp0(word,"daywork")==0)
-	{
-		word ="day work";
-	}
-	
-	if (g_strcmp0(word,"deadlines")==0)
-	{
-		word ="deadline";
-	}
-	
-	//e-words
-	if (g_strcmp0(word,"engaged")==0)
-	{
-		word ="engage";
-	}
-	
-	if (g_strcmp0(word,"engaging")==0)
-	{
-		word ="engage ing";
-	}
-	if (g_strcmp0(word,"engagement")==0)
-	{
-		word ="engage ment";
-	}
-	
-	
-	//f-words
-	if (g_strcmp0(word,"freds")==0)
-	{
-		word ="fred";
-	}
-	
-		
-	if (g_strcmp0(word,"fireplace")==0)
-	{
-		word ="fire place";
-	}
-	
-	if (g_strcmp0(word,"firestation")==0)
-	{
-		word ="fire station";
-	}
-	
-	if ((g_strcmp0(word,"firework")==0) || (g_strcmp0(word,"fireworks")==0))
-	{
-		word ="fire work";
-	}
-	
-	if (g_strcmp0(word,"friends")==0)
-	{
-		word ="friend";
-	}
-	
-	//g-words
-	if ((g_strcmp0(word,"giftshop")==0) || (g_strcmp0(word,"giftshops")==0))
-	{
-		word ="gift shop";
-	}
-	
-	if ((g_strcmp0(word,"girlfriend")==0) || (g_strcmp0(word,"girlfriends")==0))
-	{
-		word ="girl friend";
-	}	
-	
-	if ((g_strcmp0(word,"grandchildren")==0) || (g_strcmp0(word,"grandchildrens")==0))
-	{
-		word ="grand children";
-	}
-	
-	if ((g_strcmp0(word,"granddad")==0) || (g_strcmp0(word,"grandad")==0))
-	{
-		word ="grand dad";
-	}	
-	if ((g_strcmp0(word,"granddads")==0) || (g_strcmp0(word,"grandads")==0))
-	{
-		word ="grand dads";
-	}	
-	if (g_strcmp0(word,"grandmother")==0)
-	{
-		word ="grand mother";
-	}	
-	if (g_strcmp0(word,"grandmothers")==0)
-	{
-		word ="grand mothers";
-	}
-	
-	//h words
-	if (g_strcmp0(word,"higher")==0)
-	{
-		word ="high";
-	}
-	if (g_strcmp0(word,"hearing")==0)
-	{
-		word ="hear ing";
-	}
-	//i words
-	
-	//j words
-	if (g_strcmp0(word,"jeweller")==0)
-	{
-		word ="jeweler";
-	}
-	
-	if (g_strcmp0(word,"lastly")==0)
-	{
-		word ="last"; 
-	}
-	
-	if (g_strcmp0(word,"lasting")==0)
-	{
-		word ="last ing"; 
-	}
-		
-	
-	if (g_strcmp0(word,"looked")==0)
-	{
-		word ="look"; 
-	}
-	
-	if (g_strcmp0(word,"looker")==0)
-	{
-		word ="look"; 
-	}
-	
-	if (g_strcmp0(word,"lookover")==0)
-	{
-		word ="look over"; //use over prefix
-	}
-	
-	if ((g_strcmp0(word,"lunchtime")==0) || (g_strcmp0(word,"lunchtimes")==0))
-	{
-		word ="lunch time"; 
-	}
-	
-	
-	//m-words
-	
-	if (g_strcmp0(word,"mayday")==0)
-	{
-		word ="may day";
-	}
-	
-	if (g_strcmp0(word,"meetings")==0)
-	{
-		word ="meeting";
-	}
-	
-	if (g_strcmp0(word,"minimarket")==0)
-	{
-		word ="mini market";
-	}
-	
-	if (g_strcmp0(word,"ministore")==0)
-	{
-		word ="mini store";
-	}
-	
-
-	
-	if (g_strcmp0(word,"moving")==0)
-	{
-		word ="move ing";
-	}
-	//n-words
-	if (g_strcmp0(word,"neighbours")==0)
-	{
-		word ="neighbour";
-	}
-	
-	if (g_strcmp0(word,"netflixs")==0)
-	{
-		word ="netflix";
-	}
-	
-	//o words
-	if (g_strcmp0(word,"outofoffice")==0)
-	{
-		word ="out of office";
-	}
-	
-	if (g_strcmp0(word,"overdevelopment")==0)
-	{
-		word ="over development";
-	}
-	
-	//if (g_strcmp0(word,"online")==0) //single word recording
-	//{
-		//word ="on line";
-	//}
-	
-	if (g_strcmp0(word,"opening")==0)
-	{
-		word ="open ing";
-	}
-	
-	if (g_strcmp0(word,"onlooking")==0)
-	{
-		word ="on look ing";
-	}
-	
-	if (g_strcmp0(word,"overlook")==0)
-	{
-		word ="over look";
-	}
-	
-		
-	if (g_strcmp0(word,"overpayment")==0)
-	{
-		word ="over payment";
-	}
-	
-	// p words
-	if (g_strcmp0(word,"placement")==0)
-	{
-		word ="place ment";
-	}
-	if (g_strcmp0(word,"postoffice")==0)
-	{
-		word ="post office";
-	}
-	
-		
-	
-	// r words
-	
-		
-	//s-words
-	
-	if ((g_strcmp0(word,"seafood")==0) || (g_strcmp0(word,"seafoods")==0))
-	{
-		word ="sea food";
-	}
-	
-	if ((g_strcmp0(word,"seaside")==0) || (g_strcmp0(word,"seafoods")==0))
-	{
-		word ="sea side";
-	}
-	
-	if (g_strcmp0(word,"semicircle")==0)
-	{
-		word ="semi circle";
-	}
-	
-	if (g_strcmp0(word,"shoezone")==0)
-	{
-		word ="shoe zone";
-	}
-	
-	if ((g_strcmp0(word,"st")==0) || (g_strcmp0(word,"st.")==0))
-	{
-		word ="saint";
-	}
-	
-	if (g_strcmp0(word,"subagreement")==0)
-	{
-		word ="sub agree ment";
-	}
-	
-	if (g_strcmp0(word,"subdevelopment")==0)
-	{
-		word ="sub development";
-	}
-	
-    if (g_strcmp0(word,"submarine")==0)
-	{
-		word ="sub marine";
-	}
-	
-	if (g_strcmp0(word,"subpostoffice")==0)
-	{
-		word ="sub post office";
-	}
-	
-	if (g_strcmp0(word,"supercar")==0)
-	{
-		word ="super car";
-	}
-	
-	if (g_strcmp0(word,"supermarket")==0)
-	{
-		word ="super market";
-	}
-		
-	if (g_strcmp0(word,"superstar")==0)
-	{
-		word ="super star";
-	}
-		
-	//t words
-	
-	//t words
-	if ((g_strcmp0(word,"timetable")==0) || (g_strcmp0(word,"timetables")==0))
-	{
-		
-		word ="time table";
-	}
-	
-	if ((g_strcmp0(word,"traveling")==0) || (g_strcmp0(word,"travelling")==0))
-	{
-		//word ="travel ing";
-		word ="travel";
-	}
-	
-	if ((g_strcmp0(word,"travelodge")==0) || (g_strcmp0(word,"travelling")==0))
-	{
-		//word ="travel ing";
-		word ="travel lodge";
-	}
-	
-	
-	if (g_strcmp0(word,"transport")==0)
-	{
-		word ="trans port";
-	}
-		
-	//u-words
+	//g_print("%s\n",word);
 	if (g_strcmp0(word,"uncles")==0)
 	{
 		word ="uncle";
 	}
 	
-		
-	if (g_strcmp0(word,"underline")==0)
-	{
-		word ="under line";
-	}
-	
-	if (g_strcmp0(word,"undersea")==0)
-	{
-		word ="under sea";
-	}
-	
-	
-	if (g_strcmp0(word,"workday")==0)
-	{
-		word ="work day";
-	}
-	
-	if (g_strcmp0(word,"workdays")==0)
-	{
-		word ="work days";
-	}
-	
-	//name rules
-	
+	//----------------------------------------------------
+	//name substitutions
+	//----------------------------------------------------
 	if (g_strcmp0(word,"alans")==0)
 	{
 		word ="alan";
@@ -707,15 +257,7 @@ char *word_rules(char *input_str)
 	{
 		word ="elisha";
 	}
-	
-	if (g_strcmp0(word,"elizas")==0)
-	{
-		word ="eliza";
-	}
-	if (g_strcmp0(word,"elizabeths")==0)
-	{
-		word ="elizabeth";
-	}
+			
 	if (g_strcmp0(word,"elliots")==0)
 	{
 		word ="elliot";
@@ -747,7 +289,7 @@ char *word_rules(char *input_str)
 	
 	if (g_strcmp0(word,"freddy")==0)
 	{
-		word ="fredie";
+		word ="freddie";
 	}
 	if ((g_strcmp0(word,"freddies")==0) || (g_strcmp0(word,"freddys")==0))
 	{
@@ -766,11 +308,6 @@ char *word_rules(char *input_str)
 	if ((g_strcmp0(word,"gales")==0) || (g_strcmp0(word,"gailes")==0) || (g_strcmp0(word,"gails")==0) || (g_strcmp0(word,"gayles")==0))
 	{
 		word ="gale";
-	}
-	
-	if ((g_strcmp0(word,"freddies")==0) || (g_strcmp0(word,"freddys")==0))
-	{
-		word ="freddie";
 	}
 	
 	//G names
@@ -911,8 +448,7 @@ char *word_rules(char *input_str)
 	{
 		word ="kate";
 	}
-	
-	
+		
 	
 	if (g_strcmp0(word,"kens")==0)
 	{
@@ -923,10 +459,15 @@ char *word_rules(char *input_str)
 		word ="kenneth";
 	}
 	
-	//L names
-	if ((g_strcmp0(word,"lillys")==0) || (g_strcmp0(word,"lillies")==0))
+	if (g_strcmp0(word,"kings")==0)
 	{
-		word ="lilly";
+		word ="king";
+	}
+	
+	//L names
+	if ((g_strcmp0(word,"lilly")==0) || (g_strcmp0(word,"lilys")==0))
+	{
+		word ="lily";
 	}
 	if (g_strcmp0(word,"louisas")==0)
 	{
@@ -997,25 +538,10 @@ char *word_rules(char *input_str)
 	{
 		word ="naomi";
 	}
-	if (g_strcmp0(word,"normans")==0)
-	{
-		word ="norman";
-	}
-	
+		
 	//O names
-	if (g_strcmp0(word,"olivers")==0)
-	{
-		word ="oliver";
-	}
-	if (g_strcmp0(word,"olivias")==0)
-	{
-		word ="olivia";
-	}
 	
-	if (g_strcmp0(word,"pams")==0)
-	{
-		word ="pam";
-	}
+	
 	if (g_strcmp0(word,"pamelas")==0)
 	{
 		word ="pamela";
@@ -1149,44 +675,33 @@ char *word_rules(char *input_str)
 	}
 	
 	//Z words
-	if (g_strcmp0(word,"zaras")==0)
-	{
-		word ="zara";
-	}
+	
 	if (g_strcmp0(word,"zoes")==0)
 	{
 		word ="zoe";
 	}
-	if (g_strcmp0(word,"zeldas")==0)
+		
+	if ((g_strcmp0(word,"zak")==0) || (g_strcmp0(word,"zakk")==0) || (g_strcmp0(word,"zac")==0))
 	{
-		word ="zelda";
+		word ="zach";
 	}
 	
-	if ((g_strcmp0(word,"zak")==0) || (g_strcmp0(word,"zakk")==0) || (g_strcmp0(word,"zach")==0))
+	if ((g_strcmp0(word,"zaks")==0) || (g_strcmp0(word,"zakks")==0) || (g_strcmp0(word,"zacs")==0))
 	{
-		word ="zac";
+		word ="zach";
 	}
 	
-	if ((g_strcmp0(word,"zaks")==0) || (g_strcmp0(word,"zakks")==0) || (g_strcmp0(word,"zachs")==0))
-	{
-		word ="zac";
-	}
-	if (g_strcmp0(word,"zacs")==0)
-	{
-		word ="zac";
-	}
 	if (g_strcmp0(word,"zacharys")==0)
 	{
 		word ="zachary";
 	}
 	
-		
-	//g_print("%s\n",word);
+	//----------------------------------------------------
+	
 	out_str= g_strconcat(out_str,word, " ", NULL);		
 	j++;
-	} //while loop words
-		
-	
+	}
 	return out_str;
+	
 }
 
