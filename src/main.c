@@ -1391,8 +1391,19 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 			
 	m_start_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_start_hour));
 	m_start_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_start_min));	
+	
 	m_end_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_end_hour));
 	m_end_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_end_min));
+	
+	//check if end time greater than start time else set to start time
+	
+	if ((m_start_hour > m_end_hour) || ((m_start_hour==m_end_hour) && (m_start_min<m_end_min)))
+	{
+		m_end_hour =m_start_hour;
+		m_end_min=m_start_min;
+	}
+	
+	
 	
 	m_is_allday = gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_allday));
 	
@@ -1759,6 +1770,13 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	 m_start_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_start_min));
 	 m_end_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_end_hour));
 	 m_end_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_end_min));
+	 
+	 if ((m_start_hour > m_end_hour) || ((m_start_hour==m_end_hour) && (m_start_min<m_end_min)))
+	{
+		m_end_hour =m_start_hour;
+		m_end_min=m_start_min;
+	}
+	
 	 
 	if (m_is_allday) 
 	{
@@ -2901,7 +2919,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.6 (Diphone Synth)");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.7 (Diphone Synth)");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Linux Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3778,7 +3796,7 @@ static void speak_events() {
     char* str = remove_semicolons(summary_str);
     
     char* summary_str2 =word_rules(str);
-	g_print("changed_summary = %s\n", summary_str2);
+	//g_print("changed_summary = %s\n", summary_str2);
   
 	gchar** words;		 
 	words = g_strsplit (summary_str2, " ", 0); //split on space
@@ -4369,7 +4387,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	//talk speed		
 	GtkAdjustment *adjustment_speech_rate;
 	// value,lower,upper,step_increment,page_increment,page_size	
-	adjustment_speech_rate = gtk_adjustment_new(16000.00, 4000.00, 24000.00, 500.0, 500.0, 0.0);	
+	adjustment_speech_rate = gtk_adjustment_new(16000.00, 8000.00, 24000.00, 500.0, 500.0, 0.0);	
 	label_talk_speed = gtk_label_new("Talk Rate ");
 	spin_button_talk_speed = gtk_spin_button_new(adjustment_speech_rate, 16000, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_talk_speed), m_talk_rate);	

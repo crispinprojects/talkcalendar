@@ -258,6 +258,8 @@ pair_t table[] = {
 {"bye","b-aa aa-iy"},
 
 //C-words
+//cabbie CABBIE  K AE1 B IY0
+{"cabbie","k-ae ae-ae ae-b b-b b-iy iy-pau"},
 //cafe
 {"cafe","k-ah ah-f f-ey ey-ey"},
 //calendar

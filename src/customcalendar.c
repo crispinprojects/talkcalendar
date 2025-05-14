@@ -760,7 +760,6 @@ static void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, 
 	//example row_number =1  number_of_columns = 7 and col =3
 	// index = 1*7+3 
 	
-	g_print("picked_row = %d picked_col =%d index =%d\n",row_number,col_number,index);
 	
 	int offset_index = index+offset;
 	//example if index =3 and offset -2 then index =1
@@ -783,17 +782,14 @@ static void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, 
 	}
 	else
 	{
-		g_print("day offset_index = %d\n", offset_index);
-		//day_month = calendar->day_month[row_number][col_number];
 	    int aday = calendar->days[row_number][col_number];	
-		g_print("aday = %d\n",aday);
 	    calendar->day = aday;
 	}
 		
 	//check if in day range
 	if(calendar->day <=0 || calendar->day >days_in_month)
 	{
-		g_print("calendar->day %d out of range so reset\n",calendar->day);
+		//g_print("calendar->day %d out of range so reset\n",calendar->day);
 		calendar->day=1;
 	}
 	
@@ -805,9 +801,9 @@ static void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, 
 	//final check to see that day is in a valid range before calling select day	
     if((calendar->day<1) || (calendar->day>days_in_month)) calendar->day=1;
     
-    g_print("calendar->day = %d\n",calendar->day);
-    g_print("calendar->month = %d\n",calendar->month);
-    g_print("calendar->year = %d\n",calendar->year);
+    //g_print("calendar->day = %d\n",calendar->day);
+    //g_print("calendar->month = %d\n",calendar->month);
+    //g_print("calendar->year = %d\n",calendar->year);
     
 	custom_calendar_select_day(calendar, calendar->day, calendar->month, calendar->year);	
 	g_signal_emit(calendar, custom_calendar_signals[DAY_SELECTED_SIGNAL], 0);
