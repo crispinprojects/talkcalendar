@@ -295,7 +295,7 @@ pair_t table[] = {
 //charlotte
 {"charlotte","sh-aa  aa-aa aa-r r-l l-ah ah-t"},
 //chauffeur
-{"chauffeur","sh-ao ao-uh uh-f f-uh uh-r"},
+{"chauffeur","pau-sh sh-ao ao-uh uh-f f-f f-uh uh-r"},
 //check
 {"check","ch-eh eh-k"},
 //chemist

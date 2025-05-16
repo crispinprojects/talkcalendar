@@ -207,7 +207,7 @@ static int m_talk_time=1;
 static int m_talk_priority=0;
 
 //diphone talker
-static unsigned int m_talk_rate=22000; //chipmunk
+static unsigned int m_talk_rate=16000;
 
 static int m_reset_preferences=0;
 
@@ -385,7 +385,7 @@ static void config_load_default()
 	m_talk_upcoming=0;
 	m_upcoming_days=7;
 			
-    m_talk_rate=22000;
+    m_talk_rate=16000;
     
 	//calendar
 	m_12hour_format=1;
@@ -408,7 +408,7 @@ static void config_read()
 	m_talk_upcoming=0;
 	m_upcoming_days=7;
 			
-    m_talk_rate=22000;
+    m_talk_rate=16000;
     
 	//calendar
 	m_12hour_format=1;
@@ -4289,7 +4289,7 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_talk_upcoming=0;
 	m_upcoming_days=7;	
 		
-	m_talk_rate=22000; //chipmunk
+	m_talk_rate=16000; 
         
     m_pango_scale = 1.1;  
 	m_window_width=600;
