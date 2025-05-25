@@ -628,10 +628,10 @@ char *word_rules(char *input_str)
 	{
 		word ="tilda";
 	}
-	if (g_strcmp0(word,"tims")==0)
-	{
-		word ="tim";
-	}
+	//if (g_strcmp0(word,"tims")==0)
+	//{
+		//word ="tim";
+	//}
 	if (g_strcmp0(word,"timothys")==0)
 	{
 		word ="timothy";

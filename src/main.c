@@ -35,10 +35,10 @@
 #include "diphone.h"
 #include "dictionary.h"
 #include "wordrules.h"
-#include "rawplayer.h"
+#include "raw_utils.h"
 
 #define CONFIG_DIRNAME "talkcalendar-diphone"
-#define CONFIG_FILENAME "talkcalendar-diphone2"
+#define CONFIG_FILENAME "talkcalendar-diphone3"
 static char * m_config_file = NULL;
 
 //Declarations
@@ -133,6 +133,7 @@ static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data
 
 unsigned char *rawcat(unsigned char *arrys[], unsigned int arry_size[], int arry_count);
 unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size);
+static void play_diphone_list(GList *diphone_list);
 
 static void play_audio_async (GTask *task,
                           gpointer object,
@@ -206,8 +207,21 @@ static int m_upcoming_days=7;
 static int m_talk_time=1; 
 static int m_talk_priority=0;
 
-//diphone talker
+//voice parameters
+static int m_gain=3;
+static int m_echo_voice=0;
+static int m_echo_level=1;
+static int m_echo_delay=800;
+
+static int m_ring_voice=0;
+static float m_ring_level=0.8f;
+static float m_ring_freq=130.0f;
+
+//static char* m_voice="ring"; //echo or ring or amp
 static unsigned int m_talk_rate=16000;
+
+
+
 
 static int m_reset_preferences=0;
 
@@ -384,9 +398,17 @@ static void config_load_default()
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
 	m_upcoming_days=7;
-			
-    m_talk_rate=16000;
-    
+	
+	m_echo_voice=0;
+	m_ring_voice=0;
+	m_gain=3;
+	m_echo_level=1;
+	m_echo_delay=800;
+	m_ring_level=0.8f;
+	m_ring_freq=130.0f;		
+	
+	m_talk_rate=16000;
+	
 	//calendar
 	m_12hour_format=1;
 	m_show_end_time=0;
@@ -407,6 +429,14 @@ static void config_read()
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
 	m_upcoming_days=7;
+	
+	m_echo_voice=0;
+	m_ring_voice=0;
+	m_gain=3;
+	m_echo_level=1;
+	m_echo_delay=800;
+	m_ring_level=0.8f;
+	m_ring_freq=130.0f;		
 			
     m_talk_rate=16000;
     
@@ -428,6 +458,17 @@ static void config_read()
 	m_talk_at_startup=g_key_file_get_integer(kf, "calendar_settings", "speak_startup", NULL);
 	m_talk_upcoming=g_key_file_get_integer(kf, "calendar_settings", "speak_upcoming", NULL);	
 	m_upcoming_days=g_key_file_get_integer(kf, "calendar_settings", "upcoming_days", NULL);
+	
+	m_gain=g_key_file_get_integer(kf, "calendar_settings", "gain", NULL);
+	
+	//voice effects
+	m_echo_voice=g_key_file_get_integer(kf, "calendar_settings", "echo_voice", NULL);
+	m_ring_voice=g_key_file_get_integer(kf, "calendar_settings", "ring_voice", NULL);	
+	m_echo_level=g_key_file_get_integer(kf, "calendar_settings", "echo_level", NULL);
+	m_echo_delay=g_key_file_get_integer(kf, "calendar_settings", "echo_delay", NULL);
+	m_ring_level= g_key_file_get_double(kf, "calendar_settings", "ring_level", NULL);
+	m_ring_freq= g_key_file_get_double(kf, "calendar_settings", "ring_freq", NULL);		
+	
 	
 	//talk
 	m_talk_rate=g_key_file_get_integer(kf, "calendar_settings", "talk_rate", NULL);
@@ -456,6 +497,17 @@ void config_write()
 	g_key_file_set_integer(kf, "calendar_settings", "speak_startup", m_talk_at_startup);
 	g_key_file_set_integer(kf, "calendar_settings", "speak_upcoming", m_talk_upcoming);
 	g_key_file_set_integer(kf, "calendar_settings", "upcoming_days", m_upcoming_days);	
+	
+	
+	g_key_file_set_integer(kf, "calendar_settings", "gain", m_gain);
+	//voice effects
+	g_key_file_set_integer(kf, "calendar_settings", "echo_voice", m_echo_voice);
+	g_key_file_set_integer(kf, "calendar_settings", "ring_voice", m_ring_voice);		
+	g_key_file_set_integer(kf, "calendar_settings", "echo_level", m_echo_level);	
+	g_key_file_set_integer(kf, "calendar_settings", "echo_delay", m_echo_delay);	
+	g_key_file_set_double(kf, "calendar_settings", "ring_level", m_ring_level);
+	g_key_file_set_double(kf, "calendar_settings", "ring_freq", m_ring_freq);
+	
 		
 	//talk	
 	g_key_file_set_integer(kf, "calendar_settings", "talk_rate", m_talk_rate);	
@@ -1677,7 +1729,7 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 //=====================================================================
 static void callbk_day_events_dialog(GtkButton *button, gpointer  user_data)
 {	
-	g_print("callbk_day_events_dialog\n");
+	//g_print("callbk_day_events_dialog\n");
 	GtkWindow *window =user_data;		
 	GtkWidget *dialog = g_object_get_data(G_OBJECT(button), "dialog-key");	
 	gtk_window_destroy(GTK_WINDOW(dialog));
@@ -2205,7 +2257,7 @@ static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpoin
 
 static void callbk_export(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
 {
-	g_print("Export ical file\n");
+	//g_print("Export ical file\n");
 	export_ical_file(); //exports file to current working directory
 }
 
@@ -2392,7 +2444,7 @@ void export_ical_file()
 
 static void callbk_import(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
 {
-	g_print("import events.ical backup file from local directory\n");
+	//g_print("import events.ical backup file from local directory\n");
 	import_ical_file(user_data);
 	
 }
@@ -2919,7 +2971,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.7 (Diphone Synth)");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.8 (Diphone Synth)");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Linux Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -2934,7 +2986,6 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 //======================================================================
 // Speaking
 //======================================================================
-
 //======================================================================
 
 static void task_callbk(GObject *gobject,GAsyncResult *res,  gpointer  user_data)
@@ -2957,18 +3008,79 @@ static void play_audio_async (GTask *task,
    
     m_talking=TRUE; //stop any new speaking 
     
-    if (m_talk_rate < 8000 || m_talk_rate > 24000) //protect bounds
-		m_talk_rate  = 16000;
+    //protect bounds
+    if (m_talk_rate < 8000) m_talk_rate  = 8000;
+    
+   if (m_talk_rate > 42000) m_talk_rate  = 42000;
 		
 	set_sample_rate(m_talk_rate);
     
     char* raw_file_path =task_data; 
-    rawplay(raw_file_path); //using my own player (PERIODS=1)
+    
+   
+    if (m_echo_voice) 
+    {		
+	voice_echo(raw_file_path, m_gain,m_echo_level,m_echo_delay);
+    }    
+    else if (m_ring_voice) 
+	{		
+    voice_ring(raw_file_path, m_gain, m_ring_level, m_ring_freq);
+    }
+    else
+    {
+    voice_amp(raw_file_path, m_gain);
+	}
+    
+    
+    raw_player(raw_file_path); //using my own player (PERIODS=1)
     
     //m_talking=FALSE;   
     g_task_return_boolean(task, TRUE);
 }
 
+//======================================================================
+
+//======================================================================
+//play speak_str
+//======================================================================
+
+static void play_diphone_list(GList *diphone_list)
+{	
+	gpointer diphone_list_pointer;
+	gchar* diphone_str;		
+	gint diphone_number  =g_list_length(diphone_list);
+	
+	//create diphone array using list length
+	unsigned char *diphone_arrays[diphone_number]; 
+	unsigned int diphone_arrays_sizes[diphone_number];
+		
+	//load diphone arrays
+	for(int i=0; i <diphone_number; i++)
+	{
+		diphone_list_pointer=g_list_nth_data(diphone_list,i);
+		diphone_str=(gchar *)diphone_list_pointer;	
+		//g_print("play_diphone_list: diphone = %s\n",diphone_str);
+		diphone_arrays[i] = load_diphone_arry(diphone_str);	
+		diphone_arrays_sizes[i]=load_diphone_len(diphone_str);		
+	}	
+	
+	//concatenate using raw cat
+	unsigned char *data = rawcat(diphone_arrays, diphone_arrays_sizes, diphone_number);	
+	unsigned int data_len = get_merge_size(diphone_arrays_sizes,diphone_number);	
+    	
+	gchar* raw_file_path ="/tmp/talk.raw";
+	save_raw_file(raw_file_path, data, data_len);
+	    
+	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
+	g_task_set_task_data (task,raw_file_path,NULL);
+    g_task_run_in_thread(task, play_audio_async);     
+    g_object_unref(task);
+	
+	//clean up 
+	//g_list_free(diphone_list);	
+	free(data);	//prevent memory leak
+		
+}
 
 //======================================================================
 // Concatentation
@@ -3034,8 +3146,8 @@ static void speak_time(gint hour, gint min)
 	
 	diphone_list =g_list_concat(word_to_diphones("the"),word_to_diphones("time"));
 	diphone_list =g_list_concat(diphone_list,word_to_diphones("is"));	
-    diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
-	diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
+    //diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
+	//diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
 	
 	if (m_12hour_format)
 			{
@@ -3083,10 +3195,10 @@ static void speak_time(gint hour, gint min)
 		
 		time_list =g_list_concat(hour_list, word_to_diphones("pau"));
 		time_list =g_list_concat(time_list,min_list);
-		time_list =g_list_concat(time_list, word_to_diphones("pau"));
+		//time_list =g_list_concat(time_list, word_to_diphones("pau"));
 		time_list =g_list_concat(time_list, word_to_diphones("pau"));
 	    time_list =g_list_concat(time_list,word_to_diphones(ampm_str));		   
-	    time_list =g_list_concat(time_list, word_to_diphones("pau"));	
+	    //time_list =g_list_concat(time_list, word_to_diphones("pau"));	
 	}
 	else {
 		time_list =g_list_concat(hour_list, word_to_diphones("pau"));
@@ -3094,43 +3206,10 @@ static void speak_time(gint hour, gint min)
 	}
 	  	
 	diphone_list =g_list_concat(diphone_list,time_list);
-		
 	
-	gpointer diphone_list_pointer;
-	gchar* diphone_str;		
-	gint diphone_number  =g_list_length(diphone_list);
+	play_diphone_list(diphone_list);	
+	g_list_free(diphone_list);		
 	
-	//create diphone array using list length
-	unsigned char *diphone_arrays[diphone_number]; 
-	unsigned int diphone_arrays_sizes[diphone_number];
-		
-	//load diphone arrays
-	for(int i=0; i <diphone_number; i++)
-	{
-		diphone_list_pointer=g_list_nth_data(diphone_list,i);
-		diphone_str=(gchar *)diphone_list_pointer;	
-		diphone_arrays[i] = load_diphone_arry(diphone_str);	
-		diphone_arrays_sizes[i]=load_diphone_len(diphone_str);		
-	}	
-	
-	//concatenate using raw cat
-	unsigned char *data = rawcat(diphone_arrays, diphone_arrays_sizes, diphone_number);	
-	unsigned int data_len = get_merge_size(diphone_arrays_sizes,diphone_number);	
-    
-		
-	gchar* raw_file_path ="/tmp/talkout.raw";
-	FILE* f = fopen(raw_file_path, "w");
-    fwrite(data, data_len, 1, f);
-    fclose(f); 
-    
-	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-	g_task_set_task_data (task,raw_file_path,NULL);
-    g_task_run_in_thread(task, play_audio_async);     
-    g_object_unref(task);
-	
-	//clean up 
-	g_list_free(diphone_list);	
-	free(data);	//prevent memory leak
 	
 }
 //======================================================================
@@ -3624,7 +3703,7 @@ static void speak_events() {
 	//diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
 	diphone_list =g_list_concat(diphone_list,month_list);
 	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
-    diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+    //diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
         
    
     if ((m_notable_dates ==1) && (is_notable_date(m_start_day)))	
@@ -3782,7 +3861,7 @@ static void speak_events() {
 	//add am or pm diphone list
 	//time_list =g_list_concat(time_list, word_to_diphones("pause"));
 	time_list =g_list_concat(time_list,word_to_diphones(ampm_str));	
-	time_list =g_list_concat(time_list, word_to_diphones("pause"));	
+	//time_list =g_list_concat(time_list, word_to_diphones("pause"));	
 	diphone_list =g_list_concat(diphone_list,time_list);
 	
 	
@@ -3890,44 +3969,12 @@ static void speak_events() {
 	
 	}//if upcoming
 	
-	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));		
-	gpointer diphone_list_pointer;
-	gchar* diphone_str;		
-	gint diphone_number  =g_list_length(diphone_list);	
-	//create diphone array using list length
-	unsigned char *diphone_arrays[diphone_number]; 
-	unsigned int diphone_arrays_sizes[diphone_number];
-		
-	//load diphone arrays
-	for(int i=0; i <diphone_number; i++)
-	{
-		diphone_list_pointer=g_list_nth_data(diphone_list,i);
-		diphone_str=(gchar *)diphone_list_pointer;		
-		diphone_arrays[i] = load_diphone_arry(diphone_str);		
-		diphone_arrays_sizes[i]=load_diphone_len(diphone_str);		
-	}	
+	//diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));		
 	
-	//concatenate using raw cat
-	unsigned char *data = rawcat(diphone_arrays, diphone_arrays_sizes, diphone_number);	
-	unsigned int data_len = get_merge_size(diphone_arrays_sizes,diphone_number);	
-    	
-		
-	gchar* raw_file_path ="/tmp/talkout.raw";
-	FILE* f = fopen(raw_file_path, "w");
-    fwrite(data, data_len, 1, f);
-    fclose(f); 
-    
-	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-	g_task_set_task_data (task,raw_file_path,NULL);
-    g_task_run_in_thread(task, play_audio_async);     
-    g_object_unref(task);
+	play_diphone_list(diphone_list);	
+	g_list_free(diphone_list);		
 	
-	//clean up 
-	g_list_free(diphone_list);	
-	free(data);	//prevent memory leak	
 }
-
-
 
 //=====================================================================
 void dialog_search_shutdown(GtkWindow *dialog, gint response_id, gpointer user_data)
@@ -4208,6 +4255,41 @@ static void callbk_search(GSimpleAction *action, GVariant *parameter,  gpointer 
 	gtk_box_append(GTK_BOX(box), button_search);	
 	gtk_window_present(GTK_WINDOW(dialog_search));	
 }
+//======================================================================
+static void callbk_check_button_ring_toggled(GtkCheckButton *check_button, gpointer user_data)
+{
+	GtkWidget *check_button_echo;
+	check_button_echo = g_object_get_data(G_OBJECT(user_data), "cb_echo_key");
+	
+	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button)))
+	{
+		gtk_widget_set_sensitive(check_button_echo, FALSE);
+		
+	}
+	else
+	{
+		gtk_widget_set_sensitive(check_button_echo, TRUE);
+	}
+}
+
+
+
+//======================================================================
+static void callbk_check_button_echo_toggled(GtkCheckButton *check_button, gpointer user_data)
+{
+	GtkWidget *check_button_ring;
+	check_button_ring = g_object_get_data(G_OBJECT(user_data), "cb_ring_key");
+	
+	if (gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button)))
+	{
+		gtk_widget_set_sensitive(check_button_ring, FALSE);
+		
+	}
+	else
+	{
+		gtk_widget_set_sensitive(check_button_ring, TRUE);
+	}
+}
 
 //======================================================================
 static void callbk_check_button_upcoming_toggled(GtkCheckButton *check_button, gpointer user_data)
@@ -4245,12 +4327,24 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	//general talk preferences	
 	GtkWidget *check_button_talk= g_object_get_data(G_OBJECT(button), "check-button-talk-key");
     GtkWidget *check_button_talk_startup= g_object_get_data(G_OBJECT(button), "check-button-talk-startup-key");    
-    
+    	
+	GtkWidget *check_button_echo= g_object_get_data(G_OBJECT(button), "check-button-echo-key");
+	GtkWidget *check_button_ring= g_object_get_data(G_OBJECT(button), "check-button-ring-key");
+	
 	GtkWidget *check_button_talk_upcoming= g_object_get_data(G_OBJECT(button), "check-button-talk-upcoming-key");
 	GtkWidget *spin_button_upcoming_days = g_object_get_data(G_OBJECT(button), "spin-upcoming-days-key");
 	
 	GtkWidget *spin_button_talk_speed = g_object_get_data(G_OBJECT(button), "spin-talk-speed-key");		
-			
+		
+	//voice processor
+	GtkWidget *spin_button_gain= g_object_get_data(G_OBJECT(button), "spin-gain-key");		
+	GtkWidget *spin_button_echo_level= g_object_get_data(G_OBJECT(button), "spin-echo-level-key");	
+	GtkWidget *spin_button_echo_delay= g_object_get_data(G_OBJECT(button), "spin-echo-delay-key");	
+	GtkWidget *spin_button_ring_level= g_object_get_data(G_OBJECT(button), "spin-ring-level-key");	
+	GtkWidget *spin_button_ring_freq= g_object_get_data(G_OBJECT(button), "spin-ring-freq-key");	
+	
+	
+		
     GtkWidget *check_button_reset_all= g_object_get_data(G_OBJECT(button), "check-button-reset-all-key");
 	//calendar
 	m_12hour_format=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_hour_format));
@@ -4265,6 +4359,16 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_upcoming_days = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_upcoming_days));
 	
 	m_talk_rate = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_talk_speed));
+	
+	m_echo_voice=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_echo));
+	m_ring_voice=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_ring));
+	
+	m_gain=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_gain));
+	m_echo_level=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_echo_level));
+	m_echo_delay=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_echo_delay));
+	m_ring_level=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_ring_level));
+	m_ring_freq=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_ring_freq));		
+	
 				
 	m_upcoming_days = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_upcoming_days));		
 	
@@ -4288,7 +4392,15 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_talk_at_startup=0;
 	m_talk_upcoming=0;
 	m_upcoming_days=7;	
-		
+	
+	m_echo_voice=0;
+	m_ring_voice=0;
+	m_gain=3;
+	m_echo_level=1;
+	m_echo_delay=800;
+	m_ring_level=1.2f;
+	m_ring_freq=130.0f;
+			
 	m_talk_rate=16000; 
         
     m_pango_scale = 1.1;  
@@ -4326,10 +4438,33 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	GtkWidget *label_talk_speed;
 	GtkWidget *spin_button_talk_speed;
 		
+	//voice effects
+	//GtkWidget *check_button_amp;
+	GtkWidget *check_button_echo;
+	GtkWidget *check_button_ring;
+	
+	GtkWidget *label_gain;
+	GtkWidget *spin_button_gain;
+	
+	GtkWidget *label_echo_level;
+	GtkWidget *spin_button_echo_level;
+	
+	GtkWidget *label_echo_delay;
+	GtkWidget *spin_button_echo_delay;
+	
+	GtkWidget *label_ring_level;
+	GtkWidget *spin_button_ring_level;
+	
+	GtkWidget *label_ring_freq;
+	GtkWidget *spin_button_ring_freq;
+	
+	
 	GtkWidget *check_button_talk_upcoming;
 	GtkWidget *label_upcoming_days;
 	GtkWidget *spin_button_upcoming_days;
 					
+	
+	
 	GtkWidget *check_button_reset_all;		
 	GtkWidget *button_set;			
 			
@@ -4339,7 +4474,8 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	GtkWidget *label_spacer4;
 	GtkWidget *label_spacer5;
 	GtkWidget *label_spacer6;
-	//GtkWidget *label_spacer7;
+	GtkWidget *label_spacer7;
+	GtkWidget *label_spacer8;
 	
 	label_spacer1 = gtk_label_new("");
 	label_spacer2 = gtk_label_new("");
@@ -4347,7 +4483,8 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	label_spacer4 = gtk_label_new("");
 	label_spacer5 = gtk_label_new("");
 	label_spacer6 = gtk_label_new("");
-	//label_spacer7 = gtk_label_new("");
+	label_spacer7 = gtk_label_new("");
+	label_spacer8 = gtk_label_new("");
 	
 	dialog =gtk_window_new(); 
 	gtk_window_set_title (GTK_WINDOW (dialog), "Preferences");
@@ -4387,11 +4524,56 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	//talk speed		
 	GtkAdjustment *adjustment_speech_rate;
 	// value,lower,upper,step_increment,page_increment,page_size	
-	adjustment_speech_rate = gtk_adjustment_new(16000.00, 8000.00, 24000.00, 500.0, 500.0, 0.0);	
+	adjustment_speech_rate = gtk_adjustment_new(16000.00, 8000.00, 42000.00, 500.0, 500.0, 0.0);	
 	label_talk_speed = gtk_label_new("Talk Rate ");
 	spin_button_talk_speed = gtk_spin_button_new(adjustment_speech_rate, 16000, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_talk_speed), m_talk_rate);	
 	
+	// value,lower,upper,step_increment,page_increment,page_size
+	
+	//voice effects
+	
+	//check_button_amp = gtk_check_button_new_with_label ("Loud Voice");
+	check_button_echo = gtk_check_button_new_with_label ("Echo Voice");
+	check_button_ring = gtk_check_button_new_with_label ("Ring Voice");
+	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_echo), m_echo_voice);
+	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_ring), m_ring_voice);
+	
+	g_signal_connect_swapped(GTK_CHECK_BUTTON(check_button_echo), "toggled",	
+							 G_CALLBACK(callbk_check_button_echo_toggled), check_button_echo);	
+	g_object_set_data(G_OBJECT(check_button_echo), "cb_ring_key",check_button_ring);
+		
+	g_signal_connect_swapped(GTK_CHECK_BUTTON(check_button_ring), "toggled",	
+							 G_CALLBACK(callbk_check_button_ring_toggled), check_button_ring);	
+	g_object_set_data(G_OBJECT(check_button_ring), "cb_echo_key",check_button_echo);
+	
+	
+	label_gain=gtk_label_new("Gain:  ");
+	GtkAdjustment *adjustment_gain = gtk_adjustment_new(2.00, 1.00, 6.00, 1.0, 1.0, 0.0);
+	spin_button_gain = gtk_spin_button_new(adjustment_gain,2, 0);	
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_gain), m_gain);
+		
+	label_echo_level =gtk_label_new("Echo Level:  ");
+	GtkAdjustment *adjustment_echo_level = gtk_adjustment_new(2.00, 0.00, 3.00, 1.0, 1.0, 0.0);
+	spin_button_echo_level = gtk_spin_button_new(adjustment_echo_level,2, 0);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_echo_level), m_echo_level);
+	
+	label_echo_delay=gtk_label_new("Echo Delay:  ");
+	GtkAdjustment *adjustment_echo_delay = gtk_adjustment_new(800, 200, 1000, 10, 110, 0.0);
+	spin_button_echo_delay = gtk_spin_button_new(adjustment_echo_delay,800, 0);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_echo_delay), m_echo_delay);
+		
+	
+	label_ring_level=gtk_label_new("Ring Modulator Level:  ");
+	GtkAdjustment *adjustment_ring_level = gtk_adjustment_new(1.2, 0.0, 1.8, 0.1, 0.1, 0.0);
+	spin_button_ring_level = gtk_spin_button_new(adjustment_ring_level,1.2, 2);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_ring_level), m_ring_level);
+		
+	label_ring_freq=gtk_label_new("Ring Modulator Freq:  ");
+	GtkAdjustment *adjustment_ring_freq = gtk_adjustment_new(130.0, 50.0, 500.0, 10.0, 10.0, 0.0);
+	spin_button_ring_freq = gtk_spin_button_new(adjustment_ring_freq,130.0, 2);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_ring_freq), m_ring_freq);
+		
 				
 	//pango
 	GtkAdjustment *adjustment_pango;
@@ -4436,6 +4618,16 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	
 	g_object_set_data(G_OBJECT(button_set), "spin-talk-speed-key", spin_button_talk_speed);
 	
+	//voice effects
+	g_object_set_data(G_OBJECT(button_set), "check-button-echo-key",check_button_echo);
+	g_object_set_data(G_OBJECT(button_set), "check-button-ring-key",check_button_ring);
+	
+	g_object_set_data(G_OBJECT(button_set), "spin-gain-key", spin_button_gain);	
+	g_object_set_data(G_OBJECT(button_set), "spin-echo-level-key", spin_button_echo_level);
+	g_object_set_data(G_OBJECT(button_set), "spin-echo-delay-key", spin_button_echo_delay);
+	g_object_set_data(G_OBJECT(button_set), "spin-ring-level-key", spin_button_ring_level);
+	g_object_set_data(G_OBJECT(button_set), "spin-ring-freq-key", spin_button_ring_freq);
+	
 		
 	g_object_set_data(G_OBJECT(button_set), "spin-upcoming-days-key", spin_button_upcoming_days);
 		
@@ -4445,32 +4637,56 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	gtk_grid_attach(GTK_GRID(grid), check_button_hour_format,         1,1,1,1);			
 	gtk_grid_attach(GTK_GRID(grid), check_button_show_end_time,       2,1,1,1);
 	gtk_grid_attach(GTK_GRID(grid), check_button_notable_dates,       3,1,1,1);	
+	
 	gtk_grid_attach(GTK_GRID(grid), label_spacer1,                  1, 2, 1, 1);
 			
 	gtk_grid_attach(GTK_GRID(grid), label_pango_scale,             1, 3, 1, 1);		
 	gtk_grid_attach(GTK_GRID(grid), spin_button_pango_scale,       2, 3, 1, 1);		
+	
 	gtk_grid_attach(GTK_GRID(grid), label_spacer2,                  1, 4, 1, 1);
 	
 	//speak preferences
 	gtk_grid_attach(GTK_GRID(grid), check_button_talk,      		       1, 5, 1, 1);	
 	gtk_grid_attach(GTK_GRID(grid), check_button_talk_startup,        	   2, 5, 1, 1);	
+	
 	gtk_grid_attach(GTK_GRID(grid), label_spacer3,                         1, 6, 1, 1);
 	
 			
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk_upcoming,      1, 8, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), label_upcoming_days,             2, 8, 1, 1);		
-	gtk_grid_attach(GTK_GRID(grid), spin_button_upcoming_days,       3, 8, 1, 1);		
-	gtk_grid_attach(GTK_GRID(grid), label_spacer4,                   1, 9, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), check_button_talk_upcoming,      1, 7, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), label_upcoming_days,             2, 7, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), spin_button_upcoming_days,       3, 7, 1, 1);		
+	
+	gtk_grid_attach(GTK_GRID(grid), label_spacer4,                   1, 8, 1, 1);	
 		
-	gtk_grid_attach(GTK_GRID(grid), label_talk_speed,                      1, 10, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), spin_button_talk_speed,                2, 10, 1, 1);		
-	gtk_grid_attach(GTK_GRID(grid), label_spacer5,                         1, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), label_talk_speed,                      1, 9, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), spin_button_talk_speed,                2, 9, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), label_gain,                            3, 9, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), spin_button_gain,                     4, 9, 1, 1);
+		
+	gtk_grid_attach(GTK_GRID(grid), label_spacer5,                         1, 10, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  1, 12, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_echo,                     1, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), label_echo_level,                      2, 11, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), spin_button_echo_level,                3, 11, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), label_echo_delay,                      4, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), spin_button_echo_delay,                5, 11, 1, 1);
+		
+	gtk_grid_attach(GTK_GRID(grid), label_spacer6,                         1, 12, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer6,       1, 13, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_ring,                     1, 13, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), label_ring_level,                      2, 13, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), spin_button_ring_level,                3, 13, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), label_ring_freq,                      4, 13, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), spin_button_ring_freq,                5, 13, 1, 1);
+		
+	gtk_grid_attach(GTK_GRID(grid), label_spacer7,                         1, 14, 1, 1);
 	
-	gtk_grid_attach(GTK_GRID(grid), button_set,  1, 14, 3, 1);
+			
+	gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  1, 15, 1, 1);
+	
+	gtk_grid_attach(GTK_GRID(grid), label_spacer8,       1, 16, 1, 1);
+	
+	gtk_grid_attach(GTK_GRID(grid), button_set,  1, 17, 5, 1);
 	
     gtk_window_set_child (GTK_WINDOW (dialog), grid);	
 	gtk_window_present(GTK_WINDOW(dialog));
@@ -5082,25 +5298,25 @@ static void update_calendar(CustomCalendar *calendar, gpointer user_data)
 //======================================================================
 static void callbk_calendar_next_month(CustomCalendar *calendar, gpointer user_data) 
 {
-	g_print("next month\n");
+	//g_print("next month\n");
 	update_calendar(calendar, user_data);		
 }
 //======================================================================
 static void callbk_calendar_prev_month(CustomCalendar *calendar, gpointer user_data)
 {
-	g_print("prev month\n");		
+	//g_print("prev month\n");		
 	update_calendar(calendar, user_data);	
 }
 //======================================================================
 static void callbk_calendar_next_year(CustomCalendar *calendar, gpointer user_data)
 {
-	g_print("next year\n");
+	//g_print("next year\n");
 	update_calendar(calendar, user_data);	
 }
 //======================================================================
 static void callbk_calendar_prev_year(CustomCalendar *calendar, gpointer user_data)
 {
-	g_print("prev year\n");
+	//g_print("prev year\n");
 	update_calendar(calendar, user_data);
 }
 //======================================================================
@@ -5111,7 +5327,7 @@ static void callbk_calendar_prev_year(CustomCalendar *calendar, gpointer user_da
 
 static void callbk_calendar_day_selected(CustomCalendar *calendar, gpointer user_data)
 {
-	g_print("day selected\n");
+	//g_print("day selected\n");
 	update_calendar(calendar, user_data);		
 }
 //======================================================================

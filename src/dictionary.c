@@ -133,6 +133,8 @@ pair_t table[] = {
 //anne
 {"anne","ae-ae ae-n"},
 //anniversary
+//{"anniversary","ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
+//ANNIVERSARY  AE2 N AH0 V ER1 S ER0 IY0
 {"anniversary","ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
 //anthony
 {"anthony","ae-ae ae-n n-th th-ao ao-n n-iy iy-iy"},
@@ -223,7 +225,7 @@ pair_t table[] = {
 //birth
 {"birth","b-uh uh-r r-th"},
 //birthday
-{"birthday","b-er er-er er-th th-d d-ey ey-ey ey-pau"},
+{"birthday","pau-b b-er er-er er-th th-d d-ey ey-ey ey-pau"},
 //boat
 {"boat","b-ao ao-uh uh-t"},
 //book
@@ -237,7 +239,7 @@ pair_t table[] = {
 //break
 {"break","b-r r-eh eh-iy iy-k"},
 //breakfast
-{"breakfast","b-r r-eh eh-eh eh-k k-f f-ah ah-s s-t t-pau"},
+{"breakfast","b--r r-eh eh-eh eh-k k-f f-ah ah-s s-t t-pau"},
 //british
 {"british","b-r r-ih ih-t t-ih ih-sh"},
 //brother
@@ -362,6 +364,8 @@ pair_t table[] = {
 {"coach","k-ow ow-ow ow-ch ch-ch"},
 //coast
 {"coast","k-ao ao-uh uh-s s-t"},
+//cobbler COBBLER  K AA1 B L ER0
+{"cobbler","k-aa aa-aa aa-b b-b b--l l-er er-pau"},
 //code
 {"code","k-ao ao-uh uh-d"},
 //coffee
@@ -510,7 +514,7 @@ pair_t table[] = {
 //eighteen
 {"eighteen","eh-ey ey-t t-iy iy-iy iy-n n-pau"},
 //eighteenth
-{"eighteenth","ey-ey ey-t t-iy iy-iy iy-n n-th th-pau"},
+{"eighteenth","pau-ey ey-ey ey-t t-iy iy-iy iy-n n-th th-pau"},
 //eighth
 {"eighth","eh-ey ey-t t-th th-pau"},
 //eightieth (birthday)
@@ -538,7 +542,7 @@ pair_t table[] = {
 //elizas
 {"elizas","ih-l l-ay ay-ay ay-z z-ah ah-z"},
 //ella
-{"ella","eh-l l-ah"},
+{"ella","eh-l l-l l-ah ah-pau"},
 //elliot or elliott
 {"elliot","eh-eh eh-l l-iy iy-ah ah-t"},
 //{"elliott","eh-eh eh-l l-iy iy-ah ah-t"},
@@ -578,7 +582,10 @@ pair_t table[] = {
 //fear
 {"fear","f-ih ih-r"},
 //february
-{"february","f-eh eh-eh eh-b b-y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
+//FEBRUARY  F EH1 B Y AH0 W EH2 R IY0
+//{"february","f-eh eh-eh eh-b b-y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
+//FEBRUARY(1)  F EH1 B R UW0 EH2 R IY0
+{"february","f-eh eh-eh eh-b b--y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
 //feed
 {"feed","f-iy iy-d"},
 //festival
@@ -729,6 +736,10 @@ pair_t table[] = {
 //hannah or hanna
 //{"hanna","hh-ae ae-ae ae-n n-ah"},
 {"hannah","hh-ae ae-ae ae-n n-ah"},
+
+//happy HAPPY  HH AE1 P IY0
+{"happy","hh-ae ae-ae ae-p p-iy iy-pau"},
+
 //harold
 {"harold","hh-eh eh-eh eh-r r-ah ah-d"},
 //{"harolds","hh-eh eh-eh eh-r r-ah ah-d d-z"},
@@ -822,7 +833,7 @@ pair_t table[] = {
 //irene
 {"irene","ay-r r-iy iy-iy iy-n"},
 //is
-{"is","pau-ih ih-z"},
+{"is","pau-ih ih-z z-z z-pau"},
 //isaac
 {"isaac","ih-ih ih-s s-ah ah-k"},
 //isaacs
@@ -1517,7 +1528,7 @@ pair_t table[] = {
 //summertime
 {"summertime","s-ah ah-m m-uh uh-r r-t t-aa aa-iy iy-m"},
 //sunday
-{"sunday","s-ah ah-ah ah-n n-d d-ey ey-ey ey-pau pau-ey"},
+{"sunday","s-ah ah-ah ah-n n-d d-ey ey-ey ey-pau"},
 //super
 {"super","s-uw uw-p p-uh uh-r"},
 //susan
@@ -1597,13 +1608,13 @@ pair_t table[] = {
 //tim
 {"tim","t-ih ih-ih ih-m"},
 //time
-{"time","t-ay ay-ay ay-m"},
+{"time","pau-t t-ay ay-ay ay-m"},
 //times
-{"times","t-aa aa-iy iy-m m-z"},
+{"times","pau-t t-aa aa-iy iy-m m-z"},
 //timothy
-{"timothy","t-ih ih-ih ih-m m-ah ah-th th-iy iy-pau"},
+{"timothy","pau-t t-ih ih-ih ih-m m-ah ah-th th-iy iy-pau"},
 //tims
-{"tims","t-ih ih-ih ih-m m-z"},
+{"tims","pau-t t-ih ih-ih ih-m m-z"},
 //tiny
 {"tiny","t-aa aa-iy iy-n n-iy"},
 //to
@@ -1766,7 +1777,7 @@ pair_t table[] = {
 //workshop
 {"workshop","w-uh uh-r r-k k-sh sh-aa aa-p"},
 //world
-{"world","w-er er-er er-l l-d"},
+{"world","pau-w w-er er-er er-l l-d d-d"},
 
 //X-words
 //xavier

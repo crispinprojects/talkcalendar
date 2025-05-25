@@ -1503,8 +1503,16 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	if (g_strcmp0(diphone_str,"b-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_l_raw_len * sizeof(unsigned char));
 	diphone_arry = b_l_raw;
-	
 	}
+	
+	if (g_strcmp0(diphone_str,"b--l")==0) {  //longer utterance
+	diphone_arry = (unsigned char*)malloc(b___l_raw_len * sizeof(unsigned char));
+	diphone_arry = b___l_raw;
+	}
+	//extern unsigned char b___l_raw[];
+    //extern unsigned int b___l_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"b-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_m_raw_len * sizeof(unsigned char));
 	diphone_arry = b_m_raw;
@@ -1533,14 +1541,20 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"b-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = b_pau_raw;
-	
+	diphone_arry = b_pau_raw;	
 	}
 	if (g_strcmp0(diphone_str,"b-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_r_raw_len * sizeof(unsigned char));
-	diphone_arry = b_r_raw;
-	
+	diphone_arry = b_r_raw;	
 	}
+	if (g_strcmp0(diphone_str,"b--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(b___r_raw_len * sizeof(unsigned char));
+	diphone_arry = b___r_raw;	
+	}
+	//extern unsigned char b___r_raw[];
+    //extern unsigned int b___r_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"b-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_s_raw_len * sizeof(unsigned char));
 	diphone_arry = b_s_raw;
@@ -1578,14 +1592,30 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"b-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_w_raw_len * sizeof(unsigned char));
-	diphone_arry = b_w_raw;
-	
+	diphone_arry = b_w_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"b--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(b___w_raw_len * sizeof(unsigned char));
+	diphone_arry = b___w_raw;	
+	}
+	
+	//extern unsigned char b___w_raw[];
+    //extern unsigned int b___w_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"b-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_y_raw_len * sizeof(unsigned char));
-	diphone_arry = b_y_raw;
-	
+	diphone_arry = b_y_raw;	
 	}	
+	if (g_strcmp0(diphone_str,"b--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(b___y_raw_len * sizeof(unsigned char));
+	diphone_arry = b___y_raw;	
+	}	
+	//extern unsigned char b___y_raw[];
+	//extern unsigned int b___y_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"b-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(b_z_raw_len * sizeof(unsigned char));
 	diphone_arry = b_z_raw;
@@ -1906,9 +1936,16 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"d-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_l_raw_len * sizeof(unsigned char));
-	diphone_arry = d_l_raw;
-	
+	diphone_arry = d_l_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"d--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(d___l_raw_len * sizeof(unsigned char));
+	diphone_arry = d___l_raw;	
+	}
+	//extern unsigned char d___l_raw[];
+	//extern unsigned int d___l_raw_len;
+	
 	if (g_strcmp0(diphone_str,"d-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_m_raw_len * sizeof(unsigned char));
 	diphone_arry = d_m_raw;
@@ -1932,19 +1969,26 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"d-p")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_p_raw_len * sizeof(unsigned char));
-	diphone_arry = d_p_raw;
-	
+	diphone_arry = d_p_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"d-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = d_pau_raw;
-	
+	diphone_arry = d_pau_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"d-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_r_raw_len * sizeof(unsigned char));
-	diphone_arry = d_r_raw;
-	
+	diphone_arry = d_r_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"d--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(d___r_raw_len * sizeof(unsigned char));
+	diphone_arry = d___r_raw;	
+	}
+	//extern unsigned char d___r_raw[];
+	//extern unsigned int d___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"d-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_s_raw_len * sizeof(unsigned char));
 	diphone_arry = d_s_raw;
@@ -1977,19 +2021,30 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"d-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_v_raw_len * sizeof(unsigned char));
-	diphone_arry = d_v_raw;
-	
+	diphone_arry = d_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"d-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_w_raw_len * sizeof(unsigned char));
-	diphone_arry = d_w_raw;
-	
+	diphone_arry = d_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"d--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(d___w_raw_len * sizeof(unsigned char));
+	diphone_arry = d___w_raw;	
+	}
+	//extern unsigned char d___w_raw[];
+	//extern unsigned int d___w_raw_len;
+	
 	if (g_strcmp0(diphone_str,"d-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_y_raw_len * sizeof(unsigned char));
-	diphone_arry = d_y_raw;
-	
+	diphone_arry = d_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"d--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(d___y_raw_len * sizeof(unsigned char));
+	diphone_arry = d___y_raw;	
+	}
+	//extern unsigned char d___y_raw[];
+	//extern unsigned int d___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"d-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(d_z_raw_len * sizeof(unsigned char));
 	diphone_arry = d_z_raw;
@@ -2871,8 +2926,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-dh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_dh_raw_len * sizeof(unsigned char));
-	diphone_arry = f_dh_raw;
-	
+	diphone_arry = f_dh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-eh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_eh_raw_len * sizeof(unsigned char));
@@ -2881,8 +2935,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-er")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_er_raw_len * sizeof(unsigned char));
-	diphone_arry = f_er_raw;
-	
+	diphone_arry = f_er_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-ey")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_ey_raw_len * sizeof(unsigned char));
@@ -2891,8 +2944,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-f")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_f_raw_len * sizeof(unsigned char));
-	diphone_arry = f_f_raw;
-	
+	diphone_arry = f_f_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-g")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_g_raw_len * sizeof(unsigned char));
@@ -2901,8 +2953,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-hh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_hh_raw_len * sizeof(unsigned char));
-	diphone_arry = f_hh_raw;
-	
+	diphone_arry = f_hh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-ih")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_ih_raw_len * sizeof(unsigned char));
@@ -2911,8 +2962,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-iy")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_iy_raw_len * sizeof(unsigned char));
-	diphone_arry = f_iy_raw;
-	
+	diphone_arry = f_iy_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-jh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_jh_raw_len * sizeof(unsigned char));
@@ -2921,90 +2971,97 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"f-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_k_raw_len * sizeof(unsigned char));
-	diphone_arry = f_k_raw;
-	
+	diphone_arry = f_k_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_l_raw_len * sizeof(unsigned char));
-	diphone_arry = f_l_raw;
-	
+	diphone_arry = f_l_raw;	
 	}
+	if (g_strcmp0(diphone_str,"f--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(f___l_raw_len * sizeof(unsigned char));
+	diphone_arry = f___l_raw;	
+	}
+	//extern unsigned char f___l_raw[];
+	//extern unsigned int f___l_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"f-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_m_raw_len * sizeof(unsigned char));
-	diphone_arry = f_m_raw;
-	
+	diphone_arry = f_m_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_n_raw_len * sizeof(unsigned char));
-	diphone_arry = f_n_raw;
-	
+	diphone_arry = f_n_raw;	
 	}
 	
 	if (g_strcmp0(diphone_str,"f-oy")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_oy_raw_len * sizeof(unsigned char));
-	diphone_arry = f_oy_raw;
-	
+	diphone_arry = f_oy_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-p")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_p_raw_len * sizeof(unsigned char));
-	diphone_arry = f_p_raw;
-	
+	diphone_arry = f_p_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = f_pau_raw;
-	
+	diphone_arry = f_pau_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_r_raw_len * sizeof(unsigned char));
-	diphone_arry = f_r_raw;
-	
+	diphone_arry = f_r_raw;	
 	}
+	if (g_strcmp0(diphone_str,"f--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(f___r_raw_len * sizeof(unsigned char));
+	diphone_arry = f___r_raw;	
+	}
+	
+	//extern unsigned char f___r_raw[];
+	//extern unsigned int f___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"f-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_s_raw_len * sizeof(unsigned char));
-	diphone_arry = f_s_raw;
-	
+	diphone_arry = f_s_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_sh_raw_len * sizeof(unsigned char));
-	diphone_arry = f_sh_raw;
-	
+	diphone_arry = f_sh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-t")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_t_raw_len * sizeof(unsigned char));
-	diphone_arry = f_t_raw;
-	
+	diphone_arry = f_t_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-th")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_th_raw_len * sizeof(unsigned char));
-	diphone_arry = f_th_raw;
-	
+	diphone_arry = f_th_raw;	
 	}	
 	if (g_strcmp0(diphone_str,"f-uh")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_uh_raw_len * sizeof(unsigned char));
-	diphone_arry = f_uh_raw;
-	
+	diphone_arry = f_uh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-uw")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_uw_raw_len * sizeof(unsigned char));
-	diphone_arry = f_uw_raw;
-	
+	diphone_arry = f_uw_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_v_raw_len * sizeof(unsigned char));
-	diphone_arry = f_v_raw;
-	
+	diphone_arry = f_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_w_raw_len * sizeof(unsigned char));
-	diphone_arry = f_w_raw;
-	
+	diphone_arry = f_w_raw;	
 	}
 	if (g_strcmp0(diphone_str,"f-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_y_raw_len * sizeof(unsigned char));
-	diphone_arry = f_y_raw;
-	
+	diphone_arry = f_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"f--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(f___y_raw_len * sizeof(unsigned char));
+	diphone_arry = f___y_raw;	
+	}
+	//extern unsigned char f___y_raw[];
+	//extern unsigned int f___y_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"f-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(f_z_raw_len * sizeof(unsigned char));
 	diphone_arry = f_z_raw;
@@ -3118,18 +3175,24 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"g-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_k_raw_len * sizeof(unsigned char));
-	diphone_arry = g_k_raw;
-	
+	diphone_arry = g_k_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"g-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_l_raw_len * sizeof(unsigned char));
-	diphone_arry = g_l_raw;
-	
+	diphone_arry = g_l_raw;	
 	}
+	if (g_strcmp0(diphone_str,"g--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(g___l_raw_len * sizeof(unsigned char));
+	diphone_arry = g___l_raw;	
+	}
+	//extern unsigned char g___l_raw[];
+	//extern unsigned int g___l_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"g-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_m_raw_len * sizeof(unsigned char));
-	diphone_arry = g_m_raw;
-	
+	diphone_arry = g_m_raw;	
 	}
 	if (g_strcmp0(diphone_str,"g-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_n_raw_len * sizeof(unsigned char));
@@ -3153,18 +3216,22 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"g-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = g_pau_raw;
-	
+	diphone_arry = g_pau_raw;	
 	}
 	if (g_strcmp0(diphone_str,"g-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_r_raw_len * sizeof(unsigned char));
-	diphone_arry = g_r_raw;
-	
+	diphone_arry = g_r_raw;	
 	}
+	if (g_strcmp0(diphone_str,"g--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(g___r_raw_len * sizeof(unsigned char));
+	diphone_arry = g___r_raw;	
+	}
+	//extern unsigned char g___r_raw[];
+	//extern unsigned int g___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"g-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_s_raw_len * sizeof(unsigned char));
-	diphone_arry = g_s_raw;
-	
+	diphone_arry = g_s_raw;	
 	}
 	if (g_strcmp0(diphone_str,"g-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_sh_raw_len * sizeof(unsigned char));
@@ -3193,23 +3260,33 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"g-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_v_raw_len * sizeof(unsigned char));
-	diphone_arry = g_v_raw;
-	
+	diphone_arry = g_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"g-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_w_raw_len * sizeof(unsigned char));
-	diphone_arry = g_w_raw;
-	
+	diphone_arry = g_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"g--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(g___w_raw_len * sizeof(unsigned char));
+	diphone_arry = g___w_raw;	
+	}
+	//extern unsigned char g___w_raw[];
+	//extern unsigned int g___w_raw_len;
+	
 	if (g_strcmp0(diphone_str,"g-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_y_raw_len * sizeof(unsigned char));
-	diphone_arry = g_y_raw;
-	
+	diphone_arry = g_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"g--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(g___y_raw_len * sizeof(unsigned char));
+	diphone_arry = g___y_raw;	
+	}
+	//extern unsigned char g___y_raw[];
+	//extern unsigned int g___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"g-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_z_raw_len * sizeof(unsigned char));
-	diphone_arry = g_z_raw;
-	
+	diphone_arry = g_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"g-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(g_zh_raw_len * sizeof(unsigned char));
@@ -3286,14 +3363,18 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	
 	if (g_strcmp0(diphone_str,"hh-uh")==0) { 
 	diphone_arry = (unsigned char*)malloc(hh_uh_raw_len * sizeof(unsigned char));
-	diphone_arry = hh_uh_raw;
-	
+	diphone_arry = hh_uh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"hh-uw")==0) { 
 	diphone_arry = (unsigned char*)malloc(hh_uw_raw_len * sizeof(unsigned char));
-	diphone_arry = hh_uw_raw;
-	
+	diphone_arry = hh_uw_raw;	
 	}
+	if (g_strcmp0(diphone_str,"hh--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(hh___y_raw_len * sizeof(unsigned char));
+	diphone_arry = hh___y_raw;	
+	}
+	//extern unsigned char hh___y_raw[];
+	//extern unsigned int hh___y_raw_len;
 	
 	
 	//ih diphones
@@ -4014,23 +4095,26 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"k-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_k_raw_len * sizeof(unsigned char));
-	diphone_arry = k_k_raw;
-	
+	diphone_arry = k_k_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_l_raw_len * sizeof(unsigned char));
-	diphone_arry = k_l_raw;
-	
+	diphone_arry = k_l_raw;	
 	}
+	if (g_strcmp0(diphone_str,"k--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(k___l_raw_len * sizeof(unsigned char));
+	diphone_arry = k___l_raw;	
+	}
+	//extern unsigned char k___l_raw[];
+	//extern unsigned int k___l_raw_len;
+	
 	if (g_strcmp0(diphone_str,"k-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_m_raw_len * sizeof(unsigned char));
-	diphone_arry = k_m_raw;
-	
+	diphone_arry = k_m_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_n_raw_len * sizeof(unsigned char));
-	diphone_arry = k_n_raw;
-	
+	diphone_arry = k_n_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-ow")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_ow_raw_len * sizeof(unsigned char));
@@ -4049,18 +4133,23 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"k-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = k_pau_raw;
-	
+	diphone_arry = k_pau_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"k-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_r_raw_len * sizeof(unsigned char));
-	diphone_arry = k_r_raw;
-	
+	diphone_arry = k_r_raw;	
 	}
+	if (g_strcmp0(diphone_str,"k--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(k___r_raw_len * sizeof(unsigned char));
+	diphone_arry = k___r_raw;	
+	}
+	//extern unsigned char k___r_raw[];
+	//extern unsigned int k___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"k-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_s_raw_len * sizeof(unsigned char));
-	diphone_arry = k_s_raw;
-	
+	diphone_arry = k_s_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_sh_raw_len * sizeof(unsigned char));
@@ -4089,23 +4178,35 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"k-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_v_raw_len * sizeof(unsigned char));
-	diphone_arry = k_v_raw;
-	
+	diphone_arry = k_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_w_raw_len * sizeof(unsigned char));
-	diphone_arry = k_w_raw;
-	
+	diphone_arry = k_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"k--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(k___w_raw_len * sizeof(unsigned char));
+	diphone_arry = k___w_raw;	
+	}
+	
+	//extern unsigned char k___w_raw[];
+	//extern unsigned int k___w_raw_len;
+	
 	if (g_strcmp0(diphone_str,"k-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_y_raw_len * sizeof(unsigned char));
-	diphone_arry = k_y_raw;
-	
+	diphone_arry = k_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"k--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(k___y_raw_len * sizeof(unsigned char));
+	diphone_arry = k___y_raw;	
+	}
+	
+	//extern unsigned char k___y_raw[];
+	//extern unsigned int k___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"k-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_z_raw_len * sizeof(unsigned char));
-	diphone_arry = k_z_raw;
-	
+	diphone_arry = k_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"k-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(k_zh_raw_len * sizeof(unsigned char));
@@ -4496,18 +4597,22 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"m-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(m_w_raw_len * sizeof(unsigned char));
-	diphone_arry = m_w_raw;
-	
+	diphone_arry = m_w_raw;	
 	}
 	if (g_strcmp0(diphone_str,"m-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(m_y_raw_len * sizeof(unsigned char));
-	diphone_arry = m_y_raw;
-	
+	diphone_arry = m_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"m--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(m___y_raw_len * sizeof(unsigned char));
+	diphone_arry = m___y_raw;	
+	}
+	//extern unsigned char m___y_raw[];
+	//extern unsigned int m___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"m-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(m_z_raw_len * sizeof(unsigned char));
-	diphone_arry = m_z_raw;
-	
+	diphone_arry = m_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"m-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(m_zh_raw_len * sizeof(unsigned char));
@@ -4552,18 +4657,15 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"n-b")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_b_raw_len * sizeof(unsigned char));
-	diphone_arry = n_b_raw;
-	
+	diphone_arry = n_b_raw;	
 	}
 	if (g_strcmp0(diphone_str,"n-ch")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_ch_raw_len * sizeof(unsigned char));
-	diphone_arry = n_ch_raw;
-	
+	diphone_arry = n_ch_raw;	
 	}
 	if (g_strcmp0(diphone_str,"n-d")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_d_raw_len * sizeof(unsigned char));
-	diphone_arry = n_d_raw;
-	
+	diphone_arry = n_d_raw;	
 	}
 	if (g_strcmp0(diphone_str,"n-dh")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_dh_raw_len * sizeof(unsigned char));
@@ -4697,18 +4799,22 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"n-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_w_raw_len * sizeof(unsigned char));
-	diphone_arry = n_w_raw;
-	
+	diphone_arry = n_w_raw;	
 	}
 	if (g_strcmp0(diphone_str,"n-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_y_raw_len * sizeof(unsigned char));
-	diphone_arry = n_y_raw;
-	
+	diphone_arry = n_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"n--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(n___y_raw_len * sizeof(unsigned char));
+	diphone_arry = n___y_raw;	
+	}
+	//extern unsigned char n___y_raw[];
+	//extern unsigned int n___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"n-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_z_raw_len * sizeof(unsigned char));
-	diphone_arry = n_z_raw;
-	
+	diphone_arry = n_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"n-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(n_zh_raw_len * sizeof(unsigned char));
@@ -4860,8 +4966,7 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"ng-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(ng_r_raw_len * sizeof(unsigned char));
-	diphone_arry = ng_r_raw;
-	
+	diphone_arry = ng_r_raw;	
 	}
 	if (g_strcmp0(diphone_str,"ng-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(ng_s_raw_len * sizeof(unsigned char));
@@ -4937,13 +5042,11 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"ow-ao")==0) { 
 	diphone_arry = (unsigned char*)malloc(ow_ao_raw_len * sizeof(unsigned char));
-	diphone_arry = ow_ao_raw;
-	
+	diphone_arry = ow_ao_raw;	
 	}
 	if (g_strcmp0(diphone_str,"ow-aw")==0) { 
 	diphone_arry = (unsigned char*)malloc(ow_aw_raw_len * sizeof(unsigned char));
-	diphone_arry =ow_aw_raw;
-	
+	diphone_arry =ow_aw_raw;	
 	}
 	if (g_strcmp0(diphone_str,"ow-ax")==0) { 
 	diphone_arry = (unsigned char*)malloc(ow_ax_raw_len * sizeof(unsigned char));
@@ -5370,13 +5473,11 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"p-b")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_b_raw_len * sizeof(unsigned char));
-	diphone_arry = p_b_raw;
-	
+	diphone_arry = p_b_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-ch")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_ch_raw_len * sizeof(unsigned char));
-	diphone_arry = p_ch_raw;
-	
+	diphone_arry = p_ch_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-d")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_d_raw_len * sizeof(unsigned char));
@@ -5435,18 +5536,23 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"p-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_k_raw_len * sizeof(unsigned char));
-	diphone_arry = p_k_raw;
-	
+	diphone_arry = p_k_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_l_raw_len * sizeof(unsigned char));
-	diphone_arry = p_l_raw;
-	
+	diphone_arry = p_l_raw;	
 	}
+	if (g_strcmp0(diphone_str,"p--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(p___l_raw_len * sizeof(unsigned char));
+	diphone_arry = p___l_raw;	
+	}
+	//extern unsigned char p___l_raw[];
+	//extern unsigned int p___l_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"p-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_m_raw_len * sizeof(unsigned char));
-	diphone_arry = p_m_raw;
-	
+	diphone_arry = p_m_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_n_raw_len * sizeof(unsigned char));
@@ -5470,18 +5576,22 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"p-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = p_pau_raw;
-	
+	diphone_arry = p_pau_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_r_raw_len * sizeof(unsigned char));
-	diphone_arry = p_r_raw;
-	
+	diphone_arry = p_r_raw;	
 	}
+	if (g_strcmp0(diphone_str,"p--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(p___r_raw_len * sizeof(unsigned char));
+	diphone_arry = p___r_raw;	
+	}
+	//extern unsigned char p___r_raw[];
+	//extern unsigned int p___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"p-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_s_raw_len * sizeof(unsigned char));
-	diphone_arry = p_s_raw;
-	
+	diphone_arry = p_s_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_sh_raw_len * sizeof(unsigned char));
@@ -5510,23 +5620,33 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"p-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_v_raw_len * sizeof(unsigned char));
-	diphone_arry = p_v_raw;
-	
+	diphone_arry = p_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_w_raw_len * sizeof(unsigned char));
-	diphone_arry = p_w_raw;
-	
+	diphone_arry = p_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"p--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(p___w_raw_len * sizeof(unsigned char));
+	diphone_arry = p___w_raw;	
+	}
+	//extern unsigned char p___w_raw[];
+	//extern unsigned int p___w_raw_len;
+	
 	if (g_strcmp0(diphone_str,"p-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_y_raw_len * sizeof(unsigned char));
-	diphone_arry = p_y_raw;
-	
+	diphone_arry = p_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"p--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(p___y_raw_len * sizeof(unsigned char));
+	diphone_arry = p___y_raw;	
+	}
+	//extern unsigned char p___y_raw[];
+	//extern unsigned int p___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"p-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_z_raw_len * sizeof(unsigned char));
-	diphone_arry = p_z_raw;
-	
+	diphone_arry = p_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"p-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(p_zh_raw_len * sizeof(unsigned char));
@@ -6034,78 +6154,108 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"s-jh")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_jh_raw_len * sizeof(unsigned char));
-	diphone_arry = s_jh_raw;
-	
+	diphone_arry = s_jh_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"s-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_k_raw_len * sizeof(unsigned char));
-	diphone_arry = s_k_raw;
-	
+	diphone_arry = s_k_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--k")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___k_raw_len * sizeof(unsigned char));
+	diphone_arry = s___k_raw;	
+	}
+	//extern unsigned char s___k_raw[];
+	//extern unsigned int s___k_raw_len;
+	
 	if (g_strcmp0(diphone_str,"s-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_l_raw_len * sizeof(unsigned char));
-	diphone_arry = s_l_raw;
-	
+	diphone_arry = s_l_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___l_raw_len * sizeof(unsigned char));
+	diphone_arry = s___l_raw;	
+	}
+	//extern unsigned char s___l_raw[];
+	//extern unsigned int s___l_raw_len;
+	
 	if (g_strcmp0(diphone_str,"s-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_m_raw_len * sizeof(unsigned char));
-	diphone_arry = s_m_raw;
-	
+	diphone_arry = s_m_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--m")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___m_raw_len * sizeof(unsigned char));
+	diphone_arry = s___m_raw;	
+	}
+	//extern unsigned char s___m_raw[];
+	//extern unsigned int s___m_raw_len;
+		
 	if (g_strcmp0(diphone_str,"s-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_n_raw_len * sizeof(unsigned char));
-	diphone_arry = s_n_raw;
-	
+	diphone_arry = s_n_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--n")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___n_raw_len * sizeof(unsigned char));
+	diphone_arry = s___n_raw;	
+	}
+	//extern unsigned char s___n_raw[];
+	//extern unsigned int s___n_raw_len;
+	
 	if (g_strcmp0(diphone_str,"s-ow")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_ow_raw_len * sizeof(unsigned char));
-	diphone_arry = s_ow_raw;
-	
+	diphone_arry = s_ow_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-oy")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_oy_raw_len * sizeof(unsigned char));
-	diphone_arry = s_oy_raw;
-	
+	diphone_arry = s_oy_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"s-p")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_p_raw_len * sizeof(unsigned char));
-	diphone_arry = s_p_raw;
-	
+	diphone_arry = s_p_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--p")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___p_raw_len * sizeof(unsigned char));
+	diphone_arry = s___p_raw;	
+	}
+	//extern unsigned char s___p_raw[];
+	//extern unsigned int s___p_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"s-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = s_pau_raw;
-	
+	diphone_arry = s_pau_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_r_raw_len * sizeof(unsigned char));
-	diphone_arry = s_r_raw;
-	
+	diphone_arry = s_r_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-s")==0) {
 	diphone_arry = (unsigned char*)malloc(s_s_raw_len * sizeof(unsigned char));
-	diphone_arry = s_s_raw;
-	
+	diphone_arry = s_s_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_sh_raw_len * sizeof(unsigned char));
-	diphone_arry = s_sh_raw;
-	
+	diphone_arry = s_sh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-t")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_t_raw_len * sizeof(unsigned char));
-	diphone_arry = s_t_raw;
-	
+	diphone_arry = s_t_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--t")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___t_raw_len * sizeof(unsigned char));
+	diphone_arry = s___t_raw;	
+	}	
+	//extern unsigned char s___t_raw[];
+	//extern unsigned int s___t_raw_len;
+		
 	if (g_strcmp0(diphone_str,"s-th")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_th_raw_len * sizeof(unsigned char));
-	diphone_arry = s_th_raw;
-	
+	diphone_arry = s_th_raw;	
 	}	
 	if (g_strcmp0(diphone_str,"s-uh")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_uh_raw_len * sizeof(unsigned char));
-	diphone_arry = s_uh_raw;
-	
+	diphone_arry = s_uh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-uw")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_uw_raw_len * sizeof(unsigned char));
@@ -6114,23 +6264,34 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"s-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_v_raw_len * sizeof(unsigned char));
-	diphone_arry = s_v_raw;
-	
+	diphone_arry = s_v_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_w_raw_len * sizeof(unsigned char));
-	diphone_arry = s_w_raw;
-	
+	diphone_arry = s_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___w_raw_len * sizeof(unsigned char));
+	diphone_arry = s___w_raw;	
+	}
+	//extern unsigned char s___w_raw[];
+	//extern unsigned int s___w_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"s-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_y_raw_len * sizeof(unsigned char));
-	diphone_arry = s_y_raw;
-	
+	diphone_arry = s_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"s--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(s___y_raw_len * sizeof(unsigned char));
+	diphone_arry = s___y_raw;	
+	}
+	//extern unsigned char s___y_raw[];
+	//extern unsigned int s___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"s-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_z_raw_len * sizeof(unsigned char));
-	diphone_arry = s_z_raw;
-	
+	diphone_arry = s_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"s-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(s_zh_raw_len * sizeof(unsigned char));
@@ -6443,18 +6604,25 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"t-k")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_k_raw_len * sizeof(unsigned char));
-	diphone_arry = t_k_raw;
-	
+	diphone_arry = t_k_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"t-l")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_l_raw_len * sizeof(unsigned char));
-	diphone_arry = t_l_raw;
-	
+	diphone_arry = t_l_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"t--l")==0) { 
+	diphone_arry = (unsigned char*)malloc(t___l_raw_len * sizeof(unsigned char));
+	diphone_arry = t___l_raw;	
+	}
+	//extern unsigned char t___l_raw[];
+	//extern unsigned int t___l_raw_len;
+	
+	
 	if (g_strcmp0(diphone_str,"t-m")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_m_raw_len * sizeof(unsigned char));
-	diphone_arry = t_m_raw;
-	
+	diphone_arry = t_m_raw;	
 	}
 	if (g_strcmp0(diphone_str,"t-n")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_n_raw_len * sizeof(unsigned char));
@@ -6478,23 +6646,29 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"t-pau")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_pau_raw_len * sizeof(unsigned char));
-	diphone_arry = t_pau_raw;
-	
+	diphone_arry = t_pau_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"t-r")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_r_raw_len * sizeof(unsigned char));
-	diphone_arry = t_r_raw;
-	
+	diphone_arry = t_r_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"t--r")==0) { 
+	diphone_arry = (unsigned char*)malloc(t___r_raw_len * sizeof(unsigned char));
+	diphone_arry = t___r_raw;	
+	}
+	//extern unsigned char t___r_raw[];
+	//extern unsigned int t___r_raw_len;
+	
 	if (g_strcmp0(diphone_str,"t-s")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_s_raw_len * sizeof(unsigned char));
-	diphone_arry = t_s_raw;
-	
+	diphone_arry = t_s_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"t-sh")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_sh_raw_len * sizeof(unsigned char));
-	diphone_arry = t_sh_raw;
-	
+	diphone_arry = t_sh_raw;	
 	}
 	if (g_strcmp0(diphone_str,"t-t")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_t_raw_len * sizeof(unsigned char));
@@ -6518,24 +6692,37 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"t-v")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_v_raw_len * sizeof(unsigned char));
-	diphone_arry = t_v_raw;
-	
+	diphone_arry = t_v_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"t-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_w_raw_len * sizeof(unsigned char));
-	diphone_arry = t_w_raw;
-	
+	diphone_arry = t_w_raw;	
 	}
+	if (g_strcmp0(diphone_str,"t--w")==0) { 
+	diphone_arry = (unsigned char*)malloc(t___w_raw_len * sizeof(unsigned char));
+	diphone_arry = t___w_raw;	
+	}
+	//extern unsigned char t___w_raw[];
+	//extern unsigned int t___w_raw_len;
+	
 	if (g_strcmp0(diphone_str,"t-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_y_raw_len * sizeof(unsigned char));
-	diphone_arry = t_y_raw;
-	
+	diphone_arry = t_y_raw;	
 	}
+	
+	if (g_strcmp0(diphone_str,"t--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(t___y_raw_len * sizeof(unsigned char));
+	diphone_arry = t___y_raw;	
+	}
+	//extern unsigned char t___y_raw[];
+	//extern unsigned int t___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"t-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_z_raw_len * sizeof(unsigned char));
-	diphone_arry = t_z_raw;
-	
+	diphone_arry = t_z_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"t-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(t_zh_raw_len * sizeof(unsigned char));
 	diphone_arry = t_zh_raw;	
@@ -7341,18 +7528,23 @@ unsigned char *load_diphone_arry(char* diphone_str)
 	}
 	if (g_strcmp0(diphone_str,"v-w")==0) { 
 	diphone_arry = (unsigned char*)malloc(v_w_raw_len * sizeof(unsigned char));
-	diphone_arry = v_w_raw;
-	
+	diphone_arry = v_w_raw;	
 	}
+	
 	if (g_strcmp0(diphone_str,"v-y")==0) { 
 	diphone_arry = (unsigned char*)malloc(v_y_raw_len * sizeof(unsigned char));
-	diphone_arry = v_y_raw;
-	
+	diphone_arry = v_y_raw;	
 	}
+	if (g_strcmp0(diphone_str,"v--y")==0) { 
+	diphone_arry = (unsigned char*)malloc(v___y_raw_len * sizeof(unsigned char));
+	diphone_arry = v___y_raw;	
+	}
+	//extern unsigned char v___y_raw[];
+	//extern unsigned int v___y_raw_len;
+	
 	if (g_strcmp0(diphone_str,"v-z")==0) { 
 	diphone_arry = (unsigned char*)malloc(v_z_raw_len * sizeof(unsigned char));
-	diphone_arry = v_z_raw;
-	
+	diphone_arry = v_z_raw;	
 	}
 	if (g_strcmp0(diphone_str,"v-zh")==0) { 
 	diphone_arry = (unsigned char*)malloc(v_zh_raw_len * sizeof(unsigned char));

@@ -733,7 +733,7 @@ static void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, 
 	int offset = 1 - remainder; // day with offset say -2
 	
 	
-	g_print("offset = %d\n",offset);
+	//g_print("offset = %d\n",offset);
 	
 	int number_of_columns=7; //seven days
 	int number_of_rows = 6;
