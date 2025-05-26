@@ -18,6 +18,7 @@
 #include "dictionary.h"
 
 //talk calendar dictionary
+//may 2025 -change dictionary to join words on a pause (pau)
 
 //dictionary key value pair
 typedef struct pair {
@@ -29,1755 +30,1766 @@ typedef struct pair {
 // Key strings must be in strcmp() sorted order!
 pair_t table[] = {
 
+
 //A-words
 //a 
-{"a","ey-ey ey-ey"}, 
+{"a","pau-ey ey-ey ey-ey ey-pau"}, 
 //account
-{"accountant","ah-k k-aa aa-uh uh-n n-t t-ah ah-n n-t"},
+{"accountant","pau-ah ah-k k-aa aa-uh uh-n n-t t-ah ah-n n-t t-pau"},
 //activity
-{"activity","ae-k k-t t-ih ih-ih ih-v v-ah ah-t t-iy iy-pau"},
+{"activity","pau-ae ae-k k-t t-ih ih-ih ih-v v-ah ah-t t-iy iy-pau"},
 //adventure
-{"adventure","ae-d d-v v-eh eh-n n-ch ch-uh uh-r"},
+{"adventure","pau ae ae-d d-v v-eh eh-n n-ch ch-uh uh-r r-pau"},
 //afternoon
-{"afternoon","ae-ae ae-ae ae-f f-t t-er er-pau pau-er er-n n-uw uw-uw uw-n"},
+{"afternoon","pau-ae ae-ae ae-ae ae-f f-t t-er er-pau pau-er er-n n-uw uw-uw uw-n n-pau"},
 //agatha
-{"agatha","ae-g g-ah ah-th th-ah"},
+{"agatha","pau-ae ae-g g-ah ah-th th-ah ah-pau"},
 //agent
-{"agent","eh-iy iy-jh jh-ah ah-n n-t"},
+{"agent","pau-eh eh-iy iy-jh jh-ah ah-n n-t t-pau"},
 //agree
-{"agree","ah-g g-r r-iy"},
+{"agree","pau-ah ah-g g-r r-iy iy-pau"},
 //agreement
-{"agreement","ah-g g-r r-iy iy-m m-ah ah-n n-t"},
+{"agreement","pau-ah ah-g g-r r-iy iy-m m-ah ah-n n-t t-pau"},
 //airport
-{"airport","eh-eh eh-r r-p p-ao ao-ao ao-r r-t"},
+{"airport","pau-eh eh-eh eh-r r-p p-ao ao-ao ao-r r-t t-pau"},
 //alan
-{"alan","ae-ae ae-l l-ah ah-n"}, 
+{"alan","pau-ae ae-ae ae-l l-ah ah-n n-pau"}, 
 //alans
-{"alans","ae-ae ae-l l-ah ah-n n-z"},
+{"alans","pau-ae ae-ae ae-l l-ah ah-n n-z z-pau"},
 //alarm
-{"alarm","ah-l l-aa aa-r r-m"},
+{"alarm","pau-ah ah-l l-aa aa-r r-m m-pau"},
 //alec
-{"alec","ae-ae ae-l l-ih ih-k"},
+{"alec","pau-ae ae-ae ae-l l-ih ih-k k-pau"},
 //alex
-{"alex","ae-ae ae-l l-ah ah-k k-s"},
+{"alex","pau-ae ae-ae ae-l l-ah ah-k k-s s-pau"},
 //alexander
-{"alexander","ae-ae ae-l l-ah ah-g g-z z-ae ae-n n-d d-uh uh-r"},
+{"alexander","pau-ae ae-ae ae-l l-ah ah-g g-z z-ae ae-n n-d d-uh uh-r r-pau"},
 //alexanders
-{"alexanders","ae-ae ae-l l-ih ih-g g-z z-ae ae-n n-d d-uh uh-r r-z"},
+{"alexanders","pau-ae ae-ae ae-l l-ih ih-g g-z z-ae ae-n n-d d-uh uh-r r-z z-pau"},
 //alexs
-{"alexs","ae-ae ae-l l-ah ah-k k-s s-ih ih-z"},
+{"alexs","pau-ae ae-ae ae-l l-ah ah-k k-s s-ih ih-z z-pau"},
 //alf
-{"alf","ae-ae ae-l l-f"},
+{"alf","pau-ae ae-ae ae-l l-f f-pau"},
 //alfred
-{"alfred","ae-ae ae-l l-f f-r r-ah ah-d"},
+{"alfred","pau-ae ae-ae ae-l l-f f-r r-ah ah-d d-pau"},
 //alfreds
-{"alfreds","ae-ae ae-l l-f f-r r-ih ih-d d-z"},
+{"alfreds","pau-ae ae-ae ae-l l-f f-r r-ih ih-d d-z z-pau"},
 //alice
-{"alice","ae-ae ae-l l-ih ih-s"},
+{"alice","pau-ae ae-ae ae-l l-ih ih-s s-pau"},
 //alices
-{"alices","ae-ae ae-l l-ih ih-s s-ah ah-z"},
+{"alices","pau-ae ae-ae ae-l l-ih ih-s s-ah ah-z z-pau"},
 //alison and allison
-{"alison","ae-ae ae-l l-ih ih-s s-ah ah-n"},
+{"alison","pau-ae ae-ae ae-l l-ih ih-s s-ah ah-n n-pau"},
 //alisons and allisons
-{"alisons","ae-ae ae-l l-ih ih-s s-ah ah-n n-z"},
+{"alisons","pau-ae ae-ae ae-l l-ih ih-s s-ah ah-n n-z z-pau"},
 //alister and allister
-{"alister","ae-ae ae-l l-ih ih-s s-t t-uh uh-r"},
+{"alister","pau-ae ae-ae ae-l l-ih ih-s s-t t-uh uh-r r-pau"},
 //all
-{"all","ao-l l-pau"},
+{"all","pau-al ao-l l-pau"},
 //allotment
-{"allotment","ah-l l-aa aa-aa aa-t t-m m-ah ah-n n-t"},
+{"allotment","pau-ah ah-l l-aa aa-aa aa-t t-m m-ah ah-n n-t t-pau"},
 //am
-{"am","ae-m"}, 
+{"am","pau-ae ae-m m-pau"}, 
 //amazon
-{"amazon","ae-ae ae-m m-ah ah-z z-aa aa-aa aa-n"},
+{"amazon","pau-ae ae-ae ae-m m-ah ah-z z-aa aa-aa aa-n n-pau"},
 //amber
-{"amber","ae-ae ae-m m-b b-er er-pau"},
+{"amber","pau-ae ae-ae ae-m m-b b-er er-pau"},
 //ambulance
-{"ambulance","ae-ae ae-m m-b b-y y-ah ah-l l-ah ah-n n-s"},
+{"ambulance","pau-ae ae-ae ae-m m-b b-y y-ah ah-l l-ah ah-n n-s s-pau"},
 //amelia
-{"amelia","ah-m m-iy iy-iy iy-l l-y y-ah"},
+{"amelia","pau-ah ah-m m-iy iy-iy iy-l l-y y-ah ah-pau"},
 //amelias
-{"amelias","ah-m m-iy iy-iy iy-l l-y y-ah ah-z"},
+{"amelias","pau-ah ah-m m-iy iy-iy iy-l l-y y-ah ah-z z-pau"},
 //amm
-{"amm","ey-ey ey-ae ae-m m-m m-m"}, //A.M.
+{"amm","pau-ey ey-ey ey-ae ae-m m-m m-m m-pau"}, //A.M.
 //amy
-{"amy","eh-iy iy-m m-iy iy-pau"},
+{"amy","pau-eh eh-iy iy-m m-iy iy-pau"},
 //and
-{"and","ah-n n-d"},
+{"and","pau-ah ah-n n-d d-pau"},
 //andora
-{"andora","ae-ae ae-n d-ao ao-ao ao-r r-ah ah-pau"},
+{"andora","pau-ae ae-ae ae-n d-ao ao-ao ao-r r-ah ah-pau"},
+//andoras
+{"andoras","pau-ae ae-ae ae-n d-ao ao-ao ao-r r-ah ah-z z-pau"},
 //andre
-{"andre","aa-aa aa-n n-d d-r r-ey ey-ey"},
+{"andre","pau-aa aa-aa aa-n n-d d-r r-ey ey-ey ey-pau"},
 //andrea
-{"andrea","ae-ae ae-n n-d d-r r-iy iy-iy iy-ah"},
+{"andrea","pau-ae ae-ae ae-n n-d d-r r-iy iy-iy iy-ah ah-pau"},
 //andreas
-{"andreas","ae-ae aa-n n-d d-r r-eh eh-iy iy-iy iy-ah ah-z"},
+{"andreas","pau-ae ae-ae aa-n n-d d-r r-eh eh-iy iy-iy iy-ah ah-z z-pau"},
 //andrew
-{"andrew","ae-ae ae-n n-d d-r r-uw uw-pau"},
+{"andrew","pau-ae ae-ae ae-n n-d d-r r-uw uw-pau"},
 //andrews
-{"andrews","ae-ae ae-n n-d d-r r-uw uw-uw uw-z"},
+{"andrews","pau-ae ae-ae ae-n n-d d-r r-uw uw-uw uw-z z-pau"},
 //andy
-{"andy","ae-ae ae-n n-d d-iy iy-pau"},
+{"andy","pau-ae ae-ae ae-n n-d d-iy iy-pau"},
 //andys
-{"andys","ae-ae ae-n n-d d-iy iy-pau pau-iy iy-z"},
+{"andys","pau-ae ae-ae ae-n n-d d-iy iy-pau pau-iy iy-z z-pau"},
 //angela
-{"angela","ae-ae ae-n n-jh jh-ah ah-l l-ah"},
+{"angela","pau-ae ae-ae ae-n n-jh jh-ah ah-l l-ah ah-pau"},
 //angelina
-{"angelina","ae-n n-jh jh-eh eh-l l-iy iy-n n-ah"},
+{"angelina","pau-ae ae-n n-jh jh-eh eh-l l-iy iy-n n-ah ah-pau"},
 //animal
-{"animal","ae-n n-ah ah-m m-ah ah-l"},
+{"animal","pau-ae ae-n n-ah ah-m m-ah ah-l l-pau"},
 //anna
-{"anna","ae-ae ae-n n-ah"},
+{"anna","pau-ae ae-ae ae-n n-ah ah-pau"},
 //annabel
-{"annabel","ae-ae ae-n n-ah ah-b b-eh eh-eh eh-l"},
+{"annabel","pau-ae ae-ae ae-n n-ah ah-b b-eh eh-eh eh-l l-pau"},
 //anne
-{"anne","ae-ae ae-n"},
+{"anne","pau-ae ae-ae ae-n n-pau"},
 //anniversary
 //{"anniversary","ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
-//ANNIVERSARY  AE2 N AH0 V ER1 S ER0 IY0
-{"anniversary","ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
+{"anniversary","pau-ae ae-ae ae-n n-ah ah-v v-er er-er er-s s-er er-iy iy-pau"},
 //anthony
-{"anthony","ae-ae ae-n n-th th-ao ao-n n-iy iy-iy"},
-//{"anthony","ae-ae ae-n n-th th-ao ao-n n-iy iy-iy iy-z"},
-//anti
-{"anti","ae-n n-t t-iy"},
+{"anthony","pau-ae ae-ae ae-n n-th th-ao ao-n n-iy iy-iy iy-pau"},
+//antifreeze  
+{"antifreeze","pau-ae ae-ae ae-n n-t t-iy iy-f f-r r-iy iy-iy iy-z z-pau"},
 //appoint
-{"appoint","ah-p p-ao ao-iy iy-n n-t"},
+{"appoint","pau-ah ah-p p-ao ao-iy iy-n n-t t-pau"},
 //appointment
-{"appointment","pau-ah ah-p p-oy oy-oy oy-n n-t t-m m-ah ah-n n-t"},
+{"appointment","pau-ah ah-p p-oy oy-oy oy-n n-t t-m m-ah ah-n n-t t-pau"},
 //april
-{"april","ey-ey ey-p p-r r-ah ah-l"},
+{"april","pau-ey ey-ey ey-p p-r r-ah ah-l l-pau"},
 //archery
-{"archery","aa-r r-ch ch-uh uh-r r-iy"},
+{"archery","pau-aa aa-r r-ch ch-uh uh-r r-iy iy-pau"},
 //archie
-{"archie","aa-r r-ch ch-iy"},
+{"archie","pau-aa aa-r r-ch ch-iy iy-pau"},
 //art
-{"art","aa-aa aa-aa aa-r r-t"},
+{"art","pau-aa aa-aa aa-aa aa-r r-t t-pau"},
 //arthur
-{"arthur","aa-r r-th th-uh uh-r"},
+{"arthur","pau-aa aa-r r-th th-uh uh-r r-pau"},
 //assessment
-{"assessment","ah-s s-eh eh-eh eh-s s-m m-ah ah-pau pau-ah ah-n n-t"},
+{"assessment","pau-ah ah-s s-eh eh-eh eh-s s-m m-ah ah-pau pau-ah ah-n n-t t-pau"},
 //attack
-{"attack","ah-t t-ae ae-k"},
+{"attack","pau-ah ah-t t-ae ae-k k-pau"},
 //aubrey
-{"aubrey","ao-ao ao-b b-r r-iy iy-pau"},
+{"aubrey","pau-ao ao-ao ao-b b-r r-iy iy-pau"},
 //audrey
-{"audrey","ao-ao ao-d d-r r-iy iy-pau"},
+{"audrey","pau-ao ao-ao ao-d d-r r-iy iy-pau"},
 //{"audreys","ao-ao ao-uh uh-d d-r r-iy iy-z"},
 //august
-{"august","aa-aa aa-g g-ah ah-s s-t t-pau"},
+{"august","pau-aa aa-aa aa-g g-ah ah-s s-t t-pau"},
 //aunt
-{"aunt","ae-ae ae-n n-t"},
+{"aunt","pau-ae ae-ae ae-n n-t t-pau"},
 //auntie and aunty
-{"auntie","ae-ae ae-n n-t t-iy iy-pau"},
+{"auntie","pau-ae ae-ae ae-n n-t t-iy iy-pau"},
 //aunts
-{"aunts","ae-ae ae-n n-t t-s"},
+{"aunts","pau-ae ae-ae ae-n n-t t-s s-pau"},
 //autumn
-{"autumn","ao-t t-ah ah-m m-pau"},
+{"autumn","pau-ao ao-t t-ah ah-m m-pau"},
 
  
 //B-words
 //baby
-{"baby","b-eh eh-iy iy-b b-iy"},
+{"baby","pau-b b-eh eh-iy iy-b b-iy iy-pau"},
 //badminton 
-{"badminton","b-ae ae-d d-m m-ih ih-n n-t t-aa aa-n"},
+{"badminton","pau-b b-ae ae-d d-m m-ih ih-n n-t t-aa aa-n n-pau"},
 //bakery
-{"bakery","b-eh eh-iy iy-k k-uh uh-r r-iy"},
+{"bakery","pau-b b-eh eh-iy iy-k k-uh uh-r r-iy iy-pau"},
 //ball
-{"ball","b-ao ao-l"},
+{"ball","pau-b b-ao ao-l l-pau"},
 //band
-{"band","b-ae ae-n n-d"},
+{"band","pau-b b-ae ae-n n-d d-pau"},
 //bank
-{"bank","b-ae ae-ae ae-ng ng-k"},
+{"bank","pau-b b-ae ae-ae ae-ng ng-k k-pau"},
 //banking
-{"banking","b-ae ae-ae ae-ng ng-k k-ih ih-ng"},
+{"banking","pau-b b-ae ae-ae ae-ng ng-k k-ih ih-ng ng-pau"},
 //barber
-{"barber","b-aa aa-aa aa-r r-b b-er er-pau"},
+{"barber","pau-b b-aa aa-aa aa-r r-b b-er er-pau"},
 //barbars
-{"barbers","b-aa  aa-aa aa-r r-b b-er er-z z-pau"},
+{"barbers","pau-b b-aa aa-aa aa-r r-b b-er er-z z-pau"},
 //be
-{"be","b-iy"},
+{"be","pau-b b-iy iy-pau"},
 //bed
-{"bed","b-eh eh-d"},
+{"bed","pau-b b-eh eh-d d-pau"},
 //begins
-{"begins","b-ih ih-g g-ih ih-n n-z"},
+{"begins","pau-b b-ih ih-g g-ih ih-n n-z z-pau"},
 //beth
-{"beth","b-eh eh-eh eh-th"},
+{"beth","pau-b b-eh eh-eh eh-th th-pau"},
 //bethany
-{"bethany","b-eh eh-eh eh-th th-ah ah-n n-iy iy-pau"},
+{"bethany","pau-b b-eh eh-eh eh-th th-ah ah-n n-iy iy-pau"},
 //betsy
-{"betsy","b-eh eh-eh eh-t t-s s-iy iy-pau"},
+{"betsy","pau-b b-eh eh-eh eh-t t-s s-iy iy-pau"},
 //betsys
-{"betsys","b-eh eh-eh eh-t t-s s-iy iy-z z-pau"},
+{"betsys","pau-b b-eh eh-eh eh-t t-s s-iy iy-z z-pau"},
 //betty
-{"betty","b-eh eh-eh eh-t t-iy iy-pau"},
+{"betty","pau-b b-eh eh-eh eh-t t-iy iy-pau"},
 //bettys
-{"betty","b-eh eh-eh eh-t t-iy iy-z z-pau"},
+{"betty","pau-b b-eh eh-eh eh-t t-iy iy-z z-pau"},
 //big
 //bike
-{"bike","b-ay ay-ay ay-k"},
+{"bike","pau-b b-ay ay-ay ay-k k-pau"},
 //billy
-{"billy","b-ih ih-ih ih-l l-iy iy-pau"},
+{"billy","pau-b b-ih ih-ih ih-l l-iy iy-pau"},
 //bin
-{"bin","b-ih ih-ih ih-n"},
+{"bin","pau-b b-ih ih-ih ih-n n-pau"},
 //bird
-{"bird","b-uh uh-r r-d"},
+{"bird","pau-b b-uh uh-r r-d d-pau"},
 //birth
-{"birth","b-uh uh-r r-th"},
+{"birth","pau-b b-uh uh-r r-th th-pau"},
 //birthday
+//{"birthday","pau-b b-er er-er er-th th-d d-ey ey-pau"},
 {"birthday","pau-b b-er er-er er-th th-d d-ey ey-ey ey-pau"},
 //boat
-{"boat","b-ao ao-uh uh-t"},
+{"boat","pau-b b-ao ao-uh uh-t t-pau"},
 //book
-{"book","b-uh uh-k"},
+{"book","pau-b b-uh uh-k k-pau"},
 //bowls
-{"bowls","b-ao ao-uh uh-l l-z"},
+{"bowls","pau-b b-ao ao-uh uh-l l-z z-pau"},
 //box
-{"box","b-aa aa-k k-s"},
+{"box","pau-b b-aa aa-k k-s s-pau"},
 //boxing
-{"boxing","b-aa aa-aa aa-k k-s s-ih ih-ng"},
+{"boxing","pau-b b-aa aa-aa aa-k k-s s-ih ih-ng ng-pau"},
 //break
-{"break","b-r r-eh eh-iy iy-k"},
+{"break","pau-b b-r r-eh eh-iy iy-k k-pau"},
 //breakfast
-{"breakfast","b--r r-eh eh-eh eh-k k-f f-ah ah-s s-t t-pau"},
+{"breakfast","pau-b b--r r-eh eh-eh eh-k k-f f-ah ah-s s-t t-pau"},
 //british
-{"british","b-r r-ih ih-t t-ih ih-sh"},
+{"british","pau-b b-r r-ih ih-t t-ih ih-sh sh-pau"},
 //brother
-{"brother","b-r r-ah ah-dh dh-uh uh-r"},
+{"brother","pau-b b-r r-ah ah-dh dh-uh uh-r r-pau"},
 //brothers
-{"brothers","b-r r-ah ah-dh dh-uh uh-r r-z"},
+{"brothers","pau-b b-r r-ah ah-dh dh-uh uh-r r-z z-pau"},
 //brunch
-{"brunch","b-r r-r r-ah ah-n n-n n-ch ch-ch"},
+{"brunch","pau-b b-r r-r r-ah ah-n n-n n-ch ch-ch ch-pau"},
 //bus
-{"bus","b-ah ah-ah ah-s s-s"},
+{"bus","pau-b b-ah ah-ah ah-s s-s s-pau"},
 //business
-{"business","b-ih ih-z z-n n-ah ah-s"},
+{"business","b-ih ih-z z-n n-ah ah-s s-pau"},
 //buy
-{"buy","b-aa aa-iy iy-pau"},
+{"buy","pau-b b-aa aa-iy iy-pau"},
 //by
-{"by","b-aa aa-iy"},
+{"by","pau-b b-aa aa-iy iy-pau"},
 //bye
-{"bye","b-aa aa-iy"},
+{"bye","pau-b b-aa aa-iy iy-pau"},
 
 //C-words
-//cabbie CABBIE  K AE1 B IY0
-{"cabbie","k-ae ae-ae ae-b b-b b-iy iy-pau"},
+//cabbie 
+{"cabbie","pau-k k-ae ae-ae ae-b b-b b-iy iy-pau"},
 //cafe
-{"cafe","k-ah ah-f f-ey ey-ey"},
+{"cafe","pau-k k-ah ah-f f-ey ey-ey"},
 //calendar
-{"calendar","k-ae ae-ae ae-l l-ah ah-n n-d d-er er-pau"},
+{"calendar","pau-k k-ae ae-ae ae-l l-ah ah-n n-d d-er er-pau"},
 //call
-{"call","k-ao ao-l"},
+{"call","pau-k k-ao ao-l l-pau"},
 //camp
-{"camp","k-ae ae-m m-p"},
+{"camp","pau-k k-ae ae-m m-p p-pau"},
 //camping
-{"campsite","k-ae ae-m m-p p-s s-aa aa-iy iy-t t-s"},
+{"campsite","pau-k k-ae ae-m m-p p-s s-aa aa-iy iy-t t-s s-pau"},
 //car
-{"car","k-aa aa-aa aa-r"},
+{"car","pau-k k-aa aa-aa aa-r r-pau"},
 //card
-{"card","k-aa aa-r r-d"},
+{"card","pau-k k-aa aa-r r-d d-pau"},
 //care
-{"care","k-eh eh-r"},
+{"care","pau-k k-eh eh-r r-pau"},
 //carol
-{"carol","k-ae ae-r r-ah ah-l"},
+{"carol","pau-k k-ae ae-r r-ah ah-l l-pau"},
 //caroline
-{"caroline","k-eh eh-r r-ah ah-l l-aa aa-iy iy-n"},
-{"carolines","k-eh eh-r r-ah ah-l l-aa aa-iy iy-n n-z"},
+{"caroline","pau-k k-eh eh-r r-ah ah-l l-aa aa-iy iy-n n-pau"},
+{"carolines","pau-k k-eh eh-r r-ah ah-l l-aa aa-iy iy-n n-z z-pau"},
 //cat
-{"cat","k-ae ae-t"},
+{"cat","pau-k k-ae ae-t t-pau"},
 //cath
-{"cath","k-ae ae-ae ae-th th-th"},
+{"cath","pau-k k-ae ae-ae ae-th th-th th-pau"},
 //catherine and katherine
-{"catherine","k-ae ae-ae ae-th th-er er-ah ah-n"},
-//{"katherine","k-ae ae-ae ae-th th-er er-ih ih-n"},
+{"catherine","pau-k k-ae ae-ae ae-th th-er er-ah ah-n n-pau"},
+{"catherines","pau-k k-ae ae-ae ae-th th-er er-ah ah-n n-z z-pau"},
 //certificate
-{"certificate","s-uh uh-r r-t t-ih ih-f f-ih ih-k k-ah ah-t"},
+{"certificate","pau-s s-uh uh-r r-t t-ih ih-f f-ih ih-k k-ah ah-t t-pau"},
 //charles
-{"charles","ch-aa aa-aa aa-r r-l l-z"},
+{"charles","pau-ch ch-aa aa-aa aa-r r-l l-z z-pau"},
 //charlotte
-{"charlotte","sh-aa  aa-aa aa-r r-l l-ah ah-t"},
+{"charlotte","pau-sh sh-aa  aa-aa aa-r r-l l-ah ah-t t-pau"},
 //chauffeur
-{"chauffeur","pau-sh sh-ao ao-uh uh-f f-f f-uh uh-r"},
+{"chauffeur","pau-sh sh-ao ao-uh uh-f f-f f-uh uh-r r-pau"},
 //check
-{"check","ch-eh eh-k"},
+{"check","pau-ch ch-eh eh-k k-pau"},
 //chemist
-{"chemist","k-eh eh-m m-ih ih-s s-t t-pau"},
+{"chemist","pau-k k-eh eh-m m-ih ih-s s-t t-pau"},
 //child
-{"child","ch-aa aa-iy iy-l l-d"},
+{"child","pau-ch ch-aa aa-iy iy-l l-d d-pau"},
 //children
-{"children","ch-ih ih-l l-d d-r r-ah ah-n"},
+{"children","pau-ch ch-ih ih-l l-d d-r r-ah ah-n n-pau"},
 //chips
-{"chips","ch-ih ih-ih ih-p p-s s-pau"}, //dog name - walk chips
+{"chips","pau-ch ch-ih ih-ih ih-p p-s s-pau"}, //dog name - walk chips
 //choir
-{"choir","k-w w-aa aa-iy iy-uh uh-r"},
+{"choir","pau-k k-w w-aa aa-iy iy-uh uh-r r-pau"},
 //chore
-{"chore","ch-ao ao-ao ao-r r-pau"},
+{"chore","pau-ch ch-ao ao-ao ao-r r-pau"},
 //christie
-{"christie","k-r r-ih ih-s s-t t-iy"},
+{"christie","pau-k k-r r-ih ih-s s-t t-iy iy-pau"},
 //christina
-{"christina","k-r r-ih ih-s s-t t-iy iy-n n-ah"},
+{"christina","pau-k k-r r-ih ih-s s-t t-iy iy-n n-ah ah-pau"},
 //christine
-{"christine","k-r r-ih ih-s s-t t-iy iy-n"},
+{"christine","pau-k k-r r-ih ih-s s-t t-iy iy-n n-pau"},
 //christmas
-{"christmas","k-r r-ih ih-ih ih-s s-m m-ah ah-s"},
+{"christmas","pau-k k-r r-ih ih-ih ih-s s-m m-ah ah-s s-pau"},
 //church
-{"church","ch-er er-er er-ch"},
+{"church","pau-ch ch-er er-er er-ch ch-pau"},
 //cinema
 {"cinema","s-ih ih-ih ih-n n-ah ah-m m-ah ah-pau"},
 //circle
-{"circle","s-uh uh-r r-k k-ah ah-l"},
+{"circle","pau-s s-uh uh-r r-k k-ah ah-l l-pau"},
 //circus
-{"circus","s-uh uh-r r-k k-ah ah-s"},
+{"circus","pau-s s-uh uh-r r-k k-ah ah-s s-pau"},
 //city
-{"city","s-ih ih-t t-iy"},
+{"city","pau-s s-ih ih-t t-iy iy-pau"},
 //claire
-{"claire","k-l l-eh eh-eh eh-r"},
+{"claire","pau-k k-l l-eh eh-eh eh-r r-pau"},
 //clara
-{"clara","k-l l-ae ae-ae ae-r r-ah"},  //aunt clara
+{"clara","pau-k k-l l-ae ae-ae ae-r r-ah ah-pau"},  //aunt clara
 //clarence
-{"clarence","k-l l-eh eh-eh eh-r r-ah ah-n n-s"},
+{"clarence","pau-k k-l l-eh eh-eh eh-r r-ah ah-n n-s s-pau"},
 //clarissa
-{"clarissa","k-l l-er er-ih ih-ih ih-s s-ah"},
+{"clarissa","pau-k k-l l-er er-ih ih-ih ih-s s-ah ah-pau"},
 //class
-{"class","k-l l-ae ae-s"},
+{"class","pau-k k-l l-ae ae-s s-pau"},
 //claude
-{"claude","k-l l-ao ao-ao ao-d"},
+{"claude","pau-k k-l l-ao ao-ao ao-d d-pau"},
 //clean
-{"clean","k-l l-iy iy-n"},
+{"clean","pau-k k-l l-iy iy-n n-pau"},
 //cleaner
-{"cleaner","k-l l-iy iy-n n-uh uh-r"},
+{"cleaner","pau-k k-l l-iy iy-n n-uh uh-r r-pau"},
 //climbing
-{"climbing","k-l l-aa aa-iy iy-m m-ih ih-ng"},
+{"climbing","pau-k k-l l-aa aa-iy iy-m m-ih ih-ng ng-pau"},
 //clinic
-{"clinic","k-l l-ih ih-ih ih-n n-ih ih-k"},
+{"clinic","pau-k k-l l-ih ih-ih ih-n n-ih ih-k k-pau"},
 //clock
-{"clock","k-l l-aa aa-k"},
+{"clock","pau-k k-l l-aa aa-k k-pau"},
 //clocks
-{"clocks","k-l l-aa aa-k k-s"},
+{"clocks","pau-k k-l l-aa aa-k k-s s-pau"},
 //close
-{"close","k-l l-ao ao-uh uh-s"},
+{"close","pau-k k-l l-ao ao-uh uh-s s-pau"},
 //closed
-{"closed","k-l l-ao ao-uh uh-z z-d"},
+{"closed","pau-k k-l l-ao ao-uh uh-z z-d d-pau"},
 //club
-{"club","k-l l-ah ah-b"},
+{"club","pau-k k-l l-ah ah-b b-pau"},
 //coach
-{"coach","k-ow ow-ow ow-ch ch-ch"},
+{"coach","pau-k k-ow ow-ow ow-ch ch-ch ch-pau"},
 //coast
-{"coast","k-ao ao-uh uh-s s-t"},
-//cobbler COBBLER  K AA1 B L ER0
-{"cobbler","k-aa aa-aa aa-b b-b b--l l-er er-pau"},
+{"coast","pau-k k-ao ao-uh uh-s s-t t-pau"},
+//cobbler 
+{"cobbler","pau-k k-aa aa-aa aa-b b-b b--l l-er er-pau"},
 //code
-{"code","k-ao ao-uh uh-d"},
+{"code","pau-k k-ao ao-uh uh-d d-pau"},
 //coffee
-{"coffee","k-aa aa-f f-iy"},
+{"coffee","pau-k k-aa aa-f f-iy iy-pau"},
 //collection
-{"collection","k-ah ah-l l-eh eh-k k-sh sh-ah ah-n"},
+{"collection","pau-k k-ah ah-l l-eh eh-k k-sh sh-ah ah-n n-pau"},
 //college
-{"college","k-aa aa-l l-ih ih-jh"},
+{"college","pau-k k-aa aa-l l-ih ih-jh jh-pau"},
 //coming
-{"coming","k-ah ah-ah ah-m m-ih ih-ng"},
+{"coming","pau-k k-ah ah-ah ah-m m-ih ih-ng ng-pau"},
 //computer
-{"computer","k-ah ah-m m-p p-y y-uw uw-t t-uh uh-r"},
+{"computer","pau-k k-ah ah-m m-p p-y y-uw uw-t t-uh uh-r r-pau"},
 //concert
-{"concert","k-aa aa-n n-s s-uh uh-r r-t"},
+{"concert","pau-k k-aa aa-n n-s s-uh uh-r r-t t-pau"},
 //contact
-{"contact","k-aa aa-n n-t t-ae ae-k k-t"},
+{"contact","pau-k k-aa aa-n n-t t-ae ae-k k-t t-pau"},
 //cottage
-{"cottage","k-aa  aa-aa aa-t t-ah ah-jh"},
+{"cottage","pau-k k-aa  aa-aa aa-t t-ah ah-jh jh-pau"},
 //court
-{"court","k-ao ao-r r-t"},
+{"court","pau-k k-ao ao-r r-t t-pau"},
 //cousin
-{"cousin","k-ah ah-z z-ah ah-n"},
+{"cousin","pau-k k-ah ah-z z-ah ah-n n-pau"},
 
 //crispin
-{"crispin","k-r  r-ih ih-ih ih-s s-p p-ih ih-n n-n"},
+{"crispin","pau-k k-r  r-ih ih-ih ih-s s-p p-ih ih-n n-n n-pau"},
 //crispins (saint day)
-{"crispins","k-r  r-ih ih-ih ih-s s-p p-ih ih-ih ih-n n-n n-z"},  //saint day
+{"crispins","pau-k k-r  r-ih ih-ih ih-s s-p p-ih ih-ih ih-n n-n n-z z-pau"},  //saint day
 //crook
-{"crook","k-r r-uh uh-k"},
+{"crook","pau-k k-r r-uh uh-k k-pau"},
 //crooks
-{"crooks","k-r r-uh uh-k k-s"},
+{"crooks","pau-k k-r r-uh uh-k k-s s-pau"},
 //cyber
-{"cyber","s-ay ay-ay ay-b b-er er-pau"},
+{"cyber","pau-s s-ay ay-ay ay-b b-er er-pau"},
 //cycle
-{"cycle","s-aa aa-iy iy-k k-ah ah-l"},
+{"cycle","pau-s s-aa aa-iy iy-k k-ah ah-l l-pau"},
 
 //D-words
 //dad
-{"dad","d-ae ae-ae ae-d"},
+{"dad","pau-d d-ae ae-ae ae-d d-pau"},
 //dads
-{"dads","d-ae ae-ae ae-d d-z"},
+{"dads","pau-d d-ae ae-ae ae-d d-z z-pau"},
 //daisy
-{"daisy","d-ey ey-ey ey-z z-iy iy-pau"},
+{"daisy","pau-d d-ey ey-ey ey-z z-iy iy-pau"},
 //dan
-{"dan","d-ae ae-n"},
+{"dan","pau-d d-ae ae-n n-pau"},
 //dance
-{"dance","d-ae ae-n n-s"},
+{"dance","pau-d d-ae ae-n n-s s-pau"},
 //daniel
-{"daniel","d-ae ae-ae ae-n n-y y-ah ah-l"},
+{"daniel","pau-d d-ae ae-ae ae-n n-y y-ah ah-l l-pau"},
 //danielle
-{"danielle","d-ae ae-ae ae-n n-iy iy-eh eh-eh eh-l"},
+{"danielle","pau-d d-ae ae-ae ae-n n-iy iy-eh eh-eh eh-l l-pau"},
+{"danielle","pau-d d-ae ae-ae ae-n n-iy iy-eh eh-eh eh-l l-z z-pau"},
 //danny
-{"danny","d-ae ae-ae ae-n n-iy"},
+{"danny","pau-d d-ae ae-ae ae-n n-iy iy-pau"},
 //date
-{"date","d-ey ey-ey ey-t"},
+{"date","pau-d d-ey ey-ey ey-t t-pau"},
 //dates
-{"dates","d-ey ey-ey ey-t t-s s-pau"},
+{"dates","pau-d d-ey ey-ey ey-t t-s s-pau"},
 //daughter
-{"daughter","d-ao ao-ao ao-t t-er er-pau"},
+{"daughter","pau-d d-ao ao-ao ao-t t-er er-pau"},
 //daughters
-{"daughter","d-ao ao-ao ao-t t-er er-z"},
+{"daughter","pau-d d-ao ao-ao ao-t t-er er-z z-pau"},
 //dave
-{"dave","d-ey ey-ey ey-v"},
+{"dave","pau-d d-ey ey-ey ey-v v-pau"},
 //david
-{"david","d-ey ey-ey ey-v v-ih ih-d"},
+{"david","pau-d d-ey ey-ey ey-v v-ih ih-d d-pau"},
 //davids
-{"davids","d-ey ey-ey ey-v v-ih ih-d d-z"},
+{"davids","pau-d d-ey ey-ey ey-v v-ih ih-d d-z z-pau"},
 //day
-{"day","d-d d-ey ey-ey ey-pau"},
+{"day","pau-d d-d d-ey ey-ey ey-pau"},
 //days
-{"days","d-eh eh-iy iy-z"},
+{"days","pau-d d-eh eh-iy iy-z z-pau"},
 //dead
-{"dead","d-eh eh-d"},
+{"dead","pau-d d-eh eh-d d-pau"},
 //deadline
-{"deadline","d-eh eh-eh eh-d d-l l-ay ay-ay ay-n"},
+{"deadline","pau-d d-eh eh-eh eh-d d-l l-ay ay-ay ay-n n-pau"},
 //dealer
-{"dealer","d-iy iy-l l-uh uh-r"},
+{"dealer","pau-d d-iy iy-l l-uh uh-r r-pau"},
 //death
-{"death","d-eh eh-th"},
+{"death","pau-d d-eh eh-th th-pau"},
 //debbie or debby
-{"debbie","d-eh eh-eh eh-b b-iy iy-pau"},
-//{"debby","d-eh eh-eh eh-b b-iy iy-pau"},
+{"debbie","pau-d d-eh eh-eh eh-b b-iy iy-pau"},
 //deborah
-{"deborah","d-eh eh-eh eh-b b-er er-ah ah-pau"},
+{"deborah","pau-d d-eh eh-eh eh-b b-er er-ah ah-pau"},
 //debs
-{"debs","d-eh eh-b b-z"},
+{"debs","pau-d d-eh eh-b b-z z-pau"},
 //december
-{"december","d-ih ih-s s-eh eh-eh eh-m m-b b-er er-pau"},
+{"december","pau-d d-ih ih-s s-eh eh-eh eh-m m-b b-er er-pau"},
 //decorate
-{"decorate","d-eh eh-k k-uh uh-r r-eh eh-iy iy-t"},
+{"decorate","pau-d d-eh eh-k k-uh uh-r r-eh eh-iy iy-t t-pau"},
 //decorating
-{"decorating","d-eh eh-k k-uh uh-r r-eh eh-iy iy-t t-ih ih-ng"},
+{"decorating","pau-d d-eh eh-k k-uh uh-r r-eh eh-iy iy-t t-ih ih-ng ng-pau"},
 //delivery
-{"delivery","d-ih ih-l l-ih ih-ih ih-v v-er er-iy iy-pau"},
+{"delivery","pau-d d-ih ih-l l-ih ih-ih ih-v v-er er-iy iy-pau"},
 //dentist
-{"dentist","d-eh eh-eh eh-n n-t t-ah ah-s s-t"},
+{"dentist","pau-d d-eh eh-eh eh-n n-t t-ah ah-s s-t t-pau"},
 //development
-{"development","d-ih ih-v v-eh eh-l l-ah ah-p p-m m-ah ah-n n-t"},
+{"development","pau-d d-ih ih-v v-eh eh-l l-ah ah-p p-m m-ah ah-n n-t t-pau"},
 //diana
-{"diana","d-aa aa-iy iy-ae ae-n n-ah"},
+{"diana","pau-d d-aa aa-iy iy-ae ae-n n-ah ah-pau"},
 //diary
-{"diary","d-aa aa-iy iy-uh uh-r r-iy"},
+{"diary","pau-d d-aa aa-iy iy-uh uh-r r-iy iy-pau"},
 //dinner
-{"dinner","d-ih ih-ih ih-n n-er er-pau"},
+{"dinner","pau-d d-ih ih-ih ih-n n-er er-pau"},
 //{"diphone","d-ih ih-ih ih-f f-ow ow-ow ow-n n-pau"}, //bad pronouciation
 //do
-{"do","d-uw"},
+{"do","pau-d d-uw uw-pau"},
 //doctor
-{"doctor","d-aa aa-aa aa-k k-t t-er er-pau"},
+{"doctor","pau-d d-aa aa-aa aa-k k-t t-er er-pau"},
 //doctors
-{"doctors","d-aa aa-aa aa-k k-t t-er r-z z-pau"},
+{"doctors","pau-d d-aa aa-aa aa-k k-t t-er r-z z-pau"},
 //dog
-{"dog","d-ao ao-g"},
+{"dog","pau-d d-ao ao-g g-pau"},
 //don
-{"don","d-aa aa-aa aa-n"},
+{"don","pau-d d-aa aa-aa aa-n n-pau"},
 //donald
-{"donald","d-aa aa-aa aa-n n-ah ah-l l-d"},
+{"donald","pau-d d-aa aa-aa aa-n n-ah ah-l l-d d-pau"},
 //donalds
-{"donalds","d-aa aa-aa aa-n n-ah ah-l l-d d-z"},
+{"donalds","pau-d d-aa aa-aa aa-n n-ah ah-l l-d d-z z-pau"},
 //donkey
-{"donkey","d-aa aa-ng ng-k k-iy"},
+{"donkey","pau-d d-aa aa-ng ng-k k-iy iy-pau"},
 //dons
-{"dons","d-aa aa-aa aa-n n-z"},
+{"dons","pau-d d-aa aa-aa aa-n n-z z-pau"},
 //dora
-{"dora","d-ao ao-ao ao-r r-ah ah-pau"},
+{"dora","pau-d d-ao ao-ao ao-r r-ah ah-pau"},
 //down
-{"down","d-aa aa-uh uh-n"},
+{"down","pau-d d-aa aa-uh uh-n n-pau"},
 //driver
-{"driver","d-r r-ay ay-ay ay-v v-er er-pau"},
+{"driver","pau-d d-r r-ay ay-ay ay-v v-er er-pau"},
 //dustbin
-{"dustbin","d-ah ah-ah ah-s s-t t-b b-ih ih-n n-pau"},
+{"dustbin","pau-d d-ah ah-ah ah-s s-t t-b b-ih ih-n n-pau"},
 
 //E-words
 //ear
-{"ear","iy-iy iy-r"},
+{"ear","pau-iy iy-iy iy-r r-pau"},
 //early
-{"early","uh-r r-l l-iy"},
+{"early","pau-uh uh-r r-l l-iy iy-pau"},
 //east
-{"east","iy-s s-t"},
+{"east","pau-iy iy-s s-t t-pau"},
 //easter
-{"easter","iy-iy iy-s s-t t-er er-pau"},
+{"easter","pau-iy iy-iy iy-s s-t t-er er-pau"},
 //education
-{"education","eh-jh jh-ah ah-k k-eh eh-iy iy-sh sh-ah ah-n"},
+{"education","pau-eh eh-jh jh-ah ah-k k-eh eh-iy iy-sh sh-ah ah-n n-pau"},
 //eight
-{"eight","ey-ey ey-t"},
+{"eight","pau-ey ey-ey ey-t t-pau"},
 //eighteen
-{"eighteen","eh-ey ey-t t-iy iy-iy iy-n n-pau"},
+{"eighteen","pau-ey ey-ey ey-t t-iy iy-iy iy-n n-pau"},
 //eighteenth
 {"eighteenth","pau-ey ey-ey ey-t t-iy iy-iy iy-n n-th th-pau"},
 //eighth
-{"eighth","eh-ey ey-t t-th th-pau"},
+{"eighth","pau-eh eh-ey ey-ey ey-t t-th th-pau"},
 //eightieth (birthday)
-{"eightieth","ey-ey ey-t t-iy iy-ih ih-th"},
+{"eightieth","pau-eh ey-ey ey-t t-iy iy-ih ih-th th-pau"},
 //eighty
-{"eighty","eh-iy iy-t t-iy"},
+{"eighty","pau-eh eh-iy iy-t t-iy iy-pau"},
 //electric
-{"electric","ih-l l-eh eh-k k-t t-r r-ih ih-k"},
+{"electric","pau-ih ih-l l-eh eh-k k-t t-r r-ih ih-k k-pau"},
 //electrician
-{"electrician","ih-ih ih-l l-eh eh-k k-t t-r r-ih ih-ih ih-sh sh-ah ah-n"},
+{"electrician","pau-ih ih-ih ih-l l-eh eh-k k-t t-r r-ih ih-ih ih-sh sh-ah ah-n n-pau"},
 //electricity
-{"electricity","ih-l l-eh eh-k k-t t-r r-ih ih-s s-ah ah-t t-iy"},
+{"electricity","pau-ih ih-l l-eh eh-k k-t t-r r-ih ih-s s-ah ah-t t-iy iy-pau"},
 //eleven
-{"eleven","ih-l l-eh eh-eh eh-v v-ah ah-n"},
+{"eleven","pau-ih ih-l l-eh eh-eh eh-v v-ah ah-n n-pau"},
 //eleventh
-{"eleventh","ih-l l-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
+{"eleventh","pau-ih ih-l l-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
 //elisha
-{"elisha","eh-eh eh-l l-ih ih-sh sh-ah ah-pau"},
+{"elisha","pau-eh eh-eh eh-l l-ih ih-sh sh-ah ah-pau"},
 //eliza
-{"eliza","ih-l l-ay ay-ay ay-z z-ah ah-pau"},
+{"eliza","pau-ih ih-l l-ay ay-ay ay-z z-ah ah-pau"},
 //elizabeth
-{"elizabeth","ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th"},
+{"elizabeth","pau-ih ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th th-pau"},
 //elizabeths
-{"elizabeths","ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th th-s"},
+{"elizabeths","pau-ih ih-l l-ih ih-ih ih-z z-ah ah-b b-ah ah-th th-s s-pau"},
 //elizas
-{"elizas","ih-l l-ay ay-ay ay-z z-ah ah-z"},
+{"elizas","pau-ih ih-l l-ay ay-ay ay-z z-ah ah-z z-pau"},
 //ella
-{"ella","eh-l l-l l-ah ah-pau"},
+{"ella","pau-eh eh-l l-l l-ah ah-pau"},
 //elliot or elliott
-{"elliot","eh-eh eh-l l-iy iy-ah ah-t"},
+{"elliot","pau-eh eh-eh eh-l l-iy iy-ah ah-t t-pau"},
 //{"elliott","eh-eh eh-l l-iy iy-ah ah-t"},
 //elton
-{"elton","eh-l l-t t-ah ah-n"},
+{"elton","pau-eh eh-l l-t t-ah ah-n n-pau"},
 //emma
-{"emma","eh-eh eh-m m-ah"},
+{"emma","pau-eh eh-eh eh-m m-ah ah-pau"},
 //end
-{"end","eh-n n-d"},
+{"end","pau-eh eh-n n-d d-pau"},
 //ends
-{"ends","eh-n n-d d-z"},
+{"ends","pau-eh eh-n n-d d-z z-pau"},
 //engage
-{"engage","eh-n n-g g-eh eh-iy iy-jh"},
-{"engagement","eh-n n-g g-eh eh-iy iy-jh jh-m m-ah ah-n n-t"},
+{"engage","pau-eh eh-n n-g g-eh eh-iy iy-jh jh-pau"},
+{"engagement","pau-eh eh-n n-g g-eh eh-iy iy-jh jh-m m-ah ah-n n-t t-pau"},
 //evan
-{"evan","eh-eh eh-v v-ah ah-n"},
+{"evan","pau-eh eh-eh eh-v v-ah ah-n n-pau"},
 //evening
-{"evening","iy-iy iy-v v-n n-ih ih-ng ng-pau"},
+{"evening","pau-iy iy-iy iy-v v-n n-ih ih-ng ng-pau"},
 //event
-{"event","ih-v v-eh eh-eh eh-n n-t"},
+{"event","pau-ih ih-v v-eh eh-eh eh-n n-t t-pau"},
 //events
-{"events","ih-v v-eh eh-n n-t t-z z-pau"},
+{"events","pau-ih ih-v v-eh eh-n n-t t-z z-pau"},
 //eye
-{"eye","aa-iy"},
+{"eye","pau-aa aa-iy iy-pau"},
 
 //F-words
 //family
-{"family","f-ae ae-ae ae-m m-ah ah-l l-iy iy-pau"},
+{"family","pau-f f-ae ae-ae ae-m m-ah ah-l l-iy iy-pau"},
 //farm
-{"farm","f-aa aa-aa aa-r r-m"},
+{"farm","pau-f f-aa aa-aa aa-r r-m m-pau"},
 //father
-{"father","f-aa aa-aa aa-dh dh-er er-pau"},
+{"father","pau-f f-aa aa-aa aa-dh dh-er er-pau"},
 //fathers
-{"fathers","f-aa aa-aa aa-dh dh-er er-pau pau-er er-z z-pau"},
+//{"fathers","pau-f f-aa aa-aa aa-dh dh-er er-pau pau-er er-z z-pau"},
+{"fathers","pau-f f-aa aa-aa aa-dh dh-er er-er er-z z-z z-pau"},
 //fawkes
-{"fawkes","f-ao ao-ao ao-k k-s"},
+{"fawkes","pau-f f-ao ao-ao ao-k k-s s-pau"},
 //fear
-{"fear","f-ih ih-r"},
+{"fear","pau-f f-ih ih-r r-pau"},
 //february
-//FEBRUARY  F EH1 B Y AH0 W EH2 R IY0
 //{"february","f-eh eh-eh eh-b b-y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
-//FEBRUARY(1)  F EH1 B R UW0 EH2 R IY0
-{"february","f-eh eh-eh eh-b b--y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
+{"february","pau-f f-eh eh-eh eh-b b--y y-ah ah-w w-eh eh-eh eh-r r-iy iy-pau"},
 //feed
-{"feed","f-iy iy-d"},
+{"feed","pau-f f-iy iy-d d-pau"},
 //festival
-{"festival","f-eh eh-s s-t t-ah ah-v v-ah ah-l"},
+{"festival","pau-f f-eh eh-s s-t t-ah ah-v v-ah ah-l l-pau"},
 //festive
-{"festive","f-eh eh-s s-t t-ih ih-v"},
+{"festive","pau-f f-eh eh-s s-t t-ih ih-v v-pau"},
 //fifteen
-{"fifteen","f-ih ih-ih ih-f f-t t-iy iy-iy iy-n n-pau"},
+{"fifteen","pau-f f-ih ih-ih ih-f f-t t-iy iy-iy iy-n n-pau"},
 //fifteenth
-{"fifteenth","f-ih ih-f f-t t-iy iy-iy iy-n n-th th-pau"},
+{"fifteenth","pau-f f-ih ih-f f-t t-iy iy-iy iy-n n-th th-pau"},
 //fifth
-{"fifth","f-ih ih-ih ih-f f-th th-pau"},
+{"fifth","pau-f f-ih ih-ih ih-f f-th th-pau"},
 //fifty
-{"fifty","f-ih ih-ih ih-f f-t t-iy iy-pau"},
+{"fifty","pau-f f-ih ih-ih ih-f f-t t-iy iy-pau"},
 //film
-{"film","f-ih ih-ih ih-l l-m m-pau"},
+{"film","pau-f f-ih ih-ih ih-l l-m m-pau"},
 //fiona
-{"fiona","f-iy iy-ow ow-ow ow-n n-ah ah-pau"},
+{"fiona","pau-f f-iy iy-ow ow-ow ow-n n-ah ah-pau"},
 //fire
-{"fire","f-aa aa-iy iy-uh uh-r"},
+{"fire","pau-f f-aa aa-iy iy-uh uh-r r-pau"},
 //fireworks
-{"fireworks","f-aa aa-iy iy-r r-w w-uh uh-r r-k k-s"},
+{"fireworks","pau-f f-aa aa-iy iy-r r-w w-uh uh-r r-k k-s s-pau"},
 //first
-{"first","f-er er-er er-s s-t t-pau pau-t"},
+{"first","pau-f f-er er-er er-s s-t t-pau pau-t"},
 //fish
-{"fish","f-ih ih-ih ih-sh"},
+{"fish","pau-f f-ih ih-ih ih-sh sh-pau"},
 //fishing
-{"fishing","f-ih ih-sh sh-ih ih-ng"},
+{"fishing","pau-f f-ih ih-sh sh-ih ih-ng ng-pau"},
 //five
-{"five","f-ay ay-ay ay-v"},
+{"five","pau-f f-ay ay-ay ay-v v-pau"},
 //fix
-{"fix","f-ih ih-k k-s"},
+{"fix","pau-f f-ih ih-k k-s s-pau"},
 //food
-{"food","f-uw uw-d"},
+{"food","pau-f f-uw uw-d d-pau"},
 //fools april
-{"fools","f-uw uw-l l-z"},
+{"fools","pau-f f-uw uw-l l-z z-pau"},
 //football
-{"football","f-uh uh-t t-b b-ao ao-l"},
+{"football","pau-f f-uh uh-t t-b b-ao ao-l l-pau"},
 //forty
-{"forty","f-ao ao-ao ao-r r-t t-iy iy-pau"},
+{"forty","pau-f f-ao ao-ao ao-r r-t t-iy iy-pau"},
 //forward  -clocks forward
-{"forward","f-ao ao-r r-w w-uh uh-r r-d"},
+{"forward","pau-f f-ao ao-r r-w w-uh uh-r r-d d-pau"},
 //four
-{"four","f-ao ao-ao ao-r"},
+{"four","pau-f f-ao ao-ao ao-r r-pau"},
 //fourteen
-{"fourteen","f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-pau"},
+{"fourteen","pau-f f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-pau"},
 //fourteenth
-{"fourteenth","f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-th th-pau pau-th"},
+//{"fourteenth","pau-f f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-th th-pau pau-th th-pau"},
+{"fourteenth","pau-f f-ao ao-ao ao-r r-t t-iy iy-iy iy-n n-th th-th th-pau"},
 //fourth
-{"fourth","f-ao ao-ao ao-r r-th th-pau"},
+{"fourth","pau-f f-ao ao-ao ao-r r-th th-pau"},
 //frances
-{"frances","f-r r-ae ae-ae ae-n n-s s-ih ih-s"},
+{"frances","pau-f f-r r-ae ae-ae ae-n n-s s-ih ih-s s-pau"},
 //francesca
-{"francesca","f-r r-ae ae-n n-ch ch-eh eh-eh eh-s s-k k-ah"},
+{"francesca","pau-f f-r r-ae ae-n n-ch ch-eh eh-eh eh-s s-k k-ah ah-pau"},
 //francis
-{"francis","f-r r-ae ae-ae ae-n n-s s-ah ah-s"},
+{"francis","pau-f f-r r-ae ae-ae ae-n n-s s-ah ah-s s-pau"},
 //frank
-{"frank","f-r r-ae ae-ae ae-ng ng-k"},
+{"frank","pau-f f-r r-ae ae-ae ae-ng ng-k k-pau"},
 //frankenstein
-{"frankenstein","f-r r-ae ae-ng ng-k k-ah ah-n n-s s-t t-aa aa-iy iy-n"},
+{"frankenstein","pau-f f-r r-ae ae-ng ng-k k-ah ah-n n-s s-t t-aa aa-iy iy-n n-pau"},
 //fred
-{"fred","f-f f-r r-eh eh-eh eh-d d-pau"},
+{"fred","pau-f f-f f-r r-eh eh-eh eh-d d-pau"},
 //freddie and freddy
-{"freddie","f-r r-eh eh-eh eh-d d-iy iy-pau"},
+{"freddie","pau-f f-r r-eh eh-eh eh-d d-iy iy-pau"},
 //{"freddy","f-r r-eh eh-eh eh-d d-iy iy-pau"},
 //frederic
-{"frederic","f-r r-eh eh-d d-r r-ih ih-k"},
+{"frederic","pau-f f-r r-eh eh-d d-r r-ih ih-k k-pau"},
 //frederick
-{"frederick","f-r r-eh eh-eh eh-d d-er er-ih ih-k"},
+{"frederick","pau-f f-r r-eh eh-eh eh-d d-er er-ih ih-k k-pau"},
 //freds
-{"freds","f-r r-eh eh-eh eh-d d-z z-pau"},
+{"freds","pau-f f-r r-eh eh-eh eh-d d-z z-pau"},
 //freeze (anti)
-{"freeze","f-r r-iy iy-z"},
+{"freeze","pau-f f-r r-iy iy-z z-pau"},
 //{"freezer","f-r r-iy iy-z z-uh uh-r"},
 //freya
-{"freya","f-r r-eh eh-iy iy-ah"},
+{"freya","pau-f f-r r-eh eh-iy iy-ah ah-pau"},
 //friday
-{"friday","f-r r-ay ay-ay ay-d d-iy iy-pau"},
+{"friday","pau-f f-r r-ay ay-ay ay-d d-iy iy-pau"},
 //friend
-{"friend","f-r r-eh eh-eh eh-n n-d"},
+{"friend","pau-f f-r r-eh eh-eh eh-n n-d d-pau"},
 //frost
-{"frost","f-r r-ao ao-s s-t"},
+{"frost","pau-f f-r r-ao ao-s s-t t-pau"},
 //funeral
-{"funeral","f-y y-uw uw-uw uw-n n-er er-ah ah-l"},
+{"funeral","pau-f f-y y-uw uw-uw uw-n n-er er-ah ah-l l-pau"},
 
 //G-words
 
 //gale
-{"gale","g-ey ey-ey ey-l"},
+{"gale","pau-g g-ey ey-ey ey-l l-pau"},
+{"gales","pau-g g-ey ey-ey ey-l l-z z-pau"},
 //gallery
-{"gallery","g-ae ae-ae ae-l l-er er-iy iy-pau"},
+{"gallery","pau-g g-ae ae-ae ae-l l-er er-iy iy-pau"},
 //game
-{"game","g-eh eh-iy iy-m"},
+{"game","pau-g g-eh eh-iy iy-m m-pau"},
 //garage
-{"garage","g-uh uh-r r-aa aa-zh"},
-//garbage
-{"garden","g-aa aa-aa aa-r r-d d-ah ah-n"},
+{"garage","pau-g g-uh uh-r r-aa aa-zh zh-pau"},
+//garbage 
+{"garbage","pau-g g-aa aa-aa aa-r r-b b-ih ih-jh jh-pau"},
 //garden
-{"garden","g-aa aa-r r-d d-ah ah-n"},
+{"garden","pau-g g-aa aa-r r-d d-ah ah-n n-pau"},
 //gas
-{"gas","g-ae ae-ae ae-s s-s"},
+{"gas","pau-g g-ae ae-ae ae-s s-s s-pau"},
 //gate
-{"gate","g-eh eh-iy iy-t"},
+{"gate","pau-g g-eh eh-iy iy-t t-pau"},
 //geoff
-{"geoff","jh-eh eh-eh eh-f f-pau"},
+{"geoff","pau-jh jh-eh eh-eh eh-f f-pau"},
 //geoffrey
-{"geoffrey","jh-eh eh-eh eh-f f-r r-iy iy-pau"},
+{"geoffrey","pau-jh jh-eh eh-eh eh-f f-r r-iy iy-pau"},
+{"geoffreys","pau-jh jh-eh eh-eh eh-f f-r r-iy iy-z z-pau"},
+//geoffs
+{"geoffs","pau-jh jh-eh eh-eh eh-f f-z z-pau"},
 //george
-{"george","jh-ao ao-ao ao-r r-jh"},
+{"george","pau-jh jh-ao ao-ao ao-r r-jh jh-pau"},
 //georges  saint day
-{"georges","jh-ao ao-ao ao-r r-jh jh-ah ah-z z-pau"},
+{"georges","pau-jh jh-ao ao-ao ao-r r-jh jh-ah ah-z z-pau"},
 //georgina
-{"georgina","jh-ao ao-ao ao-r r-jh jh-iy iy-n n-ah ah-pau"},
+{"georgina","pau-jh jh-ao ao-ao ao-r r-jh jh-iy iy-n n-ah ah-pau"},
 //glasses
-{"glasses","g-l l-ae ae-ae ae-s s-ah ah-z"},
+{"glasses","pau-g g-l l-ae ae-ae ae-s s-ah ah-z z-pau"},
 //go
-{"go","g-ao ao-uh"},
+{"go","pau-g g-ao ao-uh uh-pau"},
 //golf
-{"golf","g-aa aa-l l-f"},
+{"golf","pau-g g-aa aa-l l-f f-pau"},
 //good
-{"good","g-uh uh-d"},
+{"good","pau-g g-uh uh-d d-pau"},
 //grand
-{"grand","g-r r-ae ae-n n-d"},
-{"grandchild","g-r r-ae ae-n n-d d-ch ch-aa aa-iy iy-l l-d"},
-{"grandchildren","g-r r-ae ae-n n-ch ch-ih ih-l l-d d-r r-ah ah-n"},
+{"grand","pau-g g-r r-ae ae-n n-d d-pau"},
+{"grandchild","pau-g g-r r-ae ae-n n-d d-ch ch-aa aa-iy iy-l l-d d-pau"},
+{"grandchildren","pau-g g-r r-ae ae-n n-ch ch-ih ih-l l-d d-r r-ah ah-n n-pau"},
 //grandad
-{"grandad","g-r r-ae ae-ae ae-n n-d d-ae ae-ae ae-d"},
-{"granddaughter","g-r r-ae ae-n n-d d-ao ao-t t-uh uh-r"},
-{"grandfather","g-r r-ae ae-n n-d d-f f-aa aa-dh dh-uh uh-r"},
-{"grandma","g-r r-ae ae-m m-aa"},
-{"grandmother","g-r r-ae ae-n n-d d-m m-ah ah-dh dh-uh uh-r"},
-{"grandpa","g-r r-ae ae-n n-d d-p p-aa"},
-{"grandparent","g-r r-ae ae-n n-d d-p p-eh eh-r r-ah ah-n n-t"},
-{"grandparents","g-r r-ae ae-n n-d d-p p-eh eh-r r-ah ah-n n-t t-s"},
-{"grandson","g-r r-ae ae-n n-d d-s s-ah ah-n"},
+{"grandad","pau-g g-r r-ae ae-ae ae-n n-d d-ae ae-ae ae-d d-pau"},
+{"granddaughter","pau-g g-r r-ae ae-n n-d d-ao ao-t t-uh uh-r r-pau"},
+{"grandfather","pau-g g-r r-ae ae-n n-d d-f f-aa aa-dh dh-uh uh-r r-pau"},
+{"grandma","pau-g g-r r-ae ae-m m-aa aa-pau"},
+{"grandmother","pau-g g-r r-ae ae-n n-d d-m m-ah ah-dh dh-uh uh-r r-pau"},
+{"grandpa","pau-g g-r r-ae ae-n n-d d-p p-aa aa-pau"},
+{"grandparent","pau-g g-r r-ae ae-n n-d d-p p-eh eh-r r-ah ah-n n-t t-pau"},
+{"grandparents","pau-g g-r r-ae ae-n n-d d-p p-eh eh-r r-ah ah-n n-t t-s s-pau"},
+{"grandson","pau-g g-r r-ae ae-n n-d d-s s-ah ah-n n-pau"},
 //granny and grannie
-{"granny","g-r r-ae ae-ae ae-n n-iy iy-pau"},
+{"granny","pau-g g-r r-ae ae-ae ae-n n-iy iy-pau"},
 //guy (fawkes day)
-{"guy","g-ay ay-ay ay-ay ay-pau"},
+{"guy","pau-g g-ay ay-ay ay-ay ay-pau"},
 
 //H-words
 //hairdresser
-{"hairdresser","hh-eh eh-eh eh-r r-d d-r r-eh eh-eh eh-s s-er er-pau"},
+{"hairdresser","pau-hh hh-eh eh-eh eh-r r-d d-r r-eh eh-eh eh-s s-er er-pau"},
 //hairdressing
-{"hairdressing","hh-eh eh-eh eh-r r-d d-r r-eh eh-eh eh-s s-ih ih-ng"},
+{"hairdressing","pau-hh hh-eh eh-eh eh-r r-d d-r r-eh eh-eh eh-s s-ih ih-ng ng-pau"},
 //halloween
-{"halloween","hh-ae ae-ae ae-l l-ah ah-w w-iy iy-iy iy-n"},
+{"halloween","pau-hh hh-ae ae-ae ae-l l-ah ah-w w-iy iy-iy iy-n n-pau"},
 //hannah or hanna
 //{"hanna","hh-ae ae-ae ae-n n-ah"},
-{"hannah","hh-ae ae-ae ae-n n-ah"},
-
-//happy HAPPY  HH AE1 P IY0
-{"happy","hh-ae ae-ae ae-p p-iy iy-pau"},
-
+{"hannah","pau-hh hh-ae ae-ae ae-n n-ah ah-pau"},
+{"hannahs","pau-hh hh-ae ae-ae ae-n n-ah ah-z z-pau"},
+//happy (birthday)
+{"happy","pau-hh hh-ae ae-ae ae-p p-iy iy-pau"},
 //harold
-{"harold","hh-eh eh-eh eh-r r-ah ah-d"},
-//{"harolds","hh-eh eh-eh eh-r r-ah ah-d d-z"},
+{"harold","pau-hh hh-eh eh-eh eh-r r-ah ah-d d-pau"},
+{"harolds","pau-hh hh-eh eh-eh eh-r r-ah ah-d d-z z-pau"},
 //harry
-{"harry","hh-eh eh-eh eh-r r-iy"},
+{"harry","pau-hh hh-eh eh-eh eh-r r-iy iy-pau"},
 //have
-{"have","hh-ae ae-v"},
+{"have","pau-hh hh-ae ae-v v-pau"},
 //head
-{"head","hh-eh eh-d"},
+{"head","pau-hh hh-eh eh-d d-pau"},
 //headache
-{"headache","hh-eh eh-d d-eh eh-iy iy-k"},
+{"headache","pau-hh hh-eh eh-d d-eh eh-iy iy-k k-pau"},
 //health
-{"health","hh-eh eh-eh eh-l l-th"},
+{"health","pau-hh hh-eh eh-eh eh-l l-th th-pau"},
 //hear
-{"hear","hh-iy iy-r"},
+{"hear","pau-hh hh-iy iy-r r-pau"},
 //heating
-{"heating","hh-iy iy-iy iy-t t-ih ih-ng"},
+{"heating","pau-hh hh-iy iy-iy iy-t t-ih ih-ng ng-pau"},
 //hector
 {"hector","hh-eh eh-eh eh-k k-t t-er er-pau"},
 //helen
-{"helen","hh-eh eh-eh eh-l l-ah ah-n"},
+{"helen","pau-hh hh-eh eh-eh eh-l l-ah ah-n n-pau"},
 //hello
-{"hello","hh-ah ah-l l-ow ow-ow ow-pau"},
+{"hello","pau-hh hh-ah ah-l l-ow ow-ow ow-pau"},
 //help
-{"help","hh-eh eh-eh eh-l l-p"},
+{"help","pau-hh hh-eh eh-eh eh-l l-p p-pau"},
 //hen
-{"hen","hh-eh eh-n"},
+{"hen","pau-hh hh-eh eh-n n-pau"},
 //henry
-{"henry","hh-eh eh-n n-r r-iy"},
+{"henry","pau-hh hh-eh eh-n n-r r-iy iy-pau"},
 //herbert
-{"herbert","hh-er er-er er-b b-t"},
+{"herbert","pau-hh hh-er er-er er-b b-t t-pau"},
 //{"herbert","hh-er er-er er-b b-t t-s"},
 //high
-{"high","hh-aa aa-iy"},
+{"high","pau-hh hh-aa aa-iy iy-pau"},
 //hobby
-{"hobby","hh-aa aa-b b-iy"},
+{"hobby","pau-hh hh-aa aa-b b-iy iy-pau"},
 //hockey
-{"hockey","hh-aa aa-aa aa-k kiy iy-pau"},
+{"hockey","pau-hh hh-aa aa-aa aa-k kiy iy-pau"},
 //holiday
-{"holiday","hh-aa aa-aa aa-l l-ah ah-d d-ey ey-ey"},
+{"holiday","pau-hh hh-aa aa-aa aa-l l-ah ah-d d-ey ey-ey ey-pau"},
 //home
-{"home","hh-ow ow-ow ow-m m-pau"},
+{"home","pau-hh hh-ow ow-ow ow-m m-pau"},
 //honor
-{"honor","aa-n n-uh uh-r"},
+{"honor","pau-hh aa-n n-uh uh-r r-pau"},
 //hospital
-{"hospital","hh-aa aa-aa aa-s s-p p-ih ih-ih ih-t t-ah ah-l"},
+{"hospital","pau-hh hh-aa aa-aa aa-s s-p p-ih ih-ih ih-t t-ah ah-l l-pau"},
 //hotel
-{"hotel","hh-ow ow-t t-eh eh-eh eh-l"},
+{"hotel","pau-hh hh-ow ow-t t-eh eh-eh eh-l l-pau"},
 //hour
-{"hour","aw-aw aw-r r-pau"},
+{"hour","pau-aw aw-aw aw-r r-pau"},
 //hours
-{"hours","aw-aw aw-r r-z"},
+{"hours","pau-aw aw-aw aw-r r-z z-pau"},
 //house
-{"house","hh-hh hh-aw aw-aw aw-s s-s"},
+{"house","pau-hh hh-hh hh-aw aw-aw aw-s s-s s-pau"},
 //humanoid
-{"humanoid","hh-y y-uw uw-uw uw-m m-ah ah-n n-oy oy-oy oy-d"},
+{"humanoid","pau-hh hh-y y-uw uw-uw uw-m m-ah ah-n n-oy oy-oy oy-d d-pau"},
 //humphrey
-{"humphrey","hh-ah  ah-ah ah-m m-f f-r r-iy iy-pau"},
+{"humphrey","pau-hh hh-ah ah-ah ah-m m-f f-r r-iy iy-pau"},
 //hundred
-{"hundred","hh-ah ah-n n-d d-r r-ah ah-d"},
+{"hundred","pau-hh hh-ah ah-n n-d d-r r-ah ah-d d-pau"},
 //hundredth
-{"hundredth","hh-ah ah-n n-d d-r r-ah ah-d d-th"},
+{"hundredth","pau-hh hh-ah ah-n n-d d-r r-ah ah-d d-th th-pau"},
 //husband
-{"husband","hh-ah  ah-ah ah-z z-b b-ah ah-n n-d"},
+{"husband","pau-hh hh-ah  ah-ah ah-z z-b b-ah ah-n n-d d-pau"},
 //husbands
-{"husbands","hh-ah  ah-ah ah-z z-b b-ah ah-n n-d d-z"},
+{"husbands","pau-hh hh-ah  ah-ah ah-z z-b b-ah ah-n n-d d-z z-pau"},
 
 //I-words
 //i
-{"i","ay-ay ay-pau"},
+{"i","pau-ay ay-ay ay-pau"},
 //ian
-{"ian","iy-iy iy-ah ah-n"},
+{"ian","pau-iy iy-iy iy-ah ah-n n-pau"},
 //in
-{"in","ih-n"},
+{"in","pau-ih ih-n n-pau"},
 //industry
-{"industry","ih-n n-d d-ah ah-s s-t t-r r-iy"},
+{"industry","pau-ih ih-n n-d d-ah ah-s s-t t-r r-iy iy-pau"},
 //information
-{"information","ih-n n-f f-uh uh-r r-m m-eh eh-iy iy-sh sh-ah ah-n"},
+{"information","pau-ih ih-n n-f f-uh uh-r r-m m-eh eh-iy iy-sh sh-ah ah-n n-pau"},
 //inn
-{"inn","ih-ih ih-ih ih-n n-pau"},
+{"inn","pau-ih ih-ih ih-ih ih-n n-pau"},
 //insurance
-{"insurance","ih-n n-sh sh-uh uh-r r-ah ah-n n-s"},
-//inter
-{"inter","ih-n n-t t-uh uh-r"},
+{"insurance","pau-ih ih-n n-sh sh-uh uh-r r-ah ah-n n-s s-pau"},
 //investment
-{"investment","ih-n n-v v-eh eh-s s-t t-m m-ah ah-n n-t"},
+{"investment","pau-ih ih-n n-v v-eh eh-s s-t t-m m-ah ah-n n-t t-pau"},
 //invoice
-{"invoice","ih-n n-v v-ao ao-iy iy-s"},
+{"invoice","pau-ih ih-n n-v v-ao ao-iy iy-s s-pau"},
 //invoke
-{"invoke","ih-n n-v v-ao ao-uh uh-k"},
+{"invoke","pau-ih ih-n n-v v-ao ao-uh uh-k k-pau"},
 //irene
-{"irene","ay-r r-iy iy-iy iy-n"},
+{"irene","pau-ay ay-r r-iy iy-iy iy-n n-pau"},
 //is
 {"is","pau-ih ih-z z-z z-pau"},
 //isaac
-{"isaac","ih-ih ih-s s-ah ah-k"},
+{"isaac","pau-ih ih-ih ih-s s-ah ah-k k-pau"},
 //isaacs
-{"isaacs","ih-ih ih-s s-ah ah-k k-s"},
+{"isaacs","pau-ih ih-ih ih-s s-ah ah-k k-s s-pau"},
 //isabel or isabelle
-{"isabel","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l"},
+{"isabel","pau-ih ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-pau"},
 //isabella
-{"isabella","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-pau"},
+{"isabella","pau-ih ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-pau"},
 //issabellas
-{"isabellas","ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-z"},
+{"isabellas","pau-ih ih-ih ih-z z-ah ah-b b-eh eh-eh eh-l l-ah ah-z z-pau"},
 //island
-{"island","aa-iy iy-l l-ah ah-n n-d"},
+{"island","pau-aa aa-iy iy-l l-ah ah-n n-d d-pau"},
 //ivan
-{"ivan","ay-ay ay-v v-ah ah-n"},
+{"ivan","pau-ay ay-ay ay-v v-ah ah-n n-pau"},
 //ivans
-{"ivans","ay-ay ay-v v-ah ah-n n-z"},
+{"ivans","pau-ay ay-ay ay-v v-ah ah-n n-z z-pau"},
 //ivy
-{"ivy","ay-ay ay-v v-iy iy-pau"},
+{"ivy","pau-ay ay-ay ay-v v-iy iy-pau"},
 
 //J-words
 //jack
-{"jack","jh-ae ae-ae ae-k"},
+{"jack","pau-jh jh-ae ae-ae ae-k k-pau"},
 //jackie or jacky
-{"jackie","jh-ae ae-ae ae-k k-iy iy-pau"},
+{"jackie","pau-jh jh-ae ae-ae ae-k k-iy iy-pau"},
 //{"jacky","jh-ae ae-ae ae-k k-iy"},
 //jacks
-{"jacks","jh-ae ae-ae ae-k k-s"},
+{"jacks","pau-jh jh-ae ae-ae ae-k k-s s-pau"},
 //jacob
-{"jacob","jh-eh ey-ey ey-k k-ah ah-b"},
+{"jacob","pau-jh jh-eh ey-ey ey-k k-ah ah-b b-pau"},
 //jacobs
-{"jacobs","jh-eh ey-ey ey-k k-ah ah-b b-z"},
+{"jacobs","pau-jh jh-eh ey-ey ey-k k-ah ah-b b-z z-pau"},
 //jacqueline
-{"jacqueline","jh-ae ae-ae ae-k k-w w-ah ah-l l-ih ih-n"},
+{"jacqueline","pau-jh jh-ae ae-ae ae-k k-w w-ah ah-l l-ih ih-n n-pau"},
 //james
-{"james","jh-ey ey-ey ey-m m-z"},
+{"james","pau-jh jh-ey ey-ey ey-m m-z z-pau"},
 //jamie
-{"jamie","jh-ey ey-ey ey-m m-iy iy-pau"},
+{"jamie","pau-jh jh-ey ey-ey ey-m m-iy iy-pau"},
 //january
-{"january","jh-ae ae-ae ae-n n-y y-uw uw-eh eh-eh eh-r r-iy iy-pau"},
+{"january","pau-jh jh-ae ae-ae ae-n n-y y-uw uw-eh eh-eh eh-r r-iy iy-pau"},
 //jason
-{"jason","jh-ey ey-ey ey-s s-ah ah-n"},
+{"jason","pau-jh jh-ey ey-ey ey-s s-ah ah-n n-pau"},
 //jeff jeffery same as geoff and geoffrey
-//{"jeff","jh-eh eh-eh eh-f"},
-//{"jeffrey","jh-eh eh-eh eh-f f-r r-iy iy-pau"},
 //jet
-{"jet","jh-eh eh-t"},
+{"jet","pau-jh jh-eh eh-t t-pau"},
 //jethro
-{"jethro","jh-eh eh-th th-r r-ao ao-uh"},
+{"jethro","pau-jh jh-eh eh-th th-r r-ao ao-uh uh-pau"},
 //jeweler
-{"jeweler","jh-uw uw-ah ah-l l-uh uh-r"},
-{"jewelers","jh-uw uw-ah ah-l l-uh uh-r r-z"},
+{"jeweler","pau-jh jh-uw uw-ah ah-l l-uh uh-r r-pau"},
+{"jewelers","pau-jh jh-uw uw-ah ah-l l-uh uh-r r-z z-pau"},
 //job
-{"job","jh-aa aa-aa aa-b b-b"},
+{"job","pau-jh jh-aa aa-aa aa-b b-b b-pau"},
 //john
-{"john","jh-aa aa-aa aa-n"},
+{"john","pau-jh jh-aa aa-aa aa-n n-pau"},
 //johns
-{"johns","jh-aa aa-aa aa-n n-z"},
+{"johns","pau-jh jh-aa aa-aa aa-n n-z z-pau"},
 //journey
-{"journey","jh-er er-er er-n n-iy iy-pau"},
+{"journey","pau-jh jh-er er-er er-n n-iy iy-pau"},
 //joy
-{"joy","jh-ao ao-iy"},
+{"joy","pau-jh jh-ao ao-iy iy-pau"},
 //july
-{"july","jh-uw uw-uw uw-l l-ay ay-ay ay-pau"},
+{"july","pau-jh jh-uw uw-uw uw-l l-ay ay-ay ay-pau"},
 //june
-{"june","jh-uw uw-uw uw-n n-pau"},
+{"june","pau-jh jh-uw uw-uw uw-n n-pau"},
 
 //K-words
 //karen or karren
-{"karen","k-eh eh-eh eh-r r-ah ah-n"},
+{"karen","pau-k k-eh eh-eh eh-r r-ah ah-n n-pau"},
+{"karens","pau-k k-eh eh-eh eh-r r-ah ah-n n-z z-pau"},
 //kate
-{"kate","k-ey ey-ey ey-t"},
+{"kate","pau-k k-ey ey-ey ey-t t-pau"},
 //ken
-{"ken","k-eh eh-eh eh-n"},
+{"ken","pau-k k-eh eh-eh eh-n n-pau"},
 //kennel
-{"kennel","k-eh eh-n n-ah ah-l"},
-{"kennels","k-eh eh-n n-ah ah-l l-z"},
+{"kennel","pau-k k-eh eh-n n-ah ah-l l-pau"},
+{"kennels","pau-k k-eh eh-n n-ah ah-l l-z z-pau"},
 //kenneth
-{"kenneth","k-eh eh-n n-ih ih-th"},
+{"kenneth","pau-k k-eh eh-n n-ih ih-th th-pau"},
 //king
-{"king","k-ih ih-ng"},
+{"king","pau-k k-ih ih-ng ng-pau"},
 //kingdom
-{"kingdom","k-ih ih-ng ng-d d-ah ah-m"},
+{"kingdom","pau-k k-ih ih-ng ng-d d-ah ah-m m-pau"},
+//kings
+{"kings","pau-k k-ih ih-ng ng-z z-pau"},
 
 //L-words
 //laboratory
-{"laboratory","l-ae ae-b b-r r-ah ah-t t-ao ao-r r-iy"},
+{"laboratory","pau-l l-ae ae-b b-r r-ah ah-t t-ao ao-r r-iy iy-pau"},
 //large
-{"large","l-aa aa-r r-jh"},
-//last e.g last day of summer
-{"last","l-ae ae-s s-t"},
+{"large","pau-l l-aa aa-r r-jh jh-pau"},
+//last e.g. last day of summer
+{"last","pau-l l-ae ae-s s-t t-pau"},
 //laura
-{"laura","l-ao ao-r r-ah"},
-{"laurel","l-ao ao-r r-ah ah-l"},
-{"laurence","l-ao ao-r r-ah ah-n n-s"},
-{"lavender","l-ae ae-v v-ah ah-n n-d d-uh uh-r"},
+{"laura","pau-l l-ao ao-r r-ah ah-pau"},
+{"laurel","pau-l l-ao ao-r r-ah ah-l l-pau"},
+{"laurence","pau-l l-ao ao-r r-ah ah-n n-s s-pau"},
+{"lavender","pau-l l-ae ae-v v-ah ah-n n-d d-uh uh-r r-pau"},
 //lawrence
-{"lawrence","l-ao ao-r r-ah ah-n n-s"},
+{"lawrence","pau-l l-ao ao-r r-ah ah-n n-s s-pau"},
 //lawyer
-{"lawyer","l-ao ao-y y-uh uh-r"},
+{"lawyer","pau-l l-ao ao-y y-uh uh-r r-pau"},
 
 //leave
-{"leave","l-iy iy-v"},
+{"leave","pau-l l-iy iy-v v-pau"},
 //leaving
-{"leaving","l-iy iy-v v-ih ih-ng"},
+{"leaving","pau-l l-iy iy-v v-ih ih-ng ng-pau"},
 //lecture
-{"lecture","l-eh eh-eh eh-k k-ch ch-er er-pau"},
+{"lecture","pau-l l-eh eh-eh eh-k k-ch ch-er er-pau"},
 //leo
-{"leo","l-iy iy-ao ao-uh"},
+{"leo","pau-l l-iy iy-ao ao-uh uh-pau"},
 //lesson
-{"lesson","l-eh eh-s s-ah ah-n"},
-{"lester","l-eh eh-s s-t t-uh uh-r"},
+{"lesson","pau-l l-eh eh-s s-ah ah-n n-pau"},
+{"lester","pau-l l-eh eh-s s-t t-uh uh-r r-pau"},
 //library book
-{"library","l-aa aa-iy iy-b b-r r-eh eh-r r-iy"},
+{"library","pau-l l-aa aa-iy iy-b b-r r-eh eh-r r-iy iy-pau"},
 //license tv
-{"license","l-aa aa-iy iy-s s-ah ah-n n-s"},
+{"license","pau-l l-aa aa-iy iy-s s-ah ah-n n-s s-pau"},
 //lift -car lift
-{"lift","l-ih ih-ih ih-f f-t"},
-//lily or lilliy
-{"lily","l-ih ih-ih ih-l l-iy iy-pau"},
+{"lift","pau-l l-ih ih-ih ih-f f-t t-pau"},
+//lily or lilly
+{"lily","pau-l l-ih ih-ih ih-l l-iy iy-pau"},
 //line
-{"line","l-aa aa-iy iy-n"},
+{"line","pau-l l-aa aa-iy iy-n n-pau"},
 //linux
-{"linux","l-ih ih-ih ih-n n-ah ah-k k-s"},
+{"linux","pau-l l-ih ih-ih ih-n n-ah ah-k k-s s-pau"},
 //location
-{"location","l-ao ao-uh uh-k k-eh eh-iy iy-sh sh-ah ah-n"},
+{"location","pau-l l-ao ao-uh uh-k k-eh eh-iy iy-sh sh-ah ah-n n-pau"},
 //lock
-{"lock","l-aa aa-k"},
-{"lockup","l-aa aa-k k-ah ah-p"},
-{"locomotive","l-ao ao-uh uh-k k-ah ah-m m-ao ao-uh uh-t t-ih ih-v"},
-
+{"lock","pau-l l-aa aa-k pau"},
+{"lockup","pau-l l-aa aa-k k-ah ah-p p-pau"},
+{"locomotive","pau-l l-ao ao-uh uh-k k-ah ah-m m-ao ao-uh uh-t t-ih ih-v v-pau"},
 //lodge
-{"lodge","l-aa aa-jh"},
+{"lodge","pau-l l-aa aa-jh"},
 //long
-{"long","l-ao ao-ng"},
-
+{"long","pau-l l-ao ao-ng"},
 //look
-{"look","l-uh uh-k"},
+{"look","pau-l l-uh uh-k"},
 //louisa
-{"louisa","l-uw uw-iy iy-iy iy-z z-ah ah-pau"},
+{"louisa","pau-l l-uw uw-iy iy-iy iy-z z-ah ah-pau"},
 //low
-{"low","l-ao ao-uh"},
+{"low","pau-l l-ao ao-uh"},
 //luca
-{"luca","l-uw uw-k k-ah ah-pau"},
-{"lucas","l-uw uw-k k-ah ah-s"},
+{"luca","pau-l l-uw uw-k k-ah ah-pau"},
+{"lucas","pau-l l-uw uw-k k-ah ah-s"},
 //lunch
-{"lunch","l-ah ah-ah ah-n n-ch ch-pau"},
+{"lunch","pau-l l-ah ah-ah ah-n n-ch ch-pau"},
 
 //M-words
 //madeline
-{"madeline","m-ae ae-ae ae-d d-ah ah-l l-ih ih-n"},
+{"madeline","pau-m m-ae ae-ae ae-d d-ah ah-l l-ih ih-n n-pau"},
 //magazine
-{"magazine","m-ae ae-g g-ah ah-z z-iy iy-n"},
-{"maggie","m-ae ae-g g-iy"},
-{"magic","m-ae ae-jh jh-ih ih-k"},
-{"magician","m-ah ah-jh jh-ih ih-sh sh-ah ah-n"},
-{"magistrate","m-ae ae-jh jh-ah ah-s s-t t-r r-eh eh-iy iy-t"},
-{"magistrates","m-ae ae-jh jh-ih ih-s s-t t-r r-eh eh-iy iy-t t-s"},
+{"magazine","pau-m m-ae ae-g g-ah ah-z z-iy iy-n n-pau"},
+{"maggie","pau-m m-ae ae-g g-iy iy-pau"},
+{"magic","pau-m m-ae ae-jh jh-ih ih-k k-pau"},
+{"magician","pau-m m-ah ah-jh jh-ih ih-sh sh-ah ah-n n-pau"},
+{"magistrate","pau-m m-ae ae-jh jh-ah ah-s s-t t-r r-eh eh-iy iy-t t-pau"},
+{"magistrates","pau-m m-ae ae-jh jh-ih ih-s s-t t-r r-eh eh-iy iy-t t-s s-pau"},
 //maintenance
-{"maintenance","m-ey ey-ey ey-n n-t t-ah ah-n n-ah ah-n n-s s-s"},
+{"maintenance","pau-m m-ey ey-ey ey-n n-t t-ah ah-n n-ah ah-n n-s s-s s-pau"},
 //man
-{"man","m-ae ae-n"},
+{"man","pau-m m-ae ae-n n-pau"},
 //management
-{"management","m-ae ae-ae ae-n n-ah ah-jh jh-m m-ah ah-n n-t"},
+{"management","pau-m m-ae ae-ae ae-n n-ah ah-jh jh-m m-ah ah-n n-t t-pau"},
 //many
-{"many","m-eh eh-n n-iy"},
+{"many","pau-m m-eh eh-n n-iy iy-pau"},
 //march
-{"march","m-aa aa-aa aa-r r-ch ch-pau"},
-{"marie","m-uh uh-r r-iy"},
-{"marigold","m-eh eh-r r-ah ah-g g-ao ao-uh uh-l l-d"},
-{"marina","m-uh uh-r r-iy iy-n n-ah"},
+{"march","pau-m m-aa aa-aa aa-r r-ch ch-pau"},
+{"marie","pau-m m-uh uh-r r-iy iy-pau"},
+{"marigold","pau-m m-eh eh-r r-ah ah-g g-ao ao-uh uh-l l-d d-pau"},
+{"marina","pau-m m-uh uh-r r-iy iy-n n-ah ah-pau"},
 //marine
-{"marine","m-uh uh-r r-iy iy-n"},
+{"marine","pau-m m-uh uh-r r-iy iy-n n-pau"},
 //marjorie
-{"marjorie","m-aa aa-r r-jh jh-uh uh-r r-iy"},
-{"mark","m-aa aa-r r-k"},
+{"marjorie","pau-m m-aa aa-r r-jh jh-uh uh-r r-iy iy-pau"},
+{"mark","pau-m m-aa aa-r r-k k-pau"},
 //market
 //mary
-{"mary","m-eh eh-eh eh-r r-iy iy-pau"},
+{"mary","pau-m m-eh eh-eh eh-r r-iy iy-pau"},
 //marys
-{"marys","m-eh eh-eh eh-r r-iy iy-z"},
+{"marys","pau-m m-eh eh-eh eh-r r-iy iy-z z-pau"},
 //master
-{"master","m-ae ae-ae ae-s s-t t-er er-pau"},
+{"master","pau-m m-ae ae-ae ae-s s-t t-er er-pau"},
 //mat
 //matt
-{"matt","m-ae ae-ae ae-t"},
+{"matt","pau-m m-ae ae-ae ae-t t-pau"},
 //matthew
-{"matthew","m-ae ae-ae ae-th th-y y-uw uw-pau"},
+{"matthew","pau-m m-ae ae-ae ae-th th-y y-uw uw-pau"},
 //matthews
-{"matthews","m-ae ae-ae ae-th th-y y-uw uw-z"},
+{"matthews","pau-m m-ae ae-ae ae-th th-y y-uw uw-z z-pau"},
 //matthias
-{"matthias","m-ah ah-th th-ay ay-ay ay-ah ah-s"},
+{"matthias","pau-m m-ah ah-th th-ay ay-ay ay-ah ah-s s-pau"},
 //maurice
-{"maurice","m-ao ao-r r-iy iy-s"},
+{"maurice","pau-m m-ao ao-r r-iy iy-s s-pau"},
 //may
-{"may","m-m m-ey ey-ey ey-pau"},
+{"may","pau-m m-m m-ey ey-ey ey-pau"},
 //me
-{"me","m-iy"},
+{"me","pau-m m-iy iy-pau"},
 //meal
-{"meal","m-iy iy-iy iy-l l-pau"},
+{"meal","pau-m m-iy iy-iy iy-l l-pau"},
 //mechanic
-{"mechanic","m-ah ah-k k-ae ae-n n-ih ih-k"},
+{"mechanic","pau-m m-ah ah-k k-ae ae-n n-ih ih-k k-pau"},
 //medical
-{"medical","m-eh eh-eh eh-d d-ah ah-k k-ah ah-l"},
+{"medical","pau-m m-eh eh-eh eh-d d-ah ah-k k-ah ah-l l-pau"},
 //meet
-{"meet","m-iy iy-iy iy-t"},
+{"meet","pau-m m-iy iy-iy iy-t t-pau"},
 //meeting
-{"meeting","m-iy iy-iy iy-t t-ih ih-ng"},
-{"member","m-eh eh-m m-b b-uh uh-r"},
-{"members","m-eh eh-m m-b b-uh uh-r r-z"},
+{"meeting","pau-m m-iy iy-iy iy-t t-ih ih-ng ng-pau"},
+{"member","pau-m m-eh eh-m m-b b-uh uh-r r-pau"},
+{"members","pau-m m-eh eh-m m-b b-uh uh-r r-z z-pau"},
+//memo
+{"memo","pau-m m-eh eh-eh eh-m m-ao ao-uh uh-pau"},
 //memorandum
-{"memorandum","m-eh eh-eh eh-m m-er er-ae ae-ae ae-n n-d d-ah ah-m"},
+{"memorandum","pau-m m-eh eh-eh eh-m m-er er-ae ae-ae ae-n n-d d-ah ah-m m-pau"},
 //message
-{"message","m-eh eh-s s-ah ah-jh"},
+{"message","pau-m m-eh eh-s s-ah ah-jh jh-pau"},
 //midnight
-{"midnight","m-ih ih-d d-n n-aa aa-iy iy-t"},
+{"midnight","pau-m m-ih ih-d d-n n-aa aa-iy iy-t t-pau"},
 //mike
-{"mike","m-aa aa-iy iy-k"},
+{"mike","pau-m m-aa aa-iy iy-k k-pau"},
 //minder
-{"minder","m-aa aa-iy iy-n n-d d-uh uh-r"},
+{"minder","pau-m m-aa aa-iy iy-n n-d d-uh uh-r r-pau"},
 //mini
-{"mini","m-ih ih-ih ih-n n-iy iy-iy iy-pau"},
+{"mini","pau-m m-ih ih-ih ih-n n-iy iy-iy iy-pau"},
 //miriam
-{"miriam","m-ih ih-r r-iy iy-ah ah-m"},
+{"miriam","pau-m m-ih ih-r r-iy iy-ah ah-m m-pau"},
 //monday
-{"monday","m-ah ah-ah ah-n n-d d-iy iy-pau"},
+{"monday","pau-m m-ah ah-ah ah-n n-n n-d d-iy iy-pau"},
 //monster
-{"monster","m-aa aa-n n-s s-t t-uh uh-r"},
+{"monster","pau-m m-aa aa-n n-s s-t t-uh uh-r r-pau"},
 //month
-{"month","m-ah ah-n n-th"},
+{"month","pau-m m-ah ah-n n-th th-pau"},
 //morning
-{"morning","m-ao ao-ao ao-r r-n n-ih ih-ng"},
+{"morning","pau-m m-ao ao-ao ao-r r-n n-ih ih-ng ng-pau"},
 //mother
-{"mother","m-ah ah-ah ah-dh dh-er er-pau"},
+{"mother","pau-m m-ah ah-ah ah-dh dh-er er-pau"},
 //mothers
-{"mothers","m-ah ah-ah ah-dh dh-er er-z"},
+{"mothers","pau-m m-ah ah-ah ah-dh dh-er er-z z-pau"},
 //motorcycle
-{"motorcycle","m-ow ow-ow ow-t t-er er-s s-ay ay-ay ay-k k-ah ah-l"},
+{"motorcycle","pau-m m-ow ow-ow ow-t t-er er-s s-ay ay-ay ay-k k-ah ah-l l-pau"},
 //move
-{"move","m-uw uw-v"},
-{"moving","m-uw uw-v v-ih ih-ng"},
+{"move","pau-m m-uw uw-v v-pau"},
+{"moving","pau-m m-uw uw-v v-ih ih-ng ng-pau"},
 //movie
-{"movie","m-uw uw-uw uw-v v-iy iy-pau"},
+{"movie","pau-m m-uw uw-uw uw-v v-iy iy-pau"},
 //muhammad
-{"muhammad","m-uh uh-hh hh-aa aa-m m-ah ah-d"},
+{"muhammad","pau-m m-uh uh-hh hh-aa aa-m m-ah ah-d d-pau"},
+{"muhammads","pau-m m-uh uh-hh hh-aa aa-m m-ah ah-d d-z z-pau"},
 //mum
-{"mum","m-ah ah-ah ah-m"},
+{"mum","pau-m m-ah ah-ah ah-m m-pau"},
 //mums
-{"mums","m-ah ah-ah ah-m m-z"},
+{"mums","pau-m m-ah ah-ah ah-m m-z z-pau"},
 //music
-{"music","m-y y-uw uw-uw uw-z z-ih ih-k"},
+{"music","pau-m m-y y-uw uw-uw uw-z z-ih ih-k k-pau"},
 //my
-{"my","m-ay ay-ay"},
+{"my","pau-m m-ay ay-ay ay-pau"},
 
 //N-words
 //naomi
-{"naomi","n-ey ey-ow ow-ow ow-m m-iy iy-pau"},
+{"naomi","pau-n n-ey ey-ow ow-ow ow-m m-iy iy-pau"},
 //nat
-{"nat","n-ae ae-t"},
+{"nat","pau-n n-ae ae-t t-pau"},
 //natalie
-{"natalie","n-ae ae-t t-ah ah-l l-iy"},
+{"natalie","pau-n n-ae ae-t t-ah ah-l l-iy iy-pau"},
 //natasha
-{"natasha","n-ah ah-t t-aa aa-sh sh-ah"},
+{"natasha","pau-n n-ah ah-t t-aa aa-sh sh-ah ah-pau"},
 //nathan
-{"nathan","n-eh eh-iy iy-th th-ah ah-n"},
-{"nathaniel","n-ah ah-th th-ae ae-n n-y y-ah ah-l"},
-{"nation","n-eh eh-iy iy-sh sh-ah ah-n"},
-{"national","n-ae ae-sh sh-ah ah-n n-ah ah-l"},
+{"nathan","pau-n n-eh eh-iy iy-th th-ah ah-n n-pau"},
+{"nathaniel","pau-n n-ah ah-th th-ae ae-n n-y y-ah ah-l l-pau"},
+{"nation","pau-n n-eh eh-iy iy-sh sh-ah ah-n n-pau"},
+{"national","pau-n n-ae ae-sh sh-ah ah-n n-ah ah-l l-pau"},
 
 //neighbour
-{"neighbour","n-eh eh-iy iy-b b-uh uh-r"},
+{"neighbour","pau-n n-eh eh-iy iy-b b-uh uh-r r-pau"},
 //nephew
-{"nephew","n-eh eh-f f-y y-uw"},
-//ness
-{"ness","n-eh eh-s"},
+{"nephew","pau-n n-eh eh-f f-y y-uw uw-pau"},
 //netball 
-{"net","n-eh eh-t t-b b-ao ao-l"},
+{"net","pau-n n-eh eh-t t-b b-ao ao-l l-pau"},
 //netflix
-{"netflix","n-eh eh-eh eh-t t-f f-l l-ih ih-ih ih-k k-k"},
+{"netflix","pau-n n-eh eh-eh eh-t t-f f-l l-ih ih-ih ih-k k-k k-pau"},
 //new
-{"new","n-uw uw-uw"},
+{"new","pau-n n-uw uw-uw uw-pau"},
 //news
-{"news","n-uw uw-z"},
+{"news","pau-n n-uw uw-z z-pau"},
 //newspaper
-{"newspaper","n-uw uw-z z-p p-eh eh-iy iy-p p-uh uh-r"},
+{"newspaper","pau-n n-uw uw-z z-p p-eh eh-iy iy-p p-uh uh-r r-pau"},
 //niece
-{"niece","n-iy iy-s"},
+{"niece","pau-n n-iy iy-s s-pau"},
 //night
-{"night","n-aa aa-iy iy-t"},
+{"night","pau-n n-aa aa-iy iy-t t-pau"},
 //nine
-{"nine","n-ay ay-ay ay-n"},
+{"nine","pau-n n-ay ay-ay ay-n n-pau"},
 //nineteen
-{"nineteen","n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-pau"},
+{"nineteen","pau-n n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-pau"},
 //nineteenth
-{"nineteenth","n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-th th-pau pau-th"},
+//{"nineteenth","pau-n n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-th th-pau pau-th th-pau"},
+{"nineteenth","pau-n n-ay ay-ay ay-n n-t t-iy iy-iy iy-n n-th th-th th-pau"},
 //ninetieth
-{"ninetieth","n-aa aa-iy iy-n n-t t-iy iy-ih ih-th"},
+{"ninetieth","pau-n n-aa aa-iy iy-n n-t t-iy iy-ih ih-th th-pau"},
 //ninety
-{"ninety","n-aa aa-iy iy-n n-t t-iy"},
+{"ninety","pau-n n-aa aa-iy iy-n n-t t-iy iy-pau"},
 //ninth
-{"ninth","n-ay ay-ay ay-n n-th th-pau"},
+{"ninth","pau-n n-ay ay-ay ay-n n-th th-pau"},
 //no
-{"no","n-ao ao-uh"},
+{"no","pau-n n-ao ao-uh uh-pau"},
 //noah
-{"noah","n-ao ao-uh uh-ah"},
+{"noah","pau-n n-ao ao-uh uh-ah ah-pau"},
 //norman
-{"norman","n-ao ao-r r-m m-ah ah-n"},
+{"norman","pau-n n-ao ao-r r-m m-ah ah-n n-pau"},
 //normans
-{"normans","n-ao ao-r r-m m-ah ah-n n-z"},
+{"normans","pau-n n-ao ao-r r-m m-ah ah-n n-z z-pau"},
 //north
-{"north","n-ao ao-r r-th th-pau"},
-{"northumbria","n-ao ao-r r-th th-ah ah-m m-r r-iy iy-ah"},
+{"north","pau-n n-ao ao-r r-th th-pau"},
+{"northumbria","pau-n n-ao ao-r r-th th-ah ah-m m-r r-iy iy-ah ah-pau"},
 //not
-{"not","n-aa aa-t"},
+{"not","pau-n n-aa aa-t t-pau"},
 //notable
-{"notable","n-ao ao-uh uh-t t-ah ah-b b-ah ah-l"},
+{"notable","pau-n n-ao ao-uh uh-t t-ah ah-b b-ah ah-l l-pau"},
 //november
-{"november","n-ow ow-v v-eh eh-eh eh-m m-b b-er er-pau"},
+{"november","pau-n n-ow ow-v v-eh eh-eh eh-m m-b b-er er-pau"},
 //now
-{"now","n-aw aw-aw aw-pau"},
+{"now","pau-n n-aw aw-aw aw-pau"},
 //nurse
-{"nurse","n-uh uh-r r-s"},
+{"nurse","pau-n n-uh uh-r r-s s-pau"},
 //nursery
-{"nursery","n-er er-er er-s s-er er-iy"},
+{"nursery","pau-n n-er er-er er-s s-er er-iy iy-pau"},
 
 //O-words
 //o
-{"o","ao-uh uh-ao ao-uh"},
+{"o","pau-ao ao-uh uh-ao ao-uh uh-pau"},
 //october
-{"october","aa-k k-t t-ow ow-ow ow-b b-er"},
+{"october","pau-aa aa-k k-t t-ow ow-ow ow-b b-er er-pau"},
 //of
-{"of","ah-v"},
-{"off","ao-f"},
-{"offer","ao-f f-uh uh-r"},
+{"of","pau-ah ah-v v-pau"},
+{"off","pau-ao ao-f f-pau"},
+{"offer","pau-ao ao-f f-uh uh-r r-pau"},
 //office
-{"office","ao-ao ao-f f-ah ah-s"},
+{"office","pau-ao ao-ao ao-f f-ah ah-s s-pau"},
 //oliver
-{"oliver","aa-aa aa-l l-ih ih-v v-er"},
+{"oliver","pau-aa aa-aa aa-l l-ih ih-v v-er er-pau"},
 //olivers
-{"oliver","aa-aa aa-l l-ih ih-v v-er er-z"},
+{"oliver","pau-aa aa-aa aa-l l-ih ih-v v-er er-z z-pau"},
 //olivia
-{"olivia","ow-l l-ih ih-ih ih-v v-iy iy-ah ah-pau"},
+{"olivia","pau-ow ow-l l-ih ih-ih ih-v v-iy iy-ah ah-pau"},
 //olivias
-{"olivias","ow-l l-ih ih-ih ih-v v-iy iy-ah ah-z"},
+{"olivias","pau-ow ow-l l-ih ih-ih ih-v v-iy iy-ah ah-z z-pau"},
 //on
-{"on","aa-aa aa-n n-n"},
+{"on","pau-aa aa-aa aa-n n-n n-pau"},
 //one
-{"one","w-ah ah-ah ah-n"},
+{"one","w-ah ah-ah ah-n n-pau"},
 //online
-{"online","aa-aa aa-n n-n n-l l-aa aa-iy iy-n"},
+{"online","pau-aa aa-aa aa-n n-n n-l l-aa aa-iy iy-n n-pau"},
 //open
-{"open","ao-uh uh-p p-ah ah-n"},
+{"open","pau-ao ao-uh uh-p p-ah ah-n n-pau"},
 //or
-{"or","ao-r"},
+{"or","pau-ao ao-r r-pau"},
 //orchestra
-{"orchestra","ao-r r-k k-ah ah-s s-t t-r r-ah"},
+{"orchestra","pau-ao ao-r r-k k-ah ah-s s-t t-r r-ah ah-pau"},
 //oscar
-{"oscar","ao-s s-k k-uh uh-r"},
-{"oscars","ao-s s-k k-uh uh-r r-z"},
+{"oscar","pau-ao ao-s s-k k-uh uh-r r-pau"},
+{"oscars","pau-ao ao-s s-k k-uh uh-r r-z z-pau"},
 //out
-{"out","aa-uh uh-t"},
-{"outbreak","aa-uh uh-t t-b b-r r-eh eh-iy iy-k"},
-{"outcome","aa-uh uh-t t-k k-ah ah-m"},
-{"outhouse","aa-uh uh-t t-hh hh-aa aa-uh uh-s"},
-{"outing","aa-uh uh-t t-ih ih-ng"},
+{"out","pau-aa aa-uh uh-t t-pau"},
+{"outbreak","pau-aa aa-uh uh-t t-b b-r r-eh eh-iy iy-k k-pau"},
+{"outcome","pau-aa aa-uh uh-t t-k k-ah ah-m m-pau"},
+{"outhouse","pau-aa aa-uh uh-t t-hh hh-aa aa-uh uh-s s-pau"},
+{"outing","pau-aa aa-uh uh-t t-ih ih-ng ng-pau"},
 //over
-{"over","ao-uh uh-v v-uh uh-r"},
+{"over","pau-ao ao-uh uh-v v-uh uh-r r-pau"},
 //own
-{"own","ow-ow-ow-ow ow-n n-pau"},
+{"own","pau-ow ow-ow-ow-ow ow-n n-pau"},
 
 //P-words
 //pam
-{"pam","p-ae ae-ae ae-m m-pau"},
+{"pam","pau-p p-ae ae-ae ae-m m-pau"},
 //pamela
-{"pamela","p-ae ae-ae ae-m m-ah ah-l l-ah"},
+{"pamela","pau-p p-ae ae-ae ae-m m-ah ah-l l-ah ah-pau"},
 //pams
-{"pams","p-ae ae-ae ae-m m-z z-pau"},
+{"pams","pau-p p-ae ae-ae ae-m m-z z-pau"},
 //pancake
-{"pancake","p-ae ae-ae ae-n n-k k-ey ey-ey ey-k"},
+{"pancake","pau-p p-ae ae-ae ae-n n-k k-ey ey-ey ey-k k-pau"},
 //paper
-{"paper","p-eh eh-iy iy-p p-uh uh-r"},
+{"paper","pau-p p-eh eh-iy iy-p p-uh uh-r r-pau"},
 //parent
-{"parent","p-eh eh-r r-ah ah-n n-t"},
-{"parents","p-eh eh-r r-ah ah-n n-t t-s"},
+{"parent","pau-p p-eh eh-r r-ah ah-n n-t t-pau"},
+{"parents","pau-p p-eh eh-r r-ah ah-n n-t t-s s-pau"},
 //parrot
-{"parrot","p-eh eh-r r-ah ah-t"},
+{"parrot","pau-p p-eh eh-r r-ah ah-t t-pau"},
 //party
-{"party","p-aa aa-aa aa-r r-t t-iy iy-pau"},
+{"party","pau-p p-aa aa-aa aa-r r-t t-iy iy-pau"},
 //passport
-{"passport","p-ae ae-ae ae-s s-p p-ao ao-ao ao-r r-t"},
+{"passport","pau-p p-ae ae-ae ae-s s-p p-ao ao-ao ao-r r-t t-pau"},
 //pat
-{"pat","p-ae ae-t"},
+{"pat","pau-p p-ae ae-t t-pau"},
 //patricia
-{"patricia","p-ah ah-t t-r r-ih ih-sh sh-ah"},
+{"patricia","pau-p p-ah ah-t t-r r-ih ih-sh sh-ah ah-pau"},
 //patrick
-{"patrick","p-ae ae-ae ae-t t-r r-ih ih-k"},
+{"patrick","pau-p p-ae ae-ae ae-t t-r r-ih ih-k k-pau"},
 //patricks (saint name)
-{"patricks","p-ae ae-ae ae-t t-r r-ih ih-k k-s"},
+{"patricks","pau-p p-ae ae-ae ae-t t-r r-ih ih-k k-s s-pau"},
 //pau
-{"pau","pau-pau"},
+//{"pau","pau-pau"},
 //paul
-{"paul","p-ao ao-ao ao-l"},
+{"paul","pau-p p-ao ao-ao ao-l l-pau"},
 //paula
-{"paula","p-ao ao-ao ao-l l-ah ah-pau"},
+{"paula","pau-p p-ao ao-ao ao-l l-ah ah-pau"},
 //pauline
-{"pauline","p-ao ao-l l-iy iy-iy iy-n"},
-//pause
-{"pause","pau-pau"},
+{"pauline","pau-p p-ao ao-l l-iy iy-iy iy-n n-pau"},
+//pauses
+{"pause1","pau-pau"},
+{"pause2","pau-pau pau-pau"},
 //pay
-{"pay","p-eh eh-iy"},
-{"payable","p-eh eh-iy iy-ah ah-b b-ah ah-l"},
-{"payed","p-eh eh-iy iy-d"},
+{"pay","pau-p p-eh eh-iy iy-pau"},
+{"payable","pau-p p-eh eh-iy iy-ah ah-b b-ah ah-l l-pau"},
+{"payed","pau-p p-eh eh-iy iy-d d-pau"},
 //paying
-{"paying","p-eh eh-iy iy-ih ih-ng"},
+{"paying","pau-p p-eh eh-iy iy-ih ih-ng ng-pau"},
 //payment
-{"payment","p-ey ey-ey ey-m m-ah ah-n n-t"},
+{"payment","pau-p p-ey ey-ey ey-m m-ah ah-n n-t t-pau"},
 //penelope
-{"penelope","p-ah ah-n n-eh eh-eh eh-l l-ah ah-p p-iy iy-pau"},
+{"penelope","pau-p p-ah ah-n n-eh eh-eh eh-l l-ah ah-p p-iy iy-pau"},
 //penny
-{"penny","p-eh eh-eh eh-n n-iy iy-pau"},
+{"penny","pau-p p-eh eh-eh eh-n n-iy iy-pau"},
 //pension
-{"pension","p-eh eh-eh eh-n n-sh sh-ah ah-n"},
+{"pension","pau-p p-eh eh-eh eh-n n-sh sh-ah ah-n n-pau"},
 //percy
-{"percy","p-er er-er er-s s-iy iy-pau"},
+{"percy","pau-p p-er er-er er-s s-iy iy-pau"},
 //perry
-{"perry","p-eh eh-eh eh-r r-iy iy-pau"},
+{"perry","pau-p p-eh eh-eh eh-r r-iy iy-pau"},
 //person
-{"person","p-uh uh-r r-s s-ah ah-n"},
+{"person","pau-p p-uh uh-r r-s s-ah ah-n n-pau"},
 //personal
-{"personal","p-uh uh-r r-s s-ih ih-n n-ih ih-l"},
+{"personal","pau-p p-uh uh-r r-s s-ih ih-n n-ih ih-l l-pau"},
 //pet
-{"pet","p-eh eh-t"},
+{"pet","pau-p p-eh eh-t t-pau"},
 //peter
-{"peter","p-iy iy-iy iy-t t-er er-pau"},
+{"peter","pau-p p-iy iy-iy iy-t t-er er-pau"},
 //peters
-{"peters","p-iy iy-iy iy-t t-er er-z"},
+{"peters","pau-p p-iy iy-iy iy-t t-er er-z z-pau"},
 //phoebe or phebe
-{"phoebe","f-iy iy-iy iy-b b-iy iy-pau"},
+{"phoebe","pau-f f-iy iy-iy iy-b b-iy iy-pau"},
 //phone
-{"phone","f-ao ao-uh uh-n"},
+{"phone","pau-f f-ao ao-uh uh-n n-pau"},
 //piano
-{"piano","p-iy iy-ae ae-n n-ao ao-uh"},
+{"piano","pau-p p-iy iy-ae ae-n n-ao ao-uh uh-pau"},
 //picture
-{"picture","p-ih ih-ih ih-k k-ch ch-er er-pau"},
+{"picture","pau-p p-ih ih-ih ih-k k-ch ch-er er-pau"},
 //pictures
-{"pictures","p-ih ih-ih ih-k k-ch ch-er er-z z-pau"},
+{"pictures","pau-p p-ih ih-ih ih-k k-ch ch-er er-z z-pau"},
 //pilates
-{"pilates","p-ih ih-ih ih-l l-aa aa-aa aa-t t-iy iy-iy iy-s s-pau"},
+{"pilates","pau-p p-ih ih-ih ih-l l-aa aa-aa aa-t t-iy iy-iy iy-s s-pau"},
 //place
-{"place","p-l l-eh eh-iy iy-s"},
+{"place","pau-p p-l l-eh eh-iy iy-s s-pau"},
 //pmm
-{"pmm","p-iy iy-iy iy-m m-eh eh-m m-m m-m"},
+{"pmm","pau-p p-iy iy-iy iy-m m-eh eh-m m-m m-m m-pau"},
 //point
-{"point","p-oy oy-oy oy-n n-t t-pau"},
-{"pop","p-aa aa-p"},
-{"popcorn","p-aa aa-p p-k k-ao ao-r r-n"},
+{"point","pau-p p-oy oy-oy oy-n n-t t-pau"},
+{"pop","pau-p p-aa aa-p p-pau"},
+{"popcorn","pau-p p-aa aa-p p-k k-ao ao-r r-n n-pau"},
 //pope
-{"pope","p-ao ao-uh uh-p"},
+{"pope","pau-p p-ao ao-uh uh-p p-pau"},
 //port
-{"port","p-ao ao-r r-t"},
+{"port","pau-p p-ao ao-r r-t t-pau"},
 //post
-{"post","p-ao ao-uh uh-s s-t"},
+{"post","pau-p p-ao ao-uh uh-s s-t t-pau"},
 //postoffice
-{"postoffice","p-ao ao-uh uh-s s-t t-ao ao-f f-ah ah-s"},
+{"postoffice","pau-p p-ao ao-uh uh-s s-t t-ao ao-f f-ah ah-s s-pau"},
 //{"potato","p-ah ah-t t-eh eh-iy iy-t t-ao ao-uh"},
 //{"potatoes","p-ah ah-t t-eh eh-iy iy-t t-ao ao-uh uh-z"},
 //practice
-{"practice","p-r r-ae ae-k k-t t-ah ah-s"},
+{"practice","pau-p p-r r-ae ae-k k-t t-ah ah-s s-pau"},
 //premier
-{"premier","p-r r-eh eh-m m-ih ih-ih ih-r r-pau"},
+{"premier","pau-p p-r r-eh eh-m m-ih ih-ih ih-r r-pau"},
 //prescription
-{"prescription","p-r r-ah ah-s s-k k-r r-ih ih-p p-sh sh-ah ah-n"},
+{"prescription","pau-p p-r r-ah ah-s s-k k-r r-ih ih-p p-sh sh-ah ah-n n-pau"},
 //present
-{"present","p-r r-eh eh-z z-ah ah-n n-t"},
+{"present","pau-p p-r r-eh eh-z z-ah ah-n n-t t-pau"},
 //pressure
-{"pressure","p-r r-eh eh-sh sh-uh uh-r"},
+{"pressure","pau-p p-r r-eh eh-sh sh-uh uh-r r-pau"},
 //priority
-{"priority","p-r r-aa aa-iy iy-ao ao-r r-ah ah-t t-iy"},
-{"priscilla","p-r r-ih ih-s s-ih ih-l l-ah"},
-{"prism","p-r r-ih ih-z z-ah ah-m"},
-{"prison","p-r r-ih ih-z z-ah ah-n"},
-{"private","p-r r-aa aa-iy iy-v v-ah ah-t"},
+{"priority","pau-p p-r r-aa aa-iy iy-ao ao-r r-ah ah-t t-iy iy-pau"},
+{"priscilla","pau-p p-r r-ih ih-s s-ih ih-l l-ah ah-pau"},
+{"prism","pau-p p-r r-ih ih-z z-ah ah-m m-pau"},
+{"prison","pau-p p-r r-ih ih-z z-ah ah-n n-pau"},
+{"private","pau-p p-r r-aa aa-iy iy-v v-ah ah-t t-pau"},
+{"professional","pau-p p-r ah-ah ah-f f-eh eh-eh eh-sh sh-ah ah-n n-ah ah-l l-pau "},
+//professor or prof
+{"professor","pau-p p-r ah-ah ah-f f-eh eh-eh eh-s s-er er-pau"},
 //program
-{"program","p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
+{"program","pau-p p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
 //programme (duplicate)
-{"programme","p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
+{"programme","pau-p p-r r-ow ow-ow ow-g g-r r-ae ae-ae ae-m m-pau"},
 //project
-{"project","p-r r-aa aa-aa aa-jh jh-eh eh-k k-t"},
+{"project","pau-p p-r r-aa aa-aa aa-jh jh-eh eh-k k-t t-pau"},
 //pronounce
-{"pronounce","p-r r-ah ah-n n-aa aa-uh uh-n n-s"},
+{"pronounce","pau-p p-r r-ah ah-n n-aa aa-uh uh-n n-s s-pau"},
 //pronounced
-{"pronounced","p-r r-ah ah-n n-aa aa-uh uh-n n-s s-t"},
+{"pronounced","pau-p p-r r-ah ah-n n-aa aa-uh uh-n n-s s-t t-pau"},
 //prunella
-{"prunella","p-r r-uw uw-n n-eh eh-eh eh-l l-ah"},
+{"prunella","pau-p p-r r-uw uw-n n-eh eh-eh eh-l l-ah ah-pau"},
 //pub
-{"pub","p-ah ah-ah ah-b b-pau"},
+{"pub","pau-p p-ah ah-ah ah-b b-pau"},
 //public
-{"public","p-ah ah-ah ah-b b-l l-ih ih-k k-pau"},
+{"public","pau-p p-ah ah-ah ah-b b-l l-ih ih-k k-pau"},
 //purchase
-{"purchase","p-uh uh-r r-ch ch-ah ah-s"},
+{"purchase","pau-p p-uh uh-r r-ch ch-ah ah-s s-pau"},
 
 //Q-words
 //queen
-{"queen","k-w w-iy iy-n"},
+{"queen","pau-k k-w w-iy iy-n n-pau"},
 //quick
-{"quick","k-w w-ih ih-k"},
+{"quick","pau-k k-w w-ih ih-k k-pau"},
 //quiz
-{"quiz","k-w w-ih ih-ih ih-z z-pau"},
+{"quiz","pau-k k-w w-ih ih-ih ih-z z-pau"},
 //quote
-{"quote","k-w w-w w-ow ow-ow ow-t t-pau"},
+{"quote","pau-k k-w w-w w-ow ow-ow ow-t t-pau"},
 
 
 //R-words
 //radio
-{"radio","r-ey ey-ey ey-d d-iy iy-ow ow-ow ow-pau"},
+{"radio","pau-r r-ey ey-ey ey-d d-iy iy-ow ow-ow ow-pau"},
 //rail
-{"rail","r-eh eh-iy iy-l"},
+{"rail","pau-r r-eh eh-iy iy-l l-pau"},
 //railway
-{"railway","r-eh eh-iy iy-l l-w w-eh eh-iy"},
-{"rain","r-eh eh-iy iy-n"},
-{"ralph","r-ae ae-l l-f"},
+{"railway","pau-r r-eh eh-iy iy-l l-w w-eh eh-iy iy-pau"},
+{"rain","pau-r r-eh eh-iy iy-n n-pau"},
+{"ralph","pau-r r-ae ae-l l-f f-pau"},
 //ray
-{"ray","r-eh eh-iy"},
+{"ray","pau-r r-eh eh-iy iy-pau"},
 //reminder
-{"reminder","r-iy iy-m m-ay ay-ay ay-n n-d d-er er-pau"},
+{"reminder","pau-r r-iy iy-m m-ay ay-ay ay-n n-d d-er er-pau"},
 //rene and renne
-{"rene","r-ah ah-n n-eh eh-iy"},
-{"renew","r-ih ih-n n-uw"},
-{"renewal","r-ih ih-n n-uw uw-ah ah-l"},
+{"rene","pau-r r-ah ah-n n-eh eh-iy iy-pau"},
+{"renew","pau-r r-ih ih-n n-uw uw-pau"},
+{"renewal","pau-r r-ih ih-n n-uw uw-ah ah-l l-pau"},
 //repair
-{"repair","r-ih ih-p p-eh eh-r"},
+{"repair","pau-r r-ih ih-p p-eh eh-r r-pau"},
 //rest
-{"rest","r-eh eh-eh eh-s s-t"},
+{"rest","pau-r r-eh eh-eh eh-s s-t t-pau"},
 //restaurant
-{"restaurant","r-eh eh-eh eh-s s-t t-er er-aa aa-aa aa-n n-t"},
+{"restaurant","pau-r r-eh eh-eh eh-s s-t t-er er-aa aa-aa aa-n n-t t-pau"},
 //retire
-{"retire","r-ih ih-t t-aa aa-iy iy-r"},
+{"retire","pau-r r-ih ih-t t-aa aa-iy iy-r r-pau"},
 //retirement
-{"retirement","r-iy iy-t t-ay ay-er er-m m-ah ah-n n-t"},
+{"retirement","pau-r r-iy iy-t t-ay ay-er er-m m-ah ah-n n-t t-pau"},
 //return
-{"return","r-ih ih-t t-uh uh-r r-n"},
+{"return","pau-r r-ih ih-t t-uh uh-r r-n n-pau"},
 //richard
-{"richard","r-ih ih-ch ch-uh uh-r r-d"},
+{"richard","pau-r r-ih ih-ch ch-uh uh-r r-d d-pau"},
 //road
-{"road","r-ao ao-uh uh-d"},
-{"robber","r-aa aa-b b-uh uh-r"},
+{"road","pau-r r-ao ao-uh uh-d d-pau"},
+{"robber","pau-r r-aa aa-b b-uh uh-r r-pau"},
 //robbie
-{"robbie","r-aa aa-b b-iy"},
+{"robbie","pau-r r-aa aa-b b-iy iy-pau"},
 //robert
-{"robert","r-aa aa-b b-uh uh-r r-t"},
+{"robert","pau-r r-aa aa-b b-uh uh-r r-t t-pau"},
 //robin
-{"robin","r-aa aa-b b-ah ah-n"},
+{"robin","pau-r r-aa aa-b b-ah ah-n n-pau"},
 //ronald
-{"ronald","r-aa aa-n n-ah ah-l l-d"},
+{"ronald","pau-r r-aa aa-n n-ah ah-l l-d d-pau"},
 //room
-{"room","r-uw uw-m"},
+{"room","pau-r r-uw uw-m m-pau"},
 //rose
-{"rose","r-ow ow-ow ow-z"},
+{"rose","pau-r r-ow ow-ow ow-z z-pau"},
 //rosemary
-{"rosemary","r-ow ow-ow ow-z z-m m-eh eh-eh eh-r r-iy iy-pau"},
+{"rosemary","pau-r r-ow ow-ow ow-z z-m m-eh eh-eh eh-r r-iy iy-pau"},
 //royal
-{"royal","r-ao ao-iy iy-ah ah-l"},
+{"royal","pau-r r-ao ao-iy iy-ah ah-l l-pau"},
 //rugby
-{"rugby","r-ah ah-g g-b b-iy"},
+{"rugby","pau-r r-ah ah-g g-b b-iy iy-pau"},
 //russell and russel
-{"russell","r-ah ah-s s-ah ah-l"},
+{"russell","pau-r r-ah ah-s s-ah ah-l l-pau"},
 
 //S-words
 //sabrina
-{"sabrina","s-ah ah-b b-r r-iy iy-iy iy-n n-ah ah-pau"},
+{"sabrina","pau-s s-ah ah-b b-r r-iy iy-iy iy-n n-ah ah-pau"},
 //saint
-{"saint","s-ey ey-ey ey-n n-t t-pau"},
-{"sam","s-ae ae-m"},
-{"samuel","s-ae ae-m m-y y-uw uw-l"},
+{"saint","pau-s s-ey ey-ey ey-n n-t t-pau"},
+//sam
+{"sam","pau-s s-ae ae-m m-pau"},
+//samuel
+{"samuel","pau-s s-ae ae-m m-y y-uw uw-l l-pau"},
 //sanctuary
-{"sanctuary","s-ae ae-ng ng-k k-ch ch-uw uw-eh eh-r r-iy"},
+{"sanctuary","pau-s s-ae ae-ng ng-k k-ch ch-uw uw-eh eh-r r-iy iy-pau"},
 //sarah
-{"sarah","s-eh eh-r r-ah"},
+{"sarah","pau-s s-eh eh-r r-ah ah-pau"},
 //saturday
-{"saturday","s-ae ae-ae ae-t t-ih ih-ih ih-d d-ey ey-ey"},
+{"saturday","pau-s s-ae ae-ae ae-t t-ih ih-ih ih-d d-ey ey-ey ey-pau"},
 //say
-{"say","s-eh eh-iy"},
+{"say","pau-s s-eh eh-iy iy-pau"},
 //says
-{"says","s-eh eh-z"},
+{"says","pau-s s-eh eh-z z-pau"},
 //school
-{"school","s-k k-uw uw-l"},
+{"school","pau-s s-k k-uw uw-l l-pau"},
 //sea
-{"sea","s-iy iy-iy"},
-{"seal","s-iy iy-l"},
-{"seaside","s-iy iy-s s-aa aa-iy iy-d"},
-{"season","s-iy iy-z z-ah ah-n"},
+{"sea","pau-s s-iy iy-iy iy-pau"},
+{"seal","pau-s s-iy iy-l l-pau"},
+{"seaside","pau-s s-iy iy-s s-aa aa-iy iy-d d-pau"},
+{"season","pau-s s-iy iy-z z-ah ah-n n-pau"},
 //second
-{"second","s-eh eh-eh eh-k k-ah ah-n n-d d-pau"},
+{"second","pau-s s-eh eh-eh eh-k k-ah ah-n n-d d-pau"},
 //self
-{"self","s-eh eh-eh eh-l l-f"},
-//semi
-{"semi","s-eh eh-m m-iy"},
-{"semicircle","s-eh eh-m m-ih ih-s s-uh uh-r r-k k-ah ah-l"},
+{"self","pau-s s-eh eh-eh eh-l l-f f-pau"},
+{"semicircle","pau-s s-eh eh-m m-ih ih-s s-uh uh-r r-k k-ah ah-l l-pau"},
 //seminar
-{"seminar","s-eh eh-eh eh-m m-ah ah-n n-aa aa-aa aa-r r-r"},
+{"seminar","pau-s s-eh eh-eh eh-m m-ah ah-n n-aa aa-aa aa-r r-r r-pau"},
 //september
-{"september","s-eh eh-p p-t t-eh eh-eh eh-m m-b b-er er-pau"},
+{"september","pau-s s-eh eh-p p-t t-eh eh-eh eh-m m-b b-er er-pau"},
 //series
-{"series","s-ih ih-r r-iy iy-z"},
+{"series","pau-s s-ih ih-r r-iy iy-z z-pau"},
 //service
-{"service","s-er er-er er-v v-ah ah-s"},
+{"service","pau-s s-er er-er er-v v-ah ah-s s-pau"},
 //seven
-{"seven","s-eh eh-eh eh-v v-ah ah-n"},
+{"seven","pau-s s-eh eh-eh eh-v v-ah ah-n n-pau"},
 //seventeen
-{"seventeen","s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-pau"},
+{"seventeen","pau-s s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-pau"},
 //seventeenth
-{"seventeenth","s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-th th-pau"},
+{"seventeenth","pau-s s-eh eh-eh eh-v v-ah ah-n n-t t-iy iy-iy iy-n n-th th-pau"},
 //seventh
-{"seventh","s-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
+{"seventh","pau-s s-eh eh-eh eh-v v-ah ah-n n-th th-pau"},
 //seventieth
-{"seventieth","s-eh eh-v v-ah ah-n n-t t-iy iy-ih ih-th"},
+{"seventieth","pau-s s-eh eh-v v-ah ah-n n-t t-iy iy-ih ih-th th-pau"},
 //seventy
-{"seventy","s-eh eh-v v-ah ah-n n-t t-iy"},
+{"seventy","pau-s s-eh eh-v v-ah ah-n n-t t-iy iy-pau"},
 //shoe
-{"shoe","sh-uw uw-pau"},
+{"shoe","pau-sh sh-uw uw-pau"},
 //shop
-{"shop","sh-aa aa-aa aa-p"},
+{"shop","pau-sh sh-aa aa-aa aa-p p-pau"},
 //shopping
-{"shopping","sh-aa aa-aa aa-p p-ih ih-ng"},
+{"shopping","pau-sh sh-aa aa-aa aa-p p-ih ih-ng n-pau"},
 //short
-{"short","sh-ao ao-r r-t"},
+{"short","pau-sh sh-ao ao-r r-t t-pau"},
 //show
-{"show","sh-ow ow-ow ow-pau"},
-//side
-{"side","s-aa aa-iy iy-d"},
+{"show","pau-sh sh-ow ow-ow ow-pau"},
 //sister
-{"sister","s-ih ih-s s-t t-uh uh-r"},
+{"sister","pau-s s-ih ih-s s-t t-uh uh-r r-pau"},
 //sisters
-{"sisters","s-ih ih-s s-t t-uh uh-r r-z"},
+{"sisters","pau-s s-ih ih-s s-t t-uh uh-r r-z z-pau"},
 //six
-{"six","s-ih ih-ih ih-k k-s s-pau"},
+{"six","pau-s s-ih ih-ih ih-k k-s s-pau"},
 //sixteen
-{"sixteen","s-ih ih-k k-s s-t t-iy iy-iy iy-n n-pau"},
+{"sixteen","pau-s s-ih ih-k k-s s-t t-iy iy-iy iy-n n-pau"},
 //sixteenth
-{"sixteenth","s-ih ih-k k-s s-t t-iy iy-iy iy-n n-th th-pau"},
+{"sixteenth","pau-s s-ih ih-k k-s s-t t-iy iy-iy iy-n n-th th-pau"},
 //sixth
-{"sixth","s-ih ih-ih ih-k k-s s-th th-pau"},
+{"sixth","pau-s s-ih ih-ih ih-k k-s s-th th-pau"},
 //sixtieth
 //sixty
-{"sixty","s-ih ih-k k-s s-t t-iy"},
+{"sixty","pau-s s-ih ih-k k-s s-t t-iy iy-pau"},
 //sky
-{"sky","s-k k-aa aa-iy"},
+{"sky","pau-s s-k k-aa aa-iy iy-pau"},
 //small
-{"small","s-m m-ao ao-l"},
+{"small","pau-s s-m m-ao ao-l l-pau"},
 //society
-{"society","s-ow ow-s s-ay ay-ay ay-ih ih-t t-iy iy-pau"},
+{"society","pau-s s-ow ow-s s-ay ay-ay ay-ih ih-t t-iy iy-pau"},
 //software
 //son
-{"son","s-ah ah-ah ah-n"},
+{"son","pau-s s-ah ah-ah ah-n n-pau"},
 //sons
-{"sons","s-ah ah-ah ah-n n-z"},
+{"sons","pau-s s-ah ah-ah ah-n n-z z-pau"},
 //south
 //special
+{"special","pau-s s-p p-eh eh-eh eh-sh sh-ah ah-l l-pau"},
 //speech
-{"speech","s-p p-iy iy-iy iy-ch ch-ch ch-pau"},
+{"speech","pau-s s-p p-iy iy-iy iy-ch ch-ch ch-pau"},
 //sport
-{"sport","s-p p-ao ao-ao ao-r r-t"},
+{"sport","pau-s s-p p-ao ao-ao ao-r r-t t-pau"},
 //spring
-{"spring","s-p p-r r-ih ih-ih ih-ng"},
+{"spring","pau-s s-p p-r r-ih ih-ih ih-ng ng-pau"},
 //stag
-{"stag","s-t t-ae ae-g"},
+{"stag","pau-s s-t t-ae ae-g g-pau"},
 //star
-{"star","s-t t-aa aa-r"},
+{"star","pau-s s-t t-aa aa-r r-pau"},
 //start
-{"start","s-t t-aa aa-r r-t"},
+{"start","pau-s s-t t-aa aa-r r-t t-pau"},
 //starts
-{"starts","s-t t-aa aa-r r-t t-s"},
+{"starts","pau-s s-t t-aa aa-r r-t t-s s-pau"},
 //station
-{"station","s-t t-ey ey-ey ey-sh sh-ah ah-n"},
+{"station","pau-s s-t t-ey ey-ey ey-sh sh-ah ah-n n-pau"},
 //stay
-{"stay","s-t t-eh eh-iy"},
+{"stay","pau-s s-t t-eh eh-iy iy-pau"},
 //steve
-{"steve","s-t t-iy iy-iy iy-v"},
+{"steve","pau-s s-t t-iy iy-iy iy-v v-pau"},
 //steven or stephen
-{"steven","s-t t-iy iy-iy iy-v v-ah ah-n"},
+{"steven","pau-s s-t t-iy iy-iy iy-v v-ah ah-n n-pau"},
 //{"stephen","s-t t-iy iy-iy iy-v v-ah ah-n"},
 //stock
-{"stock","s-t t-aa aa-k"},
+{"stock","pau-s s-t t-aa aa-k k-pau"},
 //store
-{"store","s-t t-ao ao-r"},
+{"store","pau-s s-t t-ao ao-r r-pau"},
 //study
-{"study","s-t t-ah ah-d d-iy"},
-{"studying","s-t t-ah ah-d d-iy iy-ih ih-ng"},
-//sub
-{"sub","s-ah ah-b"},
+{"study","pau-s s-t t-ah ah-d d-iy iy-pau"},
+{"studying","pau-s s-t t-ah ah-d d-iy iy-ih ih-ng ng-pau"},
 //summer
-{"summer","s-ah ah-m m-uh uh-r"},
+{"summer","pau-s s-ah ah-m m-uh uh-r r-pau"},
 //summertime
-{"summertime","s-ah ah-m m-uh uh-r r-t t-aa aa-iy iy-m"},
-//sunday
-{"sunday","s-ah ah-ah ah-n n-d d-ey ey-ey ey-pau"},
+{"summertime","pau-s s-ah ah-m m-uh uh-r r-t t-aa aa-iy iy-m m-pau"},
+//sunday 
+//{"sunday","pau-s s-ah ah-ah ah-n n-n n-d d-ey ey-ey ey-pau"},
+{"sunday","pau-s s-ah ah-ah ah-n n-d d-ey ey-ey ey-pau"},
 //super
-{"super","s-uw uw-p p-uh uh-r"},
+{"super","pau-s s-uw uw-p p-uh uh-r r-pau"},//prefix
 //susan
-{"susan","s-uw uw-uw uw-z z-ah ah-n"},
+{"susan","pau-s s-uw uw-uw uw-z z-ah ah-n n-pau"},
 //susans
-{"susans","s-uw uw-uw uw-z z-ah ah-n n-z"},
+{"susans","pau-s s-uw uw-uw uw-z z-ah ah-n n-z z-pau"},
 //synthesizer bad prounciation
-{"synthesizer","s-ih ih-ih ih-n n-th th-ah th-z z-s s-ay ay-ay ay-ay ay-er er-pau"},
+{"synthesizer","pau-s s-ih ih-ih ih-n n-th th-ah ah-ah ah-th th-z z-s s-ay ay-ay ay-ay ay-er er-pau"},
 
 //T-words
 //take
-{"take","t-eh eh-iy iy-k"},
+{"take","pau-t t-eh eh-iy iy-k k-pau"},
 //talk
-{"talk","t-ao ao-ao ao-k"},
+{"talk","pau-t t-ao ao-ao ao-k k-pau"},
 //talking
-{"talking","t-ao ao-ao ao-k k-ih ih-ng"},
+{"talking","pau-t t-ao ao-ao ao-k k-ih ih-ng ng-pau"},
 //task
-{"task","t-ae ae-ae ae-s s-k"},
+{"task","pau-t t-ae ae-ae ae-s s-k k-pau"},
 //tax
-{"tax","t-ae ae-ae ae-k k-s"},
+{"tax","pau-t t-ae ae-ae ae-k k-s s-pau"},
 //taxi
-{"taxi","t-ae ae-ae ae-k k-s s-iy iy-pau"},
+{"taxi","pau-t t-ae ae-ae ae-k k-s s-iy iy-pau"},
 //tea
-{"tea","t-t t-iy iy-iy"},
-{"tearoom","t-r r-uh uh-r r-uw uw-m"},
+{"tea","pau-t t-t t-iy iy-iy iy-pau"},
+{"tearoom","pau-t t-r r-uh uh-r r-uw uw-m m-pau"},
 //team
-{"team","t-iy iy-m"},
+{"team","pau-t t-iy iy-m m-pau"},
+//telephone
+{"telephone","pau-t t-eh eh-eh eh-l l-ah ah-f f-f f-ow ow-ow ow-ow ow-n n-pau"},
 //television
-{"television","t-eh eh-eh eh-l l-ah ah-v v-ih ih-ih ih-zh zh-ah ah-n"},
+{"television","pau-t t-eh eh-eh eh-l l-ah ah-v v-ih ih-ih ih-zh zh-ah ah-n n-pau"},
 //temperature
-{"temperature","t-eh eh-m m-p p-r r-ah ah-ch ch-uh uh-r"},
+{"temperature","pau-t t-eh eh-m m-p p-r r-ah ah-ch ch-uh uh-r r-pau"},
 //ten
-{"ten","t-eh eh-eh eh-n"},
+{"ten","pau-t t-eh eh-eh eh-n n-pau"},
 //tennis
-{"tennis","t-eh eh-n n-ah ah-s"},
+{"tennis","pau-t t-eh eh-n n-ah ah-s s-pau"},
 //tenth
-{"tenth","t-eh eh-eh eh-n n-th th-pau"},
+{"tenth","pau-t t-eh eh-eh eh-n n-th th-pau"},
 //test
-{"test","t-eh eh-s s-t"},
+{"test","pau-t t-eh eh-eh eh-s s-t t-pau"},
 //thank
-{"thank","th-ae ae-ng ng-k"},
+{"thank","pau-th th-ae ae-ng ng-k k-pau"},
 //that
-{"that","dh-ae ae-t"},
+{"that","pau-dh dh-ae ae-t t-pau"},
 //the
-{"the","dh-ah ah-ah"},
+{"the","pau-dh dh-ah ah-ah ah-pau"},
 //theatre
-{"theater","th-iy iy-iy iy-ey ey-t t-er er-pau"},
+{"theater","pau-th th-iy iy-iy iy-ey ey-t t-er er-pau"},
 //then
-{"then","dh-eh eh-eh eh-n n-pau"},
+{"then","pau-dh dh-eh eh-eh eh-n n-pau"},
 //theo
-{"theo","th-iy iy-ao ao-uh"},
+{"theo","pau-th th-iy iy-ao ao-uh uh-pau"},
 //theodore
-{"theodore","th-iy iy-ah ah-d d-ao ao-r"},
+{"theodore","pau-th th-iy iy-ah ah-d d-ao ao-r r-pau"},
 //third
 {"third","pau-th th-er er-er er-d d-pau"},
 //thirteen
-{"thirteen","th-er er-er er-t t-iy iy-iy iy-n n-pau"},
+{"thirteen","pau-th th-er er-er er-t t-iy iy-iy iy-n n-pau"},
 //thirteenth
-{"thirteenth","th-er er-er er-t t-iy iy-iy iy-n n-th th-pau"},
+{"thirteenth","pau-th th-er er-er er-t t-iy iy-iy iy-n n-th th-pau"},
 //thirtieth
-{"thirtieth","th-er er-er er-t t-iy iy-eh eh-eh eh-th th-pau"},
+{"thirtieth","pau-th th-er er-er er-t t-iy iy-eh eh-eh eh-th th-pau"},
 //thirty
-{"thirty","th-er er-er er-d d-iy iy-iy iy-pau"},
+{"thirty","pau-th th-er er-er er-d d-iy iy-iy iy-pau"},
 //thomas
-{"thomas","t-aa aa-aa aa-m m-ah ah-s"},
+{"thomas","pau-t t-aa aa-aa aa-m m-ah ah-s s-pau"},
 //{"thomases","t-aa aa-aa aa-m m-ah ah-s s-ih ih-z"},
 //three
-{"three","th-r r-iy iy-iy"},
+{"three","pau-t th-r r-iy iy-iy iy-pau"},
 //thursday
-{"thursday","th-er er-er er-z z-d d-iy iy-pau"},
+{"thursday","pau-th th-er er-er er-z z-d d-iy iy-pau"},
 //ticket
-{"ticket","t-ih ih-k k-ah ah-t"},
+{"ticket","pau-t t-ih ih-k k-ah ah-t t-pau"},
 //tiffany
-{"tiffany","t-ih ih-f ih-f f-ah ah-n n-iy iy-pau"},
+{"tiffany","pau-t t-ih ih-f ih-f f-ah ah-n n-iy iy-pau"},
 //tilda
-{"tilda","t-ih ih-ih ih-l l-d d-ah"},
+{"tilda","pau-t t-ih ih-ih ih-l l-d d-ah ah-pau"},
 //tim
-{"tim","t-ih ih-ih ih-m"},
+{"tim","pau-t t-ih ih-ih ih-m m-pau"},
 //time
-{"time","pau-t t-ay ay-ay ay-m"},
+{"time","pau-t t-ay ay-ay ay-m -pau"},
 //times
-{"times","pau-t t-aa aa-iy iy-m m-z"},
+{"times","pau-t t-aa aa-iy iy-m m-z z-pau"},
 //timothy
 {"timothy","pau-t t-ih ih-ih ih-m m-ah ah-th th-iy iy-pau"},
 //tims
-{"tims","pau-t t-ih ih-ih ih-m m-z"},
+{"tims","pau-t t-ih ih-ih ih-m m-z z-pau"},
 //tiny
-{"tiny","t-aa aa-iy iy-n n-iy"},
+{"tiny","pau-t t-aa aa-iy iy-n n-iy iy-pau"},
 //to
-{"to","t-uw uw-uw"},
+{"to","pau-t t-uw uw-uw uw-pau"},
 //today
-{"today","t-ah ah-d d-ey ey-ey"},
+{"today","pau-t t-ah ah-d d-ey ey-ey ey-pau"},
 //toll
-{"toll","t-ao ao-uh uh-l"},
+{"toll","pau-t t-ao ao-uh uh-l l-pau"},
 //tom
-{"tom","t-aa aa-aa aa-m"},
+{"tom","pau-t t-aa aa-aa aa-m m-pau"},
 //tomorrow
-{"tomorrow","t-ah ah-m m-aa aa-r r-ao ao-uh"},
+{"tomorrow","pau-t t-ah ah-m m-aa aa-r r-ao ao-uh uh-pau"},
 //toms
-{"toms","t-aa aa-aa aa-m m-z"},
+{"toms","pau-t t-aa aa-aa aa-m m-z z-pau"},
 //train
-{"train","t-r r-eh eh-iy iy-n"},
+{"train","pau-t t-r r-eh eh-iy iy-n n-pau"},
 //trans
-{"trans","t-r r-ae ae-n n-z"},
-{"transport","t-r r-ae ae-n n-s s-p p-ao ao-r r-t"},
+{"trans","pau-t t-r r-ae ae-n n-z"},//prefix
+//transport
+{"transport","pau-t t-r r-ae ae-n n-s s-p p-ao ao-r r-t t-pau"},
 //travel
-{"travel","t-r r-ae ae-ae ae-v v-ah ah-l"},
+{"travel","pau-t t-r r-ae ae-ae ae-v v-ah ah-l l-pau"},
 //traveling or travelling
-{"traveling","t-r r-ae ae-ae ae-v v-ah ah-l l-ih ih-ng"},
+{"traveling","pau-t t-r r-ae ae-ae ae-v v-ah ah-l l-ih ih-ng ng-pau"},
 //travelodge
-{"travelodge","t-r r-ae ae-ae ae-v v-ah ah-l l-aa aa-aa aa-jh jh-pau"},
+{"travelodge","pau-t t-r r-ae ae-ae ae-v v-ah ah-l l-aa aa-aa aa-jh jh-pau"},
 //trevor
-{"trevor","t-r r-eh eh-eh eh-v v-er er-pau"},
+{"trevor","pau-t t-r r-eh eh-eh eh-v v-er er-pau"},
 //trevors
-{"trevors","t-r r-eh eh-eh eh-v v-er er-z z-pau pau-z"},
+//{"trevors","pau-t t-r r-eh eh-eh eh-v v-er er-z z-pau pau-z z-pau"},
+{"trevors","pau-t t-r r-eh eh-eh eh-v v-er er-z z-z z-pau"},
 //trip
-{"trip","t-r r-ih ih-ih ih-p p-p"},
+{"trip","pau-t t-r r-ih ih-ih ih-p p-p p-pau"},
 //tuesday
-{"tuesday","t-uw uw-uw uw-z z-d d-iy iy-pau"},
+{"tuesday","pau-t t-uw uw-uw uw-z z-d d-iy iy-pau"},
 //tunnel
-{"tunnel","t-ah ah-n n-ah ah-l"},
+{"tunnel","pau-t t-ah ah-n n-ah ah-l l-pau"},
 //turn
-{"turn","t-uh uh-r r-n"},
+{"turn","pau-t t-uh uh-r r-n n-pau"},
 //tv
-{"tv","t-iy iy-iy iy-v v-iy iy-iy iy-pau"},
+{"tv","pau-t t-iy iy-iy iy-v v-iy iy-iy iy-pau"},
 //twelfth
-{"twelfth","t-w w-eh eh-eh eh-l l-f f-th th-pau pau-th"},
+//{"twelfth","pau-t t-w w-eh eh-eh eh-l l-f f-th th-pau pau-th th-pau"},
+{"twelfth","pau-t t-w w-eh eh-eh eh-l l-f f-th th-th th-pau"},
 //twelve
-{"twelve","t-w w-eh eh-eh eh-l l-v"},
+{"twelve","pau-t t-w w-eh eh-eh eh-l l-v v-pau"},
 //twentieth
-{"twentieth","t-w w-eh eh-eh eh-n n-t t-iy iy-eh eh-eh eh-th th-pau"},
+{"twentieth","pau-t t-w w-eh eh-eh eh-n n-t t-iy iy-eh eh-eh eh-th th-pau"},
 //twenty
-{"twenty","t-w w-eh eh-eh eh-n n-t t-iy iy-pau"},
+{"twenty","pau-t t-w w-eh eh-eh eh-n n-t t-iy iy-pau"},
 //two
-{"two","t-uw uw-uw uw-pau"},
+{"two","pau-t t-uw uw-uw uw-pau"},
 
 //U-words
 //uncle
-{"uncle","ah-ah ah-ng ng-k k-ah ah-l l-pau"},
-//under
-{"under","ah-n n-d d-uh uh-r"},
+{"uncle","pau-ah ah-ah ah-ng ng-k k-ah ah-l l-pau"},
+//uncles
+{"uncles","pau-ah ah-ah ah-ng ng-k k-ah ah-l l-z z-pau"},
+
 //university
-{"university","y-uw uw-n n-ah ah-v v-uh uh-r r-s s-ah ah-t t-iy"},
+{"university","pau-y y-uw uw-n n-ah ah-v v-uh uh-r r-s s-ah ah-t t-iy iy-pau"},
 //unknown
-{"unknown","ah-n n-n n-ow ow-ow ow-n n-n"},
-//up
-{"up","ah-p p-p"},
+{"unknown","pau-ah ah-n n-n n-ow ow-ow ow-n n-n n-pau"},
+
 //upcoming
-{"upcoming","ah-p p-k k-ah ah-ah ah-m m-ih ih-ng"},
+{"upcoming","pau-ah ah-p p-k k-ah ah-ah ah-m m-ih ih-ng ng-pau"},
 //ursula
-{"ursula","uh-r r-s s-ah ah-l l-ah"},
+{"ursula","pau-uh uh-r r-s s-ah ah-l l-ah ah-pau"},
 //use
-{"use","y-uw uw-uw uw-z z-pau"},
+{"use","pau-y y-uw uw-uw uw-z z-pau"},
 //user
-{"user","y-uw uw-uw uw-z z-er er-pau"},
+{"user","pau-y y-uw uw-uw uw-z z-er er-pau"},
 
 //V-words
 //vacation
-{"vacation","v-ey ey-k k-ey ey-ey ey-sh sh-ah ah-n"},
+{"vacation","pau-v v-ey ey-k k-ey ey-ey ey-sh sh-ah ah-n n-pau"},
 //val
-{"val","v-ae ae-ae ae-l l-pau"},
+{"val","pau-v v-ae ae-ae ae-l l-pau"},
 //valentine
-{"valentine","v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n"},
+{"valentine","pau-v v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n n-pau"},
 //valentines
-{"valentines","v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n n-z"},
+{"valentines","pau-v v-ae ae-ae ae-l l-ah ah-n n-t t-ay ay-ay ay-n n-z z-pau"},
 //valerie
-{"valerie","v-ae ae-ae ae-l l-er er-iy iy-pau"},
+{"valerie","pau-v v-ae ae-ae ae-l l-er er-iy iy-pau"},
 //vehicle
-{"vehicle","v-iy iy-iy iy-hh hh-ih ih-k k-ah ah-l"},
+{"vehicle","pau-v v-iy iy-iy iy-hh hh-ih ih-k k-ah ah-l l-pau"},
 //venue
-{"venue","v-eh eh-n n-y y-uw"},
+{"venue","pau-v v-eh eh-n n-y y-uw uw-pau"},
 //version
-{"version","v-er er-er er-zh zh-ah ah-n"},
+{"version","pau-v v-er er-er er-zh zh-ah ah-n n-pau"},
 //veronica
-{"veronica","v-uh uh-r r-aa aa-n n-ih ih-k k-ah"},
-{"vicar","v-ih ih-k k-uh uh-r"},
-{"vicarage","v-ih ih-k k-uh uh-r r-r r-aa aa-jh"},
+{"veronica","pau-v v-uh uh-r r-aa aa-n n-ih ih-k k-ah ah-pau"},
+{"vicar","pau-v v-ih ih-k k-uh uh-r r-pau"},
+{"vicarage","pau-v v-ih ih-k k-uh uh-r r-r r-aa aa-jh jh-pau"},
 //victor
-{"victor","v-ih ih-k k-t t-uh uh-r"},
-{"victoria","v-ih ih-k k-t t-ao ao-r r-iy iy-ah"},
+{"victor","pau-v v-ih ih-k k-t t-uh uh-r r-pau"},
+{"victoria","pau-v v-ih ih-k k-t t-ao ao-r r-iy iy-ah ah-pau"},
 //visit
-{"visit","v-ih ih-ih ih-z z-ih ih-t t-pau"},
+{"visit","pau-v v-ih ih-ih ih-z z-ih ih-t t-pau"},
 
 //w-words
 //walk
-{"walk","w-w w-ao ao-ao ao-k k-k"},
+{"walk","pau-w w-w w-ao ao-ao ao-k k-k k-pau"},
 //warm
-{"warm","w-ao ao-r r-m"},
+{"warm","pau-w w-ao ao-r r-m m-pau"},
 //warming
-{"warming","w-ao ao-r r-m m-ih ih-ng"},
-{"warn","w-ao ao-r r-n"},
-{"warning","w-ao ao-r r-n n-ih ih-ng"},
+{"warming","pau-w w-ao ao-r r-m m-ih ih-ng ng-pau"},
+{"warn","pau-w w-ao ao-r r-n n-pau"},
+{"warning","pau-w w-ao ao-r r-n n-ih ih-ng ng-pau"},
 //wash
-{"wash","w-aa aa-sh"},
+{"wash","pau-w w-aa aa-sh sh-pau"},
 //washing
-{"washing","w-aa aa-sh sh-ih ih-ng"},
+{"washing","pau-w w-aa aa-sh sh-ih ih-ng ng-pau"},
 //water
 //{"water","w-ao ao-t t-uh uh-r"},
-{"water","w-ao ao-ao ao-t t-er er-pau"},
+{"water","pau-w w-ao ao-ao ao-t t-er er-pau"},
 //way
-{"way","w-ey ey-iy"},
+{"way","pau-w w-ey ey-iy iy-pau"},
 //weather warning (to do)
-{"weather","w-eh eh-dh dh-uh uh-r"},
+{"weather","pau-w w-eh eh-dh dh-uh uh-r r-pau"},
 //web
-{"web","w-eh eh-eh eh-b b-b"},
+{"web","pau-w w-eh eh-eh eh-b b-b b-pau"},
 //wedding
-{"wedding","w-eh eh-eh eh-d d-ih ih-ng"},
+{"wedding","pau-w w-eh eh-eh eh-d d-ih ih-ng ng-pau"},
 //wednesday
-{"wednesday","w-eh eh-eh eh-n n-z z-d d-iy iy-pau"}, //or iy-iy
+{"wednesday","pau-w w-eh eh-eh eh-n n-z z-d d-iy iy-pau"}, //or iy-iy
 //week
-{"week","w-iy iy-k"},
+{"week","pau-w w-iy iy-k k-pau"},
 //west
-{"west","w-eh eh-s s-t"},
+{"west","pau-w w-eh eh-s s-t t-pau"},
 //wife
-{"wife","w-ay ay-ay ay-f"},
+{"wife","pau-w w-ay ay-ay ay-f f-pau"},
 //wifes
-{"wifes","w-aa aa-iy iy-f f-s"},
+{"wifes","pau-w w-aa aa-iy iy-f f-s s-pau"},
 //willow
-{"willow","w-ih ih-l l-ao ao-uh"},
-{"wills","w-ih ih-l l-z"},
-{"willy","w-ih ih-l l-iy"},
-{"willyum","w-ih ih-l l-y y-ah ah-m"},
-{"wilma","w-ih ih-l l-m m-ah"},
-{"wilson","w-ih ih-l l-s s-ah ah-n"},
+{"willow","pau-w w-ih ih-l l-ao ao-uh uh-pau"},
+{"wills","pau-w w-ih ih-l l-z z-pau"},
+{"willy","pau-w w-ih ih-l l-iy iy-pau"},
+{"willyum","pau-w w-ih ih-l l-y y-ah ah-m m-pau"},
+{"wilma","pau-w w-ih ih-l l-m m-ah ah-pau"},
+{"wilson","pau-w w-ih ih-l l-s s-ah ah-n n-pau"},
 //window
-{"window","w-ih ih-n n-d d-ao ao-uh"},
+{"window","pau-w w-ih ih-n n-d d-ao ao-uh uh-pau"},
 //winnie
-{"winnie","w-ih ih-ih ih-n n-iy iy-pau"},
+{"winnie","pau-w w-ih ih-ih ih-n n-iy iy-pau"},
 //winnifred
-{"winnifred","w-ih ih-ih ih-n n-ih ih-f f-r r-ih ih-d"},
+{"winnifred","pau-w w-ih ih-ih ih-n n-ih ih-f f-r r-ih ih-d d-pau"},
 //winston
-{"winston","w-ih ih-ih ih-n n-s s-t t-ah ah-n"},
+{"winston","pau-w w-ih ih-ih ih-n n-s s-t t-ah ah-n n-pau"},
 //winter
-{"winter","w-ih ih-ih ih-n n-t t-er er-pau"},
+{"winter","pau-w w-ih ih-ih ih-n n-t t-er er-pau"},
 //witch
-{"witch","w-ih ih-ch"},
+{"witch","pau-w w-ih ih-ch ch-pau"},
 //woman
-{"woman","w-uh uh-m m-ah ah-n"},
+{"woman","pau-w w-uh uh-m m-ah ah-n n-pau"},
 //word
-{"word","w-uh uh-r r-d"},
+{"word","pau-w w-uh uh-r r-d d-pau"},
 //work
-{"work","w-uh uh-r r-k k-pau"},
+{"work","pau-w w-uh uh-r r-k k-pau"},
 //working
-{"working","w-uh uh-r r-k k-ih ih-ng"},
-{"workman","w-uh uh-r r-k k-m m-ah ah-n"},
+{"working","pau-w w-uh uh-r r-k k-ih ih-ng ng-pau"},
+{"workman","pau-w w-uh uh-r r-k k-m m-ah ah-n n-pau"},
 //workshop
-{"workshop","w-uh uh-r r-k k-sh sh-aa aa-p"},
+{"workshop","pau-w w-uh uh-r r-k k-sh sh-aa aa-p p-pau"},
 //world
-{"world","pau-w w-er er-er er-l l-d d-d"},
+{"world","pau-w w-er er-er er-l l-d d-d d-pau"},
 
 //X-words
 //xavier
@@ -1785,32 +1797,32 @@ pair_t table[] = {
 
 //Y-words
 //yacht
-{"yacht","y-aa  aa-aa aa-t"},
+{"yacht","pau-y y-aa aa-aa aa-t t-pau"},
 //year
-{"year","y-ih ih-ih ih-r"},
+{"year","pau-y y-ih ih-ih ih-r r-pau"},
 //yearly
-{"yearly","y-ih ih-ih ih-r r-l l-iy iy-pau"},
-{"yodel","y-ao ao-uh uh-d d-ah ah-l"},
+{"yearly","pau-y y-ih ih-ih ih-r r-l l-iy iy-pau"},
+{"yodel","pau-y y-ao ao-uh uh-d d-ah ah-l l-pau"},
 //you
-{"you","y-uw uw-uw"},
-{"youth","y-uw uw-th"},
+{"you","pau-y y-uw uw-uw uw-pau"},
+{"youth","pau-y y-uw uw-th th-pau"},
 
 //Z-words
 //zach
-{"zach","z-ae ae-k"},
+{"zach","pau-z z-ae ae-k k-pau"},
 //zachary
-{"zachary","z-ae ae-k k-uh uh-r r-iy"},
+{"zachary","pau-z z-ae ae-k k-uh uh-r r-iy iy-pau"},
 //zara
-{"zarahemla","z-ae ae-r r-ah ah-hh hh-iy iy-m m-l l-ah"},
-{"zeppelin","z-eh eh-p p-ih ih-l l-ih ih-n"},
+{"zarahemla","pau-z z-ae ae-r r-ah ah-hh hh-iy iy-m m-l l-ah ah-pau"},
+{"zeppelin","pau-z z-eh eh-p p-ih ih-l l-ih ih-n n-pau"},
 //zero
-{"zero","z-iy iy-iy iy-r r-ow ow-pau"},
+{"zero","pau-z z-iy iy-iy iy-r r-ow ow-pau"},
 //zoe
-{"zoe","z-ao ao-uh uh-iy"},
+{"zoe","pau-z z-ao ao-uh uh-iy iy-pau"},
 //zone
-{"zone","z-ao ao-uh uh-n"},
+{"zone","pau-z z-ao ao-uh uh-n n-pau"},
 //zoo
-{"zoo","z-uw"},
+{"zoo","pau-z z-uw uw-pau"},
 
 	
 };

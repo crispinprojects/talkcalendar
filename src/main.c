@@ -38,7 +38,7 @@
 #include "raw_utils.h"
 
 #define CONFIG_DIRNAME "talkcalendar-diphone"
-#define CONFIG_FILENAME "talkcalendar-diphone3"
+#define CONFIG_FILENAME "talkcalendar-diphone4"
 static char * m_config_file = NULL;
 
 //Declarations
@@ -2971,7 +2971,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.8 (Diphone Synth)");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.3.9 (Diphone Synth)");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Linux Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -3146,7 +3146,7 @@ static void speak_time(gint hour, gint min)
 	
 	diphone_list =g_list_concat(word_to_diphones("the"),word_to_diphones("time"));
 	diphone_list =g_list_concat(diphone_list,word_to_diphones("is"));	
-    //diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
+    //diphone_list =g_list_concat(diphone_list,word_to_diphones("pause1"));
 	//diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
 	
 	if (m_12hour_format)
@@ -3193,15 +3193,15 @@ static void speak_time(gint hour, gint min)
 
 	if (m_12hour_format) {	
 		
-		time_list =g_list_concat(hour_list, word_to_diphones("pau"));
+		time_list =g_list_concat(hour_list, word_to_diphones("pause1"));
 		time_list =g_list_concat(time_list,min_list);
 		//time_list =g_list_concat(time_list, word_to_diphones("pau"));
-		time_list =g_list_concat(time_list, word_to_diphones("pau"));
+		time_list =g_list_concat(time_list, word_to_diphones("pause1"));
 	    time_list =g_list_concat(time_list,word_to_diphones(ampm_str));		   
 	    //time_list =g_list_concat(time_list, word_to_diphones("pau"));	
 	}
 	else {
-		time_list =g_list_concat(hour_list, word_to_diphones("pau"));
+		time_list =g_list_concat(hour_list, word_to_diphones("pause1"));
 		time_list =g_list_concat(time_list,min_list);
 	}
 	  	
@@ -3698,18 +3698,18 @@ static void speak_events() {
 	GList *month_list=convert_month_to_diphone_list(m_start_month);
 	
 	diphone_list =g_list_concat(diphone_list,weekday_list);
-	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
 	diphone_list =g_list_concat(diphone_list,day_number_list);
 	//diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
 	diphone_list =g_list_concat(diphone_list,month_list);
-	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
     //diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
         
    
     if ((m_notable_dates ==1) && (is_notable_date(m_start_day)))	
 	{
 		
-		diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+		diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
 		
 		char* notable_str =get_notable_date_speak_str(m_start_day);
 				
@@ -3725,7 +3725,8 @@ static void speak_events() {
 		j++;
 		} //while loop words
 		
-			
+		diphone_list =g_list_concat(diphone_list,word_to_diphones("pause2"));	
+		//diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));	
 	} //if notable dates
 	
 	GArray *day_events_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
@@ -3852,7 +3853,7 @@ static void speak_events() {
 			}
 
 	time_list =g_list_concat(time_list, hour_list);
-	time_list =g_list_concat(time_list, word_to_diphones("pause"));
+	time_list =g_list_concat(time_list, word_to_diphones("pause1"));
 	time_list =g_list_concat(time_list, min_list);
 	 
 	 //time_list =g_list_concat(hour_list,min_list);
@@ -3891,7 +3892,7 @@ static void speak_events() {
     
     if(i < day_events_arry->len-1)
     {
-    diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));	
+    diphone_list =g_list_concat(diphone_list,word_to_diphones("pause1"));	
     diphone_list =g_list_concat(diphone_list,word_to_diphones("then"));	
     }
     
@@ -3920,7 +3921,7 @@ static void speak_events() {
 	
 	GList* upcoming_number_list =get_upcoming_number_diphone_list(num_upcoming);
 	diphone_list =g_list_concat(diphone_list,upcoming_number_list);
-	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
 	
 	for (int i = 0; i < evts_upcoming->len; i++)
 	{
@@ -3948,7 +3949,7 @@ static void speak_events() {
 	diphone_list =g_list_concat(diphone_list,weekday_list);
 	diphone_list =g_list_concat(diphone_list,day_number_list);
 	diphone_list =g_list_concat(diphone_list,month_list);
-	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
 	
 	GList *event_title_list=NULL;  
     char* str = remove_semicolons(summary_str);
@@ -3963,7 +3964,7 @@ static void speak_events() {
 	j++;
 	} //while loop words
 	
-    diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+    diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
 	
 	} //for evts upcoming
 	
@@ -4364,6 +4365,7 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	m_ring_voice=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_ring));
 	
 	m_gain=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_gain));
+
 	m_echo_level=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_echo_level));
 	m_echo_delay=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_echo_delay));
 	m_ring_level=gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_ring_level));
