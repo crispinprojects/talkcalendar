@@ -28,12 +28,11 @@
 #include <alsa/asoundlib.h>
 #include <stdint.h>
 	
-void set_sample_rate(unsigned int sample_rate);
+void set_sample_rate(unsigned int rate);
 void save_raw_file(char* file_path, unsigned char *data, unsigned int data_len);
-void voice_amp(char* file_path, int gain);
-void voice_echo(char* file_path, int gain, int echo_level, int echo_delay);
-void voice_ring(char* file_path, int gain, float ring_level, float ring_freq);
 void raw_player(char* file_path);  
-int* resample(int *data_in, unsigned int num_samples);
+
+void tsm(char* file_path);
+int* merge_frames (int *input1, int *input2, int num_samples);
 
 #endif //RAWPLAY_H

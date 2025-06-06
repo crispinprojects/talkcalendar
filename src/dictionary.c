@@ -226,9 +226,9 @@ pair_t table[] = {
 {"bird","pau-b b-uh uh-r r-d d-pau"},
 //birth
 {"birth","pau-b b-uh uh-r r-th th-pau"},
-//birthday
-//{"birthday","pau-b b-er er-er er-th th-d d-ey ey-pau"},
-{"birthday","pau-b b-er er-er er-th th-d d-ey ey-ey ey-pau"},
+//birthday BIRTHDAY  B ER1 TH D EY2
+//{"birthday","pau-b b-er er-er er-th th-d d-pau pau-d d-ey ey-ey ey-pau"},
+{"birthday","pau-b b-er er-er er-th th-d d-ey ey-pau"},
 //boat
 {"boat","pau-b b-ao ao-uh uh-t t-pau"},
 //book

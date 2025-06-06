@@ -18,25 +18,28 @@
 #include "raw_utils.h"
 
 #define CHANNELS 1 //voice is mono
-#define FRAMES 4096
-#define BUF_SIZE    8192 //default
-#define PERIODS    1
-#define BITS_PER_SAMPLE 16 // bits
-#define N_SAMPLES 5000 // default
-#define PI 3.14159265359
+#define BUF_SIZE  8192 //raw player
+#define PERIODS    1 //raw player
+#define BITS_PER_SAMPLE 16 // 16 bit resolution
 
-unsigned int rate=16000;
+unsigned int sample_rate=16000;
+
+int* time_scaler(int *data_in, int data_in_size, int frame_size, int hop_size);
 
 //======================================================================
-int convertBitSize(unsigned int in, int bps)
+int convert_bitsize(unsigned int in, int bps)
 {
         const unsigned int max = (1 << (bps-1)) - 1;
-        return in > max ? in - (max<<1) : in;
+        int result=in;
+        if(in >max) result =in-(max<<1);
+        else result =in;
+        return result;       
 }
 //======================================================================
-void set_sample_rate(unsigned int sample_rate)
+void set_sample_rate(unsigned int rate)
 {
-	rate =sample_rate;		
+	sample_rate =rate;	
+	//printf("set_sample_sample_rate: sample sample_rate = %u\n", sample_rate);
 }
 //======================================================================
 void save_raw_file(char* file_path, unsigned char *data, unsigned int data_len)
@@ -48,202 +51,135 @@ void save_raw_file(char* file_path, unsigned char *data, unsigned int data_len)
 }
 
 //======================================================================
-// Voice amp
-// file_path: 	file path to raw file to be processed
-// gain:		voice amplification factor
-// level:		echo gain factor
-// delay:  		echo delay factor (number of samples)
+// Time Scale Modification (TSM) Algorithm
+// Reduces time duration by half (sample rate needs to be increased by 2)
 //======================================================================
 
-void voice_amp(char* file_path, int gain)
+void tsm(char* file_path)
 {
-	
-	long num_samples =5000; //default	
-	unsigned int bits_per_samp =16;	
-	unsigned char buf;
-	
-	//Open raw file to read
 	FILE* audio_file = fopen(file_path, "rb");
-
 	if (audio_file == NULL)
 	{
 		printf("ERROR: file does not exist, or cannot be opened.\n");
 		return;
 	}
-	//find file size and number of samples		
+		
+	unsigned int bits_per_samp =BITS_PER_SAMPLE;
+	//find file size which is the number of samples		
 	fseek(audio_file, 0, SEEK_END); //goto end of file
 	long file_size = ftell(audio_file); //get position of the file pointer 
-	rewind(audio_file); //go to top	
-	num_samples=file_size*2;
-	//use calloc to zero data arrays
+	rewind(audio_file); //got to top	
+	int num_samples=file_size; //mono
+	
 	int *data = (int *) calloc(num_samples, sizeof(int));
-		
-	//load data and echo data
-	for (int i=0; i < num_samples; i++) {		
-        
-        unsigned int tmp = 0;
-		for (int j=0; j != bits_per_samp; j+=8) {
-			fread(&buf, 1, 1, audio_file);
-			tmp += buf << j;
-		}
-	       
-        data[i] = convertBitSize(tmp, bits_per_samp);               
-    }  
-    
-    //amp data    
-    for (int i=0; i < num_samples; i++) {
-        data[i] = gain*data[i];
-    }  
-    
-    //resample data using averging  
-    int *data_resampled = resample(data,num_samples);
-    //write resampled processed voice data to file
-	FILE* f = fopen(file_path, "w");	
-    fwrite(data_resampled, num_samples/2, 1, f);
-    fclose(f); 
-    fclose(audio_file);  
-    free(data);   
-    free(data_resampled);	
-}
-
-//======================================================================
-// Voice echo
-// file_path: 	file path to raw file to be processed
-// gain:		voice amplification factor
-// level:		echo gain factor
-// delay:  		echo delay factor (number of samples)
-//======================================================================
-
-void voice_echo(char* file_path, int gain, int echo_level, int echo_delay)
-{	
-	long num_samples =5000; //default	
-	unsigned int bits_per_samp =16;	
 	unsigned char buf;
-	
-	//Open raw file to read
-	FILE* audio_file = fopen(file_path, "rb");
-
-	if (audio_file == NULL)
-	{
-		printf("ERROR: file does not exist, or cannot be opened.\n");
-		return;
-	}
-	//find file size and number of samples		
-	fseek(audio_file, 0, SEEK_END); //goto end of file
-	long file_size = ftell(audio_file); //get position of the file pointer 
-	rewind(audio_file); //go to top	
-	num_samples=file_size*2;
-	//use calloc to zero data arrays
-	int *data = (int *) calloc(num_samples, sizeof(int));
-	int *data_echo = (int *) calloc(num_samples, sizeof(int));
-			
-	if (echo_delay >num_samples) return;
-	//if (echo_delay >num_samples) echo_delay=0;
-	
-	//load data and echo data
-	for (int i=0; i < num_samples; i++) {		
-        
+	//load data
+	for (int i=0; i < num_samples; i++) {	
         unsigned int tmp = 0;
 		for (int j=0; j != bits_per_samp; j+=8) {
 			fread(&buf, 1, 1, audio_file);
 			tmp += buf << j;
-		}
-	       
-        data[i] = convertBitSize(tmp, bits_per_samp);
-        
-        if(i>=echo_delay)
-        {
-			data_echo[i-echo_delay]=data[i];
-		}	
-               
+		}	       
+        data[i] = convert_bitsize(tmp, bits_per_samp);               
     }  
-    
-    //mix data with echo    
-    for (int i=0; i < num_samples; i++) {
-        data[i] = gain*data[i]+echo_level*data_echo[i];	
-    }  
-    
-    //resample data using averging  
-    int *data_resampled = resample(data,num_samples);
-    //write resampled processed voice data to file
-	FILE* f = fopen(file_path, "w");	
-    fwrite(data_resampled, num_samples/2, 1, f);
-    fclose(f); 
-    fclose(audio_file);  
-    free(data);
-    free(data_echo);
-    free(data_resampled);	
-}
-
-//======================================================================
-// Voice ring modulator
-// file_path: 		file path to raw file to be processed
-// gain:			voice amplification factor
-// ring_level:		ring modulator gain
-// ring_freq:		ring modulator frequency
-//======================================================================
-void voice_ring(char* file_path, int gain, float ring_level, float ring_freq)
-{	
 		
-	long num_samples =5000; //default	
-	unsigned int bits_per_samp =16;	
-	unsigned char buf;
+	int *data_out = (int *) calloc(num_samples, sizeof(int));
 	
-	//Open raw file to read
-	FILE* audio_file = fopen(file_path, "rb");
-
-	if (audio_file == NULL)
-	{
-		printf("ERROR: file does not exist, or cannot be opened.\n");
-		return;
-	}
-	//find file size and number of samples		
-	fseek(audio_file, 0, SEEK_END); //goto end of file
-	long file_size = ftell(audio_file); //get position of the file pointer 
-	rewind(audio_file); //go to top	
-	num_samples=file_size*2;
-			
-	//use calloc to zero data arrays	
-	int *data = (int *) calloc(num_samples, sizeof(int));	
-	int *data_ring = (int *) calloc(num_samples, sizeof(int));
+	int frame_size=1024;
+    int hop_value =512; //double playback speed
+	data_out =time_scaler(data, num_samples, frame_size, hop_value);
 	
-		
-	int k=0;
-	//load data and ring data
-	for (int i=0; i < num_samples; i++) {		
-        
-        unsigned int tmp = 0;
-		for (int j=0; j != bits_per_samp; j+=8) {
-			fread(&buf, 1, 1, audio_file);
-			tmp += buf << j;
-		}
-	       
-        data[i] = convertBitSize(tmp, bits_per_samp);
-        	
-		float sample = gain* data[i] *ring_level*(sin(2 * PI * ring_freq * k /(rate-1)));
-						
-		k++; if (k > 16000) k = 0;
-        data_ring[i] = sample;
+	int gain =3;
+	for (int i=0; i < num_samples; i++) {
+        data_out[i] = gain*data_out[i];
     }  
-    
-    //mix data  
-      
-    //resample data using averging  
-    int *data_resampled = resample(data_ring,num_samples);
-    //write resampled processed voice data to file
-	//FILE* f = fopen("test.raw", "w");	
+  	
 	FILE* f = fopen(file_path, "w");
-    fwrite(data_resampled, num_samples/2, 1, f);
-    fclose(f); 
-    fclose(audio_file);  
-    free(data);
-    free(data_ring);
-    free(data_resampled);
-	
+	fwrite(data_out, num_samples, 1, f);  
+    fclose(f);
+			
+	fclose(audio_file); 
+	free(data_out);	
+	free(data);
 	
 }
 
 //======================================================================
+// A very basic time scaler to shorten audio voice time duration to 
+// speed up playback without changing the pitch.
+// 1. Divide data_in into frames (blocks)
+// 2. Extract two shorter sub-blocks using hop offset value
+// 3. Overlap two sub-blocks into a new shorter block using interleaving
+// 4. Append shorter blocks to create a new synthesized output data_out
+//======================================================================
+
+int* time_scaler(int *data_in, int data_in_size, int framesize, int hop_value)
+{	
+	
+	int hop =hop_value;
+	printf("Time Scaler: hop samples =%d\n",hop);	
+    int num_frames =floor(data_in_size/framesize);    
+	int short_framesize=framesize-hop;	
+	printf("Time Scaler: num_of_frames=%d framesize = %d short_framesize=%d \n",num_frames,framesize,short_framesize);
+    
+    int *data_out = (int *) calloc(data_in_size, sizeof(int));
+        
+	int pos=0; //append position		
+	
+	for (int f=0; f<num_frames-2; ++f)
+	{
+		
+		int *data_frame1 = (int *) calloc(short_framesize, sizeof(int));
+        int *data_frame2 = (int *) calloc(short_framesize, sizeof(int));
+		int *output = (int *) calloc(short_framesize, sizeof(int));
+		
+		//load frames using input data
+		for(int i=0; i<short_framesize; ++i)
+		{
+			data_frame1[i] =data_in[i+(f*framesize)];			
+			data_frame2[i] =data_in[i +((f+1)*framesize)-hop];				
+		}
+		
+		//resample by interleaving frames
+		output = merge_frames(data_frame1, data_frame2, short_framesize);
+	    
+	    //append output to data_out	    
+	    for(int k =0; k<short_framesize;++k)
+		{
+			data_out[k+pos] =output[k]; //append
+		}	
+				
+        pos=pos+short_framesize;
+						
+		free(data_frame1);
+		free(data_frame2);
+		free(output);		
+	}
+	
+	return data_out;	
+}
+
+//======================================================================
+// merge frames (overlap frames)
+// input1 = input frame 1
+// input2 = input frame 2
+// num_samples = overlap frame size
+// average two frames linearly on a sliding scale 
+// frames are weighted (fade-in fade-out) and summed sample by sample
+//======================================================================
+
+int* merge_frames (int *input1, int *input2, int num_samples)
+{
+   //interleave frames   
+    
+	int *output= (int *) calloc(num_samples, sizeof(int)); 
+	
+    for (int i = 0; i < num_samples; ++i)
+    {
+        output[i] =(input1[i] * (num_samples - i) + (input2[i]) * i) / num_samples;
+	}
+	return output;
+}
 
 //======================================================================
 // Raw Player
@@ -266,7 +202,7 @@ void raw_player(char *file_path) {
    
   	channels=CHANNELS;
   	//printf("channels = %u\n", channels);  	
-  	//printf("sample rate = %u\n", rate);
+  	//printf("sample sample_rate = %u\n", sample_rate);
   	periods_per_buffer = PERIODS; 
   	//printf("periods per buffer = %d\n", periods_per_buffer);
 	buffer_size=BUF_SIZE;
@@ -321,11 +257,11 @@ void raw_player(char *file_path) {
   		printf("ERROR: Cannot set number of channels. %s\n", snd_strerror(rc));
   	}
 	
-	//printf("set PCM rate: %u\n",rate);
+	//printf("set PCM sample_rate: %u\n",sample_rate);
  	
- 	if ((rc = snd_pcm_hw_params_set_rate_near(handle, params, &rate, 0)) < 0)
+ 	if ((rc = snd_pcm_hw_params_set_rate_near(handle, params, &sample_rate, 0)) < 0)
  	{
- 		printf("ERROR: Cannot set plyabck rate. %s\n", snd_strerror(rc));
+ 		printf("ERROR: Cannot set plyabck sample_rate. %s\n", snd_strerror(rc));
  	}
 
  	if ((rc = snd_pcm_hw_params(handle, params)) < 0)
@@ -346,9 +282,9 @@ void raw_player(char *file_path) {
 		printf("Playback ERROR: Cannot get channel number %s\n", snd_strerror(rc));
 	}
 
-	if ((rc = snd_pcm_hw_params_get_rate(params, &rate, 0)) < 0)
+	if ((rc = snd_pcm_hw_params_get_rate(params, &sample_rate, 0)) < 0)
 	{
-		printf("ERROR: Cannot get rate %s\n", snd_strerror(rc));
+		printf("ERROR: Cannot get sample_rate %s\n", snd_strerror(rc));
 	}
 
 	// Free parameters
@@ -387,37 +323,3 @@ void raw_player(char *file_path) {
 }
 
 //======================================================================
-
-// Resample: 	convert input data with N samples to output data with N/2 samples
-// data_in: 	pointer to input data array to be resampled
-// num_samples:	number of samples of input data array
-// output: 		pointer to resampled data array (averaging used) 
-
-//======================================================================
-
-int * resample(int *data_in, unsigned int num_samples)
-{
-	int j=0;
-	
-	int *data_out= (int *) calloc(num_samples/2, sizeof(int)); 
-	
-	//for (int i=0; i < num_samples-1; (i=i+2))
-	
-	for (int i=0; i < num_samples-1; i++)
-	{	
-		
-		if(i % 2 == 0) //i is even
-		{
-		int sample1 =data_in[i];
-		int sample2 =data_in[i+1];
-		data_out[j] =(sample1+sample2)/2; //average
-		j=j+1;			
-		}
-		
-    }
-	return data_out;
-}
-
-//======================================================================
-
-

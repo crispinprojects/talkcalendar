@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event titles.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Cinnamon, XFCE, Ubuntu Desktop, etc.). It uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions. I have been developing it using [Debian 12 Bookworm](https://www.debian.org/) which uses GTK4.8.
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, Cinnamon, XFCE  etc.). It uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions. I have been developing it using [Debian 12 Bookworm](https://www.debian.org/) which uses GTK4.8.
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -15,8 +15,7 @@ A screenshot of Talk Calendar is shown below.
 * event details, location, start and end time can be entered and edited
 * export and import iCalendar files (backup and restore)
 * speech synthesizer for reading out date, times and event titles
-* talking clock
-* designed for accessibility
+* talking clock (t-key)
 * Sqlite3 database used to store events
 
 
@@ -162,9 +161,9 @@ The voice used by Talk Calendar is derivative work based on the diphone collecti
  
 I have recently been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday" in an effort to personalise a calendar entry. Of course a generic title such as "Uncle birthday" or "Birthday reminder" can be used instead. Many first names have not yet been implemented and so this feature is far from complete. 
 
-The talk rate can be adjusted to help with speech clarity. I have recently added some audio processing algorithms so that the voice can be modified by using an echo algorithm or ring modulator. The ring modulator effect can be used to deepen the voice and involves mixing the synthesised voice output with a sine wave. This can be used to create a robot voice or add croak. You need to experiment with the settings exposed in the preferences dialog.
+Talk Calendar uses a very basic time scale modification algorithm to speed up playback without changing the pitch. This is based on a cross fade overlap and add (OLA) algorithm which is explained [here](https://ftp.esat.kuleuven.be/pub/sista/jszurley/peno/timescaling.pdf).
   
-The speech synthesizer and pronunciation dictionary are work in progress. The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies and word pronunciations can be easily changed in the code. 
+The speech synthesizer and pronunciation dictionary are work in progress. The advantage of using my own built-in speech synthesizer is that Talk Calendar can be compiled without any external speech synthesizer dependencies.
 
 ### Audio Thread
 
@@ -176,11 +175,7 @@ The main aim of the project has been to produce a calendar with an interface des
 
 Accessibility refers to the design of systems to be usable by people with disabilities and elders. Programs are more accessible for people with visual impairments if they can use large text, high contrast and have a simple design. I have tried make the Talk Calendar interface simple using header buttons for creating a new event, editing a selected event and deleting a selected event.  The interface can be scaled to create large text. High contrast is achieved by using black text on a plain white background. The keyboard arrow keys can be used in conjunction with the enter key to move between months and years minimising the use of the mouse if required.
 
-If you are using Debian 12 (Bookworm) GNOME desktop then switching on the screen reader provides audio navigation of the calendar interface using [Orca](https://help.gnome.org/users/orca/stable/introduction.html.en) and the [espeak](https://espeak.sourceforge.net/) text-to-speech engine. The GNOME accessibility settings are available using Settings->Accessibility. You can also use the screen reader to read out a calendar event by selecting it in the list view. 
-
-I feel I have been partially successful in my efforts to produce a speaking calendar for Linux with an interface designed for accessibility. The speech synthesizer needs further development.
-
-There is more on computer accessibility [here](https://en.wikipedia.org/wiki/Computer_accessibility).
+If you are using Debian 12 (Bookworm) GNOME desktop then switching on the screen reader provides audio navigation of the calendar interface using [Orca](https://help.gnome.org/users/orca/stable/introduction.html.en) and the [espeak](https://espeak.sourceforge.net/) text-to-speech engine. The GNOME accessibility settings are available using Settings->Accessibility. You can also use the screen reader to read out a calendar event by selecting it in the list view. There is more on Debian accessibility [here](https://www.debian.org/devel/debian-accessibility/).
 
 ## Build From Source
 
