@@ -157,6 +157,8 @@ pair_t table[] = {
 {"art","pau-aa aa-aa aa-aa aa-r r-t t-pau"},
 //arthur
 {"arthur","pau-aa aa-r r-th th-uh uh-r r-pau"},
+//ashes  AE1 SH IH0 Z
+{"ashes","pau-ae ae-ae ae-sh sh-ih ih-z z-pau"},
 //assessment
 {"assessment","pau-ah ah-s s-eh eh-eh eh-s s-m m-ah ah-pau pau-ah ah-n n-t t-pau"},
 //attack

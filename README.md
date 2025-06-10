@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event titles.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, Cinnamon, XFCE  etc.). It uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions. I have been developing it using [Debian 12 Bookworm](https://www.debian.org/) which uses GTK4.8.
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, Cinnamon, XFCE  etc.). It uses it own built-in speech synthesizer which means it can be can compiled without any external speech library dependencies and so should be universal across different distributions. 
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -21,7 +21,7 @@ A screenshot of Talk Calendar is shown below.
 
 ## Local Install Using Pre-built Binary (x86 Intel PCs)
 
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.8 and compiled using Debian 12 on Intel hardware.
+A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled using Ubuntu 24.04 on Intel hardware.
 
 Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
@@ -37,7 +37,7 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 
 ## Desktop System Menu Entry
 
-To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For the GNOME desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is <application_id>.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
+To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For desktops based on GNOME such as the Ubuntu Desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is application_id.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
 
 You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
 
@@ -88,9 +88,9 @@ A screenshot of the new event dialog is shown below.
 
 ![](talkcalendar-preferences.png)
 
-You can use 12 hour format. Event end-times can also be shown in the list view. Notable dates (Christmas, Easter, Saint Days etc.) can be displayed on the calendar which are also spoken.
+You can use 12 hour format. Event end-times can also be shown in the list view. Notable dates (Christmas, Easter, Saint Days etc.) can be displayed in the date title and these are also spoken.
 
-Talk options can be changed. The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
+The option "Speak At Startup" allows Talk Calendar to read out the current date and day events when the calendar is started.
 
 ## Talking
 
@@ -135,9 +135,11 @@ DTSTART:20240101T113000
 DTEND:20240101T140000
 ```
 
-You should backup your events by using the File->Export menu item which will create an "events.ical" file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events and then use the File->Import to restore exported events. This assumes that the "events.ical" file is in the current working directory. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this.
+You should backup your events by using the File->Export menu item. This will invoke a file chooser dialog to allow the save directory location to be chosen.
 
-The icalendar import parser allows the date and local time to be imported and checks if a time zone has been specified using the [TZID](https://icalendar.org/iCalendar-RFC-5545/3-2-19-time-zone-identifier.html) property. A file chooser dialog is used to allow the file to be chosen by the user as shown below. File filters can be used.
+The icalendar import parser allows the date and local time to be imported and checks if a time zone has been specified using the [TZID](https://icalendar.org/iCalendar-RFC-5545/3-2-19-time-zone-identifier.html) property. A file chooser dialog is used to allow the import file to be chosen. File filters can be used.
+
+If you then corrupt your database, you can clear all events and then use the File->Import to restore a previously exported ical file. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this.
 
 The parser will be updated with new features in future releases.
 
@@ -188,9 +190,9 @@ sudo apt install geany
 ```
 Alternatively, the latest version of Geany can be built from source using autotools.
 
-### Building on Ubuntu 24.04 and Debian 12 Bookworm x86 Hardware
+### Building on Ubuntu 24.04 x86 Hardware
 
-To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, SQLITE and Flite development libraries. You need to install the following packages.
+To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
 ```
 sudo apt install build-essential
@@ -215,7 +217,7 @@ To check the installed Sqlite 3 version use the command below.
 sqlite3 --version
 ```
 
-To determine which version of GTK4 is running on a Debian/Ubuntu system use the following terminal command.
+To determine which version of GTK4 is running on a Ubuntu/Debain system use the following terminal command.
 
 ```
 dpkg -l | grep libgtk*
@@ -235,17 +237,19 @@ To run Talk Calendar from the terminal use
 
 ## Debian Compile Notes
 
-I have tried to keep the current code base compatible with Debian 12 (Bookworm) which uses GTK 4.8. This is an older version of the GTK4 toolkit compared to the latest stable version which is currently [GTK4.18](https://www.gtk.org/). Debian Trixie will be the next stable release of Debian. At the time of writing the [Debian GTK4 tracker](https://tracker.debian.org/pkg/gtk4) shows that Debian Trixie is currently using GTK4.18.2. 
+The Talk Calendar 0.4 series has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8.
 
-The function gtk_css_provider_load_from_data was depreciated in GTK 4.12 and replaced with "gtk_css_provider_load_from_string". However, I have still used this to be compatible with Debian 12. If compiling with Ubuntu 24.04 you get a series of depreciation warning messages as GTK 4.14 is used. See comments in the calendar source code file to eliminate these.
+With GTK 4.14 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this has been used. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function.  A file dialog to export an ical backup file has been implemented using a GAsyncReadyCallback function and this code is not compatible with GTK 4.8 (Debian 12). 
 
-With GTK4.12 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this will be used in future updates. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. The function "gtk_file_chooser_dialog_new" used with a response callback has been depreciated and so has been removed from source code and ical backup files are saved to the current working directory. A file dialog to export an ical backup file will be implemented using a GAsyncReadyCallback function in future updates (when Debian 13 is released) and this will not be compatible with GTK4.8.
+The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason why a custom calendar was developed to allow visual markers to be used. With the 0.4 series I have replaced the custom calendar with a GTKCalendar.
 
-With GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This is not available in GTK4.8 (Debian 12) and the main reason why I ended up writing my own calendar. Also system colours will be used for the visual markers. When Debian 13 is released I will see if my custom calendar can be swapped out with GTKCalendar. 
+The last of the older Talk Calendar 0.3 versions which compiles with Debian 12 can still be download. 
+
+The Talk Calendar 0.4 series can be used with Ubuntu 22.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
 
 ### Raspberry Pi OS
 
-Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Consequently, you can build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS in the same way described above.
+Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). You need to use the Debian 12 code base to build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS. 
 
 ### Building on Fedora
 

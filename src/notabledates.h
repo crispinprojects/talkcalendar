@@ -14,25 +14,17 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
-// Very basic voice processor and raw file player
 
-#ifndef RAWUTILS_H
-#define RAWUTILS_H
+#ifndef NOTABLEDATES_H
+#define NOTABLEDATES_H
 
-#define ALSA_PCM_NEW_HW_PARAMS_API
+static int first_day_of_month(int month, int year);
+GDate* calculate_easter(gint year);
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <alsa/asoundlib.h>
-#include <stdint.h>
-	
-void set_sample_rate(unsigned int rate);
-void save_raw_file(char* file_path, unsigned char *data, unsigned int data_len);
-void raw_player(char* file_path);  
 
-void tsm(char* file_path);
-int* merge_frames (int *input1, int *input2, int num_samples);
+gboolean is_notable_date(int day, int month, int year);
 
-#endif //RAWPLAY_H
+char* get_notable_date_str(int day, int month, int year);
+char* get_notable_date_speak_str(int day, int month, int year);
+
+#endif//NOTABLEDATES_H
