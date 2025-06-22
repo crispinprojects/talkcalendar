@@ -1,16 +1,9 @@
-#--------------------------------------------------------------
-# Talk Calendar Makefile (Debian Bookworm)
-# Author: Alan Crispin <crispinalan@gmail.com> 
-# Date: May 2025
-# Changelog: 0.02
-#----------------------------------------------------------------
-
 CC ?= gcc
 PKGCONFIG = $(shell which pkg-config)
 CFLAGS = $(shell $(PKGCONFIG) --cflags gtk4)
-LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lm -lsqlite3 -lasound -L$(PWD) -lvoice
+LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3
 
-SRC = main.c displayitem.c calendarevent.c diphone.c dictionary.c dbmanager.c wordrules.c raw_utils.c notabledates.c
+SRC = main.c customcalendar.c calendarevent.c dbmanager.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -27,5 +20,4 @@ talkcalendar: $(OBJS)
 clean:
 	rm -f $(OBJS)
 	rm -f talkcalendar
-
 
