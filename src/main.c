@@ -80,6 +80,17 @@ static void set_titles_on_calendar(CustomCalendar *calendar);
 //static void callbk_calendar_home(GSimpleAction * action, GVariant *parameter, gpointer user_data)
 static void callbk_calendar_home(GSimpleAction * action, GVariant *parameter, gpointer user_data);
 
+static void callbk_easter(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
+GDate* calculate_easter(gint year);
+static void callbk_calc_easter(GtkButton *button, gpointer user_data);
+static void callbk_spin_easter_year(GtkSpinButton *button, gpointer user_data);
+
+
+
+//Search
+static void callbk_search(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
+static void callbk_search_events(GtkButton *button, gpointer user_data);
+static void search_events(const char* search_str);
 
 static void callbk_spin_day_start(GtkSpinButton *button, gpointer user_data);
 static void callbk_dropdown_month_start(GtkDropDown* self, gpointer user_data);
@@ -182,6 +193,7 @@ static int m_end_month=0;
 static int m_end_day=0;
 
 static int m_current_month=0;
+static int m_easter_year=2025;
 
 static int m_start_hour=0;
 static int m_start_min=0;
@@ -1559,8 +1571,6 @@ static void set_titles_on_calendar(CustomCalendar *calendar)
 	
 	custom_calendar_reset_marks(CUSTOM_CALENDAR(calendar));	
 	
-	//custom_calendar_initialise_holiday_array(calendar);
-	//custom_calendar_reset_holidays(CUSTOM_CALENDAR(calendar));	
 	
 	guint8 month_days =g_date_get_days_in_month(m_start_month,m_start_year);	
 		
@@ -1615,15 +1625,15 @@ static void set_titles_on_calendar(CustomCalendar *calendar)
 	char *endmin_str = "";
 	char *ampm_str = " ";
 	
-	summary_str12 =g_strndup(summary_str,9);
-	summary_str12 =g_strconcat(summary_str12,"...",NULL);
+	summary_str12 =g_strndup(summary_str,10);
+	summary_str12 =g_strconcat(summary_str12,"..",NULL);
 
 	if(!is_allday)
 	{		
 	//calendar dislap
 	time_str =get_time_str(start_hour,start_min);
-    display_str = g_strconcat(display_str, time_str, summary_str12, NULL);	
-    
+    //display_str = g_strconcat(display_str, time_str, summary_str12, NULL);	
+    display_str = g_strconcat(display_str, summary_str12, NULL);	
     //now tooltip
     tooltip_str = g_strconcat(tooltip_str, time_str, summary_str, "\n",NULL);
    
@@ -4249,7 +4259,109 @@ static void callbk_search(GSimpleAction *action, GVariant *parameter,  gpointer 
 	gtk_window_present(GTK_WINDOW(dialog_search));	
 }
 
+//======================================================================
+// Easter tool
+//======================================================================
+GDate* calculate_easter(gint year) {
 
+	GDate *edate;
+
+	gint Yr = year;
+    gint a = Yr % 19;
+    gint b = Yr / 100;
+    gint c = Yr % 100;
+    gint d = b / 4;
+    gint e = b % 4;
+    gint f = (b + 8) / 25;
+    gint g = (b - f + 1) / 3;
+    gint h = (19 * a + b - d - g + 15) % 30;
+    gint i = c / 4;
+    gint k = c % 4;
+    gint L = (32 + 2 * e + 2 * i - h - k) % 7;
+    gint m = (a + 11 * h + 22 * L) / 451;
+    gint month = (h + L - 7 * m + 114) / 31;
+    gint day = ((h + L - 7 * m + 114) % 31) + 1;
+	edate = g_date_new_dmy(day, month, year);
+
+	return edate;
+}
+
+
+static void callbk_calc_easter(GtkButton *button, gpointer user_data)
+{
+	//g_object_set_data(G_OBJECT(button_calc_easter), "label-result-key", label_result);
+	
+	GtkWidget *label_result= g_object_get_data(G_OBJECT(button), "label-result-key");
+	
+	//g_print("m_easter_year = %d\n",m_easter_year);
+	
+	GDate *easter_date =calculate_easter(m_easter_year);
+	int easter_day = g_date_get_day(easter_date);
+	int easter_month =g_date_get_month(easter_date);
+	
+	char* easter_month_str = get_month_string(easter_month);
+	char *easter_day_str = g_strdup_printf("%i",easter_day);
+	char *weekday=get_day_of_week(easter_day, easter_month, m_easter_year);
+	//weekday must be a sunday
+		
+	const char* result_str="";
+	
+	result_str = g_strconcat(weekday, " ", easter_day_str, " ", easter_month_str, NULL);
+	
+	gtk_label_set_text(GTK_LABEL(label_result),result_str);
+ 
+	
+}
+
+
+static void callbk_spin_easter_year(GtkSpinButton *button, gpointer user_data)
+{	
+	m_easter_year = gtk_spin_button_get_value_as_int (button);	
+}
+
+static void callbk_easter(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
+{
+	//g_print("Calculate Easter\n");
+	
+	GtkWidget *window = user_data;
+
+	GtkWidget *dialog_easter;
+	gint response;
+	
+	GtkWidget *box;
+	GtkWidget *button_calc_easter;
+	
+	GtkWidget *label_select_year;
+	GtkWidget *spin_button_year;
+	GtkWidget *label_result;
+		
+	dialog_easter = gtk_window_new(); 
+	gtk_window_set_title(GTK_WINDOW(dialog_easter), "Easter");
+	gtk_window_set_default_size(GTK_WINDOW(dialog_easter), 300, 100);
+	box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
+	gtk_window_set_child(GTK_WINDOW(dialog_easter), box);
+
+	label_select_year = gtk_label_new("Select Year ");
+	
+	GtkAdjustment *adjustment_year = gtk_adjustment_new(2024.00, 0.0, 5000.00, 1.0, 1.0, 0.0);
+	spin_button_year = gtk_spin_button_new(adjustment_year, 2024.00, 0);
+	g_signal_connect(GTK_SPIN_BUTTON(spin_button_year), "value_changed", G_CALLBACK(callbk_spin_easter_year), NULL);		
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_year), m_start_year);
+	
+	label_result = gtk_label_new("");
+		
+	button_calc_easter = gtk_button_new_with_label("Calculate Easter");
+	g_signal_connect(button_calc_easter, "clicked", G_CALLBACK(callbk_calc_easter), window);
+	
+	g_object_set_data(G_OBJECT(button_calc_easter), "label-result-key", label_result);
+
+	gtk_box_append(GTK_BOX(box), label_select_year);
+	gtk_box_append(GTK_BOX(box), spin_button_year);
+	gtk_box_append(GTK_BOX(box), label_result);
+	gtk_box_append(GTK_BOX(box), button_calc_easter);	
+	gtk_window_present(GTK_WINDOW(dialog_easter));	
+	
+}
 
 //======================================================================
 //Information
@@ -4397,7 +4509,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
     gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.1");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.2");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2024");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar Series 4");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4446,6 +4558,8 @@ static void window_header(GtkWindow *window)
 	GMenu *menu, *section;
 	menu = g_menu_new();
 	
+	GMenu *tools_menu; 
+	GMenuItem *item;
 	
 	section = g_menu_new();
 	g_menu_append(section, "Preferences", "app.preferences");
@@ -4453,12 +4567,12 @@ static void window_header(GtkWindow *window)
 	g_object_unref(section);
 	
 	section = g_menu_new();
-	g_menu_append(section, "Speak", "app.speaktime");
+	g_menu_append(section, "Speak", "app.speak");
 	g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
 	g_object_unref(section);
 	
 	section = g_menu_new();
-	g_menu_append(section, "Speak Time", "app.speak");
+	g_menu_append(section, "Speak Time", "app.speaktime");
 	g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
 	g_object_unref(section);
 	
@@ -4477,8 +4591,25 @@ static void window_header(GtkWindow *window)
 	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
 	g_object_unref (section);
 	
+	tools_menu =g_menu_new();
+	item =g_menu_item_new("Calculate Easter", "app.easter");
+	g_menu_append_item(tools_menu,item);
+	g_object_unref(item);
+		
+	item =g_menu_item_new("Search", "app.search");
+	g_menu_append_item(tools_menu,item);
+	g_object_unref(item);
+	
+	g_menu_append_submenu(menu, "Tools", G_MENU_MODEL(tools_menu));
+    g_object_unref(tools_menu); 
+	
+	//section = g_menu_new ();
+	//g_menu_append (section, "Search", "app.search"); 	
+	//g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	//g_object_unref (section);
+	
 	section = g_menu_new ();
-	g_menu_append (section, "Search", "app.search"); 	
+	g_menu_append (section, "Information", "app.info"); //show app info
 	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
 	g_object_unref (section);
 	
@@ -4491,8 +4622,10 @@ static void window_header(GtkWindow *window)
 	g_menu_append (section, "About", "app.about");
 	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
 	g_object_unref (section);
+	
+	
    
-        menu_button = gtk_menu_button_new();
+    menu_button = gtk_menu_button_new();
 	gtk_widget_set_tooltip_text(menu_button, "Menu");
 	gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (menu_button),"open-menu-symbolic"); 		
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), G_MENU_MODEL(menu));
@@ -4606,6 +4739,11 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	search_action=g_simple_action_new("search",NULL); //app.search
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(search_action)); //make visible
 	g_signal_connect(search_action, "activate",  G_CALLBACK(callbk_search), window);
+	
+	GSimpleAction *easter_action;
+	easter_action=g_simple_action_new("easter",NULL); //app.easter
+	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(easter_action)); //make visible
+	g_signal_connect(easter_action, "activate",  G_CALLBACK(callbk_easter), window);
 	
 	
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speak", speak_accels);		
