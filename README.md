@@ -80,7 +80,7 @@ Talk Calendar series 0.4 uses a new interface and current downloads are snapshot
 
 ## Talking
 
-Speech requires the [espeak](https://espeak.sourceforge.net/) is installed. With Ubuntu and Debian use the command below to install eSpeak.
+Speech requires that [espeak](https://espeak.sourceforge.net/) is installed. With Ubuntu and Debian use the command below to install eSpeak.
 
 ```
 sudo apt install espeak
@@ -89,6 +89,8 @@ sudo apt install espeak
 * Press the *t key* to readout the current time (talking clock).
 
 * Click calendar day to readout event details 
+
+* spacebar can also be used to read out events on a selected day
 
 ### Building on Ubuntu 24.04 x86 Hardware
 
