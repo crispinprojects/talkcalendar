@@ -11,11 +11,13 @@ A screenshot of Talk Calendar (Ubuntu Desktop) is shown below.
 ## Core Features
 
 * built with C and GTK4 for GTK based desktops
-* month view calendar with calendar day tooltips 
-* calendar event titles displayed
-* event details, location, start and end time can be entered and edited
+* Graphical user interface with month view calendar allowing events to be entered and edited
+* display of truncated event titles on calendar
+* use of tooltips (hovering over an event day displays a tooltip with day event details)
 * export and import iCalendar files (backup and restore)
+* click and talk (click on calendar day to read out events)
 * talking clock (t-key)
+* calendar tools such as calculate Easter and search for events
 * Sqlite3 database used to store events
 
 
@@ -57,7 +59,8 @@ Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to sta
 
 ## Calendar Interface
 
-Talk Calendar version 0.4 onwards use a month view calendar which displays event titles (shortened) so that all events for a month to be viewed at a single glance. Hovering over an event day displays a tooltip with further event details. Clicking on a day reads out the events for that day if any. Talking is switched on by default but can be switched off in the preferences dialog. The calendar colours for today and event days can also be changed.
+
+Talk Calendar now uses a month view calendar which displays truncated event titles on selected days so that all events for a month to be viewed at a single glance. Hovering over an event day displays a tooltip with further event details. Clicking on a day reads out the events for that day if any. Talking is switched on by default but can be switched off in the preferences dialog. The calendar colours for today and event days can also be changed.
 
 If you have ever used a desktop calendar application before then using Talk Calendar will be straight forward. You select a date, then click on the event dialog button in the top left corner which enables you to create a new event. You can then edit an existing event or delete an event by selecting it in the list view. 
 
@@ -67,7 +70,7 @@ Pressing F1 invokes the information window which can also be selected from the h
 
 ## Screenshots
 
-Talk Calendar series 0.4 uses a new interface and current downloads are snapshots of work in progress. Some current screenshot are below.
+Talk Calendar series 0.4 uses a new interface and current downloads are snapshots of work in progress. Some current screenshots are shown below.
 
 ![](talkcalendar-new-event.png)
 
@@ -77,7 +80,11 @@ Talk Calendar series 0.4 uses a new interface and current downloads are snapshot
 
 ## Talking
 
-Speech requires the espeak is installed. 
+Speech requires the [espeak](https://espeak.sourceforge.net/) is installed. With Ubuntu and Debian use the command below to install eSpeak.
+
+```
+sudo apt install espeak
+```
 
 * Press the *t key* to readout the current time (talking clock).
 
@@ -129,17 +136,23 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-## Debian Compile Notes
+## Compile Notes
 
-The Talk Calendar 0.4 series has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8.
+The latest version of Talk Calendar (0.4 series) has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8.
 
 With GTK 4.14 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this has been used. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function.  A file dialog to export an ical backup file has been implemented using a GAsyncReadyCallback function and this code is not compatible with GTK 4.8 (Debian 12). 
 
-The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason why a custom calendar was developed to allow visual markers to be used. With the 0.4 series I have replaced the custom calendar with a GTKCalendar.
+The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. I tried using the lastest version of GtkCalendar but it does not support features such as displaying event titles and tooltips. With the latest version of Talk Calendar I have upgraded custom calendar to support the display of truncated event titles on the calendar view and tooltips. Hovering over an event day displays a tooltip with further event details.
 
-The last of the older Talk Calendar 0.3 versions which compiles with Debian 12 can still be download. 
+I have also dropped the built-in diphone speech synthesizer in favour of using eSpeak. Talk Calendar is in essence a speech-dispatcher as it sends text-to-speech output to the eSpeak speech synthesizer which has to be installed separately on the user system. With Ubuntu and Debian use the command below to install eSpeak.
 
-The Talk Calendar 0.4 series can be used with Ubuntu 22.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
+```
+sudo apt install espeak
+```
+
+The last of the previous versions (0.3 series) of Talk Calendar which compiles with Debian 12 can still be download from the "talkcalendar-debian 12" folder.
+
+The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 22.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
 
 ### Raspberry Pi OS
 
@@ -203,6 +216,8 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
+
+* [espeak](https://espeak.sourceforge.net/)
 
 * [Debian](https://www.debian.org/)
 
