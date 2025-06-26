@@ -92,6 +92,14 @@ sudo apt install espeak
 
 * spacebar can also be used to read out events on a selected day
 
+## Text Scaling
+
+Font text scaling is no longer changed from within Talk Calendar using Pango but done at the system level. You can install and use the GNOME Tweaks Tool to change fonts and the text scaling factor.
+
+```
+sudo apt install gnome-tweaks
+```
+
 ### Building on Ubuntu 24.04 x86 Hardware
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
@@ -137,6 +145,32 @@ To run Talk Calendar from the terminal use
 ```
 ./talkcalendar
 ```
+
+## IDE
+
+I am now using GNOME Builder for developing Talk Calendar. This is a a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications. Talk Calendar is a GTK4 application and not a libadwaita GNOME program and uses the [GNU Make](https://www.gnu.org/software/make/) build system (not Meson). 
+
+To get the latest version of Builder with Ubuntu 22.04 you need to install Flatpak and use the Flathub repository which can be installed using using the terminal commands below.
+
+```
+sudo apt update
+sudo apt upgrade
+sudo apt install flatpak
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+```
+After a restart install Warehouse which can be used to manage the installation of Flatpaks and is particularly useful with Ubuntu as unfortunately the app centre does not support Flatpaks.
+
+```
+flatpak install flathub io.github.flattool.Warehouse
+```
+
+Open Warehouse and search for GNOME Builder and install.
+
+With Builder you can use the the "Empty Makefile Project" template for starting a GTK4 Makefile project. Builder has some great features and there is a tutorial [here](https://builder.readthedocs.io/installation.html). Some feature highlights include browser pages so that [GTK4 API](https://docs.gtk.org/gtk4/index.html) information can be displayed within the IDE, global search, integral terminal, debugger, and  build, rebuild, clean and create run command menu items.
+
+If you just want a simple code editor to compile the lastest version of Talk Calendar then [Geany](https://www.geany.org/) can be used and installed using the Ubuntu app centre. Geany has a sidebar that has a symbols tab. This is very useful as it shows a list of symbols (functions, classes, variables, etc.) found within the current open file and you can filter these. With Builder you have to do a global search for a callback.
+
 
 ## Compile Notes
 
@@ -214,6 +248,8 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 * [Glib API](https://docs.gtk.org/glib/index.html)
 
 * [Gio API](https://docs.gtk.org/gio/index.html)
+
+* [GNOME Builder](https://builder.readthedocs.io/index.html)
 
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 

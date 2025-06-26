@@ -1,19 +1,23 @@
-/***************************************************************************
- *   Author Alan Crispin                                                   *
- *   crispinalan@gmail.com                                                 *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation.                                         *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
- ***************************************************************************/
+/* dbmanager.c
+ *
+ * Copyright 2025 Alan Crispin
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
 
 
 
@@ -344,10 +348,7 @@ STARTYEAR=%i,STARTMONTH=%i,STARTDAY=%i,STARTHOUR=%i,STARTMIN=%i,\
          end_year, end_month, end_day, end_hour,end_min,\
          is_yearly,is_allday,is_priority,idx);
   
-//sprintf(query, "UPDATE EVENTS SET TITLE ='%s',PRIORITY =%i, DESCRIPTION='%s',\
-        //STARTHOUR=%i, STARTMIN=%i, ENDHOUR=%i, ENDMIN=%i, ISYEARLY=%i, ISALLDAY=%i\
-        //WHERE ID ='%i'", title,priority,description,start_hour,start_min,end_hour,end_min,is_yearly,is_allday,idx);
-         
+       
 
 // Prepare the query
 rc = sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
@@ -393,9 +394,17 @@ rc = sqlite3_step(stmt); // execute statement (query.first?)
 
 gint evt_id = sqlite3_column_int(stmt, 0);  
 
+/* const gchar *summary_str =(unsigned char*)sqlite3_column_text(stmt, 1); */
+/* const gchar *location_str =(unsigned char*)sqlite3_column_text(stmt, 2); */
+/* const gchar *desc_str =(unsigned char*)sqlite3_column_text(stmt, 3); */
+  
 const gchar *summary_str =sqlite3_column_text(stmt, 1);
 const gchar *location_str =sqlite3_column_text(stmt, 2);
 const gchar *desc_str =sqlite3_column_text(stmt, 3);
+
+/* gchar *summary_str =sqlite3_column_text(stmt, 1); */
+/* gchar *location_str =sqlite3_column_text(stmt, 2); */
+/* gchar *desc_str =sqlite3_column_text(stmt, 3); */
 
 gint start_year=sqlite3_column_int(stmt, 4);
 gint start_month=sqlite3_column_int(stmt, 5);
