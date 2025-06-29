@@ -74,6 +74,10 @@ Talk Calendar series 0.4 uses a new interface and current downloads are snapshot
 
 ![](talkcalendar-new-event.png)
 
+![](talkcalendar-day-events.png)
+
+![](talkcalendar-day-events3.png)
+
 ![](talkcalendar-preferences.png)
 
 ![](talkcalendar-information.png)
@@ -148,7 +152,7 @@ To run Talk Calendar from the terminal use
 
 ## IDE
 
-I am now using GNOME Builder for developing Talk Calendar. This is a a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications. Talk Calendar is a GTK4 application and not a libadwaita GNOME program and uses the [GNU Make](https://www.gnu.org/software/make/) build system (not Meson). 
+I am now using GNOME Builder for developing Talk Calendar. This is a a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications. Talk Calendar is a GTK4 application and not a libadwaita GNOME program and currently uses the [GNU Make](https://www.gnu.org/software/make/) build system. 
 
 To get the latest version of Builder with Ubuntu 22.04 you need to install Flatpak and use the Flathub repository which can be installed using using the terminal commands below.
 
@@ -167,10 +171,11 @@ flatpak install flathub io.github.flattool.Warehouse
 
 Open Warehouse and search for GNOME Builder and install.
 
-With Builder you can use the the "Empty Makefile Project" template for starting a GTK4 Makefile project. Builder has some great features and there is a tutorial [here](https://builder.readthedocs.io/installation.html). Some feature highlights include browser pages so that [GTK4 API](https://docs.gtk.org/gtk4/index.html) information can be displayed within the IDE, global search, integral terminal, debugger, and  build, rebuild, clean and create run command menu items.
-
 If you just want a simple code editor to compile the lastest version of Talk Calendar then [Geany](https://www.geany.org/) can be used and installed using the Ubuntu app centre. Geany has a sidebar that has a symbols tab. This is very useful as it shows a list of symbols (functions, classes, variables, etc.) found within the current open file and you can filter these. With Builder you have to do a global search for a callback.
 
+## Meson
+
+The latest snapshot meson build can be found in the meson folder but will likley be unstable and is for my own testing purposes.
 
 ## Compile Notes
 

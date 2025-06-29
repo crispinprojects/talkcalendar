@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
-//#include <config.h>
+#include <config.h>
 
 #include <gtk/gtk.h>
 
@@ -31,7 +31,7 @@
 
 
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-044"
+#define CONFIG_FILENAME "talkcalendar-045"
 static char * m_config_file = NULL;
 
 //Declarations
@@ -4196,7 +4196,7 @@ gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 gtk_widget_set_size_request(about_dialog, 200,200);
 gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.4");
+gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.5");
 gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2024");
 gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar Series 4");
 gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
@@ -4232,16 +4232,17 @@ GtkWidget *header;
 GtkWidget *menu_button;
 //GtkWidget *label;
 GtkWidget *button_events_dialog;
-//GtkWidget *button_refresh;
+GtkWidget *button_refresh;
 
 header = gtk_header_bar_new ();  
 gtk_window_set_titlebar (GTK_WINDOW (window), header);
 
-
-//button_refresh = gtk_button_new_from_icon_name("view-refresh-symbolic");
-//gtk_widget_set_tooltip_text(button_refresh, "Refresh Calendar");
-//g_signal_connect (button_refresh, "clicked", G_CALLBACK (callbk_refresh), window);  
-//gtk_header_bar_pack_end(GTK_HEADER_BAR (header), button_refresh);
+//button_refresh = gtk_button_new_with_label ("Refresh"); 
+//button_refresh = gtk_button_new_from_icon_name("edit-redo-symbolic");
+button_refresh = gtk_button_new_from_icon_name("view-refresh-symbolic");
+gtk_widget_set_tooltip_text(button_refresh, "Refresh Calendar");
+g_signal_connect (button_refresh, "clicked", G_CALLBACK (callbk_refresh), window);  
+gtk_header_bar_pack_end(GTK_HEADER_BAR (header), button_refresh);
 
 button_events_dialog = gtk_button_new_from_icon_name("appointment-new-symbolic");
 gtk_widget_set_tooltip_text(button_events_dialog, "Events Dialog");

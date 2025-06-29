@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="talkcalendar">
+	<schema id="org.gtk.talkcalendar" path="/org/gtk/talkcalendar/">
+	 <key name="window-size" type="(ii)">
+      <default>(768, 600)</default>
+      <summary>Window size</summary>
+      <description>Window size (width and height).</description>
+    </key>
+		
+	</schema>	
+</schemalist>
