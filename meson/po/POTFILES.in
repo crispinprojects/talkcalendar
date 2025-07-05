@@ -1,6 +1,0 @@
-# List of source files containing translatable strings.
-# Please keep this file sorted alphabetically.
-data/org.gtk.talkcalendar.desktop.in
-data/org.gtk.talkcalendar.metainfo.xml.in
-data/org.gtk.talkcalendar.gschema.xml
-src/main.c

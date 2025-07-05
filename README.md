@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event details.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, Cinnamon, XFCE  etc.). 
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME,  Cinnamon, XFCE  etc.). 
 
 A screenshot of Talk Calendar (Ubuntu Desktop) is shown below. 
 
@@ -11,15 +11,13 @@ A screenshot of Talk Calendar (Ubuntu Desktop) is shown below.
 ## Core Features
 
 * built with C and GTK4 for GTK based desktops
-* Graphical user interface with month view calendar allowing events to be entered and edited
-* display of truncated event titles on calendar
-* use of tooltips (hovering over an event day displays a tooltip with day event details)
+* Graphical user interface with month view calendar 
+* month events side panel
 * export and import iCalendar files (backup and restore)
-* click and talk (click on calendar day to read out events)
+* click on calendar day to read out date
 * talking clock (t-key)
 * calendar tools such as calculate Easter and search for events
 * Sqlite3 database used to store events
-
 
 ## Local Install Using Pre-built Binary (x86 Intel PCs)
 
@@ -46,63 +44,62 @@ You need to modify the "org.gtk.talkcalendar.desktop" file using your own user n
 
 Copy your modified "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
 
-Talk Calendar now uses espeak which needs to be installed separately rather. With Ubuntu you install espeak using the terminal command below.
-
-```
-sudo apt install espeak
-```
 
 ## Autostart Talk Calendar
 
 Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to start Talk Calendar when the computer is switched on. Talk Calendar can then read out the current date and day events and any future upcoming events (see preferences settings) when the computer is switched on.
 
-
 ## Calendar Interface
 
+Talk Calendar uses a month view calendar with a curtain side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the location button.
 
-Talk Calendar now uses a month view calendar which displays truncated event titles on selected days so that all events for a month to be viewed at a single glance. Hovering over an event day displays a tooltip with further event details. Clicking on a day reads out the events for that day if any. Talking is switched on by default but can be switched off in the preferences dialog. The calendar colours for today and event days can also be changed.
-
-If you have ever used a desktop calendar application before then using Talk Calendar will be straight forward. You select a date, then click on the event dialog button in the top left corner which enables you to create a new event. You can then edit an existing event or delete an event by selecting it in the list view. 
-
-The hamburger menu can be used to select the preferences dialog and other features such as exporting a personal calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be views and modified using a standard text editor. 
+The hamburger menu can be used to select the preferences dialog and other features such as exporting a personal calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
 Pressing F1 invokes the information window which can also be selected from the hamburger menu. The information window shows the keyboard shortcuts, how many records are in the calendar database, the Sqlite version being used on the system, the desktop font and scale factor. The About dialog displays the Talk Calendar version number.
 
-## Screenshots
-
-Talk Calendar series 0.4 uses a new interface and current downloads are snapshots of work in progress. Some current screenshots are shown below.
-
+### New Event
 ![](talkcalendar-new-event.png)
 
-![](talkcalendar-day-events.png)
+### Select An Event
+![](talkcalendar-selection.png)
 
-![](talkcalendar-day-events3.png)
+### Hamburger Menu
+![](talkcalendar-hamburger-menu.png)
 
+### Preferences
 ![](talkcalendar-preferences.png)
 
-![](talkcalendar-information.png)
+### Information (F1)
+![](talkcalendar-info.png)
+
 
 ## Talking
 
-Speech requires that [espeak](https://espeak.sourceforge.net/) is installed. With Ubuntu and Debian use the command below to install eSpeak.
+* Make sure the "Enable Talking" check button in the preferences window is enabled and the Flite voice in the binary download is placed in the current working directory in which the Talk Calendar executable is located
 
-```
-sudo apt install espeak
-```
+* Press the *t key* to readout the current time (talking clock)
 
-* Press the *t key* to readout the current time (talking clock).
+* Click on a calendar day to read out the date and any event details
 
-* Click calendar day to readout event details 
+* The space bar can also be used to read out events on a selected day
 
-* spacebar can also be used to read out events on a selected day
 
-## Text Scaling
+## Font Size, Text Scaling, Colour
 
-Font text scaling is no longer changed from within Talk Calendar using Pango but done at the system level. You can install and use the GNOME Tweaks Tool to change fonts and the text scaling factor.
-
+Font, font size and text scaling are no longer changed from within Talk Calendar but done at the system level. You can install and use the GNOME Tweaks tool to change system fonts and the text scaling factor. 
 ```
 sudo apt install gnome-tweaks
 ```
+The calendar style colour is again set at the system level. Open Ubuntu desktop "Settings" and use the "Appearance" tab
+to change the colour style as required.
+
+![](ubuntu-settings.png)
+
+Apparently you should use system settings rather that in-app settings with GNOME based desktops. 
+
+## Speech Engine
+
+This version of Talk Calendar uses a compiled version of [Flite](https://github.com/festvox/flite) which is a free small fast portable speech synthesis system with a BSD-like [license](https://github.com/festvox/flite?tab=License-1-ov-file#readme). The compiled Flite voice called "flite_cmu_us_kal16" must be located in the current working directory in which the Talk Calendar executable is located. I compiled the voice from the source code located [here](https://github.com/festvox/flite).
 
 ### Building on Ubuntu 24.04 x86 Hardware
 
@@ -114,17 +111,7 @@ sudo apt install libgtk-4-dev
 sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
-sudo apt install espeak
 ```
-
-The packages:
-
-```
-sudo apt install libglib2.0-dev
-sudo apt install alsa-utils
-```
-
-are needed but should be installed by default. 
 
 To check the installed Sqlite 3 version use the command below.
 
@@ -150,46 +137,17 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-## IDE
-
-I am now using GNOME Builder for developing Talk Calendar. This is a a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications. Talk Calendar is a GTK4 application and not a libadwaita GNOME program and currently uses the [GNU Make](https://www.gnu.org/software/make/) build system. 
-
-To get the latest version of Builder with Ubuntu 22.04 you need to install Flatpak and use the Flathub repository which can be installed using using the terminal commands below.
-
-```
-sudo apt update
-sudo apt upgrade
-sudo apt install flatpak
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-```
-After a restart install Warehouse which can be used to manage the installation of Flatpaks and is particularly useful with Ubuntu as unfortunately the app centre does not support Flatpaks.
-
-```
-flatpak install flathub io.github.flattool.Warehouse
-```
-
-Open Warehouse and search for GNOME Builder and install.
-
-If you just want a simple code editor to compile the lastest version of Talk Calendar then [Geany](https://www.geany.org/) can be used and installed using the Ubuntu app centre. Geany has a sidebar that has a symbols tab. This is very useful as it shows a list of symbols (functions, classes, variables, etc.) found within the current open file and you can filter these. With Builder you have to do a global search for a callback.
-
-## Meson
-
-The latest snapshot meson build can be found in the meson folder but will likley be unstable and is for my own testing purposes.
-
 ## Compile Notes
 
-The latest version of Talk Calendar (0.4 series) has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8.
+The latest version of Talk Calendar (0.4 series) has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8 and used when developing the 0.3 series of Talk Calendar.
 
-With GTK 4.14 the GtkFileDialog API is no longer signal based but callback based which should match a GAsyncReadyCallback function (async/await) and this has been used. In computer programming, the async/await pattern is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function.  A file dialog to export an ical backup file has been implemented using a GAsyncReadyCallback function and this code is not compatible with GTK 4.8 (Debian 12). 
+A model view design has been used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
 
-The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. I tried using the lastest version of GtkCalendar but it does not support features such as displaying event titles and tooltips. With the latest version of Talk Calendar I have upgraded custom calendar to support the display of truncated event titles on the calendar view and tooltips. Hovering over an event day displays a tooltip with further event details.
+With GTK 4.14 the GtkFileDialog API is no longer signal based but callback based using an async/await pattern. This is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialogs to export and import ical files (for backup purposes) has been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
 
-I have also dropped the built-in diphone speech synthesizer in favour of using eSpeak. Talk Calendar is in essence a speech-dispatcher as it sends text-to-speech output to the eSpeak speech synthesizer which has to be installed separately on the user system. With Ubuntu and Debian use the command below to install eSpeak.
+GTask allows a task to be called inside a thread and is now used to play audio rather than using GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
 
-```
-sudo apt install espeak
-```
+The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. GtkCalendar is now used in place of my previous custom calendar implementation.
 
 The last of the previous versions (0.3 series) of Talk Calendar which compiles with Debian 12 can still be download from the "talkcalendar-debian 12" folder.
 
@@ -197,7 +155,7 @@ The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 22.04,
 
 ### Raspberry Pi OS
 
-Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). You need to use the Debian 12 code base to build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS. 
+Raspberry Pi OS (64-bit) is a port of Debian Bookworm and by default it uses the Wayland compositor called [labwc](https://github.com/labwc/labwc). Currently you need to use the Debian 12 code base to build Talk Calendar on a Raspberry Pi 4 and 5 running Raspberry Pi OS. However, Raspberry Pi are testing a Trixie version of Pi OS. Further details can be found [here](https://forums.raspberrypi.com/viewtopic.php?t=389477). 
 
 ### Building on Fedora
 
@@ -254,13 +212,15 @@ GTK is released under the terms of the [GNU Lesser General Public License versio
 
 * [Gio API](https://docs.gtk.org/gio/index.html)
 
-* [GNOME Builder](https://builder.readthedocs.io/index.html)
-
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
+
+* [GNOME Builder](https://builder.readthedocs.io/index.html) is a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications.
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [espeak](https://espeak.sourceforge.net/)
+* [Flite](https://github.com/festvox/flite) is a free small fast portable speech synthesis system.
+
+* [Flite license](https://github.com/festvox/flite?tab=License-1-ov-file#readme)
 
 * [Debian](https://www.debian.org/)
 

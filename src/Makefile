@@ -1,12 +1,18 @@
-# Talk Calendar Makefile
-# Alan Crispin
-# June 2025
+#--------------------------------------------------------------
+# Talk Calendar Makefile (Ubuntu 22.04)
+# Author: Alan Crispin <crispinalan@gmail.com> 
+# Date: July 2025
+# Changelog: 0.04
+#----------------------------------------------------------------
 CC ?= gcc
 PKGCONFIG = $(shell which pkg-config)
 CFLAGS = $(shell $(PKGCONFIG) --cflags gtk4)
+#CFLAGS += -Wall
+#CFLAGS += -g
+#CFLAGS += -O3
 LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3
 
-SRC = main.c customcalendar.c calendarevent.c dbmanager.c
+SRC = main.c calendarevent.c dbmanager.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -23,12 +29,7 @@ talkcalendar: $(OBJS)
 clean:
 	rm -f $(OBJS)
 	rm -f talkcalendar
-# Builder will call this target to install an application before running
 install:
 	echo "Installing is not supported"
-# Builder uses this target to run Talk Caldendar
-# Use configure project and setup a run command
 run:
-	./talkcalendar
-
-
+	./demo

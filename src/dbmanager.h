@@ -35,14 +35,14 @@
 const char * get_db_path(void);
 void db_create_events_table(void);
 int db_insert_event(CalendarEvent *event);
-//void db_insert_event_struct(CalendarEvent event);
-void db_update_event(CalendarEvent *event);
+void db_update_event(CalendarEvent *event, int id);
+void db_delete_event(CalendarEvent *event);
 
 int db_get_number_of_rows_all(void);
 int db_get_number_of_rows_month_year(int month, int year);
 int db_get_number_of_rows_year_month_day(int year, int month, int day);
 int db_get_number_of_isyearly_events_month(int month);
-
+int db_get_id(CalendarEvent *evt);
 
 void db_get_event(int index, CalendarEvent *event);
 void db_get_all_events(GArray *evt_arry);
