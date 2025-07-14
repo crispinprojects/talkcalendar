@@ -185,10 +185,6 @@ dnf list gtk4-devel
 
 Active and under development.
 
-## License
-
-GTK is released under the terms of the [GNU Lesser General Public License version 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html). Talk Calendar is licensed under the same LGPL v2.1 license.
-
 ## Acknowledgements
 
 * [GTK](https://www.gtk.org/)
