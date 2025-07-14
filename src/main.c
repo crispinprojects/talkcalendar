@@ -1,22 +1,21 @@
 /* main.c
  *
- * Copyright 2025 Alan Crispin
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * SPDX-License-Identifier: LGPL-2.1-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #include <gtk/gtk.h>
@@ -140,8 +139,8 @@ gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 gtk_widget_set_size_request(about_dialog, 200,200);
 gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.5");
-gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2024");
+gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.6");
+gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar");
 gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
 gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about_dialog),"https://github.com/crispinprojects/");
@@ -2501,6 +2500,13 @@ static void callbk_bind_listitem (GtkListItemFactory *factory,
   GtkWidget *label;
   //MyObject *obj;
   CalendarEvent *event;
+  
+  //Repeaters -need to use current year not start year when added
+  GDateTime *date_time;  
+  date_time = g_date_time_new_now_local(); // get local time  
+  int current_year =g_date_time_get_year(date_time); 
+  g_date_time_unref(date_time);
+  
 
   label = gtk_list_item_get_child (list_item);
   gtk_widget_set_halign (GTK_WIDGET(label), GTK_ALIGN_START);
@@ -2514,7 +2520,7 @@ static void callbk_bind_listitem (GtkListItemFactory *factory,
   
   int start_day =calendar_event_get_start_day(CALENDAR_EVENT(event));
   int start_month =calendar_event_get_start_month(CALENDAR_EVENT(event));
-  int start_year =calendar_event_get_start_year(CALENDAR_EVENT(event));
+  //int start_year =calendar_event_get_start_year(CALENDAR_EVENT(event));
   
   //char* day_str =g_strdup_printf("%d",day);
   //char* month_str =g_strdup_printf("%d",month);
@@ -2524,7 +2530,7 @@ static void callbk_bind_listitem (GtkListItemFactory *factory,
   char* day_str = g_strdup_printf("%d",start_day);
   //char* month_str = g_strdup_printf("%d",month);	
   char *month_str =get_month_string(start_month);	
-  char* year_str = g_strdup_printf("%d",start_year);
+  char* year_str = g_strdup_printf("%d",current_year);
   char* date_str="";
   
   date_str= g_strconcat(date_str,day_str, " ",month_str, " ",year_str, NULL);
@@ -2581,17 +2587,10 @@ static void callbk_bind_listitem (GtkListItemFactory *factory,
 	}  
 	
 	  display_str =g_strconcat(display_str,des_loc_str,NULL);
-  
-  //display_str =g_strconcat(display_str,
-  //day_str, "-",month_str,"-",year_str, "\n",
-  //start_hour_str,":",start_min_str," ",
-  //summary, "\n",
-  //description,". ", location,NULL);
-  
+    
   gtk_label_set_label (GTK_LABEL (label), display_str);
-                       //my_object_get_string (obj));
+                       
 }
-
 //======================================================================
 static void callbk_listview (GtkListView  *list,
              guint         position,
@@ -3226,6 +3225,12 @@ static void callbk_find_event(GtkButton *button, gpointer user_data)
 	GtkSingleSelection *selection=user_data;	
 	CalendarEvent* selectedevent = gtk_single_selection_get_selected_item (GTK_SINGLE_SELECTION(selection));
 	  
+	 //Repeaters -need to use current year not start year when added
+	GDateTime *cal_date = gtk_calendar_get_date(GTK_CALENDAR(calendar));
+	int current_year=g_date_time_get_year(cal_date);
+	g_date_time_unref(cal_date);
+	 
+	 
 	 if(selectedevent==NULL) return;
 	 
 	 int start_day=0;
@@ -3238,9 +3243,10 @@ static void callbk_find_event(GtkButton *button, gpointer user_data)
 	
 	 gtk_calendar_set_day(GTK_CALENDAR(calendar),start_day);
 	 gtk_calendar_set_month(GTK_CALENDAR(calendar),start_month-1);
-	 gtk_calendar_set_year(GTK_CALENDAR(calendar),start_year);
+	 //gtk_calendar_set_year(GTK_CALENDAR(calendar),start_year);
+	 gtk_calendar_set_year(GTK_CALENDAR(calendar),current_year);
 	
-	 speak_events(start_day,start_month,start_year); 
+	 speak_events(start_day,start_month,current_year); 
 	
 }
 

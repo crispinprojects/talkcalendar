@@ -1,5 +1,5 @@
 #--------------------------------------------------------------
-# Talk Calendar Makefile (Ubuntu 22.04)
+# Talk Calendar Makefile (Ubuntu 24.04)
 # Author: Alan Crispin <crispinalan@gmail.com> 
 # Date: July 2025
 # Changelog: 0.04
