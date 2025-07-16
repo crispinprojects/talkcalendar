@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event details.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event summary words.
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME,  Cinnamon, XFCE  etc.). 
 
@@ -14,16 +14,15 @@ A screenshot of Talk Calendar (Ubuntu Desktop) is shown below.
 * Graphical user interface with month view calendar 
 * month events side panel
 * export and import iCalendar files (backup and restore)
-* click on calendar day to read out date
-* talking clock (t-key)
+* built-in diphone speech synthesizer for speaking dates, time and event summary words
 * calendar tools such as calculate Easter and search for events
 * Sqlite3 database used to store events
 
 ## Local Install Using Pre-built Binary (x86 Intel PCs)
 
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled using Ubuntu 24.04 on Intel hardware.
+A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled and tested using Ubuntu 24.04 on Intel hardware.
 
-Extract the downloaded file which contains the Talk Calendar executable. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
+A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be extracted from the binary directory. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
 ```
 sudo chmod +x talkcalendar
@@ -33,21 +32,29 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 ```
 ./talkcalendar
 ```
-## Desktop System Menu Entry
 
-To add Talk Calendar to the system menu modify the Talk Calendar desktop file provided in the download. A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. For user-specific applications desktop files can be located locally in the ***~/.local/share/applications/*** directory. Local user entries take precedence over system entries. For desktops based on GNOME such as the Ubuntu Desktop, the desktop file should be named using the [application ID](https://developer.gnome.org/documentation/tutorials/application-id.html), that is application_id.desktop, which in this case is "org.gtk.talkcalendar.desktop" 
+## BASH Script Installer
 
-You need to modify the "org.gtk.talkcalendar.desktop" file using your own user name and directory locations. For example, if your user name is "sam" and you install local applications in a folder called "Software" and you create a folder called "talkcalendar " to store the Talk Calendar binary executable and the Flite voice then the executable path would be "Exec=/home/sam/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the talkcalendar binary executable. The Path variable tells the system where to look for the executable and the calendar database. The Icon variable specifies the path to the icon file associated with the application. In a .desktop file, you need to use absolute and full paths.
+The easiest way to install Talk Calendar is to use the bash script installer from the terminal. This is found in the binary directory in the download. 
 
-Copy your modified "org.gtk.talkcalendar.desktop" file to the ***~/.local/share/applications/*** directory. Create the ~/.local/share/applications/ directory if it does not already exist. This way of locally installing Talk Calendar should be universal across different Linux distributions.
+To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
-## Autostart Talk Calendar
+```
+./install-talkcalendar.sh
+```
 
-Copy the "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart*** to start Talk Calendar when the computer is switched on. Talk Calendar can then read out the current date and day events and any future upcoming events (see preferences settings) when the computer is switched on.
+The installer assumes that you are a member of the sudo group and that the GTK4 libraries are installed. If not, go to the building section below and the following terminal command instructions to install the required packages.
+
+To uninstall Talk Calendar run the script below
+
+```
+./uninstall-talkcalendar
+```
+
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a curtain side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the location button.
+Talk Calendar uses a month view calendar with a pane side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the location button.
 
 The hamburger menu can be used to select the preferences dialog and other features such as exporting a personal calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
@@ -71,7 +78,9 @@ Pressing F1 invokes the information window which can also be selected from the h
 
 ## Talking
 
-* Make sure the "Enable Talking" check button in the preferences window is ticked and the ***Flite voice*** (flite_cmu_us_kal16) found in the binary download is placed in the current working directory in which the Talk Calendar executable is located
+Talk Calendar can read out the date and time. The event summary can also be read out but the number of words recognised is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service" etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. 
+
+* Make sure the "Enable Talking" check button in the preferences window is ticked 
 
 * Press the *t key* to readout the current time (talking clock)
 
@@ -81,20 +90,29 @@ Pressing F1 invokes the information window which can also be selected from the h
 
 ## Font Size, Text Scaling, Colour
 
-Font, font size and text scaling are no longer changed from within Talk Calendar but done at the system level. You can install and use the GNOME Tweaks tool to change system fonts and the text scaling factor. 
+Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops.
+
+Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. The easiest way to do this is to install and use the GNOME Tweaks tool  as shown below.
+ 
 ```
 sudo apt install gnome-tweaks
 ```
+
+![](gnome-tweaks.png)
+
+Gnome Teaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
+
 The calendar style colour is again set at the system level. Open Ubuntu desktop "Settings" and use the "Appearance" tab
 to change the colour style as required.
 
 ![](ubuntu-settings.png)
 
-Apparently you should use system settings rather that in-app settings with GNOME based desktops. 
+ 
+## Speech Synthesis
 
-## Speech Engine
+Talk Calendar uses the diphone speech synthesizer method. Speech is synthesised by concatenating pre-recorded segments of speech called [diphones](https://en.wikipedia.org/wiki/Diphone). A small pronouncing dictionary is used to convert a word into it a diphone pronunciation. I have been using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict?in=C+M+U+Dictionary) to look up the phoneme pronunciation  of a word and then work out the diphone construction.
 
-This version of Talk Calendar uses a compiled version of [Flite](https://github.com/festvox/flite) which is a free small fast portable speech synthesis system with a BSD-like [license](https://github.com/festvox/flite?tab=License-1-ov-file#readme). The compiled Flite voice called "flite_cmu_us_kal16" must be located in the current working directory in which the Talk Calendar executable is located. I compiled the voice from the source code located [here](https://github.com/festvox/flite).
+The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
 
 ### Building on Ubuntu 24.04 x86 Hardware
 
@@ -144,9 +162,7 @@ GTask allows a task to be called inside a thread and is now used to play audio r
 
 The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. GtkCalendar is now used in place of my previous custom calendar implementation.
 
-
 The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
-
 
 ### Building on Fedora
 
@@ -205,9 +221,7 @@ Active and under development.
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [Flite](https://github.com/festvox/flite) is a free small fast portable speech synthesis system.
-
-* [Flite license](https://github.com/festvox/flite?tab=License-1-ov-file#readme)
+* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
 
 * [Debian](https://www.debian.org/)
 

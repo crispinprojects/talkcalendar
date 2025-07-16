@@ -23,8 +23,13 @@
 #include "calendarevent.h"
 #include "dbmanager.h"
 
+#include "diphone.h"
+#include "dictionary.h"
+#include "wordrules.h"
+#include "rawplayer.h"
+
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-045"
+#define CONFIG_FILENAME "talkcalendar-045-diphone"
 static char * m_config_file = NULL;
 
 
@@ -42,7 +47,10 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data);
 static void callbk_edit_event(GtkButton *button, gpointer user_data);
 static void callbk_update_event(GtkButton *button, gpointer user_data);
 
+
 static void callbk_search(GSimpleAction *action, GVariant *parameter,  gpointer user_data);
+static void callbk_search_events(GtkButton *button, gpointer user_data);
+static void search_events(const char* search_str);
 
 static char *remove_commas(const char *text);
 static char* remove_semicolons (const char *text);
@@ -63,13 +71,27 @@ static char* get_cardinal_string(int number);
 static char* get_day_number_ordinal_string(int day);
 static char* get_day_of_week(int day, int month, int year);
 char* get_month_string(int month);
-
 static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer user_data);
-static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data);
-//static void speak_events(gpointer user_data);
 static void speak_events(int day, int month, int year);
+
+//static void speak_events();
+//static void speak_events(gpointer user_data);
+
+static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data);
 static void speak_time(gint hour, gint min);
 char* get_time_str(int hour, int min);
+
+
+//Diphone speaking
+GList* convert_date_to_weekday_diphone_list(int day, int month, int year);
+GList* convert_day_number_to_diphone_list(int day_number);
+GList* convert_month_to_diphone_list(int month);
+GList* get_event_number_diphone_list(int event_number);
+GList* convert_number_to_diphone_list(int number);
+//GList* get_upcoming_number_diphone_list(int number);
+unsigned char *rawcat(unsigned char *arrys[], unsigned int arry_size[], int arry_count);
+unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size);
+static void play_diphone_list(GList *diphone_list);
 
 
 static void play_audio_async (GTask *task,
@@ -98,22 +120,24 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 static void callbk_set_preferences(GtkButton *button, gpointer  user_data);
 
 //old style text preferences 
-//TODO need to work out how to use gsettings xml schema
 static void config_load_default(void);
 static void config_read(void);
 static void config_write(void);
 void config_initialize(void);
 
-//user preferences
-static int m_reset_preferences=0;
-static int m_12hour_format=1; //am pm hour format
-static int m_talk =1;
-static int m_talk_description=0; 
-static int m_talk_location=0; 
+//Preferences
 
+static int m_12hour_format=1; //am pm hour format
+static int m_talk =1;  
 
 static int m_window_width=900;
 static int m_window_height=500;
+
+//not user set preferences
+static int m_talk_time=1;
+static unsigned int m_sample_rate=20000;
+static int m_gain=3;
+
  
 gboolean m_talking=FALSE; //gtask
 static char* m_file_name="talkcalendar.ical"; //import default
@@ -139,9 +163,9 @@ gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 gtk_widget_set_size_request(about_dialog, 200,200);
 gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.6");
+gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.4.7");
 gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
-gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar");
+gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar (Diphone Synthesizer)");
 gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_LGPL_2_1);
 gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about_dialog),"https://github.com/crispinprojects/");
 gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar Website");
@@ -168,9 +192,6 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	GtkWidget *label_record_info;
 	GtkWidget *label_record_number;
 	GtkWidget *label_sqlite_version;
-	
-	GtkWidget *label_speech_synthesizer;
-	GtkWidget *label_flite_detected;
 	
 	GtkWidget *label_font_info;	
 	GtkWidget *label_desktop_font;
@@ -213,26 +234,6 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	sqlite_version_str = g_strconcat(sqlite_version_str, v_str,NULL);
 	label_sqlite_version =gtk_label_new(sqlite_version_str);
 	
-	label_speech_synthesizer=gtk_label_new("Speech Synthesizer");
-	gtk_label_set_attributes (GTK_LABEL (label_speech_synthesizer), attrs);
-	char* flite_str="Local Flite voice: ";
-		
-	gchar *cur_dir;	
-	cur_dir = g_get_current_dir();	
-	//g_print("current directory = %s\n", cur_dir);
-	
-	if (!g_file_test(g_build_filename(cur_dir, "flite_cmu_us_kal16", NULL), G_FILE_TEST_IS_REGULAR)) 
-	{
-	//g_print("flite does not exist\n");
-	flite_str = g_strconcat(flite_str, "not detected.",NULL);   
-	}
-	else 
-	{   
-	//g_print("flite exists\n");
-	flite_str = g_strconcat(flite_str, "detected.",NULL);
-	}
-	
-	label_flite_detected =gtk_label_new(flite_str);	
 	
 	label_font_info=gtk_label_new("Font");
 	gtk_label_set_attributes (GTK_LABEL (label_font_info), attrs);
@@ -261,8 +262,8 @@ static void callbk_info(GSimpleAction *action, GVariant *parameter,  gpointer us
 	gtk_box_append(GTK_BOX(box), label_record_number);
 	gtk_box_append(GTK_BOX(box), label_sqlite_version);	
 	
-	gtk_box_append(GTK_BOX(box), label_speech_synthesizer);	
-	gtk_box_append(GTK_BOX(box), label_flite_detected);
+	//gtk_box_append(GTK_BOX(box), label_speech_synthesizer);	
+	//gtk_box_append(GTK_BOX(box), label_espeak_detected);
 	
 	gtk_box_append(GTK_BOX(box),label_font_info);
 	gtk_box_append(GTK_BOX(box),label_desktop_font);
@@ -287,8 +288,6 @@ static void config_load_default()
 {
 //talking
 m_talk=1;
-m_talk_description=0;
-m_talk_location=0;	
 m_12hour_format=1;	
 m_window_width=900;
 m_window_height=500;
@@ -297,9 +296,7 @@ m_window_height=500;
 static void config_read()
 {
 //talking
-m_talk=1;
-m_talk_description=0;
-m_talk_location=0;	
+m_talk=1;	
 m_12hour_format=1;	
 m_window_width=900;
 m_window_height=500;
@@ -309,8 +306,7 @@ GKeyFile * kf = g_key_file_new();
 g_key_file_load_from_file(kf, m_config_file, G_KEY_FILE_NONE, NULL);
 //talk general
 m_talk = g_key_file_get_integer(kf, "calendar_settings", "talk", NULL);
-m_talk_location = g_key_file_get_integer(kf, "calendar_settings", "talk_location", NULL);
-m_talk_description= g_key_file_get_integer(kf, "calendar_settings", "talk_description", NULL);	
+//m_talk_at_startup=g_key_file_get_integer(kf, "calendar_settings", "talk_startup", NULL);
 //time format
 m_12hour_format=g_key_file_get_integer(kf, "calendar_settings", "hour_format", NULL);
 //window size	
@@ -325,9 +321,8 @@ void config_write()
 {
 GKeyFile * kf = g_key_file_new();
 //talk general	
-g_key_file_set_integer(kf, "calendar_settings", "talk", m_talk);
-g_key_file_set_integer(kf, "calendar_settings", "talk_location", m_talk_location);
-g_key_file_set_integer(kf, "calendar_settings", "talk_description", m_talk_description);
+g_key_file_set_integer(kf, "calendar_settings", "talk", m_talk);	
+//g_key_file_set_integer(kf, "calendar_settings", "talk_startup", m_talk_at_startup);
 //time format
 g_key_file_set_integer(kf, "calendar_settings", "hour_format", m_12hour_format);
 //window size	
@@ -370,6 +365,7 @@ g_free(config_dir);
 //removers
 //======================================================================
 
+//======================================================================
 static char *remove_commas(const char *text)
 {
 GString *str;
@@ -441,7 +437,6 @@ g_string_append_unichar (str, *p);
 return g_string_free (str, FALSE);
 }
 
-
 //======================================================================
 //Export ical
 //======================================================================
@@ -491,10 +486,7 @@ static void callbk_export(GSimpleAction *action, GVariant *parameter,  gpointer 
 
 static void file_save_response (GObject *source, GAsyncResult *result, void *user_data)
 {
-
 	GtkFileDialog *dialog = GTK_FILE_DIALOG (source);  
-	
-	//GtkWidget *window = g_object_get_data(G_OBJECT(dialog), "dialog-window-key");
 	
 	GFile *file;
 	file = gtk_file_dialog_save_finish (dialog, result, NULL);
@@ -508,189 +500,189 @@ static void file_save_response (GObject *source, GAsyncResult *result, void *use
 void export_file(char *file_name) 
 {
 	GFile *file;	
-GFileOutputStream *file_stream;
-GDataOutputStream *data_stream;
-GError *err = NULL;
-
-file = g_file_new_for_path(file_name);
-
-file_stream = g_file_replace(file, 0,TRUE, G_FILE_CREATE_NONE, NULL, &err);
-
-if (file_stream == NULL) {
-
-//gint errno = err->code;
-g_warning ("Error message = %s", err->message);
-g_error_free (err);
-g_print("Unable to open file: %s\n",file_name);
-g_object_unref (file);
-return;
-}
-
-data_stream = g_data_output_stream_new(G_OUTPUT_STREAM(file_stream));
-
-GArray *evt_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
-db_get_all_events(evt_arry);
-
-
-char *line = "";
-line = g_strconcat(line,"BEGIN:VCALENDAR\n",NULL);	
-g_data_output_stream_put_string(data_stream, line, NULL, NULL);
-
-for (int i = 0; i < evt_arry->len; i++)
-{		
-line="";
-gint evt_id = 0;
-gchar *summary_str = "";
-gchar *location_str = "";
-gchar *description_str = "";
-
-gint start_year = 0;
-gint start_month = 0;
-gint start_day = 0;
-gint start_hour = 0;
-gint start_min = 0;
-gint start_seconds = 0;
-
-gint end_year = 0;
-gint end_month = 0;
-gint end_day = 0;
-gint end_hour = 0;
-gint end_min = 0;
-gint end_seconds = 0;
-
-gint is_yearly = 0;
-gint is_allday = 0;
-//gint is_multiday = 0;
-gint is_priority = 0;
-
-//gint has_reminder = 0;
-//gint reminder_hour = 0;
-//gint reminder_min = 0;
-char* recurrence_str="RRULE:";
-
-CalendarEvent *evt = g_array_index(evt_arry, CalendarEvent *, i);
-
-g_object_get(evt, "eventid", &evt_id, NULL);
-g_object_get(evt, "summary", &summary_str, NULL);
-g_object_get(evt, "location", &location_str, NULL);
-g_object_get(evt, "description", &description_str, NULL);
-g_object_get(evt, "startyear", &start_year, NULL);
-g_object_get(evt, "startmonth", &start_month, NULL);
-g_object_get(evt, "startday", &start_day, NULL);
-g_object_get(evt, "starthour", &start_hour, NULL);
-g_object_get(evt, "startmin", &start_min, NULL);
-g_object_get(evt, "endyear", &end_year, NULL);
-g_object_get(evt, "endmonth", &end_month, NULL);
-g_object_get(evt, "endday", &end_day, NULL);
-g_object_get(evt, "endhour", &end_hour, NULL);
-g_object_get(evt, "endmin", &end_min, NULL);
-g_object_get(evt, "isyearly", &is_yearly, NULL);
-g_object_get(evt, "isallday", &is_allday, NULL);		
-g_object_get(evt, "ispriority", &is_priority, NULL);
-
-
-char* start_day_str = g_strdup_printf("%02d",start_day);
-char* start_month_str = g_strdup_printf("%02d",start_month);
-char* start_year_str = g_strdup_printf("%d",start_year);
-char* start_hour_str = g_strdup_printf("%02d",start_hour);
-char* start_min_str = g_strdup_printf("%02d",start_min);
-char* start_sec_str = g_strdup_printf("%02d",start_seconds);
-
-char* end_day_str = g_strdup_printf("%02d",end_day);
-char* end_month_str = g_strdup_printf("%02d",end_month);
-char* end_year_str = g_strdup_printf("%d",end_year);
-char* end_hour_str = g_strdup_printf("%02d",end_hour);
-char* end_min_str = g_strdup_printf("%02d",end_min);
-char* end_sec_str = g_strdup_printf("%02d",end_seconds);
-
-char* priority_str="";
-if (is_priority ==1) priority_str="PRIORITY:1";
-else priority_str="PRIORITY:0";
-
-//recurrence rule (more todo)
-
-if(is_yearly)
-{					
-recurrence_str = g_strconcat(recurrence_str,
-"FREQ=YEARLY;",
-"INTERVAL=1;",
-"BYMONTH=",
-start_month_str,
-";",
-"BYMONTHDAY=",
-start_day_str,	   
-NULL);			  
-}
-
-char *dts ="DTSTART:";		
-dts = g_strconcat(dts,
-start_year_str,
-start_month_str,
-start_day_str,
-"T",
-start_hour_str,
-start_min_str,
-start_sec_str,
-"\n",
-NULL);
-
-char *dte ="DTEND:";		
-dte = g_strconcat(dte,
-end_year_str,
-end_month_str,
-end_day_str,
-"T",
-end_hour_str,
-end_min_str,
-end_sec_str,
-"\n",
-NULL);
-
-line = g_strconcat(line,"BEGIN:VEVENT\n",NULL);		
-line = g_strconcat(line,dts,NULL);
-line = g_strconcat(line,dte,NULL);
-line = g_strconcat(line,"LOCATION:",location_str, "\n", NULL);
-line = g_strconcat(line,"SUMMARY:",summary_str,"\n", NULL);
-line = g_strconcat(line,"DESCRIPTION:",description_str,"\n", NULL);
-
-line = g_strconcat(line,priority_str,"\n", NULL);
-
-if(is_yearly)
-{
-
-line = g_strconcat(line,recurrence_str,"\n", NULL);
-is_yearly=0; //prevent next line repeats
-}
-
-line = g_strconcat(line,"END:VEVENT\n",NULL);		
-g_data_output_stream_put_string(data_stream, line, NULL, NULL);		
-
-}//for evt_arry
-
-line ="";
-line = g_strconcat(line,"END:VCALENDAR\n",NULL);
-g_data_output_stream_put_string(data_stream, line, NULL, NULL);
-
-g_object_unref(data_stream);
-g_object_unref(file_stream);
-g_object_unref(file);
+	GFileOutputStream *file_stream;
+	GDataOutputStream *data_stream;
+	GError *err = NULL;
 	
+	file = g_file_new_for_path(file_name);
+	
+	file_stream = g_file_replace(file, 0,TRUE, G_FILE_CREATE_NONE, NULL, &err);
+	
+	if (file_stream == NULL) {
+	
+	//gint errno = err->code;
+	g_warning ("Error message = %s", err->message);
+	g_error_free (err);
+	g_print("Unable to open file: %s\n",file_name);
+	g_object_unref (file);
+	return;
+	}
+	
+	data_stream = g_data_output_stream_new(G_OUTPUT_STREAM(file_stream));
+	
+	GArray *evt_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
+	db_get_all_events(evt_arry);
+	
+	
+	char *line = "";
+	line = g_strconcat(line,"BEGIN:VCALENDAR\n",NULL);	
+	g_data_output_stream_put_string(data_stream, line, NULL, NULL);
+	
+	for (int i = 0; i < evt_arry->len; i++)
+	{		
+	line="";
+	gint evt_id = 0;
+	gchar *summary_str = "";
+	gchar *location_str = "";
+	gchar *description_str = "";
+	
+	gint start_year = 0;
+	gint start_month = 0;
+	gint start_day = 0;
+	gint start_hour = 0;
+	gint start_min = 0;
+	gint start_seconds = 0;
+	
+	gint end_year = 0;
+	gint end_month = 0;
+	gint end_day = 0;
+	gint end_hour = 0;
+	gint end_min = 0;
+	gint end_seconds = 0;
+	
+	gint is_yearly = 0;
+	gint is_allday = 0;
+	//gint is_multiday = 0;
+	gint is_priority = 0;
+	
+	//gint has_reminder = 0;
+	//gint reminder_hour = 0;
+	//gint reminder_min = 0;
+	char* recurrence_str="RRULE:";
+	
+	CalendarEvent *evt = g_array_index(evt_arry, CalendarEvent *, i);
+	
+	g_object_get(evt, "eventid", &evt_id, NULL);
+	g_object_get(evt, "summary", &summary_str, NULL);
+	g_object_get(evt, "location", &location_str, NULL);
+	g_object_get(evt, "description", &description_str, NULL);
+	g_object_get(evt, "startyear", &start_year, NULL);
+	g_object_get(evt, "startmonth", &start_month, NULL);
+	g_object_get(evt, "startday", &start_day, NULL);
+	g_object_get(evt, "starthour", &start_hour, NULL);
+	g_object_get(evt, "startmin", &start_min, NULL);
+	g_object_get(evt, "endyear", &end_year, NULL);
+	g_object_get(evt, "endmonth", &end_month, NULL);
+	g_object_get(evt, "endday", &end_day, NULL);
+	g_object_get(evt, "endhour", &end_hour, NULL);
+	g_object_get(evt, "endmin", &end_min, NULL);
+	g_object_get(evt, "isyearly", &is_yearly, NULL);
+	g_object_get(evt, "isallday", &is_allday, NULL);		
+	g_object_get(evt, "ispriority", &is_priority, NULL);
+	
+	
+	char* start_day_str = g_strdup_printf("%02d",start_day);
+	char* start_month_str = g_strdup_printf("%02d",start_month);
+	char* start_year_str = g_strdup_printf("%d",start_year);
+	char* start_hour_str = g_strdup_printf("%02d",start_hour);
+	char* start_min_str = g_strdup_printf("%02d",start_min);
+	char* start_sec_str = g_strdup_printf("%02d",start_seconds);
+	
+	char* end_day_str = g_strdup_printf("%02d",end_day);
+	char* end_month_str = g_strdup_printf("%02d",end_month);
+	char* end_year_str = g_strdup_printf("%d",end_year);
+	char* end_hour_str = g_strdup_printf("%02d",end_hour);
+	char* end_min_str = g_strdup_printf("%02d",end_min);
+	char* end_sec_str = g_strdup_printf("%02d",end_seconds);
+	
+	char* priority_str="";
+	if (is_priority ==1) priority_str="PRIORITY:1";
+	else priority_str="PRIORITY:0";
+	
+	//recurrence rule (more todo)
+	
+	if(is_yearly)
+	{					
+	recurrence_str = g_strconcat(recurrence_str,
+	"FREQ=YEARLY;",
+	"INTERVAL=1;",
+	"BYMONTH=",
+	start_month_str,
+	";",
+	"BYMONTHDAY=",
+	start_day_str,	   
+	NULL);			  
+	}
+	
+	char *dts ="DTSTART:";		
+	dts = g_strconcat(dts,
+	start_year_str,
+	start_month_str,
+	start_day_str,
+	"T",
+	start_hour_str,
+	start_min_str,
+	start_sec_str,
+	"\n",
+	NULL);
+	
+	char *dte ="DTEND:";		
+	dte = g_strconcat(dte,
+	end_year_str,
+	end_month_str,
+	end_day_str,
+	"T",
+	end_hour_str,
+	end_min_str,
+	end_sec_str,
+	"\n",
+	NULL);
+	
+	line = g_strconcat(line,"BEGIN:VEVENT\n",NULL);		
+	line = g_strconcat(line,dts,NULL);
+	line = g_strconcat(line,dte,NULL);
+	line = g_strconcat(line,"LOCATION:",location_str, "\n", NULL);
+	line = g_strconcat(line,"SUMMARY:",summary_str,"\n", NULL);
+	line = g_strconcat(line,"DESCRIPTION:",description_str,"\n", NULL);
+	
+	line = g_strconcat(line,priority_str,"\n", NULL);
+	
+	if(is_yearly)
+	{
+	
+	line = g_strconcat(line,recurrence_str,"\n", NULL);
+	is_yearly=0; //prevent next line repeats
+	}
+	
+	line = g_strconcat(line,"END:VEVENT\n",NULL);		
+	g_data_output_stream_put_string(data_stream, line, NULL, NULL);		
+	
+	}//for evt_arry
+	
+	line ="";
+	line = g_strconcat(line,"END:VCALENDAR\n",NULL);
+	g_data_output_stream_put_string(data_stream, line, NULL, NULL);
+	
+	g_object_unref(data_stream);
+	g_object_unref(file_stream);
+	g_object_unref(file);
+
 }
 //=======================================================================
 
 static char *ignore_first_zero(char *input)
 {    
-int len = strlen(input); 
-if(len > 0)
-{
-gunichar fc = g_utf8_get_char(input);
-if (fc == '0')
-{ 	
-input++;	
-} // if
-}
-
-return input;
+	int len = strlen(input); 
+	if(len > 0)
+	{
+	gunichar fc = g_utf8_get_char(input);
+	if (fc == '0')
+	{ 	
+	input++;	
+	} // if
+	}
+	
+	return input;
 }
 
 
@@ -1204,10 +1196,10 @@ void import_ical_file(gpointer user_data)
 	int today_year = g_date_time_get_year(today);
 	int today_month = g_date_time_get_month(today);
 	int today_day = g_date_time_get_day_of_month(today);	
-
+	
 		
 	gtk_calendar_select_day (GTK_CALENDAR(calendar), today); //being depreciated and replaced by		
-		//gtk_calendar_set_date (GTK_CALENDAR(calendar), today); //gtk4.20 onwards -unstable do not use
+	//gtk_calendar_set_date (GTK_CALENDAR(calendar), today); //gtk4.20 onwards -unstable do not use
 	
 	update_calendar(GTK_CALENDAR(calendar), window);
 	
@@ -1237,31 +1229,31 @@ gtk_window_destroy(GTK_WINDOW(dialog));
 static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpointer user_data)
 {
 
-	GtkWidget *window =user_data;
-	
-	GtkWidget *dialog;
-	GtkWidget *box;
-	GtkWidget *button_confirm;
-	GtkWidget *label_confirm;
-	
-	dialog =gtk_window_new(); //gtk_dialog_new_with_buttons to be deprecated gtk4.10
-	
-	gtk_window_set_title (GTK_WINDOW (dialog), "Delete All");
-	gtk_window_set_default_size(GTK_WINDOW(dialog),350,100);
-	
-	box =gtk_box_new(GTK_ORIENTATION_VERTICAL,1);
-	gtk_window_set_child (GTK_WINDOW (dialog), box);
-	
-	button_confirm = gtk_button_new_with_label ("Delete All");
-	g_signal_connect (button_confirm, "clicked", G_CALLBACK (callbk_confirm_delete_all), window);
-	
-	label_confirm = gtk_label_new("Pressing Delete All\n will clear database");
-	
-	g_object_set_data(G_OBJECT(button_confirm), "dialog-key",dialog);
-	
-	gtk_box_append(GTK_BOX(box), label_confirm);	
-	gtk_box_append(GTK_BOX(box), button_confirm);
-	gtk_window_present (GTK_WINDOW (dialog));	
+GtkWidget *window =user_data;
+
+GtkWidget *dialog;
+GtkWidget *box;
+GtkWidget *button_confirm;
+GtkWidget *label_confirm;
+
+dialog =gtk_window_new(); //gtk_dialog_new_with_buttons to be deprecated gtk4.10
+
+gtk_window_set_title (GTK_WINDOW (dialog), "Delete All");
+gtk_window_set_default_size(GTK_WINDOW(dialog),350,100);
+
+box =gtk_box_new(GTK_ORIENTATION_VERTICAL,1);
+gtk_window_set_child (GTK_WINDOW (dialog), box);
+
+button_confirm = gtk_button_new_with_label ("Delete All");
+g_signal_connect (button_confirm, "clicked", G_CALLBACK (callbk_confirm_delete_all), window);
+
+label_confirm = gtk_label_new("Pressing Delete All\n will clear database");
+
+g_object_set_data(G_OBJECT(button_confirm), "dialog-key",dialog);
+
+gtk_box_append(GTK_BOX(box), label_confirm);	
+gtk_box_append(GTK_BOX(box), button_confirm);
+gtk_window_present (GTK_WINDOW (dialog));	
 
 }
 
@@ -1742,38 +1734,554 @@ gpointer task_data,
 GCancellable *cancellable)
 {
 
-  char* text =task_data;
-   
-   if (m_talk ==0) 
-   {
-   m_talking=FALSE;
-   return;
-   }
-   
-   
-   gchar *cur_dir;	
-   cur_dir = g_get_current_dir ();	
-   //g_print("current directory = %s\n", cur_dir);
-   
-   if (!g_file_test(g_build_filename(cur_dir, "flite_cmu_us_kal16", NULL), G_FILE_TEST_IS_REGULAR)) 
-   {
-   //g_print("flite does not exist\n");
-   return;
-   }
-   else 
-   {   
-  // g_print("flite exists\n");
-   m_talking=TRUE; //stop any new speaking 
-   gchar * command_str ="./flite_cmu_us_kal16"; //rms voice
-   command_str= g_strconcat(command_str," -t "," '",text,"' ", NULL);
-   system(command_str);
-   }  
-   
-   g_task_return_boolean(task, TRUE);	  
+    m_talking=TRUE; //stop any new speaking 
+    
+       
+    char* raw_file_path =task_data; 
+    
+    set_sample_rate(m_sample_rate);    
+    //g_print("sample_rate = %d\n",m_sample_rate);
+    voice_amp(raw_file_path, m_gain);	
+    
+    raw_player(raw_file_path); //using my own rawplayer (PERIODS=1)
+    
+    //m_talking=FALSE;   
+    g_task_return_boolean(task, TRUE);
+
+
 }
 
+//======================================================================
+// Diphones
+//======================================================================
 
+static void play_diphone_list(GList *diphone_list)
+{	
+	gpointer diphone_list_pointer;
+	gchar* diphone_str;		
+	gint diphone_number  =g_list_length(diphone_list);
+	
+	//create diphone array using list length
+	unsigned char *diphone_arrays[diphone_number]; 
+	unsigned int diphone_arrays_sizes[diphone_number];
+		
+	//load diphone arrays
+	for(int i=0; i <diphone_number; i++)
+	{
+		diphone_list_pointer=g_list_nth_data(diphone_list,i);
+		diphone_str=(gchar *)diphone_list_pointer;	
+		//g_print("play_diphone_list: diphone = %s\n",diphone_str);
+		diphone_arrays[i] = load_diphone_arry(diphone_str);	
+		diphone_arrays_sizes[i]=load_diphone_len(diphone_str);		
+	}	
+	
+	//concatenate using raw cat
+	unsigned char *data = rawcat(diphone_arrays, diphone_arrays_sizes, diphone_number);	
+	unsigned int data_len = get_merge_size(diphone_arrays_sizes,diphone_number);	
+    	
+	gchar* raw_file_path ="/tmp/talk.raw";
+	save_raw_file(raw_file_path, data, data_len);
+	    
+	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
+	g_task_set_task_data (task,raw_file_path,NULL);
+    g_task_run_in_thread(task, play_audio_async);     
+    g_object_unref(task);
+	
+	//clean up 
+	//g_list_free(diphone_list);	
+	free(data);	//prevent memory leak
+		
+}
+
+//======================================================================
+// Concatentation
+//======================================================================
+
+unsigned char *rawcat(unsigned char *arrys[], unsigned int arry_size[], int arry_count) {
+		
+	
+	if (arry_count<2) return NULL;	
+	
+	unsigned int  total_samples=0;
+	for (int c = 0; c < arry_count; c++) 
+	{  
+    unsigned int count =arry_size[c]; 
+    total_samples=total_samples+count;	
+    }        
+	unsigned char *data = (unsigned char*)malloc(total_samples * sizeof(unsigned char));
+	
+	unsigned int offset=0;
+	for(int k=0; k<arry_count; k++)
+	{
+		//loop through each arry	
+		for(int i = 0; i < arry_size[k]; i++) 
+		{		
+		data[i+offset]=arrys[k][i];
+		}		
+		offset =offset+arry_size[k];
+	}//k kount
+	return data;
+}
 //=====================================================================
+unsigned int get_merge_size(unsigned int sizes_arry[], int arry_size){
+	
+	unsigned int total_samples=0;
+	for (int i = 0; i < arry_size; i++) 
+	{  
+    unsigned int count =sizes_arry[i]; 
+    total_samples=total_samples+count;	
+    }
+	return total_samples;
+}
+
+//======================================================================
+// Diphone helpers
+//======================================================================
+
+GList* convert_date_to_weekday_diphone_list(int day, int month, int year) {
+	
+	//char* weekday_str="";
+	GList* result =NULL;
+	
+	GDate* day_date;
+	day_date = g_date_new_dmy(day, month, year);
+	GDateWeekday weekday =g_date_get_weekday(day_date);
+	
+	
+	 switch (weekday) {
+		case G_DATE_MONDAY:		
+		result =word_to_diphones("monday");			
+		break;
+		case G_DATE_TUESDAY:		
+		result =word_to_diphones("tuesday");		
+		break;
+		case G_DATE_WEDNESDAY:		
+		result =word_to_diphones("wednesday");			
+		break;
+		case G_DATE_THURSDAY:		
+		result =word_to_diphones("thursday");			
+		break;
+		case G_DATE_FRIDAY:		
+		result =word_to_diphones("friday");			
+		break;
+		case G_DATE_SATURDAY:	
+		result =word_to_diphones("saturday");		
+		break;
+		case G_DATE_SUNDAY:	
+		result =word_to_diphones("sunday");			
+		break;
+		default:
+		//Unknown day of week		
+		result =word_to_diphones("day");
+		//g_print("weekday = unkown\n");	
+		break;
+	    }//switch dow
+	
+	return result;
+}
+
+//======================================================================
+// Convert day number to diphone list
+//======================================================================
+GList* convert_day_number_to_diphone_list(int day_number) {
+	
+	GList* result =NULL;
+	
+	switch (day_number) {
+		case 1:
+		result =word_to_diphones("first");
+		break;		
+		case 2:
+		result =word_to_diphones("second");
+		break;
+		case 3:		
+		result =word_to_diphones("third");		
+		break;
+		case 4:
+		result =word_to_diphones("fourth");
+		break;
+		case 5:
+		result =word_to_diphones("fifth");
+		break;
+		case 6:
+		result =word_to_diphones("sixth");
+		break;
+		case 7:
+		result =word_to_diphones("seventh");
+		break;
+		case 8:
+		result =word_to_diphones("eighth");
+		break;
+		case 9:
+		result =word_to_diphones("ninth");
+		break;
+		case 10:
+		result =word_to_diphones("tenth");
+		break;
+		case 11:
+		result =word_to_diphones("eleventh");
+		break;
+		case 12:		
+		result =word_to_diphones("twelfth");	
+		break;
+		case 13:		
+		result =word_to_diphones("thirteenth");
+		break;
+		case 14:			
+		result =word_to_diphones("fourteenth");	
+		break;
+		case 15:		
+		result =word_to_diphones("fifteenth");
+		break;
+		case 16:		
+		result =word_to_diphones("sixteenth");
+		break;
+		case 17:		
+		result =word_to_diphones("seventeenth");
+		break;
+		case 18:		
+		result =word_to_diphones("eighteenth");
+		break;
+		case 19:		
+		result =word_to_diphones("nineteenth");
+		break;
+		case 20:		
+		result =word_to_diphones("twentieth");
+		break;
+		case 21:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("first"));				
+		break;
+		case 22:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("second"));		
+		break;
+		case 23:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("third"));	
+		break;
+		case 24:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("fourth"));
+		break;
+		case 25:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("fifth"));
+		break;
+		case 26:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("sixth"));
+		break;
+		case 27:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("seventh"));
+		break;
+		case 28:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("eighth"));
+		break;
+		case 29:		
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("ninth"));
+		break;
+		case 30:		
+		result =word_to_diphones("thirtieth");
+		break;
+		case 31:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("first"));		
+		break;
+		default:
+		//Unknown ordinal
+		result =word_to_diphones("zero");
+		break;		
+	  } //day switch      
+		
+	return result;	
+}
+
+//======================================================================
+// Convert month to diphone list
+//======================================================================
+GList* convert_month_to_diphone_list(int month) {
+	
+	GList* result =NULL;
+	
+	switch(month) {
+	case 1:		
+		result =word_to_diphones("january");
+		break;
+	case 2:			
+		result =word_to_diphones("february");	
+		break;
+	case 3:		
+		result =word_to_diphones("march");
+		break; 
+	case 4:
+		result =word_to_diphones("april");
+		break; 
+	case 5:		
+		result =word_to_diphones("may");
+		break;
+	case 6:		
+		result =word_to_diphones("june");
+		break; 
+	case 7:		
+		result =word_to_diphones("july");
+		break;
+	case 8:		
+		result =word_to_diphones("august");
+		break;
+	case 9:		
+		result =word_to_diphones("september");
+		break;
+	case 10:		
+		result =word_to_diphones("october");
+		break;
+	case 11:		
+		result =word_to_diphones("november");
+		break; 
+	case 12:		
+		result =word_to_diphones("december");
+		break; 
+	default:
+		result =word_to_diphones("month");
+	}
+
+	return result;
+}
+
+//======================================================================
+// Convert upcoming event number to diphone list
+//======================================================================
+//GList* get_upcoming_number_diphone_list(int number) {
+	
+	//GList* result =NULL;
+	
+	//if (number ==0) {	
+	//GList *noevents_list=NULL;    
+	//noevents_list = word_to_diphones("no");   
+	//noevents_list = g_list_concat(noevents_list,word_to_diphones("upcoming")); 
+	//noevents_list = g_list_concat(noevents_list,word_to_diphones("events")); 
+	//result =noevents_list;	
+	//} //if
+	
+	//else if(number ==1){		
+		//result =g_list_concat(word_to_diphones("one"),word_to_diphones("upcoming"));
+		//result =g_list_concat(result,word_to_diphones("event"));
+	//}
+	//else if(number ==2){		
+		//result =g_list_concat(word_to_diphones("two"),word_to_diphones("upcoming"));
+		//result =g_list_concat(result,word_to_diphones("events"));
+	//}
+	//else if(number ==3){
+		 //result =g_list_concat(word_to_diphones("three"),word_to_diphones("upcoming"));
+		 //result =g_list_concat(result,word_to_diphones("events")); 
+	//}
+	//else if(number ==4){
+		//result =g_list_concat(word_to_diphones("four"),word_to_diphones("upcoming")); 
+		//result =g_list_concat(result,word_to_diphones("events"));
+	//}
+	//else if(number ==5){ 
+		//result =g_list_concat(word_to_diphones("five"),word_to_diphones("upcoming"));
+		//result =g_list_concat(result,word_to_diphones("events"));	
+	//}		
+	//else {
+	//result =g_list_concat(word_to_diphones("many"),word_to_diphones("upcoming"));
+	//result =g_list_concat(result,word_to_diphones("events"));
+	//}
+	
+	//return result;
+//}
+
+//======================================================================
+// convert number to diphone list (time)
+//======================================================================
+GList* convert_number_to_diphone_list(int number) {
+	
+	GList* result =NULL;
+	
+	switch (number) {		
+		case 1:
+		result =word_to_diphones("one");
+		break;		
+		case 2:
+		result =word_to_diphones("two");
+		break;
+		case 3:
+		result =word_to_diphones("three");
+		break;
+		case 4:
+		result =word_to_diphones("four");
+		break;
+		case 5:
+		result =word_to_diphones("five");
+		break;
+		case 6:
+		result =word_to_diphones("six");
+		break;
+		case 7:
+		result =word_to_diphones("seven");
+		break;
+		case 8:
+		result =word_to_diphones("eight");
+		break;
+		case 9:
+		result =word_to_diphones("nine");
+		break;
+		case 10:
+		result =word_to_diphones("ten");
+		break;
+		case 11:
+		result =word_to_diphones("eleven");
+		break;
+		case 12:
+		result =word_to_diphones("twelve");
+		break;
+		case 13:
+		result =word_to_diphones("thirteen");
+		break;
+		case 14:
+		result =word_to_diphones("fourteen");
+		break;
+		case 15:
+		result =word_to_diphones("fifteen");
+		break;
+		case 16:
+		result =word_to_diphones("sixteen");
+		break;
+		case 17:
+		result =word_to_diphones("seventeen");
+		break;
+		case 18:
+		result =word_to_diphones("eighteen");
+		break;
+		case 19:
+		result =word_to_diphones("nineteen");
+		break;
+		case 20:
+		result =word_to_diphones("twenty");
+		break;
+		case 21:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("one"));
+		break;
+		case 22:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("two"));
+		break;
+		case 23:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("three"));
+		break;
+		case 24:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("four"));
+		break;
+		case 25:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("five"));
+		break;
+		case 26:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("six"));
+		break;
+		case 27:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("seven"));
+		break;
+		case 28:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("eight"));
+		break;
+		case 29:
+		result =g_list_concat(word_to_diphones("twenty"),word_to_diphones("nine"));
+		break;
+		case 30:
+		result =word_to_diphones("thirty");
+		break;
+		case 31:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("one"));
+		break;
+		case 32:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("two"));
+		break;
+		case 33:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("three"));
+		break;
+		case 34:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("four"));
+		break;
+		case 35:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("five"));
+		break;
+		case 36:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("six"));
+		break;
+		case 37:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("seven"));
+		break;
+		case 38:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("eight"));
+		break;
+		case 39:
+		result =g_list_concat(word_to_diphones("thirty"),word_to_diphones("nine"));
+		break;
+		case 40:
+		result =word_to_diphones("forty");
+		break;
+		case 41:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("one"));
+		break;
+		case 42:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("two"));
+		break;
+		case 43:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("three"));
+		break;
+		case 44:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("four"));
+		break;
+		case 45:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("five"));
+		break;
+		case 46:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("six"));
+		break;
+		case 47:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("seven"));
+		break;
+		case 48:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("eight"));
+		break;
+		case 49:
+		result =g_list_concat(word_to_diphones("forty"),word_to_diphones("nine"));
+		break;
+		case 50:
+		result =word_to_diphones("fifty");
+		break;
+		case 51:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("one"));
+		break;
+		case 52:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("two"));
+		break;
+		case 53:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("three"));
+		break;
+		case 54:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("four"));
+		break;
+		case 55:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("five"));
+		break;
+		case 56:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("six"));
+		break;
+		case 57:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("seven"));
+		break;
+		case 58:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("eight"));
+		break;
+		case 59:
+		result =g_list_concat(word_to_diphones("fifty"),word_to_diphones("nine"));
+		break;
+		
+		default:		
+		result =word_to_diphones("zero");
+		break;		
+				
+	}
+		
+	return result;
+}
+
+//======================================================================
+//Speak time
+//======================================================================
 static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data)
 {	
 	GDateTime *dt = g_date_time_new_now_local(); 
@@ -1788,84 +2296,93 @@ static void speak_time(gint hour, gint min)
 {	
 	
 	if(m_talk==0) return;
-	if (m_talking ==TRUE) return;
+	if (m_talking ==TRUE) return; //already talking
+				
+	GList *diphone_list=NULL;
+	GList* time_list=NULL;
+	GList* hour_list=NULL;
+	GList* min_list=NULL;	
 	
-	char* speak_str ="";
+	gchar *time_str = "";
+	gchar *hour_str = "";
+	gchar *min_str = "";		
+	gchar *ampm_str = "";
 	
-	speak_str= g_strconcat(speak_str, " the time is ", NULL);
+	diphone_list =g_list_concat(word_to_diphones("the"),word_to_diphones("time"));
+	diphone_list =g_list_concat(diphone_list,word_to_diphones("is"));	
+    //diphone_list =g_list_concat(diphone_list,word_to_diphones("pause1"));
+	//diphone_list =g_list_concat(diphone_list,word_to_diphones("pause"));
 	
-	gchar* hour_str="";
-	gchar* min_str="";
-	gchar* ampm_str="";
-	//GList *speak_word_list = NULL;
-	
-	if(m_12hour_format) {
-	
-	if (hour >= 13 && hour <= 23)
-	{
-	int s_hour = hour - 12;
-	ampm_str = " p.m. ";					
-	hour_str =get_cardinal_string(s_hour);
+	if (m_12hour_format)
+			{
+				
+				if(hour ==0) //12am midnight
+				{		
+				ampm_str = "amm";				
+				hour_list =convert_number_to_diphone_list(12);		
+				}
+								
+				if (hour >= 13 && hour <= 23)
+				{
+					int s_hour = hour - 12;
+					ampm_str = "pmm";					
+					hour_list =convert_number_to_diphone_list(s_hour);
+				}
+			   if(hour == 12)
+				{
+					ampm_str = "pmm";					
+					hour_list =convert_number_to_diphone_list(hour);
+				}
+			   if(hour <12 && hour >0)
+				{
+					ampm_str = "amm";					
+					hour_list =convert_number_to_diphone_list(hour);
+				}
+			} // 12
+			if(!m_12hour_format) //24 hours
+			{
+				hour_list =convert_number_to_diphone_list(hour);
+			} // 24
+
+			if (min > 0 && min < 10)
+			{				
+			 	GList* zero_list=convert_number_to_diphone_list(0);
+				GList* zero_min_list =convert_number_to_diphone_list(min);
+		        min_list =g_list_concat(zero_list,zero_min_list);
+			}
+			else if(min >=10)
+			{
+				min_list =convert_number_to_diphone_list(min);
+			}
+
+	if (m_12hour_format) {	
+		
+		time_list =g_list_concat(hour_list, word_to_diphones("pause1"));
+		time_list =g_list_concat(time_list,min_list);
+		//time_list =g_list_concat(time_list, word_to_diphones("pau"));
+		time_list =g_list_concat(time_list, word_to_diphones("pause1"));
+	    time_list =g_list_concat(time_list,word_to_diphones(ampm_str));		   
+	    //time_list =g_list_concat(time_list, word_to_diphones("pau"));	
 	}
-	if(hour == 12)
-	{
-	ampm_str = " p.m. ";					
-	hour_str =get_cardinal_string(hour);
+	else {
+		time_list =g_list_concat(hour_list, word_to_diphones("pause1"));
+		time_list =g_list_concat(time_list,min_list);
 	}
-	if(hour <12)
-	{
-	ampm_str = " a.m. ";					
-	hour_str =get_cardinal_string(hour);
-	}	
+	  	
+	diphone_list =g_list_concat(diphone_list,time_list);
 	
-	speak_str= g_strconcat(speak_str, hour_str, " ", NULL);
+	play_diphone_list(diphone_list);	
+	g_list_free(diphone_list);	
 	
-	if (min > 0 && min < 10)
-	{	
-	//speak_str= g_strconcat(speak_str, "zero ", NULL);
-	speak_str= g_strconcat(speak_str, "O ", NULL);
-	min_str=get_cardinal_string(min);	
-	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
-	}
-	else if(min >=10)
-	{
-	min_str=get_cardinal_string(min);
-	
-	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
-	}	
-	
-	speak_str= g_strconcat(speak_str, ampm_str, " ", NULL);
-	
-	} //12hour format
-	
-	else
-	{				
-	hour_str =get_cardinal_string(hour);	
-	speak_str= g_strconcat(speak_str, hour_str, " ", NULL);
-	
-	if (min > 0 && min < 10)
-	{	
-	speak_str= g_strconcat(speak_str, " o ", NULL);
-	min_str=get_cardinal_string(min);	
-	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
-	}
-	else if(min >=10)
-	{
-	min_str=get_cardinal_string(min);	
-	speak_str= g_strconcat(speak_str, min_str, " ", NULL);
-	}			    				
-	} //24 hour format
-	
-	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-	g_task_set_task_data (task,speak_str,NULL);
-	
-	g_task_run_in_thread(task, play_audio_async);     
-	g_object_unref(task);
 }
 
-//=====================================================================
+
+
+//======================================================================
+
 static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer user_data)
-{	
+{
+	
 	GtkWidget *calendar =user_data;
 	
 	GDateTime *cal_date = gtk_calendar_get_date(GTK_CALENDAR(calendar));
@@ -1873,155 +2390,209 @@ static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer use
 	int day = g_date_time_get_day_of_month(cal_date);
 	int month =g_date_time_get_month(cal_date);
 	int year=g_date_time_get_year(cal_date);
-	g_date_time_unref(cal_date);	
 	
 	speak_events(day,month,year);
+	
+	g_date_time_unref(cal_date);
 	
 }
 
 //=====================================================================
-static void speak_events(int day, int month, int year)
+static void speak_events(int day, int month, int year) 
 {	
 	if(m_talk==0) return;
-	if (m_talking ==TRUE) return;
+	if (m_talking ==TRUE) return; //already talking
+		
+	int day_events_number=0;
+	GList *diphone_list=NULL;
+		
+	GList *weekday_list=convert_date_to_weekday_diphone_list(day, month, year);
+		
+	GList *day_number_list =convert_day_number_to_diphone_list(day);	
 	
-	char* speak_str ="";
-				
-	gchar *dow_str=get_day_of_week(day, month, year);	//get day of week	
-	gchar *day_number_str=get_day_number_ordinal_string(day); //get day number
-	gchar *month_str=get_month_string(month); //get month
+	GList *month_list=convert_month_to_diphone_list(month);
 	
-	speak_str= g_strconcat(speak_str, dow_str," ", NULL);
-	speak_str= g_strconcat(speak_str, day_number_str," ", NULL);
-	speak_str= g_strconcat(speak_str, month_str,". ", NULL);
-	
-	GArray *day_events_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
-	db_get_all_events_year_month_day(day_events_arry ,year,month,day);
-	//int event_number = day_events_arry->len;
-	
+	diphone_list =g_list_concat(diphone_list,weekday_list);
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
+	diphone_list =g_list_concat(diphone_list,day_number_list);
+	//diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+	diphone_list =g_list_concat(diphone_list,month_list);
+	diphone_list =g_list_concat(diphone_list, word_to_diphones("pause1"));
+    //diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+    
+    // loop through day events
+    GArray *day_events_arry =g_array_new(FALSE, FALSE, sizeof(CALENDAR_TYPE_EVENT));
+	db_get_all_events_year_month_day(day_events_arry , year,month, day);
+
 	for (int i = 0; i < day_events_arry->len; i++)
 	{
-	//gint evt_id = 0;
-	gchar *summary_str = "";
-	gchar *location_str = "";
-	gchar *description_str = "";
-	gint start_hour = 0;
-	gint start_min = 0;
-	gint is_allday = 0;
-	gint is_priority = 0;
+		gint evt_id = 0;
+		gchar *summary_str = "";
+		gchar *location_str = "";
+		gchar *description_str = "";
+
+		gint start_year = 0;
+		gint start_month = 0;
+		gint start_day = 0;
+		gint start_hour = 0;
+		gint start_min = 0;
+
+		gint end_year = 0;
+		gint end_month = 0;
+		gint end_day = 0;
+		gint end_hour = 0;
+		gint end_min = 0;
+
+		gint is_yearly = 0;
+		gint is_allday = 0;
+		gint is_priority = 0;
+		gint has_reminder = 0;
+		gint reminder_min = 0;
+
+		CalendarEvent *evt = g_array_index(day_events_arry, CalendarEvent *, i);
+
+		g_object_get(evt, "eventid", &evt_id, NULL);
+		g_object_get(evt, "summary", &summary_str, NULL);
+		g_object_get(evt, "location", &location_str, NULL);
+		g_object_get(evt, "description", &description_str, NULL);
+		g_object_get(evt, "startyear", &start_year, NULL);
+		g_object_get(evt, "startmonth", &start_month, NULL);
+		g_object_get(evt, "startday", &start_day, NULL);
+		g_object_get(evt, "starthour", &start_hour, NULL);
+		g_object_get(evt, "startmin", &start_min, NULL);
+		g_object_get(evt, "endyear", &end_year, NULL);
+		g_object_get(evt, "endmonth", &end_month, NULL);
+		g_object_get(evt, "endday", &end_day, NULL);
+		g_object_get(evt, "endhour", &end_hour, NULL);
+		g_object_get(evt, "endmin", &end_min, NULL);
+		g_object_get(evt, "isyearly", &is_yearly, NULL);
+		g_object_get(evt, "isallday", &is_allday, NULL);
+		g_object_get(evt, "ispriority", &is_priority, NULL);
+
+		gchar *start_time_str = "";
+		gchar *time_str = "";
+		gchar *starthour_str = "";
+		gchar *startmin_str = "";
+		gchar *endhour_str = "";
+		gchar *endmin_str = "";
+		gchar *ampm_str = "";
+		
+
+	//--------------------------------------------------------------
+	// Talk Time
+	//---------------------------------------------------------------
+
+	if (m_talk_time) {
 	
-	CalendarEvent *evt = g_array_index(day_events_arry, CalendarEvent *, i);
+	 GList* time_list=NULL;	 
+		
+		
+		if(!is_allday) {
+
+		GList* hour_list=NULL;
+	  	GList* min_list=NULL;
+
+			if (m_12hour_format)
+			{
+				if(start_hour ==0) //12am midnight
+				{		
+				ampm_str = "amm";				
+				hour_list =convert_number_to_diphone_list(12);		
+				}
+								
+				if (start_hour >= 13 && start_hour <= 23)
+				{
+					int s_hour = start_hour - 12;
+					ampm_str = "pmm";
+				
+					hour_list =convert_number_to_diphone_list(s_hour);
+				}
+				if(start_hour ==12)
+				{
+					ampm_str = "pmm";
+					
+					hour_list =convert_number_to_diphone_list(start_hour);
+				}
+			   if(start_hour <12  && start_hour >0)	
+				{
+					ampm_str = "amm";
+					
+					hour_list =convert_number_to_diphone_list(start_hour);
+				}
+			} // 12
+			if(!m_12hour_format) //24 hours
+			{				
+				hour_list =convert_number_to_diphone_list(start_hour);
+			} // 24
+		
+			if (start_min > 0 && start_min < 10)
+			{
+				
+			 	GList* zero_list=convert_number_to_diphone_list(0);
+				GList* start_min_list =convert_number_to_diphone_list(start_min);
+		        min_list =g_list_concat(zero_list,start_min_list);	
+			}
+			else if(start_min >=10)
+			{
+				min_list =convert_number_to_diphone_list(start_min);
+			}
+
+	time_list =g_list_concat(time_list, hour_list);
+	time_list =g_list_concat(time_list, word_to_diphones("pause1"));
+	time_list =g_list_concat(time_list, min_list);
+	 
+	 //time_list =g_list_concat(hour_list,min_list);
+	} // not all day
+
+	//add am or pm diphone list
+	//time_list =g_list_concat(time_list, word_to_diphones("pause"));
+	time_list =g_list_concat(time_list,word_to_diphones(ampm_str));	
+	//time_list =g_list_concat(time_list, word_to_diphones("pause"));	
+	diphone_list =g_list_concat(diphone_list,time_list);
 	
-	g_object_get(evt, "summary", &summary_str, NULL);
-	g_object_get(evt, "description", &description_str, NULL);
-	g_object_get(evt, "location", &location_str, NULL);		
-	g_object_get(evt, "starthour", &start_hour, NULL);
-	g_object_get(evt, "startmin", &start_min, NULL);		
-	g_object_get(evt, "isallday", &is_allday, NULL);
-	g_object_get(evt, "ispriority", &is_priority, NULL);		
 	
-	//Get time first
-	gchar* hour_str="";
-	gchar* min_str="";
-	gchar* ampm_str="";
-	
-	if(!is_allday) {		
-	
-	if(m_12hour_format) {
-	
-	if (start_hour >= 13 && start_hour <= 23)
-	{
-	int s_hour = start_hour - 12;
-	ampm_str = " p.m. ";					
-	hour_str =get_cardinal_string(s_hour);
-	}
-	if(start_hour == 12)
-	{
-	ampm_str = " p.m. ";					
-	hour_str =get_cardinal_string(start_hour);
-	}
-	if(start_hour <12)
-	{
-	ampm_str = " a.m. ";					
-	hour_str =get_cardinal_string(start_hour);
-	}
-	
-	speak_str= g_strconcat(speak_str, hour_str," ", NULL);
-	
-	if (start_min > 0 && start_min< 10)
-	{				
-	
-	//speak_str= g_strconcat(speak_str, "zero ", NULL);
-	speak_str= g_strconcat(speak_str, "O ", NULL);
-	min_str=get_cardinal_string(start_min);		
-	speak_str= g_strconcat(speak_str, min_str," ", NULL);
-	}
-	else if(start_min >=10)
-	{
-	min_str=get_cardinal_string(start_min);	
-	speak_str= g_strconcat(speak_str, min_str," ", NULL);
-	}
-	
-	speak_str= g_strconcat(speak_str, ampm_str," ", NULL);
-	
-	} //12hour format
-	
-	else
-	{				
-	hour_str =get_cardinal_string(start_hour);		
-	speak_str= g_strconcat(speak_str, hour_str," ", NULL);
-	
-	if (start_min > 0 && start_min < 10)
-	{
-	speak_str= g_strconcat(speak_str, "zero ", NULL);
-	min_str=get_cardinal_string(start_min);		
-	speak_str= g_strconcat(speak_str, min_str," ", NULL);
-	}
-	else if(start_min >=10)
-	{
-	min_str=get_cardinal_string(start_min);		
-	speak_str= g_strconcat(speak_str, min_str," ", NULL);
-	}			    				
-	} //24 hour format
-	
-	} //not allday	
-	
-	//now add event summary	to speak str		
-	speak_str= g_strconcat(speak_str,summary_str,". ", NULL);
-	
-	if(m_talk_description)
-	{
-	speak_str= g_strconcat(speak_str,description_str,". ", NULL);
-	}
-	
-	if(m_talk_location)
-	{
-	speak_str= g_strconcat(speak_str,location_str,". ", NULL);
-	}
-	
-	if(is_priority) {		
-	speak_str= g_strconcat(speak_str,"  high priority ", NULL);
-	}
-	
-	//speak_str= g_strconcat(speak_str," ", NULL);//space between events
-	
-	if(i < day_events_arry->len-1)
+	} //end talk time------------------------------------------
+
+
+	//----------------------------------------------------------
+	// talk summary title
+	//-----------------------------------------------------------
+	GList *event_title_list=NULL;  
+    char* str = remove_semicolons(summary_str);
+    
+    char* summary_str2 =word_rules(str);
+	//g_print("changed_summary = %s\n", summary_str2);
+  
+	gchar** words;		 
+	words = g_strsplit (summary_str2, " ", 0); //split on space
+	int j=0;			   
+	while(words[j] != NULL)
+	{	
+	event_title_list=word_to_diphones(words[j]);
+	diphone_list =g_list_concat(diphone_list,event_title_list);	
+	j++;
+	} //while loop words
+   
+    //diphone_list =g_list_concat(diphone_list, word_to_diphones("pause"));
+    
+    if(i < day_events_arry->len-1)
     {
-		speak_str= g_strconcat(speak_str,". and. ", NULL);//then events    
+    diphone_list =g_list_concat(diphone_list,word_to_diphones("pause1"));	
+    diphone_list =g_list_concat(diphone_list,word_to_diphones("and"));	
     }
-	
-	} //for day events
-	
-	g_array_free(day_events_arry, TRUE);
-	
-	GTask* task = g_task_new(NULL, NULL, task_callbk, NULL);
-	g_task_set_task_data (task,speak_str,NULL);
-	
-	g_task_run_in_thread(task, play_audio_async);     
-	g_object_unref(task);
+    
+	} // day_events for loop
+    
+       
+    
+    play_diphone_list(diphone_list);	
+	g_list_free(diphone_list);
+        
 }
 
+
 //======================================================================
+
 //======================================================================
 //Search
 //======================================================================
@@ -2239,6 +2810,13 @@ g_array_free(all_events_arry, FALSE); //clear the array
 g_array_free(search_events_arry, FALSE); //clear the array
 }
 
+
+
+
+
+
+//======================================================================
+//Search events
 //======================================================================
 
 static void callbk_search_events(GtkButton *button, gpointer user_data)
@@ -2256,8 +2834,7 @@ static void callbk_search_events(GtkButton *button, gpointer user_data)
 	//search_str = gtk_entry_buffer_get_text(search_str);
 	search_str = remove_semicolons(search_str);
 	search_str = remove_commas(search_str);
-	search_str =remove_punctuations(search_str);
-	//g_print("search_events: search_str = %s\n", search_str);
+	search_str =remove_punctuations(search_str);	
 	
 	search_events(search_str);
 }
@@ -2423,7 +3000,7 @@ int file_exists(const char *file_name)
 }
 
 GListStore *load_store()
-{		
+{	
 	GListStore *store=NULL;
 	store = g_list_store_new(G_TYPE_OBJECT);
 	
@@ -2497,8 +3074,7 @@ static void callbk_setup_listitem (GtkListItemFactory *factory,
 static void callbk_bind_listitem (GtkListItemFactory *factory,
                   GtkListItem        *list_item)
 {
-  GtkWidget *label;
-  //MyObject *obj;
+  GtkWidget *label; 
   CalendarEvent *event;
   
   //Repeaters -need to use current year not start year when added
@@ -2589,8 +3165,8 @@ static void callbk_bind_listitem (GtkListItemFactory *factory,
 	  display_str =g_strconcat(display_str,des_loc_str,NULL);
     
   gtk_label_set_label (GTK_LABEL (label), display_str);
-                       
 }
+
 //======================================================================
 static void callbk_listview (GtkListView  *list,
              guint         position,
@@ -2605,7 +3181,8 @@ static void callbk_listview (GtkListView  *list,
 //Add new event
 //======================================================================
 static void callbk_add_new_event(GtkButton *button, gpointer user_data)
-{	
+{
+	
 	//g_return_if_fail(GTK_IS_BUTTON(button));
 	GListStore *store =user_data;
 	
@@ -2659,8 +3236,7 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	summary = remove_semicolons(summary);
 	summary = remove_commas(summary);
 	summary =remove_punctuations(summary);
-	summary =remove_ampersand(summary); //& cause markup error
-	
+	summary =remove_ampersand(summary); //markup generates & error
 	
 	buffer_description = gtk_entry_get_buffer(GTK_ENTRY(entry_description));
 	const char* description = gtk_entry_buffer_get_text(buffer_description);
@@ -2704,6 +3280,7 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	g_object_set(event_new, "isyearly", is_yearly, NULL);
 	g_object_set(event_new, "isallday", is_allday, NULL);			
 	g_object_set(event_new, "ispriority", is_priority, NULL);
+
 	
 	db_insert_event(event_new); //insert event into database
 	
@@ -2711,7 +3288,7 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 		
 	update_calendar(GTK_CALENDAR(calendar),window);
 		
-	gtk_window_destroy(GTK_WINDOW(dialog));	
+	gtk_window_destroy(GTK_WINDOW(dialog));
 
 }
 
@@ -2721,8 +3298,9 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 //======================================================================
 
 static void callbk_new_event(GtkButton *button, gpointer user_data)
-{	
-	GListStore *store =user_data;		
+{
+	g_print("callbk new event\n");	
+	GListStore *store =user_data;	
 	GtkWidget *window = g_object_get_data(G_OBJECT(button), "button-new-window-key");
 	GtkWidget *calendar = g_object_get_data(G_OBJECT(button), "button-new-calendar-key");
 	
@@ -2737,9 +3315,8 @@ static void callbk_new_event(GtkButton *button, gpointer user_data)
 	char* month_str = g_strdup_printf("%d",month);
 	char* year_str = g_strdup_printf("%d",year);
 	char* date_str="";
-	date_str= g_strconcat(date_str, day_str, "-",month_str, "-",year_str, NULL);
+	date_str= g_strconcat(date_str, day_str, "-",month_str, "-",year_str, NULL);	
 	g_date_time_unref(cal_date);
-	
 	
 	GtkWidget *dialog;
 	GtkWidget *button_add_event;	
@@ -2964,6 +3541,7 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	location = remove_commas(location);
 	location =remove_punctuations(location);
 	location =remove_ampersand(location);
+		
 	
 	int start_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_start_hour));
 	int start_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_start_min));
@@ -2992,12 +3570,16 @@ static void callbk_update_event(GtkButton *button, gpointer user_data)
 	g_object_set(event_update, "isyearly", is_yearly, NULL);
 	g_object_set(event_update, "isallday", is_allday, NULL);			
 	g_object_set(event_update, "ispriority", is_priority, NULL);
-		
-	db_update_event(event_update,id);
 	
+	
+    db_update_event(event_update,id);
+
 	update_calendar(GTK_CALENDAR(calendar), window);
 	
-	gtk_window_destroy(GTK_WINDOW(dialog));
+
+     gtk_window_destroy(GTK_WINDOW(dialog));
+
+
 }
 
 
@@ -3218,6 +3800,10 @@ static void callbk_edit_event(GtkButton *button, gpointer user_data)
 	
 }
 
+//======================================================================
+// Talk Selected Event
+//======================================================================
+
 static void callbk_find_event(GtkButton *button, gpointer user_data)
 {
 	GtkWidget *window = g_object_get_data(G_OBJECT(button), "button-find-window-key");
@@ -3246,10 +3832,9 @@ static void callbk_find_event(GtkButton *button, gpointer user_data)
 	 //gtk_calendar_set_year(GTK_CALENDAR(calendar),start_year);
 	 gtk_calendar_set_year(GTK_CALENDAR(calendar),current_year);
 	
-	 speak_events(start_day,start_month,current_year); 
-	
+	 speak_events(start_day,start_month,current_year);  
+    
 }
-
 //======================================================================
 // Delete event
 //======================================================================
@@ -3257,16 +3842,17 @@ static void callbk_find_event(GtkButton *button, gpointer user_data)
 static void callbk_delete_event(GtkButton *button, gpointer user_data)
 {	
 	GtkWidget *window = g_object_get_data(G_OBJECT(button), "button-delete-window-key");
-	GtkWidget *calendar = g_object_get_data(G_OBJECT(button), "button-delete-calendar-key");
+	GtkWidget *calendar = g_object_get_data(G_OBJECT(button), "button-delete-calendar-key");	
 	GtkSingleSelection *selection=user_data;
 	
 	GListModel *model = gtk_single_selection_get_model(selection);
     GListStore *store = G_LIST_STORE(model);
-    
+	
 	guint p = gtk_single_selection_get_selected((GtkSingleSelection*)selection);	
 	
+	
 	CalendarEvent* selectedevent = gtk_single_selection_get_selected_item (GTK_SINGLE_SELECTION(selection));
-
+	  
 	 gchar *summary_str = "";
 	 gchar *description_str = "";	
 	 gchar *location_str = "";	
@@ -3274,15 +3860,14 @@ static void callbk_delete_event(GtkButton *button, gpointer user_data)
 	 g_object_get(selectedevent, "summary", &summary_str, NULL);
 	 g_object_get(selectedevent, "description", &description_str, NULL);
 	 g_object_get(selectedevent, "location", &location_str, NULL);
-	
-	 g_print("Selected Event: summary = %s description = %s location = %s \n",summary_str,description_str,location_str); 
-          
+	    
      //remove from store
      g_list_store_remove(G_LIST_STORE(store),p); 
      //remove from db
      db_delete_event(selectedevent); 
      
-     update_calendar(GTK_CALENDAR(calendar), window);	 
+     update_calendar(GTK_CALENDAR(calendar), window);
+	 
 }
 //======================================================================
 // Calendar
@@ -3298,9 +3883,8 @@ static void update_calendar(GtkCalendar *calendar, gpointer user_data)
 	
 	int selected_day = g_date_time_get_day_of_month(cal_date);
 	int selected_month =g_date_time_get_month(cal_date);
-	int selected_year=g_date_time_get_year(cal_date);
-	g_date_time_unref(cal_date);
-		
+	int selected_year=g_date_time_get_year(cal_date);	
+	
 	char* dow =get_day_of_week(selected_day, selected_month,selected_year);
 	
 	char* day_str = g_strdup_printf("%d",selected_day);
@@ -3335,32 +3919,35 @@ static void update_calendar(GtkCalendar *calendar, gpointer user_data)
 		g_object_get (evt, "startday", &day, NULL);
 		g_object_get (evt, "startmonth", &month, NULL);
 		g_object_get (evt, "startyear", &year, NULL);
-		
+				
 		//append event to store
 		g_list_store_append(G_LIST_STORE(store),evt);   
-		//place a visual marker on day of the current month
+		//places a visual marker on day of the current month.
 		gtk_calendar_mark_day(GTK_CALENDAR(calendar),day);
   	
      }//for
    	
 	g_array_free(evt_arry_month, FALSE); 
-	speak_events(selected_day,selected_month,selected_year);	
+	speak_events(selected_day,selected_month,selected_year);
 }
-//======================================================================
+
 
 static void callbk_calendar_home(GSimpleAction * action, GVariant *parameter, gpointer user_data)
 {
+	
 	GtkWindow *window =user_data;	
 	GtkWidget *calendar =g_object_get_data(G_OBJECT(window), "window-calendar-key");
-
+	//GtkWidget *label_date =g_object_get_data(G_OBJECT(window), "window-label-date-key");
+	
 	GDateTime *today;
 	today = g_date_time_new_now_local();
-	//int year = g_date_time_get_year(today);
-	//int month = g_date_time_get_month(today);
-	//int day = g_date_time_get_day_of_month(today);	
+	int year = g_date_time_get_year(today);
+	int month = g_date_time_get_month(today);
+	int day = g_date_time_get_day_of_month(today);	
 	
 	gtk_calendar_select_day (GTK_CALENDAR(calendar), today); //being depreciated and replaced by		
-	//gtk_calendar_set_date (GTK_CALENDAR(calendar), today); //gtk4.20 onwards -unstable do not use	
+	//gtk_calendar_set_date (GTK_CALENDAR(calendar), today); //gtk4.20 onwards -unstable do not use
+	
 	update_calendar(GTK_CALENDAR(calendar), window);
 	g_date_time_unref(today);
 }
@@ -3372,33 +3959,37 @@ static void callbk_calendar_home(GSimpleAction * action, GVariant *parameter, gp
 
 
 static void callbk_calendar_day_selected(GtkCalendar *calendar, gpointer user_data)
-{	
-	GtkWidget *window=user_data;
-	update_calendar(calendar,window);	
+{
+	GtkWidget *window=user_data;	
+	update_calendar(calendar,window);
 }
 //======================================================================	
 static void callbk_calendar_next_month(GtkCalendar *calendar, gpointer user_data)
-{	
+{
+	g_print("next month\n");
 	GtkWidget *window = user_data;
 	update_calendar(calendar, window);	
 }
 //======================================================================
 static void callbk_calendar_prev_month(GtkCalendar *calendar, gpointer user_data)
-{	
+{
+	g_print("prev month\n");	
 	GtkWidget *window = user_data;
 	update_calendar(calendar, window);		
 }
 //======================================================================
 static void callbk_calendar_next_year(GtkCalendar *calendar, gpointer user_data)
 {
+	g_print("next year\n");
 	GtkWidget *window = user_data;
-	update_calendar(calendar, window);	
+	update_calendar(calendar, window);		
 }
 //======================================================================
 static void callbk_calendar_prev_year(GtkCalendar *calendar, gpointer user_data)
 {
+	g_print("prev year\n");
 	GtkWidget *window = user_data;
-	update_calendar(calendar, window);
+	update_calendar(calendar, window);	
 }
 
 //======================================================================
@@ -3411,25 +4002,11 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	GtkWidget *dialog = g_object_get_data(G_OBJECT(button), "dialog-key");
 	
 	GtkWidget *check_button_hour_format= g_object_get_data(G_OBJECT(button), "check-button-hour-format-key");
-	GtkWidget *check_button_talk= g_object_get_data(G_OBJECT(button), "check-button-talk-key");	
-	GtkWidget *check_button_talk_description= g_object_get_data(G_OBJECT(button), "check-button-talk-description-key");
-	GtkWidget *check_button_talk_location= g_object_get_data(G_OBJECT(button), "check-button-talk-location-key");
-	GtkWidget *check_button_reset_all= g_object_get_data(G_OBJECT(button), "check-button-reset-all-key");
-	
+	GtkWidget *check_button_talk= g_object_get_data(G_OBJECT(button), "check-button-talk-key");
+		
 	m_12hour_format=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_hour_format));
-	m_talk=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk));	
-	m_talk_description=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk_description));
-	m_talk_location =gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk_location));
-	m_reset_preferences=gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_reset_all));
-	
-	if(m_reset_preferences) {
-	//reset preferences
-	m_12hour_format=1;
-	m_talk=1;	
-	m_talk_description=0;
-	m_talk_location =0;
-	m_reset_preferences=0; //toggle
-	}
+	m_talk=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk));
+		
 	config_write();	//save preferences
 	update_calendar(GTK_CALENDAR(calendar),window);
 	
@@ -3449,21 +4026,11 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	GtkWidget *button_set;
 		
 	GtkWidget *check_button_hour_format;	
-	GtkWidget *check_button_talk;		
-	GtkWidget *check_button_talk_description;
-	GtkWidget *check_button_talk_location;
-	GtkWidget *check_button_reset_all;
-	
-	GtkWidget *label_spacer1;
-	GtkWidget *label_spacer2;
-	GtkWidget *label_spacer3;
-	GtkWidget *label_spacer4;		
-	
+	GtkWidget *check_button_talk;
+		
+	GtkWidget *label_spacer1;	
 	label_spacer1 = gtk_label_new("");
-	label_spacer2 = gtk_label_new("");
-	label_spacer3 = gtk_label_new("");
-	label_spacer4 = gtk_label_new("");	
-	
+		
 	dialog =gtk_window_new(); 
 	gtk_window_set_title (GTK_WINDOW (dialog), "Preferences");
 	gtk_window_set_modal(GTK_WINDOW (dialog),TRUE);
@@ -3476,36 +4043,19 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	g_object_set_data(G_OBJECT(button_set), "dialog-key",dialog);
 	
 	check_button_hour_format = gtk_check_button_new_with_label ("12 Hour Format");
-	check_button_talk = gtk_check_button_new_with_label ("Enable Talking");	
-	check_button_talk_description = gtk_check_button_new_with_label ("Talk Description");
-	check_button_talk_location = gtk_check_button_new_with_label ("Talk Location");	
-	check_button_reset_all = gtk_check_button_new_with_label ("Reset All");
+	check_button_talk = gtk_check_button_new_with_label ("Enable Talking");
 	
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_hour_format), m_12hour_format);
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk), m_talk);	
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk_description), m_talk_description);
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk_location), m_talk_location);
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_reset_all), m_reset_preferences);
+	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk), m_talk);
 	
 	g_object_set_data(G_OBJECT(button_set), "dialog-key",dialog);
 	g_object_set_data(G_OBJECT(button_set), "check-button-hour-format-key",check_button_hour_format);
-	
-	g_object_set_data(G_OBJECT(button_set), "check-button-talk-key",check_button_talk);	
-	g_object_set_data(G_OBJECT(button_set), "check-button-talk-description-key",check_button_talk_description);
-	g_object_set_data(G_OBJECT(button_set), "check-button-talk-location-key",check_button_talk_location);	
-	
-	g_object_set_data(G_OBJECT(button_set), "check-button-reset-all-key",check_button_reset_all);
-	
+	g_object_set_data(G_OBJECT(button_set), "check-button-talk-key",check_button_talk);
+		
 	gtk_grid_attach(GTK_GRID(grid), check_button_hour_format,   	1, 1, 1, 1);			
-	gtk_grid_attach(GTK_GRID(grid), label_spacer1,            		 1, 2, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk,  			1, 3, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer2,      			 1, 4, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk_description,  1, 5, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk_location,  	2, 5, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer3,      	 		1, 6, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  		1, 7, 1, 1);	
-	gtk_grid_attach(GTK_GRID(grid), label_spacer4,      	 1, 8, 1, 1);		
-	gtk_grid_attach(GTK_GRID(grid), button_set,  			1, 9, 3, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_talk,  			2, 1, 1, 1);	
+	gtk_grid_attach(GTK_GRID(grid), label_spacer1,            		 1, 2, 1, 1);		
+	gtk_grid_attach(GTK_GRID(grid), button_set,  			1, 3, 2, 1);
 	
 	gtk_window_set_child (GTK_WINDOW (dialog), grid);	
 	gtk_window_present(GTK_WINDOW(dialog));
@@ -3515,14 +4065,14 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 //======================================================================
 void callbk_shutdown(GtkWindow *window, gint response_id, gpointer user_data)
 {
-gtk_window_get_default_size(GTK_WINDOW(window), &m_window_width,&m_window_height);	
-config_write();	
+	gtk_window_get_default_size(GTK_WINDOW(window), &m_window_width,&m_window_height);	
+	config_write();	
 }
 
 //======================================================================
 
 static void startup(GtkApplication *app)
-{		
+{	 	
 	 config_initialize();	  	
 	 db_create_events_table(); //startup database 
 }
@@ -3552,6 +4102,7 @@ static void activate (GtkApplication* app, gpointer user_data)
 	GtkWidget *button_edit_event;
 	GtkWidget *button_delete_event;
 	GtkWidget *button_find_event;
+	
 	
 	window = gtk_application_window_new(app);
 	gtk_window_set_title (GTK_WINDOW(window), "Talk Calendar");
@@ -3584,23 +4135,26 @@ static void activate (GtkApplication* app, gpointer user_data)
 	
 	g_object_set_data(G_OBJECT(calendar), "calendar-label-date-key",label_date);
 	
-	//GDateTime *cal_date = gtk_calendar_get_date(GTK_CALENDAR(calendar));	
-	//int day = g_date_time_get_day_of_month(cal_date);
-	//int month =g_date_time_get_month(cal_date);
-	//int year=g_date_time_get_year(cal_date);
-	////g_print("Date is : %d-%d-%d \n", day, month,year);
-	//g_date_time_unref(cal_date);
+	GDateTime *cal_date = gtk_calendar_get_date(GTK_CALENDAR(calendar));
+	
+	int day = g_date_time_get_day_of_month(cal_date);
+	int month =g_date_time_get_month(cal_date);
+	int year=g_date_time_get_year(cal_date);
+	//g_print("Date is : %d-%d-%d \n", day, month,year);
 	//char* day_str = g_strdup_printf("%d",day);
 	//char* month_str = g_strdup_printf("%d",month);
 	//char* year_str = g_strdup_printf("%d",year);
 	//char* date_str="";
 	//date_str= g_strconcat(date_str, day_str, "-",month_str, "-",year_str, NULL);
 	//gtk_label_set_text(GTK_LABEL(label_date), date_str);	
-		
+	g_date_time_unref(cal_date);	
+	
 	box2 =gtk_box_new(GTK_ORIENTATION_VERTICAL,1);	
 	gtk_box_append(GTK_BOX(box2), label_date);
 	gtk_box_append(GTK_BOX(box2), calendar); 
     
+	
+	
 	label_month_events = gtk_label_new("");
 	gtk_label_set_use_markup(GTK_LABEL(label_month_events), TRUE);
 	char* header_str ="Month Events";
@@ -3724,7 +4278,6 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.home", home_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.info", info_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.preferences", preferences_accels);
-			
 	
 	//button_new_event = gtk_button_new_with_label("New Event");
 	button_new_event= gtk_button_new_from_icon_name("appointment-new-symbolic");
@@ -3735,13 +4288,12 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_new_event);
 	
 	//button_edit_event = gtk_button_new_with_label("Edit Event");	
-	button_edit_event= gtk_button_new_from_icon_name("edit-symbolic");	
+	button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");	
 	gtk_widget_set_tooltip_text(button_edit_event, "Edit Event");		
 	g_signal_connect(button_edit_event, "clicked", G_CALLBACK(callbk_edit_event), selection);
 	g_object_set_data(G_OBJECT(button_edit_event), "button-edit-window-key",window);
 	g_object_set_data(G_OBJECT(button_edit_event), "button-edit-store-key",store);	
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_edit_event);
-	
 		
 	//button_delete_event = gtk_button_new_with_label("Delete Event");
 	button_delete_event= gtk_button_new_from_icon_name("edit-delete-symbolic");		
@@ -3826,8 +4378,14 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (menu_button),"open-menu-symbolic"); 		
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), G_MENU_MODEL(menu));
 	gtk_header_bar_pack_end(GTK_HEADER_BAR (header), menu_button);
-	
+		
 	update_calendar(GTK_CALENDAR(calendar),window);	
+		
+	//if(m_talk && m_talk_at_startup) {
+		////update_calendar(GTK_CALENDAR(calendar),window);
+		//speak_events(day,month,year);	
+	//}
+	
 	
 	paned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
    

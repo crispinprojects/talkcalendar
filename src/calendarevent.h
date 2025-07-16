@@ -1,4 +1,4 @@
-/* clanedarevent.h
+/* calendarevent.h
  *
  * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
  *

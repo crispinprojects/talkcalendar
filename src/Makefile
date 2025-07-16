@@ -1,5 +1,5 @@
 #--------------------------------------------------------------
-# Talk Calendar Makefile (Ubuntu 24.04)
+# Talk Calendar Makefile GTK4
 # Author: Alan Crispin <crispinalan@gmail.com> 
 # Date: July 2025
 # Changelog: 0.04
@@ -10,9 +10,9 @@ CFLAGS = $(shell $(PKGCONFIG) --cflags gtk4)
 #CFLAGS += -Wall
 #CFLAGS += -g
 #CFLAGS += -O3
-LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3
+LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3 -lasound -L$(PWD) -lvoice
 
-SRC = main.c calendarevent.c dbmanager.c
+SRC = main.c calendarevent.c dbmanager.c diphone.c dictionary.c wordrules.c rawplayer.c 
 
 OBJS = $(SRC:.c=.o)
 
