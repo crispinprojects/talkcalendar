@@ -4280,6 +4280,7 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.preferences", preferences_accels);
 	
 	button_new_event = gtk_button_new_with_label("New");
+	gtk_button_set_has_frame(GTK_BUTTON(button_new_event),FALSE);
 	//button_new_event= gtk_button_new_from_icon_name("appointment-new-symbolic");
 	gtk_widget_set_tooltip_text(button_new_event, "New Event");		
 	g_signal_connect(button_new_event, "clicked", G_CALLBACK(callbk_new_event), store);	
@@ -4287,7 +4288,8 @@ static void activate (GtkApplication* app, gpointer user_data)
 	g_object_set_data(G_OBJECT(button_new_event), "button-new-calendar-key",calendar);
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_new_event);
 	
-	button_edit_event = gtk_button_new_with_label("Edit");	
+	button_edit_event = gtk_button_new_with_label("Edit");
+	gtk_button_set_has_frame(GTK_BUTTON(button_edit_event),FALSE);	
 	//button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");	
 	gtk_widget_set_tooltip_text(button_edit_event, "Edit Event");		
 	g_signal_connect(button_edit_event, "clicked", G_CALLBACK(callbk_edit_event), selection);
@@ -4296,6 +4298,7 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_edit_event);
 		
 	button_delete_event = gtk_button_new_with_label("Delete");
+	gtk_button_set_has_frame(GTK_BUTTON(button_delete_event),FALSE);	
 	//button_delete_event= gtk_button_new_from_icon_name("edit-delete-symbolic");		
 	gtk_widget_set_tooltip_text(button_delete_event, "Delete Event");			
 	g_signal_connect(button_delete_event, "clicked", G_CALLBACK(callbk_delete_event), selection);
@@ -4305,6 +4308,7 @@ static void activate (GtkApplication* app, gpointer user_data)
 	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_delete_event);
 	
 	button_find_event = gtk_button_new_with_label("Find");
+	gtk_button_set_has_frame(GTK_BUTTON(button_find_event),FALSE);
 	//button_find_event= gtk_button_new_from_icon_name("find-location-symbolic");		
 	gtk_widget_set_tooltip_text(button_find_event, "Find On Calendar");			
 	g_signal_connect(button_find_event, "clicked", G_CALLBACK(callbk_find_event), selection);

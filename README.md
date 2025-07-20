@@ -4,7 +4,7 @@ Talk Calendar is a personal desktop calendar for Linux which has some speech cap
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
-A screenshot of Talk Calendar (Ubuntu Desktop) is shown below. 
+A screenshot of Talk Calendar is shown below. 
 
 ![](talkcalendar.png)
 
@@ -20,7 +20,7 @@ A screenshot of Talk Calendar (Ubuntu Desktop) is shown below.
 
 ## Pre-built Binary (x86 Intel PCs)
 
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the installers directory. Unzip the installer archive file relevant for your distribution to locate the Talk Calendar executable.
+A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the installers directory. Unzip the installer archive file relevant to your distribution which contains the Talk Calendar executable.
 
 Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
@@ -43,7 +43,7 @@ To install Talk Calendar run the installer script as shown below and follow the 
 ./install-talkcalendar.sh
 ```
 
-The installer assumes that you are a member of the sudo group and that the GTK4 libraries are installed. If not, go to the building section below and the following terminal command instructions to install the required packages.
+The installer assumes that you are a member of the sudo group and that the GTK4 libraries are installed. If not, go to the build Talk Calendar section below and use the terminal command instructions to install the required packages.
 
 To uninstall Talk Calendar run the script below
 
@@ -51,11 +51,11 @@ To uninstall Talk Calendar run the script below
 ./uninstall-talkcalendar
 ```
 
-You can open the BASH script installer using a Text Editor to view the code. Talk Calendar is installed into the directory "/usr/bin/talkcalendar".
+You can open the BASH script installer using a Text Editor to view the code. Talk Calendar is installed into the directory "/usr/bin/talkcalendar". One advantage of using a BASH script installer is that the code can be inspected to show exactly what is occurring. 
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a pane side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the location button.
+Talk Calendar uses a month view calendar with a pane side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the "find on calendar"" button.
 
 The hamburger menu can be used to select the preferences dialog and other features such as exporting a personal calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
@@ -89,10 +89,11 @@ Talk Calendar can read out the date and time. The event summary can also be read
 
 * The space bar can also be used to read out events on a selected day
 
-## Font Size, Text Scaling, Colour, Icons
+## Font, Colour, Icons
 
 ### Font
-Apparently you should now use ***system settings*** rather that in-app settings with GTK applications and GNOME based desktops.
+
+Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops and GTK applications.
 
 Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. One way to do this with GNOME and the Ubuntu Desktop is to use the GNOME Tweaks tool which is installed as shown below.
  
@@ -104,23 +105,26 @@ sudo apt install gnome-tweaks
 
 GNOME Tweaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
 
+Xfce uses its own "Appearance" settings window which allows the default font to be changed and so you don't need to install Tweaks.
+
 ### Colour
 
-Again with GTK (GNOME) desktops style colour should now be set at the system level. Unfortunately, testing across different desktops and distributions has shown that this can be problematic.
+Again with GNOME based desktops colour should now be set at the system level using the desktop environment "Settings" dialog. Unfortunately, testing across different desktops and distributions has shown that this approach can be problematic.
 
-Style and accent colour can be changed with Ubuntu 24.04. This is done by opening Ubuntu desktop "Settings" and using the "Appearance" tab to change the colour style as required.
+With Ubuntu 24.04 accent colour can be changed by opening Ubuntu desktop "Settings" and using the "Appearance" tab. It is possible to choose from a variety of colours to customise the way the desktop looks and accent colours are applied to Talk Calendar as you would expect.
 
-Attempting to change the accent colour with Debian 13 had no effect with the accent colour defaulting to the standard system colours (blue). The same was true when testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland). Debian 13 is using GTK4.18 while Ubuntu 24.04 is using GTK 4.14.
+With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on Talk Calendar. The calendar colours default to the standard system colours (blue/light blue). This is strange as the Talk Calendar 0.4 series uses the GTK4 Calendar widget. The only different between Ubuntu 24.04 and Debian 13 is that Ubuntu uses GTK 4.14 and Debian GTK 4.18. I am considering reverting back to the custom calendar which I developed for the 0.3 series of Talk Calendar and which allowed colours to be changed using a CSS class.
 
+With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the standard system colours (blue) are used again. The today colour is shown as dark blue. Event days are shown as light blue. See screenshots by following the Xfce4 and Wayland link above.
 
 ### Icons
 
-I had started to use code which created buttons from icon names with code such as that shown below. 
+I had started to use button widgets created using icon names with code such as that shown below. 
 ```
 button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");
 ```	
 
-I had assumed that there would be consistency across desktops and distributions now using libadwaita. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME desktop and Xfce different icons where used and some not found. Consequently with Talk Calendar 0.4.8 I have reverted back to creating buttons with names.
+I had assumed that there would be consistency across desktops and distributions now using libadwaita. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME 48 (Wayland) desktop and Xfce different icons where used and some not found. Consequently, Talk Calendar 0.4.8 has reverted back to creating buttons with names.
 
 ```
 button_edit_event = gtk_button_new_with_label("Edit");
@@ -174,15 +178,15 @@ To run Talk Calendar from the terminal use
 
 ## Compile Notes
 
-The latest version of Talk Calendar (0.4 series) has been developed using Ubuntu 24.04 which uses GTK 4.14. This is a much newer version of the GTK toolkit compared to that used with Debian 12 which is version GTK 4.8 and used when developing the 0.3 series of Talk Calendar.
+The Talk Calendar 0.4 series is being developed using both Ubuntu 24.04 which uses GTK 4.14 and Debian 13 (testing) which uses GTK 4.18. The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8.
 
-A model view design has been used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
+A model view design is used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
 
-With GTK 4.14 the GtkFileDialog API is no longer signal based but callback based using an async/await pattern. This is a syntactic feature that allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialogs to export and import ical files (for backup purposes) has been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
+With GTK 4.12 onwards the GtkFileDialog API is no longer signal based but callback based using an asynchronous pattern. This allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialogs to export and import ical files (for backup purposes) have been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
 
-GTask allows a task to be called inside a thread and is now used to play audio rather than using GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that a play audio blocking operation is executed in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
+GTask allows a task to be called inside a thread and is now used to play audio rather than using GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that audio is played in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
 
-The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. GtkCalendar is now used in place of my previous custom calendar implementation.
+The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. GtkCalendar is now used in place of my previous custom calendar implementation although with GTK4.18  I have found an issue with system wide accent colours
 
 The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
 
