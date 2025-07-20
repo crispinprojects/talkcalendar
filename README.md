@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event summary words.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME,  Cinnamon, XFCE  etc.). 
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
 A screenshot of Talk Calendar (Ubuntu Desktop) is shown below. 
 
@@ -18,11 +18,11 @@ A screenshot of Talk Calendar (Ubuntu Desktop) is shown below.
 * calendar tools such as calculate Easter and search for events
 * Sqlite3 database used to store events
 
-## Local Install Using Pre-built Binary (x86 Intel PCs)
+## Pre-built Binary (x86 Intel PCs)
 
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the binary directory. This has been built using GTK 4.14 and compiled and tested using Ubuntu 24.04 on Intel hardware.
+A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the installers directory. Unzip the installer archive file relevant for your distribution to locate the Talk Calendar executable.
 
-A 64-bit prebuilt binary for the latest version of Talk Calendar is available and can be extracted from the binary directory. Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
+Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
 
 ```
 sudo chmod +x talkcalendar
@@ -35,7 +35,7 @@ Assuming that the GTK4 base libraries are installed the Talk Calendar binary can
 
 ## BASH Script Installer
 
-The easiest way to install Talk Calendar is to use the bash script installer from the terminal. This is found in the binary directory in the download. 
+The easiest way to install Talk Calendar is to use the BASH script installer from the terminal. This is found in the installers directory in the download. 
 
 To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
@@ -51,6 +51,7 @@ To uninstall Talk Calendar run the script below
 ./uninstall-talkcalendar
 ```
 
+You can open the BASH script installer using a Text Editor to view the code. Talk Calendar is installed into the directory "/usr/bin/talkcalendar".
 
 ## Calendar Interface
 
@@ -63,8 +64,8 @@ Pressing F1 invokes the information window which can also be selected from the h
 ### New Event
 ![](talkcalendar-new-event.png)
 
-### Select An Event
-![](talkcalendar-selection.png)
+### Select Event and Find On Calendar
+![](talkcalendar-find.png)
 
 ### Hamburger Menu
 ![](talkcalendar-hamburger-menu.png)
@@ -88,11 +89,12 @@ Talk Calendar can read out the date and time. The event summary can also be read
 
 * The space bar can also be used to read out events on a selected day
 
-## Font Size, Text Scaling, Colour
+## Font Size, Text Scaling, Colour, Icons
 
-Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops.
+### Font
+Apparently you should now use ***system settings*** rather that in-app settings with GTK applications and GNOME based desktops.
 
-Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. The easiest way to do this is to install and use the GNOME Tweaks tool  as shown below.
+Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. One way to do this with GNOME and the Ubuntu Desktop is to use the GNOME Tweaks tool which is installed as shown below.
  
 ```
 sudo apt install gnome-tweaks
@@ -100,21 +102,37 @@ sudo apt install gnome-tweaks
 
 ![](gnome-tweaks.png)
 
-Gnome Teaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
+GNOME Tweaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
 
-The calendar style colour is again set at the system level. Open Ubuntu desktop "Settings" and use the "Appearance" tab
-to change the colour style as required.
+### Colour
 
-![](ubuntu-settings.png)
+Again with GTK (GNOME) desktops style colour should now be set at the system level. Unfortunately, testing across different desktops and distributions has shown that this can be problematic.
 
- 
+Style and accent colour can be changed with Ubuntu 24.04. This is done by opening Ubuntu desktop "Settings" and using the "Appearance" tab to change the colour style as required.
+
+Attempting to change the accent colour with Debian 13 had no effect with the accent colour defaulting to the standard system colours (blue). The same was true when testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland). Debian 13 is using GTK4.18 while Ubuntu 24.04 is using GTK 4.14.
+
+
+### Icons
+
+I had started to use code which created buttons from icon names with code such as that shown below. 
+```
+button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");
+```	
+
+I had assumed that there would be consistency across desktops and distributions now using libadwaita. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME desktop and Xfce different icons where used and some not found. Consequently with Talk Calendar 0.4.8 I have reverted back to creating buttons with names.
+
+```
+button_edit_event = gtk_button_new_with_label("Edit");
+```
+
 ## Speech Synthesis
 
 Talk Calendar uses the diphone speech synthesizer method. Speech is synthesised by concatenating pre-recorded segments of speech called [diphones](https://en.wikipedia.org/wiki/Diphone). A small pronouncing dictionary is used to convert a word into it a diphone pronunciation. I have been using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict?in=C+M+U+Dictionary) to look up the phoneme pronunciation  of a word and then work out the diphone construction.
 
 The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
 
-### Building on Ubuntu 24.04 x86 Hardware
+### Building on Ubuntu 24.04 and Debian 13 (x86 Hardware)
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
@@ -132,12 +150,15 @@ To check the installed Sqlite 3 version use the command below.
 sqlite3 --version
 ```
 
-To determine which version of GTK4 is running on a Ubuntu/Debain system use the following terminal command.
+To determine which version of GTK4 is running on a Ubuntu/Debian system use the following terminal command.
 
+```
+gtk4-launch --version
+```
+or
 ```
 dpkg -l | grep libgtk*
 ```
-
 Use the MAKEFILE to compile Talk Calendar. Just run "make" inside the source code folder.
 
 ```
@@ -149,6 +170,7 @@ To run Talk Calendar from the terminal use
 ```
 ./talkcalendar
 ```
+
 
 ## Compile Notes
 
