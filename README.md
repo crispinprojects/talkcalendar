@@ -107,15 +107,21 @@ GNOME Tweaks can also be used to add Talk Calendar to the startup applications. 
 
 Xfce uses its own "Appearance" settings window which allows the default font to be changed and so you don't need to install Tweaks.
 
-### Colour
+### Accent Colour
 
-Again with GNOME based desktops colour should now be set at the system level using the desktop environment "Settings" dialog. Unfortunately, testing across different desktops and distributions has shown that this approach can be problematic.
+Again with GNOME based desktops colour should now be set at the system level using the desktop environment "Settings" dialog. Unfortunately, testing Talk Calendar across different desktops and distributions has shown mixed results.
 
 With Ubuntu 24.04 accent colour can be changed by opening Ubuntu desktop "Settings" and using the "Appearance" tab. It is possible to choose from a variety of colours to customise the way the desktop looks and accent colours are applied to Talk Calendar as you would expect.
 
-With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on Talk Calendar. The calendar colours default to the standard system colours (blue/light blue). This is strange as the Talk Calendar 0.4 series uses the GTK4 Calendar widget. The only different between Ubuntu 24.04 and Debian 13 is that Ubuntu uses GTK 4.14 and Debian GTK 4.18. I am considering reverting back to the custom calendar which I developed for the 0.3 series of Talk Calendar and which allowed colours to be changed using a CSS class.
+With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on Talk Calendar. The calendar colours default to the standard system colours (blue/light blue). 
 
-With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the standard system colours (blue) are used again. The today colour is shown as dark blue. Event days are shown as light blue. See screenshots by following the Xfce4 and Wayland link above.
+With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the standard system colours (blue) are used again. The currently selected day colour is shown as dark blue. Event days are shown as light blue. See the screenshots by following the Xfce4 and Wayland link above.
+
+## Update Accent Colours
+
+It appears that now only GTK4 applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. Because Talk Calendar is a GTK4 only and not a libadwaita application it is not a compliant GNOME application and this is the reason why accent colours are not supported with Debian 13 GNOME. Accent colours are part of the GNOME Human Interface Guidelines (HIG) and the Adwaita design language. It looks like Talk Calendar will have to be rewritten as a libadwaita application to support accent colours. 
+
+I am in a dilemma on how to proceed as Xfce does not officially adopt GNOME's libadwaita as it maintains its own themes within its own ecosystem. While Xfce applications can use GTK4 they generally do not rely on libadwaita for styling and themes. 
 
 ### Icons
 
@@ -129,6 +135,10 @@ I had assumed that there would be consistency across desktops and distributions 
 ```
 button_edit_event = gtk_button_new_with_label("Edit");
 ```
+
+
+
+
 
 ## Speech Synthesis
 
