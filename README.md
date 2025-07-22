@@ -113,19 +113,9 @@ Again with GNOME based desktops colour should now be set at the system level usi
 
 With Ubuntu 24.04 accent colour can be changed by opening Ubuntu desktop "Settings" and using the "Appearance" tab. It is possible to choose from a variety of colours to customise the way the desktop looks and accent colours are applied to Talk Calendar as you would expect.
 
-With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on Talk Calendar. The calendar colours default to the standard system colours (blue/light blue). 
+With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on the current version of Talk Calendar. The calendar colours default to the Debian default colour scheme (dark blue/light blue). 
 
-With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the standard system colours (blue) are used again. The currently selected day colour is shown as dark blue. Event days are shown as light blue. See the screenshots by following the Xfce4 and Wayland link above.
-
-## Update On Accent Colours (libadwaita)
-
-With the latest changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently with the GNOME desktop environment. The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy to allow other desktop environments (Xfce, Cinnamon, MATE, Pantheon) to use GTK and apply their own themes. 
-
-Talk Calendar is a GTK4 only application and not a libadwaita application and so it is not GNOME HIG compliant. Because Talk Calendar is a GTK4 app accent colours are not supported with Debian 13 GNOME. I developed a small libadwaita Calendar test project and accent colours worked on Debian 13 but the application would not run on a default [Xfce4 Wayland](https://github.com/crispinprojects/xfce4-wayland) install.  Consequently, I am in a dilemma as to whether I should rewrite Talk Calendar as a libadwaita application. This would mean that it would only run on GNOME desktops. 
-
-Currently Talk Calendar is a GTK4 application and runs on GTK desktop environments other than GNOME such as Xfce. This is because GTK4 can be used to write Xfce applications and run them. The issue is that Xfce and other GTK desktops have not officially adopted GNOME's libadwaita as they maintain their own themes and ecosystem. The other option is to resurrect my custom calendar widget which allows colours to be changed using CSS classes inside the application. 
- 
-It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE, Pantheon will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG (libadwaita), the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. Also it is likely that only GTK4 applications will support either X11 or Wayland which is another factor to consider.
+With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the Debian default colour scheme (dark blue/light blue) are used again. The currently selected day colour is shown as dark blue. Event days are shown as light blue. 
 
 ### Icons
 
@@ -134,11 +124,34 @@ I had started to use button widgets created using icon names with code such as t
 button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");
 ```	
 
-I had assumed that there would be consistency across desktops and distributions now using libadwaita. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME 48 (Wayland) desktop and Xfce different icons where used and some not found. Consequently, Talk Calendar 0.4.8 has reverted back to creating buttons with names.
+I had assumed that there would be consistency across desktops and distributions. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME 48 (Wayland) desktop and Debian Xfce4 (Wayland) different icons where used and some not found. Consequently, Talk Calendar has reverted back to creating buttons with names.
 
 ```
 button_edit_event = gtk_button_new_with_label("Edit");
 ```
+
+## GTK4 vs libadwaita
+
+With the latest GTK/GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently with the GNOME desktop environment. The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy to allow other desktop environments (Xfce, Cinnamon, MATE) to use GTK and apply their own themes. 
+
+Talk Calendar is a GTK4 only application and is not a libadwaita application. The means that it is not GNOME HIG compliant and so accent colours are not supported with Debian 13 GNOME. I have developed a small libadwaita Calendar demo as shown in the screenshot below and accent colours are supported on Debian 13 GNOME. 
+
+![](debian13-accent-colour.png)
+
+However, the application would not run on a default [Xfce4 Wayland](https://github.com/crispinprojects/xfce4-wayland) desktop unless libadwaita is installed (see below). 
+
+```
+sudo apt update
+sudo apt install libadwaita-1-dev
+```
+
+
+Even when I got the demo to run on Xfce only the Debian default system colours (dark blue/light blue) were displayed just like in the current GTK4 Talk Calendar case. Because the GTK4 runtime is installed by default in Debian the Talk Calendar binary (and any other GTK4 application) can be run without installing any theme library such as libadwaita.
+
+Consequently, I am in a dilemma as to whether I should rewrite Talk Calendar as a libadwaita application. It would run on GNOME desktops. However, even if users of other GTK desktops install libadwaita to run the calendar it would not benefit from accent colours because Xfce and other desktops have not officially adopted the GNOME HIG as they maintain their own themes and ecosystem. The other option is to resurrect my custom calendar widget which used "in-app" preferences to allow colours to be changed.
+ 
+It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE etc. will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG (libadwaita), the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. 
+
 
 ## Speech Synthesis
 
