@@ -17,9 +17,6 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
-
-
 #include "dbmanager.h"
 
 #define CONFIG_DIRNAME "dbtest-gtk"
@@ -184,27 +181,6 @@ int db_insert_event(CalendarEvent *evt) {
 	g_object_get(evt, "isallday", &is_allday, NULL);
 	g_object_get(evt, "ispriority", &is_priority, NULL);
 
-//print event
-//printf("evt: summary =%s\n",summary_str);
-//printf("evt: description =%s\n",desc_str);
-//printf("evt: location =%s\n",location_str);
-
-//printf("evt: start_year =%d\n",start_year);
-//printf("evt: start_month =%d\n",start_month);
-//printf("evt: start_day =%d\n",start_day);
-//printf("evt: start_hour =%d\n",start_hour);
-//printf("evt: start_min =%d\n",start_min);
-
-//printf("evt: end_year =%d\n",end_year);
-//printf("evt: end_month =%d\n",end_month);
-//printf("evt: end_day =%d\n",end_day);
-//printf("evt: end_hour =%d\n",end_hour);
-//printf("evt: end_min =%d\n",end_min);
-
-//printf("evt: is_yearly =%d\n",is_yearly);
-//printf("evt: is_allday =%d\n",is_allday);
-//printf("evt: is_priority =%d\n",is_priority);
-
 sqlite3 *db;
 int rc=0;
 char sql_query[2048] = ""; //string on the stack (not heap)
@@ -232,11 +208,7 @@ VALUES  ('%s','%s','%s', %d,%d,%d,%d,%d, %d,%d,%d,%d,%d,%d,%d,%d);",
         end_year, end_month, end_day, end_hour,end_min,\
         is_yearly,is_allday,is_priority);
 
-//printf("sql = %s\n",sql_query);
-//printf("Length of sql_query =%ld\n",strlen(sql_query));
-
 // Prepare the query
-//printf("Preparing the insert query..\n");
 if (sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL) != SQLITE_OK){
      //printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
 }
@@ -244,7 +216,6 @@ if (sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL) != SQLITE_OK){
 rc = sqlite3_step(stmt); // execute (step) insert
 sqlite3_finalize(stmt);  // finialize insert query
 int insert_id = sqlite3_last_insert_rowid(db);
-//printf("insert id = %d\n",insert_id);
 sqlite3_close(db); //close db
 return insert_id;
 }
@@ -253,8 +224,7 @@ return insert_id;
 //=====================================================================
 
 void db_delete_event(CalendarEvent *evt)
-{
-	printf("delete event\n");
+{	
 	gint evt_id=0;
 	gchar *summary_str="";
 	gchar *location_str="";
@@ -309,30 +279,13 @@ void db_delete_event(CalendarEvent *evt)
 	} else {
 	printf("Opened database successfully\n");
 	}
-
-	//sprintf(sql, "DELETE FROM EVENTS WHERE SUMMARY ='%s'", summary_str);
-	
-	//sprintf(sql, "DELETE FROM EVENTS WHERE SUMMARY ='%s'AND LOCATION ='%s' AND DESCRIPTION='%s'\
-	//AND YEAR='%i' AND MONTH='%i' AND DAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
-	//AND ENDHOUR='%i' AND ENDMIN='%i'\
-	//AND ISYEARLY='%i' AND ISALLDAY='%i' AND ISPRIORITY='%i'",summary_str,location_str,desc_str,year,month,day,start_hour,start_min,\
-	//end_hour,end_min,is_yearly,is_allday,is_priority);
-	
-	//sprintf(sql, "DELETE FROM EVENTS WHERE SUMMARY ='%s' AND LOCATION ='%s' AND DESCRIPTION='%s'\
-	//AND STARTYEAR='%i' AND STARTMONTH='%i' AND STARTDAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
-	//AND ENDYEAR='%i' AND ENDMONTH='%i' AND ENDDAY='%i' AND ENDHOUR='%i' AND ENDMIN='%i'\
-	//AND ISYEARLY='%i' AND ISALLDAY='%i' AND ISPRIORITY='%i', summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
-	//end_year,end_month,end_day,end_hour,end_min,is_yearly,is_allday,is_priority);
-	
 	
 	sprintf(sql, "DELETE FROM EVENTS WHERE SUMMARY ='%s'AND LOCATION ='%s' AND DESCRIPTION='%s'\
 	AND STARTYEAR='%i' AND STARTMONTH='%i' AND STARTDAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
 	AND ENDHOUR='%i' AND ENDMIN='%i'\
 	AND ISYEARLY='%i' AND ISALLDAY='%i' AND ISPRIORITY='%i'",summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
 	end_hour,end_min,is_yearly,is_allday,is_priority);
-	
-  //sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE YEAR = '%i' AND MONTH = '%i' AND DAY = '%i'", year, month, day);
-	
+	  
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
 	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
 	}
@@ -391,29 +344,6 @@ void db_update_event(CalendarEvent *evt, int id)
 	g_object_get(evt, "isallday", &is_allday, NULL);
 	g_object_get(evt, "ispriority", &is_priority, NULL);
 
-// g_print("updating event\n");
-//print event
-//printf("evt: summary =%s\n",summary_str);
-//printf("evt: description =%s\n",desc_str);
-//printf("evt: location =%s\n",location_str);
-
-//printf("evt: start_year =%d\n",start_year);
-//printf("evt: start_month =%d\n",start_month);
-//printf("evt: start_day =%d\n",start_day);
-//printf("evt: start_hour =%d\n",start_hour);
-//printf("evt: start_min =%d\n",start_min);
-
-//printf("evt: end_year =%d\n",end_year);
-//printf("evt: end_month =%d\n",end_month);
-//printf("evt: end_day =%d\n",end_day);
-//printf("evt: end_hour =%d\n",end_hour);
-//printf("evt: end_min =%d\n",end_min);
-
-//printf("evt: is_yearly =%d\n",is_yearly);
-//printf("evt: is_allday =%d\n",is_allday);
-////printf("evt: is_multiday =%d\n",is_multiday);
-//printf("evt: is_priority =%d\n",is_priority);
-
 sqlite3 *db;
 int rc=0;
 sqlite3_stmt *stmt;
@@ -428,15 +358,6 @@ char query[2048] = "";
    } else {
       //printf("Opened database successfully\n");
    }
-
-
-//sprintf(query, "UPDATE EVENTS SET SUMMARY ='%s',LOCATION ='%s', DESCRIPTION='%s',\
-//YEAR=%i,MONTH=%i,DAY=%i,STARTHOUR=%i,STARTMIN=%i,\
-         //ENDHOUR=%i,ENDMIN=%i,\
-         //ISYEARLY=%i,ISALLDAY=%i,ISPRIORITY=%i\
-         //WHERE ID ='%i'",summary_str,location_str,desc_str,year,month,day,start_hour,start_min,\
-         //end_hour,end_min,\
-         //is_yearly,is_allday,is_priority,id);
 
 	sprintf(query, "UPDATE EVENTS SET SUMMARY ='%s',LOCATION ='%s', DESCRIPTION='%s',\
 	STARTYEAR=%i,STARTMONTH=%i,STARTDAY=%i,STARTHOUR=%i,STARTMIN=%i,\
@@ -519,9 +440,6 @@ int db_get_id(CalendarEvent *evt)
 	} else {
 	printf("Opened database successfully\n");
 	}
-
-	//sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE MONTH = '%i' AND ISYEARLY = '%i'", month,1);
-	//printf("sql = %s\n",sql);
 	
 	sprintf(sql, "SELECT ID FROM EVENTS WHERE SUMMARY ='%s'AND LOCATION ='%s' AND DESCRIPTION='%s'\
 	AND STARTYEAR='%i' AND STARTMONTH='%i' AND STARTDAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
@@ -632,8 +550,7 @@ sqlite3_close(db);
 //======================================================================
 // Get number of rows all events
 //======================================================================
-int db_get_number_of_rows_all(void) {
-	//printf("Get number of  db rows all\n");
+int db_get_number_of_rows_all(void) {	
 	sqlite3 *db;
 	int rc=0;
 	int row_count=0;
@@ -694,7 +611,6 @@ return 0;
 }
 
 sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE STARTYEAR = '%i' AND STARTMONTH = '%i'", year, month);
-//printf("sql = %s\n",sql);
 
 rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 if (rc != SQLITE_OK) {
@@ -772,8 +688,7 @@ int db_get_number_of_isyearly_events_month(int month) {
 	}
 
 	sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE STARTMONTH = '%i' AND ISYEARLY = '%i'", month,1);
-	//printf("sql = %s\n",sql);
-
+	
 	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 	if (rc != SQLITE_OK) {
 	printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
@@ -812,8 +727,7 @@ void db_get_all_events(GArray *evt_arry) {
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
 	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
 	}
-
-
+	
 	while (sqlite3_step(stmt) == SQLITE_ROW) {
 
 	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
@@ -862,13 +776,8 @@ void db_get_all_events_year_month(GArray *evt_arry, int year, int month)
 	} else {
 	//printf("Opened database successfully\n");
 	}
-
-	//sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i'", year, 1, month);
-
 	sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i' ORDER BY STARTDAY, STARTHOUR, STARTMIN asc", year, 1, month);
 
-	
-	
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
      printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
 	}
@@ -921,10 +830,7 @@ void db_get_all_enddate_events_year_month(GArray *evt_arry, int year, int month)
 	} else {
 	//printf("Opened database successfully\n");
 	}
-
-	//sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i'", year, 1, month);
-
-	//sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month,1);
+		
 	sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month);
 
 	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
@@ -1141,7 +1047,6 @@ void db_get_upcoming_events(GArray *evt_arry, int year, int month, int from ,int
 	//printf("Opened database successfully\n");
 	}
 
-
 	sprintf(sql, "SELECT * FROM EVENTS WHERE STARTYEAR ='%i' AND STARTMONTH = '%i' AND\
 	STARTDAY BETWEEN '%i' AND '%i' ORDER BY STARTDAY asc ", year, month, from,to);
 
@@ -1183,7 +1088,6 @@ void db_get_upcoming_events(GArray *evt_arry, int year, int month, int from ,int
 //======================================================================
 void db_delete_row(int id){
 
-	//printf("Delete row  %d\n", id);
 	sqlite3 *db;
 	int rc=0;
 	sqlite3_stmt *stmt;

@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event summary words.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event details.
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
@@ -11,10 +11,11 @@ A screenshot of Talk Calendar is shown below.
 ## Core Features
 
 * built with C and GTK4 for GTK based desktops
-* Graphical user interface with month view calendar 
-* month events side panel
+* Graphical user interface with month-view calendar with event tooltips
+* traditional menu and keybindings 
+* event day and today colour preferences 
+* dark colour scheme mode
 * export and import iCalendar files (backup and restore)
-* built-in diphone speech synthesizer for speaking dates, time and event summary words
 * calendar tools such as calculate Easter and search for events
 * Sqlite3 database used to store events
 
@@ -55,35 +56,48 @@ You can open the BASH script installer using a Text Editor to view the code. Tal
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a pane side panel to display month events. To create a new event select a day on the calendar and press the new event button on the header bar. To edit an event, select it in month events side panel and then press the edit event button on the header bar. Likewise to delete an event select it in the month events side panel and press the delete button on the header bar. To locate an event on the calendar press the "find on calendar"" button.
+Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" menu item or press Ctrl+N. To edit an event, select it in day view panel and then either select the "edit event" menu item or press Ctrl+E. Likewise to delete an event select it in the day view panel and use the "delete event" menu item or press the delete key. 
 
-The hamburger menu can be used to select the preferences dialog and other features such as exporting a personal calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
+Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
-Pressing F1 invokes the information window which can also be selected from the hamburger menu. The information window shows the keyboard shortcuts, how many records are in the calendar database, the Sqlite version being used on the system, the desktop font and scale factor. The About dialog displays the Talk Calendar version number.
+Pressing F1 invokes the information window which can also be selected from the menu using the Help->Information menu item. The information window shows the keyboard shortcuts, how many records are in the calendar database, the Sqlite version being used on the system, the desktop font and scale factor and the status of the speech synthesizer. The About dialog displays the Talk Calendar version number.
 
 ### New Event
 ![](talkcalendar-new-event.png)
 
-### Select Event and Find On Calendar
-![](talkcalendar-find.png)
-
-### Hamburger Menu
-![](talkcalendar-hamburger-menu.png)
+### Calendar Tooltips
+![](talkcalendar-tooltip.png)
 
 ### Preferences
 ![](talkcalendar-preferences.png)
 
+You can change the today and event colours by clicking on the colour buttons and using the colour picker.
+
+![](colour-picker.png)
+
 ### Information (F1)
 ![](talkcalendar-info.png)
 
+The keyboard shortcuts for creating, editing and deleting events are shown below.
+
+```
+CONTROL+N = new event
+CONTROL+E = edit selected event
+DELETE = delete selected event
+```
+
+
+## Dark Theme
+
+You can select a dark colour scheme from the preferences dialog. This uses a dark background with white text on the user interface elements. You can change the today and event colours to suit the dark theme.
+
+![](talkcalendar-dark-theme.png)
 
 ## Talking
 
-Talk Calendar can read out the date and time. The event summary can also be read out but the number of words recognised is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service" etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. 
+* Make sure the "Enable Talking" check button in the preferences window is ticked and the Flite speech synthesizer is installed (see the speech synthesis section below)
 
-* Make sure the "Enable Talking" check button in the preferences window is ticked 
-
-* Press the *t key* to readout the current time (talking clock)
+* Press the ***T key*** to readout the current time (talking clock)
 
 * Click on a calendar day to read out the date and any event details
 
@@ -93,9 +107,9 @@ Talk Calendar can read out the date and time. The event summary can also be read
 
 ### Font
 
-Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops and GTK applications.
+Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops and GTK4 applications.
 
-Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. One way to do this with GNOME and the Ubuntu Desktop is to use the GNOME Tweaks tool which is installed as shown below.
+Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. One way to do this with the GNOME desktop and the Ubuntu Desktop is to use the GNOME Tweaks tool which is installed as shown below.
  
 ```
 sudo apt install gnome-tweaks
@@ -107,57 +121,17 @@ GNOME Tweaks can also be used to add Talk Calendar to the startup applications. 
 
 Xfce uses its own "Appearance" settings window which allows the default font to be changed and so you don't need to install Tweaks.
 
-### Accent Colour
+### Colour
 
-Again with GNOME based desktops colour should now be set at the system level using the desktop environment "Settings" dialog. Unfortunately, testing Talk Calendar across different desktops and distributions has shown mixed results.
-
-With Ubuntu 24.04 accent colour can be changed by opening Ubuntu desktop "Settings" and using the "Appearance" tab. It is possible to choose from a variety of colours to customise the way the desktop looks and accent colours are applied to Talk Calendar as you would expect.
-
-With Debian 13 GNOME 48 (Wayland) the desktop "Settings" dialog can be used to change the accent colour. Unfortunately this has no effect on the current version of Talk Calendar. The calendar colours default to the Debian default colour scheme (dark blue/light blue). 
-
-With Xfce there is no system wide settings dialog to change accent colours. Instead the "Appearance" dialog has three style options by default. These are the Adwaita (Gtk3,GTk2) light style, the Adwaita-Dark (Gtk3,Gtk2) dark style and the High Contrast (Gtk3,Gtk2) style. All of these styles work with Talk Calendar. Testing Talk Calendar with [Xfce4 and Wayland](https://github.com/crispinprojects/xfce4-wayland) using Debian 13 shows that the Debian default colour scheme (dark blue/light blue) are used again. The currently selected day colour is shown as dark blue. Event days are shown as light blue. 
-
-### Icons
-
-I had started to use button widgets created using icon names with code such as that shown below. 
-```
-button_edit_event= gtk_button_new_from_icon_name("document-edit-symbolic");
-```	
-
-I had assumed that there would be consistency across desktops and distributions. Unfortunately, when testing Talk Calendar with the Ubuntu Desktop, the Debian 13 GNOME 48 (Wayland) desktop and Debian Xfce4 (Wayland) different icons where used and some not found. Consequently, Talk Calendar has reverted back to creating buttons with names.
-
-```
-button_edit_event = gtk_button_new_with_label("Edit");
-```
-
-## GTK4 vs libadwaita
-
-With the latest GTK/GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently with the GNOME desktop environment. The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy to allow other desktop environments (Xfce, Cinnamon, MATE) to use GTK and apply their own themes. 
-
-Talk Calendar is a GTK4 only application and is not a libadwaita application. The means that it is not GNOME HIG compliant and so accent colours are not supported with Debian 13 GNOME. I have developed a small libadwaita Calendar demo as shown in the screenshot below and accent colours are supported on Debian 13 GNOME. 
-
-![](debian13-accent-colour.png)
-
-However, the application would not run on a default [Xfce4 Wayland](https://github.com/crispinprojects/xfce4-wayland) desktop unless libadwaita is installed (see below). 
-
-```
-sudo apt update
-sudo apt install libadwaita-1-dev
-```
-
-
-Even when I got the demo to run on Xfce only the Debian default system colours (dark blue/light blue) were displayed just like in the current GTK4 Talk Calendar case. Because the GTK4 runtime is installed by default in Debian the Talk Calendar binary (and any other GTK4 application) can be run without installing any theme library such as libadwaita.
-
-Consequently, I am in a dilemma as to whether I should rewrite Talk Calendar as a libadwaita application. It would run on GNOME desktops. However, even if users of other GTK desktops install libadwaita to run the calendar it would not benefit from accent colours because Xfce and other desktops have not officially adopted the GNOME HIG as they maintain their own themes and ecosystem. The other option is to resurrect my custom calendar widget which used "in-app" preferences to allow colours to be changed.
- 
-It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE etc. will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG (libadwaita), the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. 
-
+The today and event calendar colours are set using the colour buttons in the preferences dialog. 
 
 ## Speech Synthesis
 
-Talk Calendar uses the diphone speech synthesizer method. Speech is synthesised by concatenating pre-recorded segments of speech called [diphones](https://en.wikipedia.org/wiki/Diphone). A small pronouncing dictionary is used to convert a word into it a diphone pronunciation. I have been using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict?in=C+M+U+Dictionary) to look up the phoneme pronunciation  of a word and then work out the diphone construction.
+The Flite speech synthesizer is used as the speech engine and this has to be installed separately. With Debian and Ubuntu based distributions this is done using the command below.
 
-The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the pretty light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s).
+```
+sudo apt install flite
+```
 
 ### Building on Ubuntu 24.04 and Debian 13 (x86 Hardware)
 
@@ -201,17 +175,44 @@ To run Talk Calendar from the terminal use
 
 ## Compile Notes
 
-The Talk Calendar 0.4 series is being developed using both Ubuntu 24.04 which uses GTK 4.14 and Debian 13 (testing) which uses GTK 4.18. The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8.
+The Talk Calendar 0.4 series is being developed using both Debian 13 Trixie and Ubuntu 24.04. Debian 13 uses GTK 4.18 while Ubuntu 24.04 uses GTK 4.14. The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8.
 
-A model view design is used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
+A model view design has been used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
 
-With GTK 4.12 onwards the GtkFileDialog API is no longer signal based but callback based using an asynchronous pattern. This allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialogs to export and import ical files (for backup purposes) have been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
+With GTK 4.12 onwards the GtkFileDialog API is no longer signal based but callback based using an asynchronous pattern. This allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialog windows to export and import ical files (for backup purposes) have been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
 
-GTask allows a task to be called inside a thread and is now used to play audio rather than using GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that audio is played in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
+GTask allows a task to be called inside a thread and is now used to play audio rather than the previous approach which used GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that audio is played in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
 
-The GTK4.14 [GTKCalendar](https://docs.gtk.org/gtk4/class.Calendar.html) has a function  called [gtk_calendar_mark_day](https://docs.gtk.org/gtk4/method.Calendar.mark_day.html) which places a visual marker on a particular day of the current calendar month. This did not work with GTK 4.8 (Debian 12) and the reason I developed a custom calendar to allow visual markers to be used. GtkCalendar is now used in place of my previous custom calendar implementation although with GTK4.18  I have found an issue with system wide accent colours
+Talk Calendar uses a GTK4 custom calendar which allows both visual markers and tooltips to be applied. A dark theme can be used with the today and event colours changed using the colour buttons in the preferences dialog.
 
 The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
+
+## GTK4 vs libadwaita
+
+With the latest GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently within the GNOME desktop environment. The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy to allow other desktop environments (Xfce, Cinnamon, MATE) to develop and use GTK4 applications.
+
+Talk Calendar is a GTK4 application and is not a libadwaita application. The means that it is not GNOME HIG compliant and so accent colours are not supported when using Debian 13 Trixie GNOME. I have developed a small libadwaita Calendar demo as shown in the screenshot below to demonstrate the use of accent colours on Debian 13 GNOME. 
+
+![](debian13-accent-colour.png)
+
+However, the application would not run on a default [Xfce4 Wayland](https://github.com/crispinprojects/xfce4-wayland) desktop without installing libadwaita and supporting libraries. Depending on your system setup this can be done using the commands below but other libraries may be needed. 
+
+```
+sudo apt update
+sudo apt install libadwaita-1-0
+```
+
+Even when I got the libadwaita calendar demo to run on Debian 13 Xfce only the Debian default system colours (dark blue/light blue) were displayed as there is no accent colours dialog. 
+
+Debian 13 Trixie (and Ubuntu) based distros have the GTK4 runtime installed by default. This means that Talk Calendar just runs without installing libadwaita.
+
+Talk Calendar has not been rewritten as a libadwaita application using the GNOME HIG philosophy. Although a Talk Calendar libadwaita application would run on the GNOME desktop it would not run on other GTK desktops such as Xfce with out installing supporting libraries. Xfce and other GTK desktops have not officially adopted the GNOME HIG philosophy as they maintain their own system dialogs (e.g. Appearance dialog) and ecosystem. 
+
+The GNOME HIG discourages the [use of preferences](https://wiki.gnome.org/Design(2f)HIG(2f)Planning(2f)Configuration.html) saying "using preferences as a band-aid is the root of much UI evil" and then "As far as possible, applications should be designed in order to not require manual configuration". Talk Calendar does allow users to change colour and theme preferences and choose other display options and so it is not GNOME HIG compliant in this respect. Sorry about that.
+
+Talk Calendar supports a dark theme which can be selected using the preferences dialog. The today and event day colours to be changed to suit the dark colour scheme using the colour picker so that the user can select their own [accent colours](https://www.bbc.co.uk/homes/design/colour_wheel.shtml). The dark theme worked on an [Xfce Wayland desktop](https://github.com/crispinprojects/xfce4-wayland).
+
+It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE etc. will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG philosophy, the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. 
 
 ### Building on Fedora
 
@@ -270,7 +271,7 @@ Active and under development.
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* Diphone collection and synthesis Alan W. Black and Kevin Lenzo [2000](https://www.cs.cmu.edu/~awb/papers/ICSLP2000_diphone.pdf)
+* [Flite](https://github.com/festvox/flite)
 
 * [Debian](https://www.debian.org/)
 
