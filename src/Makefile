@@ -1,12 +1,11 @@
-# Calendar Makefile
-# Alan Crispin
-# July 2025
+# Testing Makefile
+
 CC ?= gcc
 PKGCONFIG = $(shell which pkg-config)
 CFLAGS = $(shell $(PKGCONFIG) --cflags gtk4)
-LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3
+LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3 -lasound -lm
 
-SRC = main.c customcalendar.c calendarevent.c dbmanager.c
+SRC = main.c customcalendar.c calendarevent.c dbmanager.c diphone.c dictionary.c wavcat.c wavplay.c
 
 OBJS = $(SRC:.c=.o)
 
@@ -24,10 +23,5 @@ clean:
 	rm -f $(OBJS)
 	rm -f talkcalendar
 
-install:
-	echo "Installing is not supported"
-
-run:
-	./talkcalendar
 
 

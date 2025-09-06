@@ -17,1161 +17,417 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <glib.h>
+#include <sqlite3.h>
 #include "dbmanager.h"
+#include "calendarevent.h"
 
-#define CONFIG_DIRNAME "dbtest-gtk"
-
-/*
-SQLite creates its database file with 0644 permissions by default.
-This can be changed by redefining SQLITE_DEFAULT_FILE_PERMISSIONS
-during compilation. SQLITE_DEFAULT_FILE_PERMISSIONS=N
-
-The default numeric file permissions for newly created database files under unix.
-If not specified, the default is 0644 which means that the files is globally
-readable but only writable by the creator.
-
-0644 = rw-r--r--
-
-    r (read): 4
-    w (write): 2
-    x (execute): 1
-
-set so that all users can read and write but cannot execute the db
-
-    Owner: rwx = 4+2+0 = 6
-    Group: r-- = 4+2+0 = 6
-    Others: r-- = 4+2+0 = 6
- 0666 = rw-rw-rw-
-
-*/
-
-#define SQLITE_DEFAULT_FILE_PERMISSIONS = 0666 //does not work
-
-//use chmod 666 calendar.db if issues
-
-//======================================================================
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
-   int i;
-   for(i = 0; i < argc; i++) {
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   printf("\n");
-   return 0;
+/**
+ * @brief Creates a CalendarEvent struct from an SQLite query result.
+ * @param stmt An SQLite prepared statement.
+ * @return A new CalendarEvent struct, or NULL on failure.
+ */
+static CalendarEvent* create_event_from_query(sqlite3_stmt *stmt) {
+    CalendarEvent* event = g_object_new(CALENDAR_TYPE_EVENT, NULL);
+    
+    calendar_event_set_eventid(event, sqlite3_column_int(stmt, 0));
+    calendar_event_set_summary(event, (const gchar*)sqlite3_column_text(stmt, 1));
+    calendar_event_set_location(event, (const gchar*)sqlite3_column_text(stmt, 2));
+    calendar_event_set_description(event, (const gchar*)sqlite3_column_text(stmt, 3));
+    calendar_event_set_start_year(event, sqlite3_column_int(stmt, 4));
+    calendar_event_set_start_month(event, sqlite3_column_int(stmt, 5));
+    calendar_event_set_start_day(event, sqlite3_column_int(stmt, 6));
+    calendar_event_set_start_hour(event, sqlite3_column_int(stmt, 7));
+    calendar_event_set_start_min(event, sqlite3_column_int(stmt, 8));
+    calendar_event_set_end_year(event, sqlite3_column_int(stmt, 9));
+    calendar_event_set_end_month(event, sqlite3_column_int(stmt, 10));
+    calendar_event_set_end_day(event, sqlite3_column_int(stmt, 11));
+    calendar_event_set_end_hour(event, sqlite3_column_int(stmt, 12));
+    calendar_event_set_end_min(event, sqlite3_column_int(stmt, 13));
+    calendar_event_set_is_yearly(event, sqlite3_column_int(stmt, 14));
+    calendar_event_set_is_allday(event, sqlite3_column_int(stmt, 15));
+    calendar_event_set_is_priority(event, sqlite3_column_int(stmt, 16));
+    
+    return event;
 }
-//======================================================================
-void remove_apostrophes(char* str)
-{
-    int from, to;
-    for (from = 0, to = 0; str[from] != '\0'; ++from) {
-        if (!(str[from] == '\'')) {
-            str[to] = str[from];
-            ++to;
-        }
+
+/**
+ * @brief Checks if a file exists.
+ * @param filename The name of the file to check.
+ * @return TRUE if the file exists, FALSE otherwise.
+ */
+static gboolean db_file_exist(const gchar *filename) {
+    return g_file_test(filename, G_FILE_TEST_EXISTS);
+}
+
+/**
+ * @brief Creates the events table in the database if it doesn't exist.
+ * @param db A pointer to the SQLite database connection.
+ * @return 0 on success, 1 on failure.
+ */
+static int db_create_events_table(sqlite3 *db) {
+    const char *sql = "CREATE TABLE IF NOT EXISTS events ("
+                      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                      "summary TEXT NOT NULL,"
+                      "location TEXT,"
+                      "description TEXT,"
+                      "start_year INTEGER,"
+                      "start_month INTEGER,"
+                      "start_day INTEGER,"
+                      "start_hour INTEGER,"
+                      "start_min INTEGER,"
+                      "end_year INTEGER,"
+                      "end_month INTEGER,"
+                      "end_day INTEGER,"
+                      "end_hour INTEGER,"
+                      "end_min INTEGER,"
+                      "is_yearly INTEGER,"
+                      "is_allday INTEGER,"
+                      "is_priority INTEGER);";
+    
+    char *err_msg = 0;
+    int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+    if (rc != SQLITE_OK) {
+        g_critical("Failed to create table: %s", err_msg);
+        sqlite3_free(err_msg);
+        return 1;
     }
-    str[to] = '\0';
-}
-//======================================================================
-const char *get_db_path(void){
-
-	const char *path = "calendar.db";
-	return path;
-}
-//======================================================================
-//Create events table
-//======================================================================
-void db_create_events_table(void) {
-
-sqlite3 *db;
-char *zErrMsg = NULL;
-int rc=0;
-char *sql;
-
-	const char *path=get_db_path();
-
-	rc = sqlite3_open(path, &db);
-
-   if(rc) {
-      printf("Can't open database: %s\n", sqlite3_errmsg(db));
-      return;
-   } else {
-      printf("Opened database successfully\n");
-   }
-
-  sql = "CREATE TABLE EVENTS("\
-        "ID 				INTEGER PRIMARY KEY AUTOINCREMENT,"\
-        "SUMMARY      		TEXT,"\
-        "LOCATION     		TEXT,"\
-        "DESCRIPTION        TEXT,"\
-        "STARTYEAR          INT,"\
-        "STARTMONTH         INT,"\
-        "STARTDAY           INT,"\
-        "STARTHOUR      	INT,"\
-        "STARTMIN       	INT,"\
-        "ENDYEAR            INT,"\
-        "ENDMONTH           INT,"\
-        "ENDDAY            	INT,"\
-        "ENDHOUR      		INT,"\
-        "ENDMIN       		INT,"\
-        "ISYEARLY			INT,"\
-	    "ISALLDAY			INT,"\
-	    "ISPRIORITY 		INT);" ;
-
-
-   //printf("Execute sql to create tables\n");
-
-/* Execute SQL statement */
-   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
-
-   if(rc != SQLITE_OK){
-      printf("Sql1 message: %s\n", zErrMsg);
-      sqlite3_free(zErrMsg);
-   } else {
-      printf("Events table created successfully\n");
-   }
-
-   sqlite3_close(db);
-
-}
-//======================================================================
-// Insert using CalendarEvent pointer
-//======================================================================
-
-int db_insert_event(CalendarEvent *evt) {
-
-	//printf("dbmanger: inserting event\n");
-
-	gint evt_id=0;
-	gchar *summary_str="";
-	gchar *location_str="";
-	gchar *desc_str="";
-
-	gint start_year=0;
-	gint start_month=0;
-	gint start_day=0;
-	gint start_hour=0;
-	gint start_min=0;
-
-	gint end_year=0;
-	gint end_month=0;
-	gint end_day=0;
-	gint end_hour=0;
-	gint end_min=0;
-	gint is_yearly=0;
-	gint is_allday=0;
-	gint is_priority =0;
-
-	g_object_get (evt, "eventid", &evt_id, NULL);
-	g_object_get (evt, "summary", &summary_str, NULL);
-	g_object_get (evt, "location", &location_str, NULL);
-	g_object_get (evt, "description", &desc_str, NULL);
-
-	g_object_get (evt, "startyear", &start_year, NULL);
-	g_object_get (evt, "startmonth", &start_month, NULL);
-	g_object_get (evt, "startday", &start_day, NULL);
-	g_object_get (evt, "starthour", &start_hour, NULL);
-	g_object_get (evt, "startmin", &start_min, NULL);
-
-	g_object_get (evt, "endyear", &end_year, NULL);
-	g_object_get (evt, "endmonth", &end_month, NULL);
-	g_object_get (evt, "endday", &end_day, NULL);
-	g_object_get (evt, "endhour", &end_hour, NULL);
-	g_object_get (evt, "endmin", &end_min, NULL);
-
-	g_object_get(evt, "isyearly", &is_yearly, NULL);
-	g_object_get(evt, "isallday", &is_allday, NULL);
-	g_object_get(evt, "ispriority", &is_priority, NULL);
-
-sqlite3 *db;
-int rc=0;
-char sql_query[2048] = ""; //string on the stack (not heap)
- //Use statement to prevent injection errors
-sqlite3_stmt *stmt;
-
-/* Open database */
-
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-
-   if(rc) {
-      printf("Can't open database: %s\n", sqlite3_errmsg(db));
-      return(0);
-   } else {
-      //printf("Opened database successfully\n");
-   }
-
-sprintf(sql_query, "INSERT INTO EVENTS (SUMMARY,LOCATION,DESCRIPTION,\
-STARTYEAR,STARTMONTH,STARTDAY,STARTHOUR,STARTMIN,\
-ENDYEAR,ENDMONTH,ENDDAY,ENDHOUR,ENDMIN,\
-ISYEARLY,ISALLDAY,ISPRIORITY)\
-VALUES  ('%s','%s','%s', %d,%d,%d,%d,%d, %d,%d,%d,%d,%d,%d,%d,%d);",
-        summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
-        end_year, end_month, end_day, end_hour,end_min,\
-        is_yearly,is_allday,is_priority);
-
-// Prepare the query
-if (sqlite3_prepare_v2(db, sql_query, -1, &stmt, NULL) != SQLITE_OK){
-     //printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
+    return 0;
 }
 
-rc = sqlite3_step(stmt); // execute (step) insert
-sqlite3_finalize(stmt);  // finialize insert query
-int insert_id = sqlite3_last_insert_rowid(db);
-sqlite3_close(db); //close db
-return insert_id;
-}
-//=====================================================================
-// Delete Event
-//=====================================================================
+/**
+ * @brief Opens a connection to an SQLite database.
+ * @param db_filename The name of the database file.
+ * @return A pointer to the database handle, or NULL on failure.
+ */
+sqlite3* db_open(const char *db_filename) {
+    sqlite3 *db_handle;
+    int rc = sqlite3_open(db_filename, &db_handle);
+    if (rc != SQLITE_OK) {
+        g_critical("Cannot open database: %s", sqlite3_errmsg(db_handle));
+        sqlite3_close(db_handle);
+        return NULL;
+    }
 
-void db_delete_event(CalendarEvent *evt)
-{	
-	gint evt_id=0;
-	gchar *summary_str="";
-	gchar *location_str="";
-	gchar *desc_str="";
+    if (db_create_events_table(db_handle) != 0) {
+        g_critical("Failed to create database table.");
+        sqlite3_close(db_handle);
+        return NULL;
+    }
 
-	gint start_year=0;
-	gint start_month=0;
-	gint start_day=0;
-	gint start_hour=0;
-	gint start_min=0;
-
-	gint end_year=0;
-	gint end_month=0;
-	gint end_day=0;
-	gint end_hour=0;
-	gint end_min=0;
-	gint is_yearly=0;
-	gint is_allday=0;
-	gint is_priority =0;
-	
-	g_object_get (evt, "summary", &summary_str, NULL);
-	g_object_get (evt, "location", &location_str, NULL);
-	g_object_get (evt, "description", &desc_str, NULL);
-
-	g_object_get (evt, "startyear", &start_year, NULL);
-	g_object_get (evt, "startmonth", &start_month, NULL);
-	g_object_get (evt, "startday", &start_day, NULL);
-	g_object_get (evt, "starthour", &start_hour, NULL);
-	g_object_get (evt, "startmin", &start_min, NULL);
-
-	g_object_get (evt, "endyear", &end_year, NULL);
-	g_object_get (evt, "endmonth", &end_month, NULL);
-	g_object_get (evt, "endday", &end_day, NULL);
-	g_object_get (evt, "endhour", &end_hour, NULL);
-	g_object_get (evt, "endmin", &end_min, NULL);
-
-	g_object_get(evt, "isyearly", &is_yearly, NULL);
-	g_object_get(evt, "isallday", &is_allday, NULL);
-	g_object_get(evt, "ispriority", &is_priority, NULL);
-	
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	printf("Opened database successfully\n");
-	}
-	
-	sprintf(sql, "DELETE FROM EVENTS WHERE SUMMARY ='%s'AND LOCATION ='%s' AND DESCRIPTION='%s'\
-	AND STARTYEAR='%i' AND STARTMONTH='%i' AND STARTDAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
-	AND ENDHOUR='%i' AND ENDMIN='%i'\
-	AND ISYEARLY='%i' AND ISALLDAY='%i' AND ISPRIORITY='%i'",summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
-	end_hour,end_min,is_yearly,is_allday,is_priority);
-	  
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	rc = sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-		
+    return db_handle;
 }
 
-//======================================================================
-// Update event
-//======================================================================
-void db_update_event(CalendarEvent *evt, int id)
-{
-
-//int idx=event->id;
-
-    gint evt_id=0;
-	gchar *summary_str="";
-	gchar *location_str="";
-	gchar *desc_str="";
-
-	gint start_year=0;
-	gint start_month=0;
-	gint start_day=0;
-	gint start_hour=0;
-	gint start_min=0;
-
-	gint end_year=0;
-	gint end_month=0;
-	gint end_day=0;
-	gint end_hour=0;
-	gint end_min=0;
-	gint is_yearly=0;
-	gint is_allday=0;
-	gint is_priority =0;
-	
-	g_object_get (evt, "summary", &summary_str, NULL);
-	g_object_get (evt, "location", &location_str, NULL);
-	g_object_get (evt, "description", &desc_str, NULL);
-
-	g_object_get (evt, "startyear", &start_year, NULL);
-	g_object_get (evt, "startmonth", &start_month, NULL);
-	g_object_get (evt, "startday", &start_day, NULL);
-	g_object_get (evt, "starthour", &start_hour, NULL);
-	g_object_get (evt, "startmin", &start_min, NULL);
-
-	g_object_get (evt, "endyear", &end_year, NULL);
-	g_object_get (evt, "endmonth", &end_month, NULL);
-	g_object_get (evt, "endday", &end_day, NULL);
-	g_object_get (evt, "endhour", &end_hour, NULL);
-	g_object_get (evt, "endmin", &end_min, NULL);
-
-	g_object_get(evt, "isyearly", &is_yearly, NULL);
-	g_object_get(evt, "isallday", &is_allday, NULL);
-	g_object_get(evt, "ispriority", &is_priority, NULL);
-
-sqlite3 *db;
-int rc=0;
-sqlite3_stmt *stmt;
-char query[2048] = "";
-
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-
-   if(rc) {
-      printf("Can't open database: %s\n", sqlite3_errmsg(db));
-      return;
-   } else {
-      //printf("Opened database successfully\n");
-   }
-
-	sprintf(query, "UPDATE EVENTS SET SUMMARY ='%s',LOCATION ='%s', DESCRIPTION='%s',\
-	STARTYEAR=%i,STARTMONTH=%i,STARTDAY=%i,STARTHOUR=%i,STARTMIN=%i,\
-	ENDYEAR=%i,ENDMONTH=%i,ENDDAY=%i,ENDHOUR=%i,ENDMIN=%i,\
-	ISYEARLY=%i,ISALLDAY=%i,ISPRIORITY=%i\
-	WHERE ID ='%i'",summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
-	end_year, end_month, end_day, end_hour,end_min,\
-	is_yearly,is_allday,is_priority,id);
-
-
-// Prepare the query
-rc = sqlite3_prepare_v2(db, query, -1, &stmt, NULL);
-if (rc != SQLITE_OK) {
-  // error handling -> statement not prepared
-  printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
+/**
+ * @brief Closes the database connection.
+ * @param db A pointer to the database handle.
+ * @return void
+ */
+void db_close(sqlite3 *db) {
+    if (db) {
+        sqlite3_close(db);
+        g_print("Database connection closed.\n");
+    }
 }
 
- rc = sqlite3_step(stmt); // execute (step) insert
- sqlite3_finalize(stmt);// finialize
+/**
+ * @brief Inserts a new event into the database.
+ * @param db A pointer to the database handle.
+ * @param event A pointer to the CalendarEvent struct to insert.
+ * @return The ID of the inserted row on success, -1 on failure.
+ */
+int db_insert_event(sqlite3 *db, CalendarEvent* event) {
+    const char *sql = "INSERT INTO events (summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return -1;
+    }
+    
+    sqlite3_bind_text(stmt, 1, calendar_event_get_summary(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, calendar_event_get_location(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, calendar_event_get_description(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 4, calendar_event_get_start_year(event));
+    sqlite3_bind_int(stmt, 5, calendar_event_get_start_month(event));
+    sqlite3_bind_int(stmt, 6, calendar_event_get_start_day(event));
+    sqlite3_bind_int(stmt, 7, calendar_event_get_start_hour(event));
+    sqlite3_bind_int(stmt, 8, calendar_event_get_start_min(event));
+    sqlite3_bind_int(stmt, 9, calendar_event_get_end_year(event));
+    sqlite3_bind_int(stmt, 10, calendar_event_get_end_month(event));
+    sqlite3_bind_int(stmt, 11, calendar_event_get_end_day(event));
+    sqlite3_bind_int(stmt, 12, calendar_event_get_end_hour(event));
+    sqlite3_bind_int(stmt, 13, calendar_event_get_end_min(event));
+    sqlite3_bind_int(stmt, 14, calendar_event_get_is_yearly(event));
+    sqlite3_bind_int(stmt, 15, calendar_event_get_is_allday(event));
+    sqlite3_bind_int(stmt, 16, calendar_event_get_is_priority(event));
 
-sqlite3_close(db);
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        g_warning("Failed to execute statement: %s", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return -1;
+    }
+    sqlite3_finalize(stmt);
+    return sqlite3_last_insert_rowid(db);
 }
-//======================================================================
 
-int db_get_id(CalendarEvent *evt)
-{
-	int id =0;
-	//SELECT ID,* FROM ...;
-	gchar *summary_str="";
-	gchar *location_str="";
-	gchar *desc_str="";
+/**
+ * @brief Deletes an event from the database by its ID.
+ * @param db A pointer to the database handle.
+ * @param id The ID of the event to delete.
+ * @return 0 on success, 1 on failure.
+ */
+int db_delete_event(sqlite3 *db, int id) {
+    sqlite3_stmt *stmt;
+    const char *sql = "DELETE FROM events WHERE id = ?";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 
-	gint start_year=0;
-	gint start_month=0;
-	gint start_day=0;
-	gint start_hour=0;
-	gint start_min=0;
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return 1;
+    }
 
-	gint end_year=0;
-	gint end_month=0;
-	gint end_day=0;
-	gint end_hour=0;
-	gint end_min=0;
-	gint is_yearly=0;
-	gint is_allday=0;
-	gint is_priority =0;
-	
-	g_object_get (evt, "summary", &summary_str, NULL);
-	g_object_get (evt, "location", &location_str, NULL);
-	g_object_get (evt, "description", &desc_str, NULL);
+    sqlite3_bind_int(stmt, 1, id);
 
-	g_object_get (evt, "startyear", &start_year, NULL);
-	g_object_get (evt, "startmonth", &start_month, NULL);
-	g_object_get (evt, "startday", &start_day, NULL);
-	g_object_get (evt, "starthour", &start_hour, NULL);
-	g_object_get (evt, "startmin", &start_min, NULL);
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        g_warning("Failed to execute statement: %s", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return 1;
+    }
 
-	g_object_get (evt, "endyear", &end_year, NULL);
-	g_object_get (evt, "endmonth", &end_month, NULL);
-	g_object_get (evt, "endday", &end_day, NULL);
-	g_object_get (evt, "endhour", &end_hour, NULL);
-	g_object_get (evt, "endmin", &end_min, NULL);
+    sqlite3_finalize(stmt);
+    return 0;
+}
 
-	g_object_get(evt, "isyearly", &is_yearly, NULL);
-	g_object_get(evt, "isallday", &is_allday, NULL);
-	g_object_get(evt, "ispriority", &is_priority, NULL);
-	
-	
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
+int db_delete_event_by_details(sqlite3 *db, const gchar* summary, gint year, gint month, gint day) {
+    sqlite3_stmt *stmt;
+    const char *sql = "DELETE FROM events WHERE summary = ? AND start_year = ? AND start_month = ? AND start_day = ?";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
 
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return 0;
-	} else {
-	printf("Opened database successfully\n");
-	}
-	
-	sprintf(sql, "SELECT ID FROM EVENTS WHERE SUMMARY ='%s'AND LOCATION ='%s' AND DESCRIPTION='%s'\
-	AND STARTYEAR='%i' AND STARTMONTH='%i' AND STARTDAY='%i' AND STARTHOUR='%i' AND STARTMIN='%i'\
-	AND ENDYEAR=%i AND ENDMONTH=%i AND ENDDAY=%i AND ENDHOUR='%i' AND ENDMIN='%i'\
-	AND ISYEARLY='%i' AND ISALLDAY='%i' AND ISPRIORITY='%i'",summary_str,location_str,desc_str,start_year,start_month,start_day,start_hour,start_min,\
-	end_year,end_month,end_day,end_hour,end_min,is_yearly,is_allday,is_priority);
-	
-	
-	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-	// error handling -> statement not prepared
-	printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
-	}
-	rc = sqlite3_step(stmt);
-	//if (rc != SQLITE_ROW) {
-	//// error handling -> no rows returned, or an error occurred
-	//return 0;
-	//}
-	id = sqlite3_column_int(stmt, 0);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-	return id;
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return 1;
+    }
+
+    sqlite3_bind_text(stmt, 1, summary, -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 2, year);
+    sqlite3_bind_int(stmt, 3, month);
+    sqlite3_bind_int(stmt, 4, day);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        g_warning("Failed to execute statement: %s", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return 1;
+    }
+
+    sqlite3_finalize(stmt);
+    return 0;
+}
+
+int db_delete_all_events(sqlite3 *db) {
+    const char *sql = "DELETE FROM events";
+    char *err_msg = 0;
+    int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to delete all events: %s", err_msg);
+        sqlite3_free(err_msg);
+        return 1;
+    }
+    return 0;
+}
+
+/**
+ * @brief Retrieves a single event from the database by its ID.
+ * @param db A pointer to the database handle.
+ * @param id The ID of the event to retrieve.
+ * @return A new CalendarEvent struct on success, NULL if not found or on failure.
+ */
+CalendarEvent* db_get_event_by_id(sqlite3 *db, int id) {
+    const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority FROM events WHERE id = ?";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return NULL;
+    }
+    sqlite3_bind_int(stmt, 1, id);
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        sqlite3_finalize(stmt);
+        return event;
+    }
+    sqlite3_finalize(stmt);
+    return NULL;
 }
 
 
-
-//======================================================================
-// Get CalendarEvent
 //======================================================================
 
-void db_get_event(int index, CalendarEvent *evt){
+GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int day) {
+    const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority FROM events WHERE (start_year = ? OR is_yearly = 1) AND start_month = ? AND start_day = ? ORDER BY start_hour, start_min asc";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return NULL;
+    }
+    sqlite3_bind_int(stmt, 1, year);
+    sqlite3_bind_int(stmt, 2, month);
+    sqlite3_bind_int(stmt, 3, day);
 
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-
-sprintf(sql, "SELECT * FROM EVENTS WHERE ID = %i", index);
-
-if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-     printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
+    GArray *events_array = g_array_new(FALSE, FALSE, sizeof(CalendarEvent*));
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        g_array_append_vals(events_array, &event, 1);
+    }
+    sqlite3_finalize(stmt);
+    return events_array;
 }
 
-rc = sqlite3_step(stmt); // execute statement (query.first?)
 
+/**
+ * @brief Retrieves all events from the database 
+ * @param db A pointer to the database handle.
+ * @return GArray containing all events
+ */
+GArray* db_get_all_events(sqlite3 *db) {
+    const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority FROM events ORDER BY start_year, start_month, start_day, start_hour, start_min";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return NULL;
+    }
 
-gint evt_id = sqlite3_column_int(stmt, 0);
-
-/* const gchar *summary_str =(unsigned char*)sqlite3_column_text(stmt, 1); */
-/* const gchar *location_str =(unsigned char*)sqlite3_column_text(stmt, 2); */
-/* const gchar *desc_str =(unsigned char*)sqlite3_column_text(stmt, 3); */
-
-const gchar *summary_str =sqlite3_column_text(stmt, 1);
-const gchar *location_str =sqlite3_column_text(stmt, 2);
-const gchar *desc_str =sqlite3_column_text(stmt, 3);
-
-/* gchar *summary_str =sqlite3_column_text(stmt, 1); */
-/* gchar *location_str =sqlite3_column_text(stmt, 2); */
-/* gchar *desc_str =sqlite3_column_text(stmt, 3); */
-
-gint start_year=sqlite3_column_int(stmt, 4);
-gint start_month=sqlite3_column_int(stmt, 5);
-gint start_day=sqlite3_column_int(stmt, 6);
-gint start_hour=sqlite3_column_int(stmt, 7);
-gint start_min=sqlite3_column_int(stmt, 8);
-
-gint end_year=sqlite3_column_int(stmt, 9);
-gint end_month=sqlite3_column_int(stmt, 10);;
-gint end_day=sqlite3_column_int(stmt, 11);
-gint end_hour=sqlite3_column_int(stmt, 12);
-gint end_min=sqlite3_column_int(stmt, 13);
-
-gint is_yearly=sqlite3_column_int(stmt, 14);
-gint is_allday=sqlite3_column_int(stmt, 15);
-gint is_priority =sqlite3_column_int(stmt, 16);
-
-g_object_set(evt, "eventid",evt_id, NULL);
-g_object_set(evt, "summary", g_strdup(summary_str), NULL);
-g_object_set(evt, "location", g_strdup(location_str), NULL);
-g_object_set(evt, "description", g_strdup(desc_str), NULL);
-g_object_set(evt, "startyear", start_year, NULL);
-g_object_set(evt, "startmonth", start_month, NULL);
-g_object_set(evt, "startday", start_day, NULL);
-g_object_set(evt, "starthour", start_hour, NULL);
-g_object_set(evt, "startmin", start_min, NULL);
-g_object_set(evt, "endyear", end_year, NULL); // to do
-g_object_set(evt, "endmonth", end_month, NULL);
-g_object_set(evt, "endday", end_day, NULL);
-g_object_set(evt, "endhour", end_hour, NULL);
-g_object_set(evt, "endmin", end_min, NULL);
-g_object_set(evt, "isyearly", is_yearly, NULL);
-g_object_set(evt, "isallday", is_allday, NULL);
-g_object_set(evt, "ispriority", is_priority, NULL);
-
-sqlite3_finalize(stmt);
-sqlite3_close(db);
-}
-//======================================================================
-// Get number of rows all events
-//======================================================================
-int db_get_number_of_rows_all(void) {	
-	sqlite3 *db;
-	int rc=0;
-	int row_count=0;
-	sqlite3_stmt *stmt;
-	char sql[200] = "";
-
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return 0;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT Count(*) FROM EVENTS");
-	//printf("sql = %s\n",sql);
-
-	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-	// error handling -> statement not prepared
-	printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
-	}
-	rc = sqlite3_step(stmt);
-	if (rc != SQLITE_ROW) {
-	// error handling -> no rows returned, or an error occurred
-	// printf("SQL return no rows");
-	return 0;
-	}
-	row_count = sqlite3_column_int(stmt, 0);
-
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-	return row_count;
+    GArray *events_array = g_array_new(FALSE, FALSE, sizeof(CalendarEvent*));
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        g_array_append_vals(events_array, &event, 1);
+    }
+    sqlite3_finalize(stmt);
+    return events_array;
 }
 
-//======================================================================
-// Get number of rows year month
-//======================================================================
 
-int db_get_number_of_rows_month_year(int month, int year) {
+/**
+ * @brief Updates an existing event in the database.
+ * @param db A pointer to the database handle.
+ * @param event A pointer to the CalendarEvent struct with updated information.
+ * @return 0 on success, 1 on failure.
+ */
+int db_update_event(sqlite3 *db, CalendarEvent* event) {
+    const char *sql = "UPDATE events SET summary = ?, location = ?, description = ?, start_year = ?, "
+                      "start_month = ?, start_day = ?, start_hour = ?, start_min = ?, end_year = ?, "
+                      "end_month = ?, end_day = ?, end_hour = ?, end_min = ?, is_yearly = ?, "
+                      "is_allday = ?, is_priority = ? WHERE id = ?";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return -1;
+    }
+    
+    sqlite3_bind_text(stmt, 1, calendar_event_get_summary(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, calendar_event_get_location(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, calendar_event_get_description(event), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 4, calendar_event_get_start_year(event));
+    sqlite3_bind_int(stmt, 5, calendar_event_get_start_month(event));
+    sqlite3_bind_int(stmt, 6, calendar_event_get_start_day(event));
+    sqlite3_bind_int(stmt, 7, calendar_event_get_start_hour(event));
+    sqlite3_bind_int(stmt, 8, calendar_event_get_start_min(event));
+    sqlite3_bind_int(stmt, 9, calendar_event_get_end_year(event));
+    sqlite3_bind_int(stmt, 10, calendar_event_get_end_month(event));
+    sqlite3_bind_int(stmt, 11, calendar_event_get_end_day(event));
+    sqlite3_bind_int(stmt, 12, calendar_event_get_end_hour(event));
+    sqlite3_bind_int(stmt, 13, calendar_event_get_end_min(event));
+    sqlite3_bind_int(stmt, 14, calendar_event_get_is_yearly(event));
+    sqlite3_bind_int(stmt, 15, calendar_event_get_is_allday(event));
+    sqlite3_bind_int(stmt, 16, calendar_event_get_is_priority(event));
+    sqlite3_bind_int(stmt, 17, calendar_event_get_eventid(event));
 
-sqlite3 *db;
-int rc=0;
-int row_count=0;
-sqlite3_stmt *stmt;
-char sql[200] = "";
-
-//Open database
-const char *path=get_db_path();
-rc = sqlite3_open(path, &db);
-if(rc) {
-printf("Can't open database: %s\n", sqlite3_errmsg(db));
-return 0;
-} else {
-//printf("Opened database successfully\n");
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        g_warning("Failed to execute statement: %s", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt);
+        return -1;
+    }
+    sqlite3_finalize(stmt);
+    return 0;
 }
 
-sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE STARTYEAR = '%i' AND STARTMONTH = '%i'", year, month);
 
-rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-if (rc != SQLITE_OK) {
-// error handling -> statement not prepared
-printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
-}
-rc = sqlite3_step(stmt);
-if (rc != SQLITE_ROW) {
-// error handling -> no rows returned, or an error occurred
-return 0;
-}
-row_count = sqlite3_column_int(stmt, 0);
-sqlite3_finalize(stmt);
-sqlite3_close(db);
-return row_count;
-}
+/**
+ * @brief Retrieves all events from the database that match the given criteria.
+ * @param db A pointer to the database handle.
+ * @param summary The summary to search for (can be NULL for any).
+ * @param location The location to search for (can be NULL for any).
+ * @return A GArray of CalendarEvent structs. The array and its contents must be freed by the caller.
+ */
 
-//======================================================================
-// Get number of rows YEAR MONTH DAY
-//======================================================================
-int db_get_number_of_rows_year_month_day(int year, int month, int day) {
+GArray* db_get_events_by_search(sqlite3 *db, const gchar* summary, const gchar* location) {
+    GString *sql_builder = g_string_new("SELECT id, summary, location, description, start_year, start_month, "
+                                        "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                                        "end_min, is_yearly, is_allday, is_priority FROM events WHERE 1=1");
+    
+    if (summary) {
+        g_string_append(sql_builder, " AND summary LIKE ?");
+    }
+    if (location) {
+        g_string_append(sql_builder, " AND location LIKE ?");
+    }
+    
+    g_string_append(sql_builder, " ORDER BY start_year, start_month, start_day, start_hour, start_min");
 
-	sqlite3 *db;
-	int rc=0;
-	int row_count=0;
-	sqlite3_stmt *stmt;
-	char sql[200] = "";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql_builder->str, -1, &stmt, NULL);
+    g_string_free(sql_builder, TRUE);
 
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return NULL;
+    }
+    
+    int param_index = 1;
+    if (summary) {
+        gchar* like_summary = g_strdup_printf("%%%s%%", summary);
+        sqlite3_bind_text(stmt, param_index++, like_summary, -1, SQLITE_TRANSIENT);
+        g_free(like_summary);
+    }
+    if (location) {
+        gchar* like_location = g_strdup_printf("%%%s%%", location);
+        sqlite3_bind_text(stmt, param_index++, like_location, -1, SQLITE_TRANSIENT);
+        g_free(like_location);
+    }
 
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return(0);
-	} else {
-	//printf("Opened database successfully\n");
-	}
+    GArray *events_array = g_array_new(FALSE, FALSE, sizeof(CalendarEvent*));
+    
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        g_array_append_vals(events_array, &event, 1);
+    }
 
-	sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE STARTYEAR = '%i' AND STARTMONTH = '%i' AND STARTDAY = '%i'", year, month, day);
+    if (rc != SQLITE_DONE) {
+        g_warning("Failed to execute search: %s", sqlite3_errmsg(db));
+    }
 
-	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-	// error handling -> statement not prepared
-	printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
-	return 0;
-	}
-rc = sqlite3_step(stmt);
-if (rc != SQLITE_ROW) {
-  // error handling -> no rows returned, or an error occurred
-  return 0;
-}
-row_count = sqlite3_column_int(stmt, 0);
-sqlite3_finalize(stmt);
-sqlite3_close(db);
-return row_count;
-}
-//======================================================================
-// Get number of isyearly events in month
-//======================================================================
-int db_get_number_of_isyearly_events_month(int month) {
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return  0;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT Count(*) FROM EVENTS WHERE STARTMONTH = '%i' AND ISYEARLY = '%i'", month,1);
-	
-	rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-	if (rc != SQLITE_OK) {
-	printf("SQL prepare error: %s\n", sqlite3_errmsg(db));
-	}
-	rc = sqlite3_step(stmt);
-	if (rc != SQLITE_ROW) {
-	// error handling -> no rows returned, or an error occurred
-	return 0;
-	}
-	int row_count = sqlite3_column_int(stmt, 0);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-	return row_count;
-}
-//======================================================================
-// Get all events
-//======================================================================
-void db_get_all_events(GArray *evt_arry) {
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	// Open database
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT * FROM EVENTS");
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-	
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-	} //while
-
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-//======================================================================
-// Get events for month year (with isYearly)
-//======================================================================
-void db_get_all_events_year_month(GArray *evt_arry, int year, int month)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-	sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i' ORDER BY STARTDAY, STARTHOUR, STARTMIN asc", year, 1, month);
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-     printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-
-	} //while
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-
+    sqlite3_finalize(stmt);
+    return events_array;
 }
 
-//======================================================================
-// Get all end date events for month year
-//======================================================================
-void db_get_all_enddate_events_year_month(GArray *evt_arry, int year, int month)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-		
-	sprintf(sql, "SELECT * FROM EVENTS WHERE (ENDYEAR = '%i') AND ENDMONTH = '%i'", year, month);
 
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-     printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-
-	} //while
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-
-}
-//======================================================================
-// Get events for year month day (day events with isYearly)
-//======================================================================
-void db_get_all_events_year_month_day(GArray *evt_arry, int year, int month, int day)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	// Open database
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i' AND STARTDAY = '%i' ORDER BY STARTHOUR, STARTMIN asc", year, 1, month, day);
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-     printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-	}
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-
-//======================================================================
-// Get DAY isYearly events
-//======================================================================
-void db_get_isyearly_events_day(GArray *evt_arry, int month, int day)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT * FROM EVENTS WHERE STARTMONTH = '%i' AND STARTDAY = '%i' AND ISYEARLY = '%i'",month,day,1);
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	return;
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-	} //while
-
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-
-}
-
-//======================================================================
-// Get MONTH isYearly events
-//======================================================================
-void db_get_isyearly_events_month(GArray *evt_arry, int month)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT * FROM EVENTS WHERE STARTMONTH = '%i' AND ISYEARLY = '%i'", month, 1);
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	return;
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-	} //while
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-
-//======================================================================
-// Get upcoming events
-//======================================================================
-void db_get_upcoming_events(GArray *evt_arry, int year, int month, int from ,int to)
-{
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-	//Open database
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "SELECT * FROM EVENTS WHERE STARTYEAR ='%i' AND STARTMONTH = '%i' AND\
-	STARTDAY BETWEEN '%i' AND '%i' ORDER BY STARTDAY asc ", year, month, from,to);
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-     printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	while (sqlite3_step(stmt) == SQLITE_ROW) {
-
-	CalendarEvent *tmp_evt = g_object_new(CALENDAR_TYPE_EVENT, 0);
-
-	g_object_set(tmp_evt, "eventid", sqlite3_column_int(stmt, 0), NULL);
-	g_object_set(tmp_evt, "summary", sqlite3_column_text(stmt, 1), NULL);
-	g_object_set(tmp_evt, "location", sqlite3_column_text(stmt, 2), NULL);
-	g_object_set(tmp_evt, "description", sqlite3_column_text(stmt, 3), NULL);
-	g_object_set(tmp_evt, "startyear", sqlite3_column_int(stmt, 4), NULL);
-	g_object_set(tmp_evt, "startmonth", sqlite3_column_int(stmt, 5), NULL);
-	g_object_set(tmp_evt, "startday", sqlite3_column_int(stmt, 6), NULL);
-	g_object_set(tmp_evt, "starthour", sqlite3_column_int(stmt, 7), NULL);
-	g_object_set(tmp_evt, "startmin", sqlite3_column_int(stmt, 8), NULL);
-	g_object_set(tmp_evt, "endyear", sqlite3_column_int(stmt, 9), NULL);
-	g_object_set(tmp_evt, "endmonth", sqlite3_column_int(stmt,10), NULL);
-	g_object_set(tmp_evt, "endday", sqlite3_column_int(stmt, 11), NULL);
-	g_object_set(tmp_evt, "endhour", sqlite3_column_int(stmt, 12), NULL);
-	g_object_set(tmp_evt, "endmin", sqlite3_column_int(stmt, 13), NULL);
-
-	g_object_set(tmp_evt, "isyearly", sqlite3_column_int(stmt, 14), NULL);
-	g_object_set(tmp_evt, "isallday", sqlite3_column_int(stmt, 15), NULL);
-	g_object_set(tmp_evt, "ispriority", sqlite3_column_int(stmt, 16), NULL);
-
-	g_array_append_val(evt_arry, tmp_evt);
-	} //while
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-
-//======================================================================
-// Delete row (single event)
-//======================================================================
-void db_delete_row(int id){
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-
-	/* Open database */
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "DELETE FROM EVENTS WHERE ID=%i", id);
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	rc = sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-//======================================================================
-// Delete all events
-//======================================================================
-void db_delete_all(void){
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-
-	// Open database
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-	sprintf(sql, "DELETE FROM EVENTS");
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	rc = sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-
-//======================================================================
-// Reset sequence
-//======================================================================
-
-void db_reset_sequence(void){
-
-	sqlite3 *db;
-	int rc=0;
-	sqlite3_stmt *stmt;
-	char sql[2048] = "";
-
-	//Open database
-	const char *path=get_db_path();
-	rc = sqlite3_open(path, &db);
-	if(rc) {
-	printf("Can't open database: %s\n", sqlite3_errmsg(db));
-	return;
-	} else {
-	//printf("Opened database successfully\n");
-	}
-
-	sprintf(sql, "DELETE FROM SQLITE_SEQUENCE WHERE NAME= 'EVENTS'");
-
-	if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK){
-	printf("SQL get events prepare error: %s\n", sqlite3_errmsg(db));
-	}
-
-	rc = sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-}
-//======================================================================

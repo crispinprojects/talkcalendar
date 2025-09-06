@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event details.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event summary words.
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
@@ -17,6 +17,7 @@ A screenshot of Talk Calendar is shown below.
 * dark colour scheme mode
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
+* built-in speech synthesizer
 * Sqlite3 database used to store events
 
 ## Pre-built Binary (x86 Intel PCs)
@@ -41,7 +42,7 @@ The easiest way to install Talk Calendar is to use the BASH script installer fro
 To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
 ```
-./install-talkcalendar.sh
+sudo ./install-talkcalendar.sh
 ```
 
 The installer assumes that you are a member of the sudo group and that the GTK4 libraries are installed. If not, go to the build Talk Calendar section below and use the terminal command instructions to install the required packages.
@@ -49,7 +50,7 @@ The installer assumes that you are a member of the sudo group and that the GTK4 
 To uninstall Talk Calendar run the script below
 
 ```
-./uninstall-talkcalendar
+sudo ./uninstall-talkcalendar
 ```
 
 You can open the BASH script installer using a Text Editor to view the code. Talk Calendar is installed into the directory "/usr/bin/talkcalendar". One advantage of using a BASH script installer is that the code can be inspected to show exactly what is occurring. 
@@ -73,7 +74,7 @@ Pressing F1 invokes the information window which can also be selected from the m
 
 You can change the today and event colours by clicking on the colour buttons and using the colour picker.
 
-![](colour-picker.png)
+![](talkcalendar-colour.png)
 
 ### Information (F1)
 ![](talkcalendar-info.png)
@@ -95,13 +96,11 @@ You can select a dark colour scheme from the preferences dialog. This uses a dar
 
 ## Talking
 
-* Make sure the "Enable Talking" check button in the preferences window is ticked and the Flite speech synthesizer is installed (see the speech synthesis section below)
+* Make sure the "Enable Talking" check button in the preferences window is ticked 
 
 * Press the ***T key*** to readout the current time (talking clock)
 
-* Click on a calendar day to read out the date and any event details
-
-* The space bar can also be used to read out events on a selected day
+* Click on a calendar day press the space bar to read out events
 
 ## Font, Colour, Icons
 
@@ -125,15 +124,44 @@ Xfce uses its own "Appearance" settings window which allows the default font to 
 
 The today and event calendar colours are set using the colour buttons in the preferences dialog. 
 
+### Events Database
+
+Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQLite is a small, fast and full-featured SQL database engine written in C. 
+
+### Export and Import iCalendar Files
+
+Talk Calendar allows a personal calendar to be exported as an iCalendar file. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be modified using a standard text editor. 
+
+The export to icalendar file does not currently support time zones and so the DTSTART and DTEND properties contain dates with local time and have no reference to a time zone. For example, the following represents an event starting on January, 1st, 2024 at 11.30am and ending at 2pm.
+
+```
+DTSTART:20240101T113000
+DTEND:20240101T140000
+```
+
+You should backup your events by using the File->Export menu item which will create an "events.ical" file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events and then use the File->Import to restore exported events. This assumes that the "events.ical" file is in the current working directory. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this.
+
+The icalendar import parser allows the date and local time to be imported and checks if a time zone has been specified using the [TZID](https://icalendar.org/iCalendar-RFC-5545/3-2-19-time-zone-identifier.html) property. A file chooser dialog is used to allow the file to be chosen by the user as shown below. File filters can be used.
+
+The parser will be updated with new features in future releases.
+
+### Recurring Events
+
+The only recurring event type that is currently supported by Talk Calendar is yearly. This is required for events such as birthdays and anniversaries. The parser uses icalendar [RRULE](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html) to determine if an event is yearly (e.g. birthday).
+
+## Updating
+
+To update from the Talk Calendar 0.4 series to the 0.5 series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
+
 ## Speech Synthesis
 
-The Flite speech synthesizer is used as the speech engine and this has to be installed separately. With Debian and Ubuntu based distributions this is done using the command below.
+Talk Calendar uses it own built-in speech synthesizer coded from scratch to read out the date, time and event summary words. The number of event words recognised is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service", "radio reminder", "television reminder", etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. 
 
-```
-sudo apt install flite
-```
+Talk Calendar uses the diphone speech synthesizer method. Speech is synthesised by concatenating pre-recorded segments of speech called [diphones](https://en.wikipedia.org/wiki/Diphone). A small pronouncing dictionary is used to convert a word into it a diphone pronunciation. I have been using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict?in=C+M+U+Dictionary) to look up the phoneme pronunciation  of a word and then work out the diphone construction.
 
-### Building on Ubuntu 24.04 and Debian 13 (x86 Hardware)
+The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice hex arrays that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s). 
+
+### Building on Debian 13 and Ubuntu 24.04 (x86 Hardware)
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
@@ -175,7 +203,7 @@ To run Talk Calendar from the terminal use
 
 ## Compile Notes
 
-The Talk Calendar 0.4 series is being developed using both Debian 13 Trixie and Ubuntu 24.04. Debian 13 uses GTK 4.18 while Ubuntu 24.04 uses GTK 4.14. The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8.
+The Talk Calendar 0.5 series is being developed using both Debian 13 Trixie and Ubuntu 24.04. Debian 13 uses GTK 4.18 while Ubuntu 24.04 uses GTK 4.14. The Talk Calendar 0.5 series uses its own internal speech synthesizer.The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8 while Talk Calendar 0.4 series used GTK 4.14.
 
 A model view design has been used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
 
@@ -185,7 +213,7 @@ GTask allows a task to be called inside a thread and is now used to play audio r
 
 Talk Calendar uses a GTK4 custom calendar which allows both visual markers and tooltips to be applied. A dark theme can be used with the today and event colours changed using the colour buttons in the preferences dialog.
 
-The latest version  of Talk Calendar (0.4 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
+The latest version  of Talk Calendar (0.5 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
 
 ## GTK4 vs libadwaita
 
@@ -267,11 +295,9 @@ Active and under development.
 
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
-* [GNOME Builder](https://builder.readthedocs.io/index.html) is a free and open-source Integrated Development Environment (IDE) which can be used for developing GTK4 and GNOME applications.
-
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [Flite](https://github.com/festvox/flite)
+* [Diphone License](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt)
 
 * [Debian](https://www.debian.org/)
 

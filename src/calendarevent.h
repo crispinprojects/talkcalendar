@@ -80,8 +80,8 @@ void calendar_event_set_is_yearly(CalendarEvent *self, gint is_yearly);
 gint calendar_event_get_is_allday(CalendarEvent *self);
 void calendar_event_set_is_allday(CalendarEvent *self, gint is_allday);
 
-gint calendar_event_get_is_multiday(CalendarEvent *self);
-void calendar_event_set_is_multiday(CalendarEvent *self, gint is_multiday);
+//gint calendar_event_get_is_multiday(CalendarEvent *self);
+//void calendar_event_set_is_multiday(CalendarEvent *self, gint is_multiday);
 
 gint calendar_event_get_is_priority(CalendarEvent *self);
 void calendar_event_set_is_priority(CalendarEvent *self, gint is_priority);

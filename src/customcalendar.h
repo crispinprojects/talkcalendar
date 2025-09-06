@@ -18,13 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 /*
-GTK4 simple month view calendar which uses a grid of day labels 
+GTK4 simple month view calendar which uses a grid of day labels
 */
 
 #pragma once
 
 #include <gtk/gtk.h>
-
 #include <stdio.h>
 
 G_BEGIN_DECLS
@@ -33,46 +32,46 @@ G_BEGIN_DECLS
 #define CUSTOM_CALENDAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), CUSTOM_TYPE_CALENDAR, CustomCalendar))
 #define CUSTOM_IS_CALENDAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CUSTOM_TYPE_CALENDAR))
 
-typedef struct _CustomCalendar	 CustomCalendar;
+typedef struct _CustomCalendar CustomCalendar;
 
 GtkWidget *custom_calendar_new (void);
 
-GDK_AVAILABLE_IN_ALL GType	custom_calendar_get_type(void) G_GNUC_CONST;
+GDK_AVAILABLE_IN_ALL GType custom_calendar_get_type(void) G_GNUC_CONST;
 
-GDK_AVAILABLE_IN_ALL void custom_calendar_mark_day(CustomCalendar *calendar,  guint day);
-GDK_AVAILABLE_IN_ALL void  custom_calendar_unmark_day (CustomCalendar *calendar,guint day);
+GDK_AVAILABLE_IN_ALL void custom_calendar_update (CustomCalendar *calendar);
+GDK_AVAILABLE_IN_ALL void custom_calendar_goto_today (CustomCalendar *calendar);
+
+GDK_AVAILABLE_IN_ALL void custom_calendar_select_day(CustomCalendar *calendar, guint dday, guint month, guint year);
+
+// Day Marking Functions
+GDK_AVAILABLE_IN_ALL void custom_calendar_mark_day (CustomCalendar *calendar, guint day);
+GDK_AVAILABLE_IN_ALL void custom_calendar_unmark_day (CustomCalendar *calendar, guint day);
 GDK_AVAILABLE_IN_ALL void custom_calendar_reset_marks (CustomCalendar *calendar);
-GDK_AVAILABLE_IN_ALL gboolean  custom_calendar_get_day_is_marked (CustomCalendar *calendar, guint day);
+GDK_AVAILABLE_IN_ALL gboolean custom_calendar_get_day_is_marked (CustomCalendar *calendar, guint day);
 
+// Tooltip Functions
 GDK_AVAILABLE_IN_ALL void custom_calendar_set_tooltip_str(CustomCalendar *calendar, int day, char* title);
 GDK_AVAILABLE_IN_ALL void custom_calendar_initialise_tooltip_array(CustomCalendar *calendar);
 
-GDK_AVAILABLE_IN_ALL void custom_calendar_goto_today (CustomCalendar *calendar);
-GDK_AVAILABLE_IN_ALL void custom_calendar_update (CustomCalendar *calendar);
-
-
+// Getter Functions for Day, Month, and Year
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_day(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_month(CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL int custom_calendar_get_year(CustomCalendar *calendar);
 
-//properties
+// Property Setter and Getter Functions
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colour_str);
+GDK_AVAILABLE_IN_ALL const gchar* custom_calendar_get_today_colour(CustomCalendar *self);
 
-void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colourname);
-const gchar* custom_calendar_get_today_colour(CustomCalendar *self);
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colour_str);
+GDK_AVAILABLE_IN_ALL const gchar* custom_calendar_get_event_colour(CustomCalendar *self);
 
-void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colourname);
-const gchar* custom_calendar_get_event_colour(CustomCalendar *self);
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_tooltips);
+GDK_AVAILABLE_IN_ALL gboolean custom_calendar_get_show_tooltips(CustomCalendar *self);
 
-void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_tooltips);
-gboolean custom_calendar_get_show_tooltips(CustomCalendar *self);
-
-//not public
+// Internal Callbacks
 void callbk_next_month(CustomCalendar *calendar);
 void callbk_prev_month(CustomCalendar *calendar);
 void callbk_next_year(CustomCalendar *calendar);
 void callbk_prev_year(CustomCalendar *calendar);
-
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(CustomCalendar, g_object_unref)
 
 G_END_DECLS

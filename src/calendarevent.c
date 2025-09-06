@@ -46,9 +46,12 @@ struct _CalendarEvent
 };
 
 G_DEFINE_TYPE (CalendarEvent, calendar_event, G_TYPE_OBJECT);
-
+//G_DEFINE_FINAL_TYPE(CalendarEvent, calendar_event, G_TYPE_OBJECT)
 //======================================================================
-//define properties
+/**
+ * @brief Initialize the CalendarEvent object.
+ * @param self The CalendarEvent instance.
+ */
 enum {
     PROP_0,
     PROP_EVENTID,
@@ -72,8 +75,14 @@ enum {
 };
 
 static GParamSpec *properties[LAST_PROP];
-//======================================================================
 
+/**
+ * @brief Get the instance properties.
+ * @param object The GObject instance.
+ * @param prop_id The property ID.
+ * @param value The value to get.
+ * @param pspec The parameter specification.
+ */
 static void calendar_event_get_property(GObject *object,
                                         guint   prop_id,
                                         GValue  *value,
@@ -138,7 +147,14 @@ static void calendar_event_get_property(GObject *object,
             break;
     }
 }
-//======================================================================
+
+/**
+ * @brief Set the instance properties.
+ * @param self The CalendarEvent instance.
+ * @param prop_id The property ID.
+ * @param value The value to set.
+ * @param pspec The parameter specification.
+ */
 static void calendar_event_set_property(GObject *object,
                                         guint   prop_id,
                                         const GValue  *value,
@@ -203,8 +219,11 @@ static void calendar_event_set_property(GObject *object,
 
     }
 }
-//======================================================================
 
+/**
+ * @brief Class initialization function.
+ * @param klass The CalendarEventClass instance.
+ */
 static void calendar_event_class_init (CalendarEventClass *klass)
 {
     //make class constructor static meaning not available outside this class
@@ -344,22 +363,55 @@ static void calendar_event_init (CalendarEvent *self)
 {  
 	//leave empty
 }
-//======================================================================
-//getters and setters
-//======================================================================
+
+/**
+ * @brief Finalize the CalendarEvent object.
+ * @param object The GObject instance.
+ */
+static void calendar_event_dispose(GObject *object)
+{
+    CalendarEvent *self = CALENDAR_EVENT(object);
+    g_clear_pointer(&self->summary, g_free);
+    g_clear_pointer(&self->location, g_free);
+    g_clear_pointer(&self->description, g_free);
+    G_OBJECT_CLASS(calendar_event_parent_class)->dispose(object);
+}
+
+
+
+/**
+ * @brief Get the event ID.
+ * @param self The CalendarEvent instance.
+ * @return The event ID.
+ */
 gint calendar_event_get_eventid(CalendarEvent *self){
     return self->eventid;
 }
-//======================================================================
+
+/**
+ * @brief Set the event ID.
+ * @param self The CalendarEvent instance.
+ * @param eventid The unique ID of the event.
+ */
 void calendar_event_set_eventid(CalendarEvent *self, gint event_id)
 {
     self->eventid =event_id;
 }
-//======================================================================
+
+/**
+ * @brief Get the summary of the event.
+ * @param self The CalendarEvent instance.
+ * @return The summary of the event.
+ */
 const gchar* calendar_event_get_summary(CalendarEvent *self){
     return self->summary;
 }
-//======================================================================
+
+/**
+ * @brief Set the summary of the event.
+ * @param self The CalendarEvent instance.
+ * @param summary The summary to set.
+ */
 void calendar_event_set_summary(CalendarEvent *self, const gchar* summary)
 {
     if(g_strcmp0(summary, self->summary))
@@ -368,13 +420,21 @@ void calendar_event_set_summary(CalendarEvent *self, const gchar* summary)
         self->summary =g_strdup(summary);
     }
 }
-//======================================================================
 
+/**
+ * @brief Get the location of the event.
+ * @param self The CalendarEvent instance.
+ * @return The location of the event.
+ */
 const gchar* calendar_event_get_location(CalendarEvent *self){
     return self->location;
 }
-//======================================================================
 
+/**
+ * @brief Set the location of the event.
+ * @param self The CalendarEvent instance.
+ * @param location The location to set.
+ */
 void calendar_event_set_location(CalendarEvent *self, const gchar* location)
 {
     if(g_strcmp0(location, self->location))
@@ -383,14 +443,23 @@ void calendar_event_set_location(CalendarEvent *self, const gchar* location)
         self->location =g_strdup(location);
     }
 }
-//======================================================================
+
+/**
+ * @brief Get the description of the event.
+ * @param self The CalendarEvent instance.
+ * @return The description of the event.
+ */
 const gchar* calendar_event_get_description(CalendarEvent *self){
 
     return self->description;
 
 }
-//======================================================================
 
+/**
+ * @brief Set the description of the event.
+ * @param self The CalendarEvent instance.
+ * @param description The description to set.
+ */
 void calendar_event_set_description(CalendarEvent *self, const gchar* description){
 
     if(g_strcmp0(description, self->description))
@@ -400,131 +469,248 @@ void calendar_event_set_description(CalendarEvent *self, const gchar* descriptio
     }
 
 }
-//======================================================================
 
+/**
+ * @brief Get the start year.
+ * @param self The CalendarEvent instance.
+ * @return The start year.
+ */
 gint calendar_event_get_start_year(CalendarEvent *self){
     return self->startyear;
 }
-//======================================================================
+
+/**
+ * @brief Set the start year.
+ * @param self The CalendarEvent instance.
+ * @param start_year The start year to set.
+ */
 void calendar_event_set_start_year(CalendarEvent *self, gint start_year)
 {
     self->startyear =start_year;
 }
-//======================================================================
+
+/**
+ * @brief Get the start month.
+ * @param self The CalendarEvent instance.
+ * @return The start month.
+ */
 gint calendar_event_get_start_month(CalendarEvent *self){
     return self->startmonth;
 }
-//======================================================================
+
+/**
+ * @brief Set the start month.
+ * @param self The CalendarEvent instance.
+ * @param start_month The start month to set.
+ */
 void calendar_event_set_start_month(CalendarEvent *self, gint start_month)
 {
     self->startmonth =start_month;
 }
-//======================================================================
 
+/**
+ * @brief Get the start day.
+ * @param self The CalendarEvent instance.
+ * @return The start day.
+ */
 gint calendar_event_get_start_day(CalendarEvent *self){
     return self->startday;
 }
-//======================================================================
+
+/**
+ * @brief Set the start day.
+ * @param self The CalendarEvent instance.
+ * @param start_day The start day to set.
+ */
 void calendar_event_set_start_day(CalendarEvent *self, gint start_day)
 {
     self->startday =start_day;
 }
-//======================================================================
 
+/**
+ * @brief Get the start hour.
+ * @param self The CalendarEvent instance.
+ * @return The start hour.
+ */
 gint calendar_event_get_start_hour(CalendarEvent *self){
     return self->starthour;
 }
-//======================================================================
+
+/**
+ * @brief Set the start hour.
+ * @param self The CalendarEvent instance.
+ * @param start_hour The start hour to set.
+ */
 void calendar_event_set_start_hour(CalendarEvent *self, gint start_hour)
 {
     self->starthour =start_hour;
 }
-//======================================================================
 
+/**
+ * @brief Get the start minute.
+ * @param self The CalendarEvent instance.
+ * @return The start minute.
+ */
 gint calendar_event_get_start_min(CalendarEvent *self){
     return self->startmin;
 }
-//======================================================================
+
+/**
+ * @brief Set the start minute.
+ * @param self The CalendarEvent instance.
+ * @param start_min The start minute to set.
+ */
 void calendar_event_set_start_min(CalendarEvent *self, gint start_min)
 {
     self->startmin =start_min;
 }
-//======================================================================
+
+/**
+ * @brief Get the end year.
+ * @param self The CalendarEvent instance.
+ * @return The end year.
+ */
 gint calendar_event_get_end_year(CalendarEvent *self){
     return self->endyear;
 }
-//======================================================================
+
+/**
+ * @brief Set the end year.
+ * @param self The CalendarEvent instance.
+ * @param end_year The end year to set.
+ */
 void calendar_event_set_end_year(CalendarEvent *self, gint end_year)
 {
     self->endyear =end_year;
 }
-//======================================================================
 
+/**
+ * @brief Get the end month.
+ * @param self The CalendarEvent instance.
+ * @return The end month.
+ */
 gint calendar_event_get_end_month(CalendarEvent *self){
     return self->endmonth;
 }
-//======================================================================
+
+/**
+ * @brief Set the end month.
+ * @param self The CalendarEvent instance.
+ * @param end_month The end month to set.
+ */
 void calendar_event_set_end_month(CalendarEvent *self, gint end_month)
 {
     self->endmonth =end_month;
 }
-//======================================================================
 
+/**
+ * @brief Get the end day.
+ * @param self The CalendarEvent instance.
+ * @return The end day.
+ */
 gint calendar_event_get_end_day(CalendarEvent *self){
     return self->endday;
 }
-//======================================================================
+
+/**
+ * @brief Set the end day.
+ * @param self The CalendarEvent instance.
+ * @param end_day The end day to set.
+ */
 void calendar_event_set_end_day(CalendarEvent *self, gint end_day)
 {
     self->endday =end_day;
 }
-//======================================================================
 
+/**
+ * @brief Get the end hour.
+ * @param self The CalendarEvent instance.
+ * @return The end hour.
+ */
 gint calendar_event_get_end_hour(CalendarEvent *self){
     return self->endhour;
 }
-//======================================================================
+
+/**
+ * @brief Set the end hour.
+ * @param self The CalendarEvent instance.
+ * @param end_hour The end hour to set.
+ */
 void calendar_event_set_end_hour(CalendarEvent *self, gint end_hour)
 {
     self->endhour =end_hour;
 }
-//======================================================================
 
+/**
+ * @brief Get the end minute.
+ * @param self The CalendarEvent instance.
+ * @return The end minute.
+ */
 gint calendar_event_get_end_min(CalendarEvent *self){
     return self->endmin;
 }
-//======================================================================
+
+/**
+ * @brief Set the end minute.
+ * @param self The CalendarEvent instance.
+ * @param end_min The end minute to set.
+ */
 void calendar_event_set_end_min(CalendarEvent *self, gint end_min)
 {
     self->endmin =end_min;
 }
-//======================================================================
+
+/**
+ * @brief Get whether the event is yearly.
+ * @param self The CalendarEvent instance.
+ * @return The yearly status of the event.
+ */
 gint calendar_event_get_is_yearly(CalendarEvent *self){
     return self->isyearly;
 }
-//======================================================================
+/**
+ * @brief Set whether the event is yearly.
+ * @param self The CalendarEvent instance.
+ * @param is_yearly The yearly status to set.
+ */
 void calendar_event_set_is_yearly(CalendarEvent *self, gint is_yearly)
 {
     self->isyearly =is_yearly;
 }
-//======================================================================
-
+/**
+ * @brief Get whether the event is all-day.
+ * @param self The CalendarEvent instance.
+ * @return The all-day status of the event.
+ */
 gint calendar_event_get_is_allday(CalendarEvent *self){
     return self->isallday;
 }
-//======================================================================
+
+/**
+ * @brief Set whether the event is all-day.
+ * @param self The CalendarEvent instance.
+ * @param is_allday The all-day status to set.
+ */
 void calendar_event_set_is_allday(CalendarEvent *self, gint is_allday)
 {
     self->isallday =is_allday;
 }
-//======================================================================
 
+/**
+ * @brief Get whether the event is a priority.
+ * @param self The CalendarEvent instance.
+ * @return The priority status of the event.
+ */
 gint calendar_event_get_is_priority(CalendarEvent *self){
     return self->ispriority;
 }
-//======================================================================
+
+/**
+ * @brief Set whether the event is a priority.
+ * @param self The CalendarEvent instance.
+ * @param is_priority The priority status to set.
+ */
 void calendar_event_set_is_priority(CalendarEvent *self, gint is_priority)
 {
     self->ispriority =is_priority;
 }
-//======================================================================

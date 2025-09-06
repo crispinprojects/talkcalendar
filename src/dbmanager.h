@@ -17,48 +17,53 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-#pragma once
 
-#include <gtk/gtk.h>
-#include <glib/gstdio.h>  //needed for g_mkdir
-#include <math.h>  //compile with -lm
+#ifndef DBMANAGER_H
+#define DBMANAGER_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sqlite3.h>
-
+#include <glib.h>
 #include "calendarevent.h"
 
-const char * get_db_path(void);
-void db_create_events_table(void);
-int db_insert_event(CalendarEvent *event);
-void db_update_event(CalendarEvent *event, int id);
-void db_delete_event(CalendarEvent *event);
+// Initializes and creates the database file and schema.
+// Returns an SQLite database handle. The caller is responsible for closing it.
+sqlite3* db_open(const char *db_filename);
 
-int db_get_number_of_rows_all(void);
-int db_get_number_of_rows_month_year(int month, int year);
-int db_get_number_of_rows_year_month_day(int year, int month, int day);
-int db_get_number_of_isyearly_events_month(int month);
-int db_get_id(CalendarEvent *evt);
+// Closes the database connection.
+void db_close(sqlite3 *db);
 
-void db_get_event(int index, CalendarEvent *event);
-void db_get_all_events(GArray *evt_arry);
+// Inserts an event into the database.
+// Returns the id of the new event on success, or -1 on failure.
+int db_insert_event(sqlite3 *db, CalendarEvent* event);
 
-void db_get_all_events_year_month(GArray *evt_arry, int year, int month);
+// Deletes a specific event by its ID.
+int db_delete_event(sqlite3 *db, int id);
 
-//void db_get_all_multiday_events_year_month(GArray *evt_arry, int year, int month);
-void db_get_all_enddate_events_year_month(GArray *evt_arry, int year, int month);
+// Deletes a specific event by its summary and date.
+int db_delete_event_by_details(sqlite3 *db, const gchar* summary, gint year, gint month, gint day);
 
-void db_get_upcoming_events(GArray *evt_arry, int year, int month, int from ,int to);
+// Deletes all events from the database.
+int db_delete_all_events(sqlite3 *db);
 
-void db_get_all_events_year_month_day(GArray *evt_arry, int year, int month, int day);
+// Retrieves a specific event by its ID.
+// The caller is responsible for unrefing the returned CalendarEvent object.
+CalendarEvent* db_get_event_by_id(sqlite3 *db, int id);
 
-void db_get_isyearly_events_month(GArray *evt_arry, int month);
-void db_get_isyearly_events_day(GArray *evt_arry, int month, int day);
-
-void db_delete_row(int id);
-void db_delete_all(void);
-void db_reset_sequence(void);
+// Retrieves all events for a specific day.
+// The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
+GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int day);
 
 
+// Retrieves all events from the database.
+// The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
+GArray* db_get_all_events(sqlite3 *db);
+
+// Updates an existing event in the database.
+// Returns 0 on success, or -1 on failure.
+int db_update_event(sqlite3 *db, CalendarEvent* event);
+
+// Retrieves a list of events matching a summary or location.
+// The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
+GArray* db_get_events_by_search(sqlite3 *db, const gchar* summary, const gchar* location);
+
+#endif // DBMANAGER_H
