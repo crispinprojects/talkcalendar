@@ -20,24 +20,9 @@ A screenshot of Talk Calendar is shown below.
 * built-in speech synthesizer
 * Sqlite3 database used to store events
 
-## Pre-built Binary (x86 Intel PCs)
-
-A pre-built 64-bit x86 Talk Calendar executable is available and can be downloaded from the installers directory. Unzip the installer archive file relevant to your distribution which contains the Talk Calendar executable.
-
-Talk Calendar must have executable permissions to execute.  If necessary change Talk Calendar file permissions so that it can run as an executable as shown below.
-
-```
-sudo chmod +x talkcalendar
-```
-Assuming that the GTK4 base libraries are installed the Talk Calendar binary can be run from the terminal using:
-
-```
-./talkcalendar
-```
-
 ## BASH Script Installer
 
-The easiest way to install Talk Calendar is to use the BASH script installer from the terminal. This is found in the installers directory in the download. 
+The easiest way to install Talk Calendar is to use a BASH script installer from the terminal. For traditional Intel X86 PCs use the Talk Calendar X86 installer found in the installers directory in the download. This has been tested with Debian 13 (Trixie) and Ubuntu 24.04.
 
 To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
@@ -53,7 +38,7 @@ To uninstall Talk Calendar run the script below
 sudo ./uninstall-talkcalendar
 ```
 
-You can open the BASH script installer using a Text Editor to view the code. Talk Calendar is installed into the directory "/usr/bin/talkcalendar". One advantage of using a BASH script installer is that the code can be inspected to show exactly what is occurring. 
+One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed into the directory "/usr/bin/talkcalendar". See below for using the Raspberry Pi installer.
 
 ## Calendar Interface
 
@@ -242,6 +227,16 @@ Talk Calendar supports a dark theme which can be selected using the preferences 
 
 It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE etc. will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG philosophy, the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. 
 
+### Building on Raspberry Pi
+
+At the time of writing [Raspberry Pi](https://www.raspberrypi.com/software/) does not have an official release of RPi OS (Trixie). However, Ubuntu Desktop 25.04 (ARM 64-bit) can be installed using the official Raspberry Pi Imager on RPi 4/400 and RPi5/550 boards with 4GB or above. I have successfully compiled Talk Calendar on a RPi 500 with the Ubuntu 25.04 OS. See screenshot below.
+
+![](talkcalendar-ARM64.png)
+
+I have provided a Talk Calendar Raspberry Pi installer for RPi 5/500 tested with Ubuntu 25.04 RPi OS with the ARM Cortex A76 processor. This can be downloaded from the installers directory.
+
+Canonical also provide Ubuntu [images](https://canonical.com/blog/ubuntu-developer-images-now-available-for-orangepi-rv2-a-low-cost-risc-v-sbc) for RISC-V single board computers (SBCs) such as the OrangePi RV2. Although I have not been able to test one of these boards I expect that it should be possible to compile Talk Calendar on a RISC-V board using Ubuntu RISC-V OS provided GTK 4.14 or above is supported. 
+
 ### Building on Fedora
 
 With Fedora you need to install the following packages to compile Talk Calendar.
@@ -261,7 +256,12 @@ To check the installed Sqlite 3 version use the command below.
 sqlite3 --version
 ```
 
-To check the installed version of the GTK4 development libraries use the command below.
+To determine which version of GTK4 is running on a Ubuntu/Debian system use the following terminal command.
+
+```
+gtk4-launch --version
+```
+or
 
 ```
 dnf list gtk4-devel
