@@ -1297,33 +1297,23 @@ static void callbk_set_alarm(GtkButton *button, gpointer user_data)
 {	
 	m_alarm_on=TRUE;	
 	GtkWidget *label_alarm_status=user_data;
-	gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm On");
 	
 	GtkWidget *spin_button_alarm_hour = g_object_get_data(G_OBJECT(button), "spin-alarm-hour-key");
 	GtkWidget *spin_button_alarm_min = g_object_get_data(G_OBJECT(button), "spin-alarm-min-key");
 		
 	m_alarm_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_hour));
 	m_alarm_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_min));
-		
-	GtkWidget *am_pm_dropdown = g_object_get_data(G_OBJECT(button), "am-pm-dropdown-key");
-    m_am_pm_index = gtk_drop_down_get_selected(GTK_DROP_DOWN(am_pm_dropdown));
-    
-   
-    // Convert the 12-hour format to 24-hour format
-    if (m_am_pm_index == 1) { // PM is selected
-        if (m_alarm_hour != 12) { // 12 PM should remain 12
-            m_alarm_hour += 12;
-        }
-    } else { // AM is selected
-        if (m_alarm_hour == 12) { // 12 AM (midnight) should be 0
-            m_alarm_hour = 0;
-        }
-    }
+	
+	char *alarm_str ="Alarm On ";	
+	char* hour_str = g_strdup_printf("%02d",m_alarm_hour);
+	char* min_str = g_strdup_printf("%02d",m_alarm_min);
+	alarm_str = g_strconcat(alarm_str,hour_str,":",min_str,NULL);		
+	gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
 	
 	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
 	config_write();	//save alarm values
 	
-	
+	g_free(alarm_str);
 }
 
 /**
@@ -1350,44 +1340,42 @@ static void callbk_cancel_alarm(GtkButton *button, gpointer user_data)
  */
 static void callbk_alarm_button(GtkButton *button, gpointer user_data)
 {
-	
+	GtkWidget *window =user_data;
 	GtkWidget *alarm_window;
 	alarm_window = gtk_window_new(); 
 	gtk_window_set_title(GTK_WINDOW(alarm_window), "Set Alarm");
 	gtk_window_set_default_size (GTK_WINDOW (alarm_window),400, 150);
+	gtk_window_set_transient_for(GTK_WINDOW(alarm_window), GTK_WINDOW(window));
+  	gtk_window_set_modal(GTK_WINDOW(alarm_window), TRUE);
+  	 
+	GtkWidget *label_alarm_status = gtk_label_new("");
 		
-	//spin_button_alarm_hour = gtk_spin_button_new_with_range(0, 23, 1);
-	// Using a 12-hour clock:
+	if(m_alarm_on){		
+		char *alarm_str ="Alarm On ";	
+	    char* hour_str = g_strdup_printf("%02d",m_alarm_hour);
+	    char* min_str = g_strdup_printf("%02d",m_alarm_min);
+	    alarm_str = g_strconcat(alarm_str,hour_str,":",min_str,NULL);		
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
+		g_free(hour_str);
+		g_free(min_str);
+		g_free(alarm_str);
+	}
+	else{
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
+	}		
     // Alarm Time Selection
 	GtkWidget *hbox_alarm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new("Set Alarm:"));
-	GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);
+	//GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);//12 hour
+	GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(0, 23, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_hour), m_alarm_hour);
 	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_hour);
 	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new(":"));
 	GtkWidget *spin_button_alarm_min = gtk_spin_button_new_with_range(0, 59, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_min), m_alarm_min);	
 	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_min);
-
-	// Use GtkDropDown for AM/PM selection
-	GtkStringList *am_pm_list = gtk_string_list_new(NULL);
-	gtk_string_list_append(am_pm_list, "AM");
-	gtk_string_list_append(am_pm_list, "PM");
-	GtkWidget *am_pm_dropdown = gtk_drop_down_new(G_LIST_MODEL(am_pm_list), NULL);
-	gtk_drop_down_set_selected(GTK_DROP_DOWN(am_pm_dropdown), m_am_pm_index);
-	gtk_box_append(GTK_BOX(hbox_alarm), am_pm_dropdown);
-	
 	
 	GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-
-	GtkWidget *label_alarm_status = gtk_label_new("");
-	
-	if(m_alarm_on){
-		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm On");
-	}
-	else{
-		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
-	}
 	
 	//// Set and Cancel Buttons
 	GtkWidget *set_alarm_button = gtk_button_new_with_label("Set Alarm");
@@ -1396,8 +1384,7 @@ static void callbk_alarm_button(GtkButton *button, gpointer user_data)
 		
 	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-hour-key", spin_button_alarm_hour);
 	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-min-key", spin_button_alarm_min);	
-	g_object_set_data(G_OBJECT(set_alarm_button), "am-pm-dropdown-key", am_pm_dropdown);
-
+	
 	GtkWidget *cancel_button = gtk_button_new_with_label("Cancel Alarm");
 	g_signal_connect(cancel_button, "clicked", G_CALLBACK(callbk_cancel_alarm), label_alarm_status);
 	gtk_box_append(GTK_BOX(vbox_buttons), cancel_button);
@@ -4073,11 +4060,14 @@ static gboolean update_time_label(gpointer data)
     int current_hour = g_date_time_get_hour(now);
     int current_min = g_date_time_get_minute(now);
     int current_sec = g_date_time_get_second(now);
-    
+    char *time_str;
     //char *time_str = g_date_time_format(date_time, "%H:%M:%S");   // 24hr time format
 	//char *time_str = g_date_time_format(date_time, "%H:%M");   // 24hr time format
+    if(m_12hour_format)
+    time_str = g_date_time_format(now, "%I:%M %p"); //12 hour format
+    else 
+    time_str = g_date_time_format(now, "%H:%M");
     
-    gchar *time_str = g_date_time_format(now, "%I:%M %p"); //12 hour format
     gtk_label_set_text(GTK_LABEL(label), time_str); 
     
     if(current_hour==m_alarm_hour && current_min==m_alarm_min && current_sec==0 && m_alarm_on)
