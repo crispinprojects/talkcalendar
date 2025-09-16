@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, times and event summary words.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates and event times and summary words.
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
@@ -22,23 +22,21 @@ A screenshot of Talk Calendar is shown below.
 
 ## BASH Script Installer
 
-The easiest way to install Talk Calendar is to use a BASH script installer from the terminal. For traditional Intel X86 PCs use the Talk Calendar X86 installer found in the installers directory in the download. This has been tested with Debian 13 (Trixie) and Ubuntu 24.04.
+The easiest way to install Talk Calendar on a traditional Intel X86 PC with either Debian 13 or Ubuntu 24.04 (or above) is to use the BASH script installer from the terminal. The Talk Calendar installer is found in the installers directory in the download. 
 
 To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
 ```
-sudo ./install-talkcalendar.sh
+./install-talkcalendar.sh
 ```
-
-The installer assumes that you are a member of the sudo group and that the GTK4 libraries are installed. If not, go to the build Talk Calendar section below and use the terminal command instructions to install the required packages.
 
 To uninstall Talk Calendar run the script below
 
 ```
-sudo ./uninstall-talkcalendar
+./uninstall-talkcalendar
 ```
 
-One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed into the directory "/usr/bin/talkcalendar". See below for using the Raspberry Pi installer.
+One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed locally into the directory "./local/bin". The installer has been tested with Debian 13 (Trixie) and Ubuntu 24.04.
 
 ## Calendar Interface
 
@@ -72,6 +70,11 @@ CONTROL+E = edit selected event
 DELETE = delete selected event
 ```
 
+### Set Alarm
+![](talkcalendar-alarm.png)
+
+The audio beep alarm is activated at the selected time provided Talk Calendar is running.
+
 
 ## Dark Theme
 
@@ -79,13 +82,6 @@ You can select a dark colour scheme from the preferences dialog. This uses a dar
 
 ![](talkcalendar-dark-theme.png)
 
-## Talking
-
-* Make sure the "Enable Talking" check button in the preferences window is ticked 
-
-* Press the ***T key*** to readout the current time (talking clock)
-
-* Click on a calendar day press the space bar to read out events
 
 ## Font, Colour, Icons
 
@@ -232,8 +228,6 @@ It appears that GTK5 will continue to be a general-purpose toolkit but likely to
 At the time of writing [Raspberry Pi](https://www.raspberrypi.com/software/) does not have an official release of RPi OS (Trixie). However, Ubuntu Desktop 25.04 (ARM 64-bit) can be installed using the official Raspberry Pi Imager on RPi 4/400 and RPi5/550 boards with 4GB or above. I have successfully compiled Talk Calendar on a RPi 500 with the Ubuntu 25.04 OS. See screenshot below.
 
 ![](talkcalendar-ARM64.png)
-
-I have provided a Talk Calendar Raspberry Pi installer for RPi 5/500 tested with Ubuntu 25.04 RPi OS with the ARM Cortex A76 processor. This can be downloaded from the installers directory.
 
 Canonical also provide Ubuntu [images](https://canonical.com/blog/ubuntu-developer-images-now-available-for-orangepi-rv2-a-low-cost-risc-v-sbc) for RISC-V single board computers (SBCs) such as the OrangePi RV2. Although I have not been able to test one of these boards I expect that it should be possible to compile Talk Calendar on a RISC-V board using Ubuntu RISC-V OS provided GTK 4.14 or above is supported. 
 

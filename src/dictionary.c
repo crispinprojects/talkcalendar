@@ -55,6 +55,8 @@ static WordEntry word_table[] = {
 {"alarm","pau_ah ah_l l_aa aa_r r_m m_pau"},
 //alec
 {"alec","pau_ae ae_ae ae_l l_ih ih_k k_pau"},
+//alert
+{"alert","pau_ah ah_l l_er er_er er_t t_pau"},
 //alex
 {"alex","pau_ae ae_ae ae_l l_ah ah_k k_s s_pau"},
 //alexander
@@ -221,7 +223,7 @@ static WordEntry word_table[] = {
 {"bird","pau_b b_uh uh_r r_d d_pau"},
 //birth
 {"birth","pau_b b_uh uh_r r_th th_pau"},
-//birthday BIRTHDAY  B ER1 TH D EY2
+//birthday 
 //{"birthday","pau_b b_er er_er er_th th_d d_pau pau_d d_ey ey_ey ey_pau"},
 {"birthday","pau_b b_er er_er er_th th_d d_ey ey_pau"},
 //boat
@@ -623,7 +625,7 @@ static WordEntry word_table[] = {
 {"football","pau_f f_uh uh_t t_b b_ao ao_l l_pau"},
 //forty
 {"forty","pau_f f_ao ao_ao ao_r r_t t_iy iy_pau"},
-//forward  _clocks forward
+//forward  _clocks forward (todo)
 {"forward","pau_f f_ao ao_r r_w w_uh uh_r r_d d_pau"},
 //four
 {"four","pau_f f_ao ao_ao ao_r r_pau"},
@@ -1149,6 +1151,8 @@ static WordEntry word_table[] = {
 {"not","pau_n n_aa aa_t t_pau"},
 //notable
 {"notable","pau_n n_ao ao_uh uh_t t_ah ah_b b_ah ah_l l_pau"},
+//notification
+{"notification","pau_n n_ow ow_ow ow_t t_ah ah_f f_ah ah_k k_ey ey_ey ey_sh sh_ah ah_n n_pau"},
 //november
 {"november","pau_n n_ow ow_v v_eh eh_eh eh_m m_b b_er er_pau"},
 //now
@@ -1317,7 +1321,7 @@ static WordEntry word_table[] = {
 {"prison","pau_p p_r r_ih ih_z z_ah ah_n n_pau"},
 {"private","pau_p p_r r_aa aa_iy iy_v v_ah ah_t t_pau"},
 {"professional","pau_p p_r ah_ah ah_f f_eh eh_eh eh_sh sh_ah ah_n n_ah ah_l l_pau "},
-//professor or prof
+//professor 
 {"professor","pau_p p_r ah_ah ah_f f_eh eh_eh eh_s s_er er_pau"},
 //program
 {"program","pau_p p_r r_ow ow_ow ow_g g_r r_ae ae_ae ae_m m_pau"},

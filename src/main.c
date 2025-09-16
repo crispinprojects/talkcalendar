@@ -32,13 +32,14 @@
 #include "wavcat.h"
 #include "dictionary.h"
 #include "wavplay.h"
+#include "alarm.h"
 
 // Global database handle, to be opened and closed with the application
 static sqlite3 *db_handle = NULL;
 
 // File and directory names for configuration
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-050"
+#define CONFIG_FILENAME "talkcalendar-052"
 
 static char * m_config_file = NULL;
 
@@ -100,16 +101,17 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 int get_total_number_of_events(void);
 static void callbk_info(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
+static void callbk_speak(GtkButton *button, gpointer user_data);
+static void audio_synthesis_task(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable);
+static void audio_synthesis_completed(GObject *source_object, GAsyncResult *result, gpointer user_data);
+
 // Function prototypes for speech synthesis functionality
-static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer user_data);
-static void speak_events(gpointer user_data);
+
 static char* get_day_of_week(int day, int month, int year);
 static char* get_day_number_ordinal_string(int day);
 char* get_month_string(int month);
 char* get_time_str_talk(int hour, int min);
 static char* get_cardinal_string(int number);
-static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data);
-static void speak_time(gint hour, gint min);
 
 // Function prototypes for GtkListView and event display
 static void update_store(CustomCalendar *calendar, gpointer user_data);
@@ -118,8 +120,17 @@ static void callbk_setup_listitem (GtkListItemFactory *factory,GtkListItem *list
 static void callbk_bind_listitem (GtkListItemFactory *factory, GtkListItem *list_item);
 char* get_time_str(int hour, int min);
 
-// Function prototype for menu creation
-static GMenu *create_menu(const GtkApplication *app); 
+// Function prototype for update time label
+static gboolean update_time_label(gpointer data);
+
+// Function prototypes for basic alarm feature
+static void callbk_alarm_button(GtkButton *button, gpointer user_data);
+static void callbk_set_alarm(GtkButton *button, gpointer user_data);
+static void play_alarm_audio_async (GTask *task, gpointer object,gpointer task_data,GCancellable *cancellable);
+static void callbk_cancel_alarm(GtkButton *button, gpointer user_data);
+static void play_alarm();
+
+static void alarm_task_callbk(GObject *gobject,GAsyncResult *result,  gpointer  user_data);
 
 //======================================================================
 // Global preference variables
@@ -131,6 +142,8 @@ static gboolean m_reset_preferences=FALSE;
 static gboolean m_talk =TRUE;
 static gboolean m_talk_at_startup =TRUE;
 static gboolean m_talk_time =TRUE;
+
+static gboolean m_talk_event_number=TRUE;
 
 // Listview preferences
 static gboolean m_12hour_format=TRUE; // am pm hour format
@@ -149,16 +162,21 @@ static char *m_eventcolour = NULL;
 
 // Default file name for import/export
 static char* m_file_name="talkcalendar.ical"; // import default
+
+static gboolean continue_timer = TRUE;
+static int m_alarm_hour=0;
+static int m_alarm_min=0;
+static int m_am_pm_index=0; //am=0 pm=1
+static gboolean m_alarm_on=TRUE;
+//static gboolean m_alarm_activated=FALSE; //TODO
 //======================================================================
 
 // Array of GActionEntry objects for application-level actions
-const GActionEntry app_actions[] = {
-  { "speak", callbk_speak}, 
-  { "speaktime", callbk_speaktime},     
+const GActionEntry app_actions[] = {    
   { "home", callbk_calendar_home}, 
   { "newevent", callbk_new_event},
   { "editevent", callbk_edit_event},  
- { "deleteevent", callbk_delete_event},
+  { "deleteevent", callbk_delete_event},
   { "info", callbk_info},
   { "preferences", callbk_preferences} 
 };
@@ -181,13 +199,14 @@ typedef struct {
  * @param task_data A pointer to the AudioTaskData structure.
  * @param cancellable A GCancellable object (unused).
  */
-static void audio_synthesis_task(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
+static void audio_synthesis_task(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) 
+{
     (void) source_object;
     (void) cancellable;
 
-    AudioTaskData *data = (AudioTaskData *)task_data;
 
-    //printf("Starting audio synthesis in background thread...\n");
+    AudioTaskData *data = (AudioTaskData *)task_data;
+	
     char* merge_file = "/tmp/talkcalendar.wav";
     
     // blocking code now in a thread
@@ -209,19 +228,83 @@ static void audio_synthesis_task(GTask *task, gpointer source_object, gpointer t
  * @param result The GAsyncResult object, which is a GTask in this case.
  * @param user_data A pointer to the user data passed to g_task_new.
  */
-static void audio_synthesis_completed(GObject *source_object, GAsyncResult *result, gpointer user_data) {
+static void audio_synthesis_completed(GObject *source_object, GAsyncResult *result, gpointer user_data) 
+{
     (void) source_object;
    
     GTask *task = G_TASK(result);
+    
+    GtkButton *button = GTK_BUTTON(user_data);
     // The data from g_task_set_task_data is retrieved here.
     gboolean success = GPOINTER_TO_INT(g_task_get_task_data(task));
     
     if (success) {       
-        //g_print("Audio synthesis and playback finished.\n");
+		//g_print("Audio synthesis and playback finished.\n");
+		
     } else {      
-        g_print("Audio synthesis and playback failed.\n");
+		//g_print("Audio synthesis and playback failed.\n");
     }
-  }
+       
+	gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE); // Re-enable the button
+	
+ }
+
+/**
+ * @brief This function is the alarm completion callback. 
+ * @param source_object The GObject that initiated the task (unused).
+ * @param result The GAsyncResult object, which is a GTask in this case.
+ * @param user_data pointer to the user data passed to g_task_new (unsued)
+ */
+ 
+static void alarm_task_callbk(GObject *gobject,GAsyncResult *result,  gpointer  user_data)
+{		
+	//the task callbk function is called back when the 
+	//play_alarm audio_async function has completed
+		
+	GTask *task = G_TASK(result);    
+    gboolean success = GPOINTER_TO_INT(g_task_get_task_data(task));
+    
+    if (success) {       
+		//g_print("Audio alarm playback finished.\n");
+		
+    } else {      
+		//g_print("Audio alarm playback failed.\n");
+    }
+
+}
+
+/**
+ * @brief background thread managed by GTask for playing alarm audio
+ * @param task The GTask object.
+ * @param source_object The GObject that initiated the task (unused).
+ * @param task_data A pointer to the AudioTaskData structure.
+ * @param cancellable A GCancellable object (unused).
+ */
+
+static void play_alarm_audio_async (GTask *task, gpointer object, gpointer task_data, GCancellable *cancellable)
+{
+	
+	play_alarm();	
+	g_task_set_task_data(task, GINT_TO_POINTER(TRUE), NULL);
+}
+  
+
+/**
+ * @brief This function plays the alarm audio.
+ */
+static void play_alarm()
+{	
+		
+	unsigned char *data = (unsigned char*)malloc(alarm_wav_len * sizeof(unsigned char));
+	memcpy(data, alarm_wav, alarm_wav_len * sizeof(unsigned char)); //copy  alarm into data	
+	unsigned int data_len = alarm_wav_len;	
+    char *alarm_file ="/tmp/alarm.wav"; 
+	FILE* f = fopen(alarm_file, "w");
+    fwrite(data, data_len, 1, f);
+    fclose(f);  
+    wavplay("/tmp/alarm.wav");
+	free(data);		
+}
 
 //======================================================================
 // Save load config file
@@ -234,7 +317,11 @@ static void config_load_default()
 {
 	//talking
 	m_talk=TRUE;
-	m_talk_at_startup=FALSE;
+	m_talk_event_number=TRUE;
+	//alarm
+	m_alarm_hour=0;
+    m_alarm_min=0;
+	m_alarm_on=TRUE;
 		
 	//calendar
 	m_12hour_format=TRUE;
@@ -253,11 +340,7 @@ static void config_load_default()
 static void config_read()
 {
 	
-	// Load keys from keyfile
-	//GKeyFile * kf = g_key_file_new();
-	//g_key_file_load_from_file(kf, m_config_file, G_KEY_FILE_NONE, NULL);
-	
-	 GKeyFile *kf = g_key_file_new();
+	GKeyFile *kf = g_key_file_new();
     if (!g_key_file_load_from_file(kf, m_config_file, G_KEY_FILE_NONE, NULL)) {
         g_key_file_free(kf);
         return;
@@ -265,7 +348,13 @@ static void config_read()
 		
 	//talk preferences
 	m_talk = g_key_file_get_boolean(kf, "calendar_settings", "talk", NULL);
-	m_talk_at_startup=g_key_file_get_boolean(kf, "calendar_settings", "talk_startup", NULL);
+	m_talk_event_number=g_key_file_get_boolean(kf, "calendar_settings", "talk_event_number", NULL);
+		
+	//alarm (save alarm settings so that they are restored)
+	m_alarm_hour=g_key_file_get_integer(kf, "calendar_settings", "alarm_hour", NULL);
+    m_alarm_min=g_key_file_get_integer(kf, "calendar_settings", "alarm_min", NULL);
+    m_am_pm_index=g_key_file_get_integer(kf, "calendar_settings", "am_pm_index", NULL);
+	m_alarm_on=g_key_file_get_boolean(kf, "calendar_settings", "alarm_on", NULL);
 		
 	//listview preferences
 	m_12hour_format=g_key_file_get_boolean(kf, "calendar_settings", "hour_format", NULL);	
@@ -273,25 +362,15 @@ static void config_read()
 	//calendar preferences
 	m_show_tooltips = g_key_file_get_boolean(kf, "calendar_settings", "show_tooltips", NULL);
 	m_is_dark_theme =g_key_file_get_boolean(kf, "calendar_settings", "dark_theme", NULL);
-	
-	//m_todaycolour=g_key_file_get_string(kf, "calendar_settings", "todaycolour", NULL);	
-	//m_eventcolour=g_key_file_get_string(kf, "calendar_settings", "eventcolour", NULL);
-	
-	// Free any previously allocated string before overwriting it.
-    //g_free(m_todaycolour);
-    //m_todaycolour = g_key_file_get_string(kf, "calendar_settings", "todaycolour", NULL);
-
-    //g_free(m_eventcolour);
-    //m_eventcolour = g_key_file_get_string(kf, "calendar_settings", "eventcolour", NULL);
-	
-	// Free any previously allocated string before overwriting it.
+		
+	// free any previously allocated string before overwriting it.
     g_free(m_todaycolour);
     m_todaycolour = g_key_file_get_string(kf, "calendar_settings", "todaycolour", NULL);
 
     g_free(m_eventcolour);
     m_eventcolour = g_key_file_get_string(kf, "calendar_settings", "eventcolour", NULL);
 
-    // If the file does not contain a value, g_key_file_get_string returns NULL.
+    // if the file does not contain a value, g_key_file_get_string returns NULL.
     // so then provide a default value.
     if (!m_todaycolour) {
         m_todaycolour = g_strdup("rgb(221,160,221)");
@@ -318,8 +397,14 @@ void config_write()
 	GKeyFile * kf = g_key_file_new();
 	//talk general	
 	g_key_file_set_boolean(kf, "calendar_settings", "talk", m_talk);	
-	g_key_file_set_boolean(kf, "calendar_settings", "talk_startup", m_talk_at_startup);
+	g_key_file_set_boolean(kf, "calendar_settings", "talk_event_number", m_talk_event_number);
 		
+	//alarm	
+	g_key_file_set_integer(kf, "calendar_settings", "alarm_hour", m_alarm_hour);
+	g_key_file_set_integer(kf, "calendar_settings", "alarm_min", m_alarm_min);
+	g_key_file_set_integer(kf, "calendar_settings", "am_pm_index", m_am_pm_index);
+	g_key_file_set_boolean(kf, "calendar_settings", "alarm_on",m_alarm_on);
+	
 	//listview
 	g_key_file_set_boolean(kf, "calendar_settings", "hour_format", m_12hour_format);
 	g_key_file_set_boolean(kf, "calendar_settings", "show_end_time", m_use_end_time);
@@ -388,8 +473,10 @@ static char *ignore_first_zero(char *input)
 	return input;
 }
 
- /* @param input_text The null-terminated string to sanitize.
- *  @return A new, dynamically allocated string with forbidden characters removed,
+/**
+ * @brief santizes text for insertion into database
+ * @param input_text The null-terminated string to sanitize.
+ * @return A new, dynamically allocated string with forbidden characters removed,
  *  or NULL if the input is NULL or memory allocation fails.
  */
 char* sanitize_text(const char* input_text) 
@@ -579,13 +666,7 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	char* year_str = g_strdup_printf("%d",year);
 	char* date_str="";
 	date_str= g_strconcat(date_str, day_str, "-",month_str, "-",year_str, NULL);
-	
-	// Note: g_strconcat creates a new string and returns it. 
-	// Crucially, it also takes ownership of its arguments and frees them internally.
-	// Free the intermediate strings now that they have been concatenated
-    //g_free(day_str);
-    //g_free(month_str);
-    //g_free(year_str);
+		
 	
 	GtkWidget *dialog;
 	GtkWidget *button_add_event;	
@@ -622,11 +703,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	label_date =gtk_label_new("");
 	gtk_label_set_text(GTK_LABEL(label_date), date_str);
 	
-	
-	// Free the date_str now that it has been used
-	// the g_strconcat function handles the freeing  day_str, month_str, or year_str internally 
-	
-    g_free(date_str); 
 	
 	//time spin adjustments
 	
@@ -738,11 +814,11 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	
 	gtk_grid_attach(GTK_GRID(grid), button_add_event,  1, 11, 4, 1);
 	
-	//g_free(day_str);
-    //g_free(month_str);
-    //g_free(year_str);
-    //g_free(date_str); 
-	
+	g_free(day_str);
+    g_free(month_str);
+    g_free(year_str);
+    g_free(date_str); 
+    
 	gtk_window_set_child (GTK_WINDOW (dialog), grid);	
 	gtk_window_present(GTK_WINDOW(dialog));	
 }
@@ -1099,6 +1175,7 @@ static void callbk_edit_event(GSimpleAction *action, GVariant *parameter,  gpoin
 	
 	gtk_grid_attach(GTK_GRID(grid), button_update,  		1, 11, 4, 1);
 	
+
 	g_free(day_str);
     g_free(month_str);
     g_free(year_str);
@@ -1207,6 +1284,133 @@ static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpoin
 	gtk_box_append(GTK_BOX(box), label_confirm);	
 	gtk_box_append(GTK_BOX(box), button_confirm);
 	gtk_window_present (GTK_WINDOW (dialog));
+}
+
+//======================================================================
+
+/**
+ * @brief button callbk function to set the alarm values
+ * @param button The GtkButton that triggered the callback. 
+ * @param user_data is the alarm status label 
+ */
+static void callbk_set_alarm(GtkButton *button, gpointer user_data)
+{	
+	m_alarm_on=TRUE;	
+	GtkWidget *label_alarm_status=user_data;
+	gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm On");
+	
+	GtkWidget *spin_button_alarm_hour = g_object_get_data(G_OBJECT(button), "spin-alarm-hour-key");
+	GtkWidget *spin_button_alarm_min = g_object_get_data(G_OBJECT(button), "spin-alarm-min-key");
+		
+	m_alarm_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_hour));
+	m_alarm_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_min));
+		
+	GtkWidget *am_pm_dropdown = g_object_get_data(G_OBJECT(button), "am-pm-dropdown-key");
+    m_am_pm_index = gtk_drop_down_get_selected(GTK_DROP_DOWN(am_pm_dropdown));
+    
+   
+    // Convert the 12-hour format to 24-hour format
+    if (m_am_pm_index == 1) { // PM is selected
+        if (m_alarm_hour != 12) { // 12 PM should remain 12
+            m_alarm_hour += 12;
+        }
+    } else { // AM is selected
+        if (m_alarm_hour == 12) { // 12 AM (midnight) should be 0
+            m_alarm_hour = 0;
+        }
+    }
+	
+	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
+	config_write();	//save alarm values
+	
+	
+}
+
+/**
+ * @brief button callbk function to reset the alarm 
+ * @param button The GtkButton that triggered the callback. 
+ * @param user_data is the alarm status label 
+ */
+static void callbk_cancel_alarm(GtkButton *button, gpointer user_data)
+{	
+	m_alarm_on=FALSE;	
+	GtkWidget *label_alarm_status=user_data;
+	gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
+	m_alarm_hour=0;
+	m_alarm_min=0;
+	m_am_pm_index=0;
+	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
+	config_write();	//save alarm values
+}
+
+/**
+ * @brief button callbk function to set up the alarm UI
+ * @param button The GtkButton that triggered the callback. 
+ * @param user_data (unused)
+ */
+static void callbk_alarm_button(GtkButton *button, gpointer user_data)
+{
+	
+	GtkWidget *alarm_window;
+	alarm_window = gtk_window_new(); 
+	gtk_window_set_title(GTK_WINDOW(alarm_window), "Set Alarm");
+	gtk_window_set_default_size (GTK_WINDOW (alarm_window),400, 150);
+		
+	//spin_button_alarm_hour = gtk_spin_button_new_with_range(0, 23, 1);
+	// Using a 12-hour clock:
+    // Alarm Time Selection
+	GtkWidget *hbox_alarm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new("Set Alarm:"));
+	GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_hour), m_alarm_hour);
+	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_hour);
+	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new(":"));
+	GtkWidget *spin_button_alarm_min = gtk_spin_button_new_with_range(0, 59, 1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_min), m_alarm_min);	
+	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_min);
+
+	// Use GtkDropDown for AM/PM selection
+	GtkStringList *am_pm_list = gtk_string_list_new(NULL);
+	gtk_string_list_append(am_pm_list, "AM");
+	gtk_string_list_append(am_pm_list, "PM");
+	GtkWidget *am_pm_dropdown = gtk_drop_down_new(G_LIST_MODEL(am_pm_list), NULL);
+	gtk_drop_down_set_selected(GTK_DROP_DOWN(am_pm_dropdown), m_am_pm_index);
+	gtk_box_append(GTK_BOX(hbox_alarm), am_pm_dropdown);
+	
+	
+	GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+	GtkWidget *label_alarm_status = gtk_label_new("");
+	
+	if(m_alarm_on){
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm On");
+	}
+	else{
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
+	}
+	
+	//// Set and Cancel Buttons
+	GtkWidget *set_alarm_button = gtk_button_new_with_label("Set Alarm");
+	g_signal_connect(set_alarm_button, "clicked", G_CALLBACK(callbk_set_alarm), label_alarm_status);
+	gtk_box_append(GTK_BOX(vbox_buttons), set_alarm_button);
+		
+	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-hour-key", spin_button_alarm_hour);
+	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-min-key", spin_button_alarm_min);	
+	g_object_set_data(G_OBJECT(set_alarm_button), "am-pm-dropdown-key", am_pm_dropdown);
+
+	GtkWidget *cancel_button = gtk_button_new_with_label("Cancel Alarm");
+	g_signal_connect(cancel_button, "clicked", G_CALLBACK(callbk_cancel_alarm), label_alarm_status);
+	gtk_box_append(GTK_BOX(vbox_buttons), cancel_button);
+	
+	gtk_box_append(GTK_BOX(vbox_buttons), label_alarm_status);
+
+	GtkWidget *vbox_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	gtk_box_append(GTK_BOX(vbox_layout), hbox_alarm);
+	gtk_box_append(GTK_BOX(vbox_layout), vbox_buttons);
+	
+	gtk_window_set_child (GTK_WINDOW (alarm_window), vbox_layout);		
+		
+	gtk_window_present(GTK_WINDOW (alarm_window));
 }
 
 //======================================================================
@@ -2607,7 +2811,8 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	
 	//talking
 	GtkWidget *check_button_talk= g_object_get_data(G_OBJECT(button), "check-button-talk-key");
-	GtkWidget *check_button_talk_startup= g_object_get_data(G_OBJECT(button), "check-button-talk-startup-key");		
+	GtkWidget *check_button_talk_event_number= g_object_get_data(G_OBJECT(button), "check-button-talk-event-number-key");		
+	
 	GtkWidget *check_button_reset_all= g_object_get_data(G_OBJECT(button), "check-button-reset-all-key");
 	
 	//listview
@@ -2620,7 +2825,7 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 			
 	//speak
 	m_talk=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk));
-	m_talk_at_startup=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk_startup));	
+	m_talk_event_number=gtk_check_button_get_active (GTK_CHECK_BUTTON(check_button_talk_event_number));	
 	
 	m_reset_preferences=gtk_check_button_get_active(GTK_CHECK_BUTTON(check_button_reset_all));
 	
@@ -2640,8 +2845,8 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	
 	//talking
 	m_talk=TRUE;			
-	m_talk_at_startup=FALSE;		
-	m_reset_preferences=FALSE; //toggle
+	m_talk_event_number=TRUE;		
+	//m_reset_preferences=FALSE; //toggle
 	}
 	
 	config_write();	//save preferences
@@ -2681,8 +2886,9 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
     GtkWidget *check_button_show_tooltips;
     GtkWidget *check_button_dark_theme;
     GtkWidget *check_button_talk;
-    GtkWidget *check_button_talk_startup;
-    GtkWidget *check_button_talk_upcoming;
+    
+    GtkWidget *check_button_talk_event_number;
+    //GtkWidget *check_button_talk_upcoming;
     GtkWidget *check_button_reset_all;
     GtkWidget *label_todaycolour;
     GtkWidget *label_eventcolour;
@@ -2716,27 +2922,20 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
     GtkColorDialog *dialog_today = gtk_color_dialog_new();
     GtkWidget *colour_button_today = gtk_color_dialog_button_new(dialog_today);
     
-    // REMOVE THE NEXT LINE: It's causing a double free.
-    // g_object_set_data_full(G_OBJECT(colour_button_today), "dialog", dialog_today, g_object_unref);
 
     GdkRGBA rgba_today;
     if (gdk_rgba_parse (&rgba_today, m_todaycolour)) {
         gtk_color_dialog_button_set_rgba (GTK_COLOR_DIALOG_BUTTON(colour_button_today), &rgba_today);
     }
    
-
     GtkColorDialog *dialog_event = gtk_color_dialog_new();
     GtkWidget *colour_button_event = gtk_color_dialog_button_new(dialog_event);
-
-    // REMOVE THE NEXT LINE: It's causing a double free.
-    // g_object_set_data_full(G_OBJECT(colour_button_event), "dialog", dialog_event, g_object_unref);
 
     GdkRGBA rgba_event;
     if (gdk_rgba_parse (&rgba_event, m_eventcolour)) {
         gtk_color_dialog_button_set_rgba (GTK_COLOR_DIALOG_BUTTON(colour_button_event), &rgba_event);
     }
 		
-	
 	label_todaycolour = gtk_label_new("Today Colour: ");
 	label_eventcolour = gtk_label_new("Event Colour: ");
 	
@@ -2748,8 +2947,8 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	
 	//speech
 	check_button_talk = gtk_check_button_new_with_label ("Enable Talking");
-	check_button_talk_startup = gtk_check_button_new_with_label ("Talk At Startup");
-	check_button_talk_upcoming= gtk_check_button_new_with_label ("Talk Upcoming");
+	check_button_talk_event_number = gtk_check_button_new_with_label ("Talk Event Number");
+	//check_button_talk_upcoming= gtk_check_button_new_with_label ("Talk Upcoming");
 		
 	check_button_reset_all = gtk_check_button_new_with_label ("Reset All");
 		
@@ -2761,7 +2960,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	
 	////set speak
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk), m_talk);
-	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk_startup), m_talk_at_startup);
+	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk_event_number), m_talk_event_number);
 	
 	gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_reset_all), m_reset_preferences);
 	
@@ -2775,7 +2974,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	
 	//speaking
 	g_object_set_data(G_OBJECT(button_set), "check-button-talk-key",check_button_talk);
-	g_object_set_data(G_OBJECT(button_set), "check-button-talk-startup-key",check_button_talk_startup);				
+	g_object_set_data(G_OBJECT(button_set), "check-button-talk-event-number-key",check_button_talk_event_number);				
 	//colour
 	g_object_set_data(G_OBJECT(button_set), "colour-button-today-key", colour_button_today);
 	g_object_set_data(G_OBJECT(button_set), "colour-button-event-key", colour_button_event);	
@@ -2801,8 +3000,8 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 	gtk_grid_attach(GTK_GRID(grid), label_spacer2,               1, 6, 1, 1);
 	
 	//speak preferences
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk,             1, 7, 1, 1);
-	gtk_grid_attach(GTK_GRID(grid), check_button_talk_startup,     2, 7, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_talk,             		1, 7, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), check_button_talk_event_number,     2, 7, 1, 1);
 	
 	gtk_grid_attach(GTK_GRID(grid), label_spacer3,     			  1, 8, 1, 1);
 		
@@ -2816,156 +3015,6 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpoint
 }
  
  
-//static void callbk_preferences(GSimpleAction* action, GVariant *parameter,gpointer user_data)
-//{			
-	//GtkWidget *window =user_data;
-
-    //GtkWidget *dialog;
-    //GtkWidget *grid;
-    //GtkWidget *button_set;
-
-    //GtkWidget *check_button_hour_format;
-    //GtkWidget *check_button_show_end_time;
-
-    //GtkWidget *check_button_show_tooltips;
-    //GtkWidget *check_button_dark_theme;
-    ////speak
-    //GtkWidget *check_button_talk;
-    //GtkWidget *check_button_talk_startup;
-    //GtkWidget *check_button_talk_upcoming;
-
-    //GtkWidget *check_button_reset_all;
-
-    //GtkWidget *label_spacer1;
-    //GtkWidget *label_spacer2;
-    //GtkWidget *label_spacer3;
-    //GtkWidget *label_spacer4;
-    //GtkWidget *label_spacer5;
-    //GtkWidget *label_spacer6;
-
-    //label_spacer1 = gtk_label_new("");
-    //label_spacer2 = gtk_label_new("");
-    //label_spacer3 = gtk_label_new("");
-    //label_spacer4 = gtk_label_new("");
-    //label_spacer5 = gtk_label_new("");
-    //label_spacer6 = gtk_label_new("");
-
-    //dialog =gtk_window_new();
-    //gtk_window_set_title (GTK_WINDOW (dialog), "Preferences");
-    //gtk_window_set_modal(GTK_WINDOW (dialog),TRUE);
-    //gtk_window_set_transient_for(GTK_WINDOW (dialog),GTK_WINDOW(window));
-
-    //grid = gtk_grid_new();
-    //gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
-    //button_set = gtk_button_new_with_label ("Set Preferences");
-    //g_signal_connect (button_set, "clicked", G_CALLBACK (callbk_set_preferences), window);
-    //g_object_set_data(G_OBJECT(button_set), "dialog-key",dialog);
-
-    //GtkWidget *label_todaycolour;
-    //GtkColorDialog *dialog_today = gtk_color_dialog_new();
-    //GtkWidget *colour_button_today = gtk_color_dialog_button_new(dialog_today);
-    //// Link the button and dialog to manage the memory.
-    //g_object_set_data_full(G_OBJECT(colour_button_today), "dialog", dialog_today, g_object_unref);
-
-    //GdkRGBA rgba_today;
-    //if (gdk_rgba_parse (&rgba_today, m_todaycolour)) {
-        //gtk_color_dialog_button_set_rgba (GTK_COLOR_DIALOG_BUTTON(colour_button_today), &rgba_today);
-    //}
-
-    //GtkWidget *label_eventcolour;
-    //GtkColorDialog *dialog_event = gtk_color_dialog_new();
-    //GtkWidget *colour_button_event = gtk_color_dialog_button_new(dialog_event);
-    //// Link the button and dialog to manage the memory.
-    //g_object_set_data_full(G_OBJECT(colour_button_event), "dialog", dialog_event, g_object_unref);
-
-    //GdkRGBA rgba_event;
-    //if (gdk_rgba_parse (&rgba_event, m_eventcolour)) {
-        //gtk_color_dialog_button_set_rgba (GTK_COLOR_DIALOG_BUTTON(colour_button_event), &rgba_event);
-    //}
-	
-	//label_todaycolour = gtk_label_new("Today Colour: ");
-	//label_eventcolour = gtk_label_new("Event Colour: ");
-	
-	////calendar
-	//check_button_hour_format = gtk_check_button_new_with_label ("12 Hour Format");	
-	//check_button_show_end_time = gtk_check_button_new_with_label ("Use End Time");
-	//check_button_show_tooltips = gtk_check_button_new_with_label ("Use Calendar Tooltips");
-	//check_button_dark_theme = gtk_check_button_new_with_label ("Use Dark Theme");
-	
-	////speech
-	//check_button_talk = gtk_check_button_new_with_label ("Enable Talking");
-	//check_button_talk_startup = gtk_check_button_new_with_label ("Talk At Startup");
-	//check_button_talk_upcoming= gtk_check_button_new_with_label ("Talk Upcoming");
-		
-	//check_button_reset_all = gtk_check_button_new_with_label ("Reset All");
-		
-	////set calendar preferences
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_hour_format),m_12hour_format);	
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_show_end_time),m_use_end_time);
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_show_tooltips),m_show_tooltips);
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_dark_theme),m_is_dark_theme);
-	
-	//////set speak
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk), m_talk);
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_talk_startup), m_talk_at_startup);
-	
-	//gtk_check_button_set_active (GTK_CHECK_BUTTON(check_button_reset_all), m_reset_preferences);
-	
-	////data setters
-	
-	//g_object_set_data(G_OBJECT(button_set), "dialog-key",dialog);
-	////calendar
-	//g_object_set_data(G_OBJECT(button_set), "check-button-hour-format-key",check_button_hour_format);
-	//g_object_set_data(G_OBJECT(button_set), "check-button-show-end-time-key",check_button_show_end_time);		
-	//g_object_set_data(G_OBJECT(button_set), "check-button-show-tooltips-key",check_button_show_tooltips);
-	//g_object_set_data(G_OBJECT(button_set), "check-button-dark-theme-key",check_button_dark_theme);
-	
-	////speaking
-	//g_object_set_data(G_OBJECT(button_set), "check-button-talk-key",check_button_talk);
-	//g_object_set_data(G_OBJECT(button_set), "check-button-talk-startup-key",check_button_talk_startup);				
-	////colour
-	//g_object_set_data(G_OBJECT(button_set), "colour-button-today-key", colour_button_today);
-	//g_object_set_data(G_OBJECT(button_set), "colour-button-event-key", colour_button_event);	
-	////reset
-	//g_object_set_data(G_OBJECT(button_set), "check-button-reset-all-key",check_button_reset_all);
-	
-	////grid layout	
-	////Calendar preferences	
-	//gtk_grid_attach(GTK_GRID(grid), check_button_hour_format,    1, 1, 1, 1);
-	//gtk_grid_attach(GTK_GRID(grid), check_button_show_end_time,  2, 1, 1, 1);
-		
-	//gtk_grid_attach(GTK_GRID(grid), check_button_show_tooltips,  1, 2, 1, 1);
-	//gtk_grid_attach(GTK_GRID(grid), check_button_dark_theme,     2, 2, 1, 1);		
-	
-	//gtk_grid_attach(GTK_GRID(grid), label_spacer1,             1, 3, 1, 1);
-	
-	//gtk_grid_attach(GTK_GRID(grid), label_todaycolour,         1, 4, 1, 1);
-	//gtk_grid_attach(GTK_GRID(grid), colour_button_today,       2, 4, 1, 1);
-	
-	//gtk_grid_attach(GTK_GRID(grid), label_eventcolour,         1, 5, 1, 1);
-	//gtk_grid_attach(GTK_GRID(grid), colour_button_event,       2, 5, 1, 1);
-	
-	//gtk_grid_attach(GTK_GRID(grid), label_spacer2,               1, 6, 1, 1);
-	
-	////speak preferences
-	//gtk_grid_attach(GTK_GRID(grid), check_button_talk,             1, 7, 1, 1);
-	//gtk_grid_attach(GTK_GRID(grid), check_button_talk_startup,     2, 7, 1, 1);
-	
-	//gtk_grid_attach(GTK_GRID(grid), label_spacer3,     			  1, 8, 1, 1);
-		
-	
-	////gtk_grid_attach(GTK_GRID(grid), label_spacer4,       			1, 9, 1, 1);		
-		
-	//gtk_grid_attach(GTK_GRID(grid), label_spacer5,      			 1, 9, 1, 1);	
-	//gtk_grid_attach(GTK_GRID(grid), check_button_reset_all,  		1, 10, 1, 1);	
-	//gtk_grid_attach(GTK_GRID(grid), label_spacer6,       			1, 11, 1, 1);	
-	//gtk_grid_attach(GTK_GRID(grid), button_set,  1, 12, 3, 1);
-	
-	//gtk_window_set_child (GTK_WINDOW (dialog), grid);	
-	//gtk_window_present(GTK_WINDOW(dialog));
-	
-//}
-
 /**
  * @brief Callback for the about action, which opens an about dialog.
  * @param action The GSimpleAction that triggered the callback.
@@ -2983,7 +3032,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.0");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.2");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar (Integral Speech Synthesizer)");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);
@@ -3328,27 +3377,22 @@ static char* get_day_number_ordinal_string(int day)
 	return day_str;
 }
 
-/**
- * @brief Callback for the speak action, which starts text-to-speech for events.
- * @param action The GSimpleAction that triggered the callback.
- * @param parameter The GVariant parameter (unused).
- * @param user_data A pointer to the GtkWindow.
- */
-static void callbk_speak(GSimpleAction* action, GVariant *parameter,gpointer user_data)
-{	
-	GtkWidget *window =user_data;
-	speak_events(window);
-}
 
-/**
- * @brief Synthesizes and plays speech for a list of events.
- * @param user_data A pointer to the GtkWindow.
- */
-static void speak_events(gpointer user_data)
+static void callbk_speak(GtkButton *button, gpointer user_data)
 {
-    GtkWidget *window = user_data;
-    GtkWidget *calendar = g_object_get_data(G_OBJECT(window), "window-calendar-key");
-
+	//g_print("callbk_speak\n");
+	if(m_talk==FALSE) return;
+	//GtkWidget *window =user_data;
+	(void) user_data;
+	GtkWidget *calendar = g_object_get_data(G_OBJECT(button), "button-speak-calendar-key");
+	//GtkWidget *button_speak_time = g_object_get_data(G_OBJECT(button), "button-speak-time-key");
+	gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE); // Disable button while speaking
+	//gtk_widget_set_sensitive(GTK_WIDGET(button_speak_time), FALSE); // Disable button while speaking
+	
+	
+	// Create a dynamic array for words
+    GPtrArray *words_array = g_ptr_array_new();
+		
     int day = custom_calendar_get_day(CUSTOM_CALENDAR(calendar));
     int month = custom_calendar_get_month(CUSTOM_CALENDAR(calendar));
     int year = custom_calendar_get_year(CUSTOM_CALENDAR(calendar));
@@ -3356,10 +3400,7 @@ static void speak_events(gpointer user_data)
     char *dow_str = get_day_of_week(day, month, year);
     char *day_number_str = get_day_number_ordinal_string(day);
     char *month_str = get_month_string(month);
-    
-    // Create a dynamic array for words
-    GPtrArray *words_array = g_ptr_array_new();
-
+         
     // Add initial date words. We add copies to manage memory later.
     g_ptr_array_add(words_array, g_strdup(dow_str));
     g_ptr_array_add(words_array, g_strdup(day_number_str));
@@ -3368,6 +3409,43 @@ static void speak_events(gpointer user_data)
     
     //get all events for selected day
 	GArray* events_for_day = db_get_all_events_year_month_day(db_handle, year, month, day);
+	
+	if(m_talk_event_number && events_for_day->len>0)
+	{
+		
+		if(events_for_day->len==1)
+		{
+			g_ptr_array_add(words_array, g_strdup("one"));
+			g_ptr_array_add(words_array, g_strdup("event"));
+		}
+		else if(events_for_day->len==2)
+		{
+			g_ptr_array_add(words_array, g_strdup("two"));
+			g_ptr_array_add(words_array, g_strdup("events"));
+	    }
+	    else if(events_for_day->len==3)
+		{
+			g_ptr_array_add(words_array, g_strdup("three"));
+			g_ptr_array_add(words_array, g_strdup("events"));
+	    }
+	    else if(events_for_day->len==4)
+		{
+			g_ptr_array_add(words_array, g_strdup("four"));
+			g_ptr_array_add(words_array, g_strdup("events"));
+	    }
+	    else if(events_for_day->len==5)
+		{
+			g_ptr_array_add(words_array, g_strdup("five"));
+			g_ptr_array_add(words_array, g_strdup("events"));
+	    }
+	    else if(events_for_day->len>5)
+		{
+			g_ptr_array_add(words_array, g_strdup("many"));
+			g_ptr_array_add(words_array, g_strdup("events"));
+	    }
+	}
+	
+	
     
     if (events_for_day) {      
     for (guint i = 0; i < events_for_day->len; i++) 
@@ -3395,8 +3473,6 @@ static void speak_events(gpointer user_data)
 	char* time_str_start ="";
 	time_str_start= get_time_str_talk(start_hour, start_min);
 	
-	//g_print("time_str_start = %s\n",time_str_start);
-	//char *time_str_start_lower = g_ascii_strdown(time_str_start, -1);
 	
 	char *token_time_start = strtok(time_str_start, " ");
     while (token_time_start != NULL) {
@@ -3491,111 +3567,21 @@ static void speak_events(gpointer user_data)
         }
     }
 
+    
+    
+    
+    
     // Clean up the words_array and its contents
     g_ptr_array_free(words_array, TRUE);
-
-    GTask *task = g_task_new(NULL, NULL, audio_synthesis_completed, NULL);
+		
+	
+    GTask *task = g_task_new(NULL, NULL, audio_synthesis_completed, button);
     g_task_set_task_data(task, data, NULL);
     g_task_run_in_thread(task, audio_synthesis_task);
     g_object_unref(task);
-}
-
-//======================================================================
-
-/**
- * @brief Callback for the speaktime action, which speaks the current time.
- * @param action The GSimpleAction that triggered the callback.
- * @param parameter The GVariant parameter (unused).
- * @param user_data A pointer to the GtkWindow.
- */
-static void callbk_speaktime(GSimpleAction * action, GVariant *parameter, gpointer user_data)
-{
-	
-	GDateTime *dt = g_date_time_new_now_local(); 
-	gint hour =g_date_time_get_hour(dt);	
-	gint min= g_date_time_get_minute(dt);	
-	
-	speak_time(hour,min);	
-	g_date_time_unref (dt);
-}	
-
-/**
- * @brief Synthesizes and plays speech for the current time.
- * @param hour The current hour.
- * @param min The current minute.
- */
-static void speak_time(gint hour, gint min) 
-{	
-	if(m_talk==FALSE) return;
-		
-		char* speak_str ="";	
-		speak_str= g_strconcat(speak_str, "the time is ", NULL);	
-		char* time_str= get_time_str_talk(hour, min);
-		speak_str= g_strconcat(speak_str, "",time_str, NULL);
-		
-		// Create a dynamic array for words
-		GPtrArray *words_array = g_ptr_array_new();
-		char *token = strtok(speak_str, " ");
-		while (token != NULL) {
-		//g_print("summary word =%s\n", token);
-		// Add each word token to the GPtrArray
-		g_ptr_array_add(words_array, g_strdup(token));
-		token = strtok(NULL, " ");
-		}
-		g_free(speak_str);
-		
-		//DEBUG: print the words to verify
-		//g_print("Words array: ");
-		//for (guint i = 0; i < words_array->len; i++) {
-        //g_print("%s ", (char*)g_ptr_array_index(words_array, i));
-		//}
-		//g_print("\n");
-		
-		AudioTaskData *data = g_new(AudioTaskData, 1);
-		data->diphone_entries = NULL;
-		data->diphone_number = 0;
-		data->tempo = 2.0f;
-		data->amplification = 2.0f;
-		
-		for (guint i = 0; i < words_array->len; i++) {
-        char* word_to_process = (char*)g_ptr_array_index(words_array, i);
-        WordEntry* word_entry = find_word_entry(word_to_process);
-		
-        if (word_entry != NULL) {
-		char* diphone_string = g_strdup(word_entry->diphone_str);
-		char* start_ptr = diphone_string;
-		char* end_ptr;
-		
-		while ((end_ptr = strchr(start_ptr, ' ')) != NULL) {
-		*end_ptr = '\0';
-		DiphoneEntry* entry = find_diphone_entry(start_ptr);
-		if (entry != NULL) {
-		data->diphone_entries = (DiphoneEntry**)g_realloc_n(data->diphone_entries, data->diphone_number + 1, sizeof(DiphoneEntry*));
-		data->diphone_entries[data->diphone_number++] = entry;
-		}
-		*end_ptr = ' ';
-		start_ptr = end_ptr + 1;
-		}
-		if (*start_ptr != '\0') {
-		DiphoneEntry* entry = find_diphone_entry(start_ptr);
-		if (entry != NULL) {
-		data->diphone_entries = (DiphoneEntry**)g_realloc_n(data->diphone_entries, data->diphone_number + 1, sizeof(DiphoneEntry*));
-		data->diphone_entries[data->diphone_number++] = entry;
-		}
-		}
-		g_free(diphone_string);
-        }
-		}
-		
-		// Clean up the words_array and its contents
-		g_ptr_array_free(words_array, TRUE);
-		
-		GTask *task = g_task_new(NULL, NULL, audio_synthesis_completed, NULL);
-		g_task_set_task_data(task, data, NULL);
-		g_task_run_in_thread(task, audio_synthesis_task);
-		g_object_unref(task);
 	
 }
+
 //======================================================================
 
 /**
@@ -3673,24 +3659,24 @@ char* get_time_str_talk(int hour, int min)
 	char *time_str = "";
 	char *hour_str = "";
 	char *min_str = "";	
-	char *ampm_str = " ";
+	char *ampm_str = "";
 	
 	if(m_12hour_format) {
 	
 	if (hour >= 13 && hour <= 23)
 	{
 	int corrected_hour = hour - 12;
-	ampm_str = " pmm ";					
+	ampm_str = "pmm ";					
 	hour_str =get_cardinal_string(corrected_hour);
 	}
 	if(hour == 12)
 	{
-	ampm_str = " p.m. ";					
+	ampm_str = "pmm ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	if(hour <12)
 	{
-	ampm_str = " amm ";					
+	ampm_str = "amm ";					
 	hour_str =get_cardinal_string(hour);
 	}
 	
@@ -4072,6 +4058,46 @@ static void callbk_bind_listitem (GtkListItemFactory *factory, GtkListItem *list
   gtk_label_set_label (GTK_LABEL (label), display_str);    
 }
 
+
+/**
+ * @brief update the time label
+ * @param gpointer data to the GtkLabel
+ */
+static gboolean update_time_label(gpointer data)
+{
+	GtkLabel *label = (GtkLabel*)data;
+	GtkWidget *label_alarm_state = g_object_get_data(G_OBJECT(label), "label-time-alarm-key");
+ 
+
+    GDateTime *now = g_date_time_new_now_local();
+    int current_hour = g_date_time_get_hour(now);
+    int current_min = g_date_time_get_minute(now);
+    int current_sec = g_date_time_get_second(now);
+    
+    //char *time_str = g_date_time_format(date_time, "%H:%M:%S");   // 24hr time format
+	//char *time_str = g_date_time_format(date_time, "%H:%M");   // 24hr time format
+    
+    gchar *time_str = g_date_time_format(now, "%I:%M %p"); //12 hour format
+    gtk_label_set_text(GTK_LABEL(label), time_str); 
+    
+    if(current_hour==m_alarm_hour && current_min==m_alarm_min && current_sec==0 && m_alarm_on)
+    {			
+		//play the alarm signal in a thread
+		GTask* task = g_task_new(NULL, NULL, alarm_task_callbk, NULL);	
+		//GTask* task = g_task_new(NULL, NULL, NULL, NULL);		
+	    g_task_run_in_thread(task, play_alarm_audio_async);     
+	    g_object_unref(task);
+    }
+    
+	g_free(time_str);
+    g_date_time_unref(now);
+
+	
+	return continue_timer;
+}
+
+//======================================================================
+
 /**
  * @brief Callback function to quit Talk Calendar.
  * @param action The GSimpleAction that triggered the callback.
@@ -4092,7 +4118,6 @@ static void callbk_quit(GSimpleAction *action, GVariant *parameter, gpointer use
     g_application_quit(G_APPLICATION(app)); 
 }
 
-
 /**
  * @brief Callback function to shutdown Talk Calendar.
  * @param GtkWindow that triggered the callback.  
@@ -4110,116 +4135,24 @@ static void callbk_shutdown(GtkWindow *window, gpointer user_data)
 }
 
 /**
- * @brief Creates the main application menu.
- * @param app The GtkApplication object.
- * @return A GMenu object.
- */
-static GMenu *create_menu(const GtkApplication *app) 
-{		
-	GMenu *menu;
-    GMenu *file_menu;   
-    GMenu *event_menu;
-    GMenu *calendar_menu;
-    GMenu *help_menu;
-    GMenuItem *item;
-
-	menu =g_menu_new();
-	file_menu =g_menu_new();	
-	event_menu =g_menu_new();
-	calendar_menu =g_menu_new();
-	help_menu =g_menu_new();
-	
-	//File items	
-	item =g_menu_item_new("Export", "app.export");
-	g_menu_append_item(file_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Import", "app.import");
-	g_menu_append_item(file_menu,item);
-	g_object_unref(item);
-	
-	item = g_menu_item_new("Quit", "app.quit");
-    g_menu_append_item(file_menu, item);
-    g_object_unref(item);
-		
-	//Event items
-	item =g_menu_item_new("New Event", "app.newevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Edit Selected Event", "app.editevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Delete Selected Event", "app.deleteevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Delete All Events", "app.deleteall");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Speak", "app.speak");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Search", "app.search");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	//Calendar items
-	item =g_menu_item_new("Go To Today", "app.home");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Speak Time", "app.speaktime");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-		
-	item =g_menu_item_new("Calculate Easter", "app.easter");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Preferences", "app.preferences");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);	
-		
-	//Help items
-	item =g_menu_item_new("Information", "app.info");
-	g_menu_append_item(help_menu,item);
-	g_object_unref(item);
-		
-	item =g_menu_item_new("About", "app.about");
-	g_menu_append_item(help_menu,item);
-	g_object_unref(item);
-	
-	g_menu_append_submenu(menu, "File", G_MENU_MODEL(file_menu));
-    g_object_unref(file_menu);   
-    g_menu_append_submenu(menu, "Event", G_MENU_MODEL(event_menu));
-    g_object_unref(event_menu);
-    g_menu_append_submenu(menu, "Calendar", G_MENU_MODEL(calendar_menu));
-    g_object_unref(calendar_menu);
-    g_menu_append_submenu(menu, "Help", G_MENU_MODEL(help_menu));
-    g_object_unref(help_menu);
-    
-    return menu;
-}
-
-/**
  * @brief The main application entry point.
  * @param app The GtkApplication instance.
  * @param user_data User data.
  */
 static void activate (GtkApplication *app, gpointer  user_data)
 {
-	GtkWidget *window;	
-	GMenu *menu;	
+	GtkWidget *window;
+	GtkWidget *header;
+		
 	GtkWidget *calendar;
 	GtkWidget *scrolled_window;
 	GtkWidget *paned;	
 	GtkWidget *box;	
 	GtkWidget *box_listview;
 	GtkWidget *box_calendar;
+	
+	GtkWidget *button_speak;
+	GtkWidget* label_time;
 		
 	GtkListItemFactory *factory;
 	GListModel *model;
@@ -4227,9 +4160,11 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	GtkWidget *list_view;
 		
 	window = gtk_application_window_new(app);
-	gtk_window_set_title (GTK_WINDOW(window), "Talk Calendar");		
+	gtk_window_set_title (GTK_WINDOW(window), "");		
 	gtk_window_set_default_size (GTK_WINDOW(window), m_window_width, m_window_height);	
 	g_signal_connect(window, "destroy", G_CALLBACK(callbk_shutdown), NULL);
+	header = gtk_header_bar_new();
+	gtk_window_set_titlebar(GTK_WINDOW(window), header);
 		
 	GListStore *store=NULL;
 	store = g_list_store_new(G_TYPE_OBJECT);
@@ -4307,8 +4242,8 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	g_object_set_data(G_OBJECT(selection), "selection-calendar-key",calendar);
 	
 	const gchar *home_accels[2] = { "Home", NULL };	
-	const gchar *speak_accels[2] = { "space", NULL };
-	const gchar *speaktime_accels[2] = {"t", NULL };
+	//const gchar *speak_accels[2] = { "space", NULL };
+	//const gchar *speaktime_accels[2] = {"t", NULL };
 	const gchar *newevent_accels[2] = {"<Ctrl>n", NULL };	
 	const gchar *editevent_accels[2] = {"<Ctrl>e", NULL };		
 	const gchar *delete_accels[2] = {"Delete", NULL };
@@ -4357,7 +4292,7 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	deleteall_action=g_simple_action_new("deleteall",NULL); //app.deleteall
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(deleteall_action)); //make visible
 	g_signal_connect(deleteall_action, "activate",  G_CALLBACK(callbk_delete_all), window);
-	
+		
 	//Calendar home
 	GSimpleAction *home_action;	
 	home_action=g_simple_action_new("home",NULL); //app.home
@@ -4386,46 +4321,115 @@ static void activate (GtkApplication *app, gpointer  user_data)
 	info_action=g_simple_action_new("info",NULL); //app.info
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(info_action)); //make visible
 	g_signal_connect(info_action, "activate",  G_CALLBACK(callbk_info), window);
-	
-		
+			
 	GSimpleAction *about_action;
 	about_action=g_simple_action_new("about",NULL); //app.about
 	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(about_action)); //make visible
 	g_signal_connect(about_action, "activate",  G_CALLBACK(callbk_about), window);
-	
-	GSimpleAction *speak_action;	
-	speak_action=g_simple_action_new("speak",NULL); //app.speak
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(speak_action)); //make visible	
-	g_signal_connect(speak_action, "activate",  G_CALLBACK(callbk_speak), window);
-	
-	GSimpleAction *speaktime_action;	
-	speaktime_action=g_simple_action_new("speaktime",NULL); //app.speaktime
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(speaktime_action)); //make visible	
-	g_signal_connect(speaktime_action, "activate",  G_CALLBACK(callbk_speaktime), window);
-	
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speak", speak_accels);		
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speaktime", speaktime_accels);		
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.home", home_accels);
-	
+			
+	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.home", home_accels);	
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.newevent", newevent_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.editevent", editevent_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.deleteevent", delete_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.info", info_accels);
 	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.preferences", preferences_accels);
 	
-	menu=create_menu(app);	
-	gtk_application_set_menubar (app,G_MENU_MODEL(menu));
-    gtk_application_window_set_show_menubar(GTK_APPLICATION_WINDOW(window), TRUE);
+	//hamburger menu
+	GMenu *menu, *section;
+	GtkWidget *menu_button;
+	GMenu *tools_menu; 
+	GMenuItem *item;
+	
+	menu = g_menu_new();
+	section = g_menu_new ();
+	
+	g_menu_append (section, "Export", "app.export"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "Import", "app.import"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "New Event", "app.newevent"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "Edit Event", "app.editevent"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "Delete Event", "app.deleteevent"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "Delete All", "app.deleteall"); 	
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+			
+	tools_menu =g_menu_new();
+	item =g_menu_item_new("Calculate Easter", "app.easter");
+	g_menu_append_item(tools_menu,item);
+	g_object_unref(item);
+	
+	item =g_menu_item_new("Search", "app.search");
+	g_menu_append_item(tools_menu,item);
+	g_object_unref(item);
+	
+	g_menu_append_submenu(menu, "Tools", G_MENU_MODEL(tools_menu));
+	g_object_unref(tools_menu); 
+		
+	section = g_menu_new();
+	g_menu_append(section, "Preferences", "app.preferences");
+	g_menu_append_section(menu, NULL, G_MENU_MODEL(section));
+	g_object_unref(section);
+		
+	section = g_menu_new ();
+	g_menu_append (section, "Information", "app.info"); //show app info
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	section = g_menu_new ();
+	g_menu_append (section, "About", "app.about");
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+	g_object_unref (section);
+	
+	menu_button = gtk_menu_button_new();
+	gtk_widget_set_tooltip_text(menu_button, "Menu");
+	gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (menu_button),"open-menu-symbolic"); 		
+	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), G_MENU_MODEL(menu));
+	gtk_header_bar_pack_end(GTK_HEADER_BAR (header), menu_button);
+		
 	
 	set_tooltips_on_calendar(CUSTOM_CALENDAR(calendar));
 		
 	custom_calendar_update (CUSTOM_CALENDAR(calendar));
 	update_store(CUSTOM_CALENDAR(calendar), store);
 	
-	if(m_talk && m_talk_at_startup) {
-		speak_events(window);		
-	}
+	//speak buttons
 	
+	button_speak= gtk_button_new_with_label("Speak");		
+	//g_signal_connect(button_speak_events, "clicked", G_CALLBACK(callbk_speak_events), window);
+	g_signal_connect(button_speak, "clicked", G_CALLBACK(callbk_speak), button_speak);		
+	gtk_header_bar_pack_start(GTK_HEADER_BAR(header), button_speak);	
+	g_object_set_data(G_OBJECT(button_speak), "button-speak-calendar-key",calendar);
+	
+	label_time=gtk_label_new("");	
+    gtk_label_set_xalign(GTK_LABEL(label_time),0.5);
+	g_timeout_add_seconds(1, update_time_label, label_time);
+	//gtk_header_bar_pack_start(GTK_HEADER_BAR(header), label_time);
+	gtk_header_bar_pack_end(GTK_HEADER_BAR(header), label_time);
+		
+	//GtkWidget *button_alarm = gtk_button_new_with_label("Alarm");	
+	GtkWidget *button_alarm = gtk_button_new_from_icon_name("alarm-symbolic");
+	g_signal_connect(button_alarm, "clicked", G_CALLBACK(callbk_alarm_button), window);	
+	gtk_header_bar_pack_end(GTK_HEADER_BAR(header), button_alarm);
+		
 	paned = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     gtk_paned_set_start_child(GTK_PANED(paned), box_calendar);
     gtk_paned_set_end_child(GTK_PANED(paned), box_listview);	
@@ -4435,6 +4439,9 @@ static void activate (GtkApplication *app, gpointer  user_data)
     g_object_set(settings, "gtk-application-prefer-dark-theme", m_is_dark_theme, NULL);
 	
 	gtk_window_present(GTK_WINDOW (window));	
+	
+	
+	
 }
 
 /**
@@ -4445,7 +4452,7 @@ static void activate (GtkApplication *app, gpointer  user_data)
  */
 int main (int  argc, char **argv)
 {
-	GtkApplication *app;
+	//GtkApplication *app;
 	int status;
 	config_initialize();
 	
@@ -4455,15 +4462,12 @@ int main (int  argc, char **argv)
         return 1;
     }
 	
-	app = gtk_application_new ("org.gtk.talkcalendar", G_APPLICATION_DEFAULT_FLAGS);	
+	GtkApplication *app = gtk_application_new ("org.gtk.talkcalendar", G_APPLICATION_DEFAULT_FLAGS);	
 	g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
 	status = g_application_run (G_APPLICATION (app), argc, argv);
 	g_object_unref (app);
 	
-	db_close(db_handle); // Close database on exit
-	// Free the globally allocated strings before exiting
-	//g_free(m_config_dir);
-	//g_free(m_config_file);
+	db_close(db_handle); // Close database on exit	
 	
 	return status;
 }
