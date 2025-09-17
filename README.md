@@ -73,7 +73,7 @@ DELETE = delete selected event
 ### Set Alarm
 ![](talkcalendar-alarm.png)
 
-The audio beep alarm is activated at the selected time provided Talk Calendar is running.
+When an alarm is set with Talk Calendar a separate child process, the alarm timer process, is spawned. Spawning a process in an operating system means creating a new child process from an existing parent process which in this case is Talk Calendar. These both run concurrently. This means that if Talk Calendar is closed the alarm will still be active and beep at the required time unless it is terminated by using the system monitor program. The Process ID (PID) which uniquely identifies the active alarm timer process is displayed by opening the alarm dialog again after the alarm process has been spawned. You use this PID if you want to terminate the alarm timer process using the system monitor.
 
 
 ## Dark Theme
