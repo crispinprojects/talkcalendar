@@ -3202,7 +3202,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.3");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.4");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar (Integral Speech Synthesizer)");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);
@@ -3507,37 +3507,37 @@ static char* get_day_number_ordinal_string(int day)
 	day_str="twentieth"; //twentieth
 	break;
 	case 21:
-	day_str="twenty first";
+	day_str="twentyfirst";
 	break;
 	case 22:
-	day_str="twenty second";
+	day_str="twentysecond";
 	break;
 	case 23:
-	day_str="twenty third";
+	day_str="twentythird";	
 	break;
 	case 24:
-	day_str="twenty fourth";
+	day_str="twentyfourth";
 	break;
 	case 25:
-	day_str="twenty fifth";
+	day_str="twentyfifth";
 	break;
 	case 26:
-	day_str="twenty sixth";
+	day_str="twentysixth";
 	break;
 	case 27:
-	day_str="twenty seventh";
+	day_str="twentyseventh";
 	break;
 	case 28:
-	day_str="twenty eighth";
+	day_str="twentyeighth";
 	break;
 	case 29:
-	day_str="twenty ninth";
+	day_str="twentyninth";
 	break;
 	case 30:
 	day_str="thirtieth";
 	break;
 	case 31:
-	day_str="thirty first";
+	day_str="thirtyfirst";
 	break;
 	default:
 	//Unknown day ordinal
@@ -3695,11 +3695,11 @@ static void callbk_speak(GtkButton *button, gpointer user_data)
     }
     
     // DEBUG: print the words to verify
-    //g_print("Words array: ");
-    //for (guint i = 0; i < words_array->len; i++) {
-        //g_print("%s ", (char*)g_ptr_array_index(words_array, i));
-    //}
-    //g_print("\n");
+    g_print("Words array: ");
+    for (guint i = 0; i < words_array->len; i++) {
+        g_print("%s ", (char*)g_ptr_array_index(words_array, i));
+    }
+    g_print("\n");
 
     AudioTaskData *data = g_new(AudioTaskData, 1);
     data->diphone_entries = NULL;

@@ -1603,6 +1603,8 @@ static WordEntry word_table[] = {
 {"thirtieth","pau_th th_er er_er er_t t_iy iy_eh eh_eh eh_th th_pau"},
 //thirty
 {"thirty","pau_th th_er er_er er_d d_iy iy_iy iy_pau"},
+//thirty
+{"thirtyfirst","pau_th th_er er_er er_d d_iy iy_iy iy_pau pau_f f_er er_er er_s s_t t_pau pau_t"},
 //this
 {"this","pau_dh dh_ih ih_s s_pau"},
 
@@ -1677,8 +1679,28 @@ static WordEntry word_table[] = {
 {"twelve","pau_t t_w w_eh eh_eh eh_l l_v v_pau"},
 //twentieth
 {"twentieth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_eh eh_eh eh_th th_pau"},
+
 //twenty
 {"twenty","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau"},
+//21st
+{"twentyfirst","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_f f_er er_er er_s s_t t_pau pau_t"},
+//22nd
+{"twentysecond","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_s s_eh eh_eh eh_k k_ah ah_n n_d d_pau"},
+//23rd
+{"twentythird","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau  pau_th th_er er_er er_d d_pau"},
+//24th
+{"twentyfourth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_f f_ao ao_ao ao_r r_th th_pau"},
+//25th
+{"twentyfifth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_f f_ih ih_ih ih_f f_th th_pau"},
+//26th
+{"twentysixth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_s s_ih ih_ih ih_k k_s s_th th_pau"},
+//27th
+{"twentyseventh","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_s s_eh eh_eh eh_v v_ah ah_n n_th th_pau"},
+//28th
+{"twentyeighth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_eh eh_ey ey_ey ey_t t_th th_pau"},
+//29th
+{"twentyninth","pau_t t_w w_eh eh_eh eh_n n_t t_iy iy_pau pau_n n_ay ay_ay ay_n n_th th_pau"},
+
 //two
 {"two","pau_t t_uw uw_uw uw_pau"},
 
