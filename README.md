@@ -68,6 +68,7 @@ The keyboard shortcuts for creating, editing and deleting events are shown below
 CONTROL+N = new event
 CONTROL+E = edit selected event
 DELETE = delete selected event
+t = speak time
 ```
 
 ### Set Alarm
@@ -225,7 +226,7 @@ It appears that GTK5 will continue to be a general-purpose toolkit but likely to
 
 ### Building on Raspberry Pi
 
-At the time of writing [Raspberry Pi](https://www.raspberrypi.com/software/) does not have an official release of RPi OS (Trixie). However, Ubuntu Desktop 25.04 (ARM 64-bit) can be installed using the official Raspberry Pi Imager on RPi 4/400 and RPi5/550 boards with 4GB or above. I have successfully compiled Talk Calendar on a RPi 500 with the Ubuntu 25.04 OS. See screenshot below.
+[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/) and like the Ubuntu Desktop 25.04 (ARM 64-bit) can be installed using the official Raspberry Pi Imager on RPi 4/400 and RPi5/550 boards with 4GB or above. Both support recent versions of GTK4 the prerequisite for Talk Calendar. I have successfully compiled Talk Calendar on a RPi 500 with the Ubuntu 25.04 OS. See screenshot below.
 
 ![](talkcalendar-ARM64.png)
 

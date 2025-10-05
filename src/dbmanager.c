@@ -298,7 +298,54 @@ GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int d
     return events_array;
 }
 
+//=====================================================================
+//int  db_get_number_day_events2(sqlite3 *db, int year, int month, int day)
+//{		
+	//const char *sql = "SELECT Count(*) FROM events WHERE start_year = ? AND start_month = ? AND start_day = ?";
+	
+    //sqlite3_stmt *stmt;
+    //int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    //if (rc != SQLITE_OK) {
+        //g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        //return 0;
+    //}
+    //sqlite3_bind_int(stmt, 1, year);
+    //sqlite3_bind_int(stmt, 2, month);
+    //sqlite3_bind_int(stmt, 3, day);
+    	
+	//int row_count=0;	
+	//row_count = sqlite3_column_int(stmt, 0); //not working?
+	//printf("db_get_number_day_events: %d-%d-%d row_count = %d\n",day,month,year,row_count);
+	//sqlite3_finalize(stmt);	
+	//return row_count;
+//}
 
+int  db_get_number_day_events(sqlite3 *db, int year, int month, int day)
+{
+	 const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority FROM events WHERE (start_year = ? OR is_yearly = 1) AND start_month = ? AND start_day = ?";
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return 0;
+    }
+    sqlite3_bind_int(stmt, 1, year);
+    sqlite3_bind_int(stmt, 2, month);
+    sqlite3_bind_int(stmt, 3, day);
+
+    GArray *events_array = g_array_new(FALSE, FALSE, sizeof(CalendarEvent*));
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        g_array_append_vals(events_array, &event, 1);
+    }
+    sqlite3_finalize(stmt);
+    //printf("db_get_number_day_events2: %d-%d-%d row_count = %d\n",day,month,year,events_array->len);
+    return events_array->len;
+}
+
+//======================================================================
 /**
  * @brief Retrieves all events from the database 
  * @param db A pointer to the database handle.

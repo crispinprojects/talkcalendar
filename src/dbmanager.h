@@ -53,6 +53,7 @@ CalendarEvent* db_get_event_by_id(sqlite3 *db, int id);
 // The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
 GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int day);
 
+int  db_get_number_day_events(sqlite3 *db, int year, int month, int day);
 
 // Retrieves all events from the database.
 // The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
