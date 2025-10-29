@@ -33,13 +33,14 @@
 #include "wavcat.h"
 #include "dictionary.h"
 #include "wavplay.h"
+#include "alarm.h"
 
 // Global database handle, to be opened and closed with the application
 static sqlite3 *db_handle = NULL;
 
 // File and directory names for configuration
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-055"
+#define CONFIG_FILENAME "talkcalendar-056"
 
 static char * m_config_file = NULL;
 
@@ -132,6 +133,9 @@ static gboolean update_time_label(gpointer data);
 // Function prototypes for basic alarm feature
 static void callbk_alarm_button(GtkButton *button, gpointer user_data);
 static void callbk_set_alarm(GtkButton *button, gpointer user_data);
+static void play_alarm_audio_async (GTask *task, gpointer object,gpointer task_data,GCancellable *cancellable);
+static void callbk_cancel_alarm(GtkButton *button, gpointer user_data);
+static void play_alarm();
 
 
 
@@ -177,7 +181,7 @@ static gboolean continue_timer = TRUE;
 static int m_alarm_hour=0;
 static int m_alarm_min=0;
 static int m_am_pm_index=0; //am=0 pm=1
-GPid spawned_pid = 0; // Global variable to store the PID of the spawned timer alarm process
+static gboolean m_alarm_on=TRUE;
 
 //======================================================================
 
@@ -259,7 +263,71 @@ static void audio_synthesis_completed(GObject *source_object, GAsyncResult *resu
 	gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE); // Re-enable the button
 	
  }
+//======================================================================
+// Alarm
+//======================================================================
 
+/**
+ * @brief This function is the alarm completion callback. 
+ * @param source_object The GObject that initiated the task (unused).
+ * @param result The GAsyncResult object, which is a GTask in this case.
+ * @param user_data pointer to the user data passed to g_task_new (unsued)
+ */
+ 
+static void alarm_task_callbk(GObject *gobject,GAsyncResult *result,  gpointer  user_data)
+{		
+	//the task callbk function is called back when the 
+	//play_alarm audio_async function has completed
+		
+	GTask *task = G_TASK(result);    
+    gboolean success = GPOINTER_TO_INT(g_task_get_task_data(task));
+    
+    if (success) {       
+		//g_print("Audio alarm playback finished.\n");
+		
+    } else {      
+		//g_print("Audio alarm playback failed.\n");
+    }
+
+}
+
+
+/**
+ * @brief background thread managed by GTask for playing alarm audio
+ * @param task The GTask object.
+ * @param source_object The GObject that initiated the task (unused).
+ * @param task_data A pointer to the AudioTaskData structure.
+ * @param cancellable A GCancellable object (unused).
+ */
+
+static void play_alarm_audio_async (GTask *task, gpointer object, gpointer task_data, GCancellable *cancellable)
+{
+	
+	play_alarm();	
+	g_task_set_task_data(task, GINT_TO_POINTER(TRUE), NULL);
+}
+  
+
+/**
+ * @brief This function plays the alarm audio.
+ */
+static void play_alarm()
+{	
+	
+	//create alarm wav from data in alarm.c	
+	unsigned char *data = (unsigned char*)malloc(alarm_wav_len * sizeof(unsigned char));
+	memcpy(data, alarm_wav, alarm_wav_len * sizeof(unsigned char)); //copy  alarm into data	
+	unsigned int data_len = alarm_wav_len;	
+    char *alarm_file ="/tmp/alarm.wav"; 
+	FILE* f = fopen(alarm_file, "w");
+    fwrite(data, data_len, 1, f);
+    fclose(f);  
+	//play alarm.wav
+    wavplay("/tmp/alarm.wav");
+	free(data);   
+    
+    		
+}
 
 //======================================================================
 // Save load config file
@@ -276,6 +344,10 @@ static void config_load_default()
 	m_talk_upcoming=TRUE;
 	m_upcoming_days=7;
 				
+	m_alarm_hour=0;
+    m_alarm_min=0;
+	m_alarm_on=TRUE;
+	
 	//calendar
 	m_12hour_format=TRUE;
 	m_use_end_time=FALSE;
@@ -305,7 +377,13 @@ static void config_read()
 	
 	m_talk_upcoming=g_key_file_get_boolean(kf, "calendar_settings", "talk_upcoming", NULL);
 	m_upcoming_days=g_key_file_get_integer(kf, "calendar_settings", "upcoming_days", NULL);
-				
+	
+	//alarm (save alarm settings so that they are restored)
+	m_alarm_hour=g_key_file_get_integer(kf, "calendar_settings", "alarm_hour", NULL);
+    m_alarm_min=g_key_file_get_integer(kf, "calendar_settings", "alarm_min", NULL);
+    m_am_pm_index=g_key_file_get_integer(kf, "calendar_settings", "am_pm_index", NULL);
+	m_alarm_on=g_key_file_get_boolean(kf, "calendar_settings", "alarm_on", NULL);
+					
 	//listview preferences
 	m_12hour_format=g_key_file_get_boolean(kf, "calendar_settings", "hour_format", NULL);	
 	m_use_end_time = g_key_file_get_boolean(kf, "calendar_settings", "show_end_time", NULL);
@@ -351,6 +429,12 @@ void config_write()
 	
 	g_key_file_set_boolean(kf, "calendar_settings", "talk_upcoming", m_talk_upcoming);
 	g_key_file_set_integer(kf, "calendar_settings", "upcoming_days", m_upcoming_days);	
+	
+	//alarm	
+	g_key_file_set_integer(kf, "calendar_settings", "alarm_hour", m_alarm_hour);
+	g_key_file_set_integer(kf, "calendar_settings", "alarm_min", m_alarm_min);
+	g_key_file_set_integer(kf, "calendar_settings", "am_pm_index", m_am_pm_index);
+	g_key_file_set_boolean(kf, "calendar_settings", "alarm_on",m_alarm_on);
 			
 	//listview
 	g_key_file_set_boolean(kf, "calendar_settings", "hour_format", m_12hour_format);
@@ -1240,285 +1324,101 @@ static void callbk_delete_all(GSimpleAction *action, GVariant *parameter,  gpoin
  * @param button The GtkButton that triggered the callback. 
  * @param user_data is the alarm status label 
  */
-//static void callbk_set_alarm(GtkButton *button, gpointer user_data)
-//{	
-		
-	//GtkWidget *alarm_window = user_data;
-	
-	////GtkWidget *label_alarm_status = g_object_get_data(G_OBJECT(button), "label-alarm-status-key");
-	//GtkWidget *spin_button_alarm_hour = g_object_get_data(G_OBJECT(button), "spin-alarm-hour-key");
-	//GtkWidget *spin_button_alarm_min = g_object_get_data(G_OBJECT(button), "spin-alarm-min-key");
-		
-	//m_alarm_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_hour));
-	//m_alarm_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_min));
-		
-	//GtkWidget *am_pm_dropdown = g_object_get_data(G_OBJECT(button), "am-pm-dropdown-key");
-    //m_am_pm_index = gtk_drop_down_get_selected(GTK_DROP_DOWN(am_pm_dropdown));
-    
-   
-    //// Convert the 12-hour format to 24-hour format
-    //if (m_am_pm_index == 1) { // PM is selected
-        //if (m_alarm_hour != 12) { // 12 PM should remain 12
-            //m_alarm_hour += 12;
-        //}
-    //} else { // AM is selected
-        //if (m_alarm_hour == 12) { // 12 AM (midnight) should be 0
-            //m_alarm_hour = 0;
-        //}
-    //}
-	
-	
-	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
-		
-	////1. calculate delay duration
-	
-	//GDateTime *now = g_date_time_new_now_local();
-    //int current_hour = g_date_time_get_hour(now);
-    //int current_min = g_date_time_get_minute(now);
-    //int current_sec = g_date_time_get_second(now);
-    //g_date_time_unref(now);
-    
-    //// Calculate remaining seconds in the current minute
-	//int remaining_seconds_in_minute = 60 - current_sec;
-	//g_print("remaining seconds in minute(error) = %d\n", remaining_seconds_in_minute);
-    
-    //int current_total_minutes = (current_hour * 60) + current_min;
-    //int alarm_total_minutes = (m_alarm_hour * 60) + m_alarm_min;
-    //int duration_minutes = alarm_total_minutes - current_total_minutes;
-    
-    //if (duration_minutes < 0) {
-        //duration_minutes += (24 * 60); // Alarm is for the next day
-    //}
-    
-    //int duration_seconds = duration_minutes * 60;
-    ////int duration_seconds_corrected =duration_minutes * 60+remaining_seconds_in_minute;
-    
-    //g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
-    //g_print("The timer will run in %d seconds.\n", duration_seconds);
-    ////g_print("Corrected timer will run in %d seconds.\n", duration_seconds_corrected);
-	
-	
-	//// Convert the integer duration to a string for g_spawn_async
-    //// Use g_strdup_printf to dynamically allocate a string
-    //gchar *duration_str = g_strdup_printf("%d", duration_seconds);
-    ////gchar *duration_str = g_strdup_printf("%d", duration_seconds_corrected);
-	
-	//g_print("duration_str =%s\n",duration_str);
-	//g_print("Spawning child timer alarm process...\n");
-	////2. spawn timer
-	
-    //// The command and arguments for the background process
-    //const gchar *argv[] = { 
-        //"./timer",
-        //duration_str, // Use the dynamically created duration string
-        //NULL 
-    //};
-
-    //GError *error = NULL;
-
-    //// Use g_spawn_async to run the command without blocking the UI
-    //gboolean success = g_spawn_async(NULL, 
-                                     //(gchar **)argv, 
-                                     //NULL, 
-                                     //G_SPAWN_SEARCH_PATH,
-                                     //NULL, 
-                                     //NULL, 
-                                      //&spawned_pid, // Store the PID in the global variable 
-                                     //&error);
-    
-    //g_print("Child process spawned with PID: %d\n", spawned_pid);
-   
-    //if (!success) {
-        //g_printerr("Failed to spawn timer process: %s\n", error->message);
-        //g_error_free(error);
-    //} else {
-        //g_print("Timer process spawned successfully.\n");
-    //}
-
-    //// Free the dynamically allocated string
-    //g_free(duration_str);	
-	////g_free(alarm_str);
-	
-	//gtk_window_destroy(GTK_WINDOW(alarm_window));
-//}
-
 static void callbk_set_alarm(GtkButton *button, gpointer user_data)
 {	
-    GtkWidget *alarm_window = user_data;
-    GtkWidget *spin_button_alarm_hour = g_object_get_data(G_OBJECT(button), "spin-alarm-hour-key");
-    GtkWidget *spin_button_alarm_min = g_object_get_data(G_OBJECT(button), "spin-alarm-min-key");
-    
-    m_alarm_hour = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_hour));
-    m_alarm_min = gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_min));
-    
-    GtkWidget *am_pm_dropdown = g_object_get_data(G_OBJECT(button), "am-pm-dropdown-key");
-    m_am_pm_index = gtk_drop_down_get_selected(GTK_DROP_DOWN(am_pm_dropdown));
-    
-    if (m_am_pm_index == 1) { 
-        if (m_alarm_hour != 12) {
-            m_alarm_hour += 12;
-        }
-    } else {
-        if (m_alarm_hour == 12) {
-            m_alarm_hour = 0;
-        }
-    }
-
-    g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
-    
-    // Calculate duration
-    GDateTime *now = g_date_time_new_now_local();
-    
-    GDateTime *alarm_time = g_date_time_new_local(
-        g_date_time_get_year(now),
-        g_date_time_get_month(now),
-        g_date_time_get_day_of_month(now),
-        m_alarm_hour,
-        m_alarm_min,
-        0.0
-    );
-
-    // If alarm is in the past, set it for the next day
-    if (g_date_time_compare(alarm_time, now) < 0) {
-        GDateTime *next_day_alarm = g_date_time_add_days(alarm_time, 1);
-        g_date_time_unref(alarm_time);
-        alarm_time = next_day_alarm;
-    }
-    
-    gint64 duration_in_seconds = g_date_time_to_unix(alarm_time) - g_date_time_to_unix(now);
-    
-    g_print("Duration until alarm: %" G_GINT64_FORMAT " seconds.\n", duration_in_seconds);
-    
-    if (spawned_pid != 0) {
-        g_print("Killing previous timer process with PID %d.\n", spawned_pid);
-        kill(spawned_pid, SIGKILL);
-        spawned_pid = 0; // Reset PID
-    }
-
-    // Find the timer executable in the system's PATH
-    gchar *timer_path = g_find_program_in_path("timer");
-    if (timer_path == NULL) {
-        g_printerr("Error: Could not find 'timer' executable in PATH. Please ensure ~/.local/bin2 is in your PATH and try again.\n");
-        return;
-    }
-    
-    // Arguments to pass to the spawned process
-    gchar *argv[] = {
-        timer_path,
-        g_strdup_printf("%" G_GINT64_FORMAT, duration_in_seconds),
-        NULL
-    };
-    
-    // Spawn a separate process for the timer
-    GError *error = NULL;
-    gboolean success = g_spawn_async(
-        NULL,       // working directory
-        argv,       // arguments
-        NULL,       // environment
-        G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, // flags
-        NULL,       // child setup
-        NULL,       // user data
-        &spawned_pid, // PID
-        &error
-    );
-
-    g_free(argv[1]);
-    g_free(timer_path);
-    g_date_time_unref(now);
-    g_date_time_unref(alarm_time);
-
-    if (success) {
-        g_print("Timer process spawned with PID %d.\n", spawned_pid);
-    } else {
-        g_printerr("Error spawning timer process: %s\n", error->message);
-        g_error_free(error);
-    }
-    
-    gtk_window_destroy(GTK_WINDOW(alarm_window));
+	m_alarm_on=TRUE;	
+	GtkWidget *label_alarm_status=user_data;
+	
+	GtkWidget *spin_button_alarm_hour = g_object_get_data(G_OBJECT(button), "spin-alarm-hour-key");
+	GtkWidget *spin_button_alarm_min = g_object_get_data(G_OBJECT(button), "spin-alarm-min-key");
+		
+	m_alarm_hour= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_hour));
+	m_alarm_min= gtk_spin_button_get_value(GTK_SPIN_BUTTON(spin_button_alarm_min));
+	
+	char *alarm_str ="Alarm On ";	
+	char* hour_str = g_strdup_printf("%02d",m_alarm_hour);
+	char* min_str = g_strdup_printf("%02d",m_alarm_min);
+	alarm_str = g_strconcat(alarm_str,hour_str,":",min_str,NULL);		
+	gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
+	
+	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
+	config_write();	//save alarm values
+	
+	g_free(alarm_str);
 }
 
-
+/**
+ * @brief button callbk function to reset the alarm 
+ * @param button The GtkButton that triggered the callback. 
+ * @param user_data is the alarm status label 
+ */
+static void callbk_cancel_alarm(GtkButton *button, gpointer user_data)
+{	
+	m_alarm_on=FALSE;	
+	GtkWidget *label_alarm_status=user_data;
+	gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
+	m_alarm_hour=0;
+	m_alarm_min=0;
+	m_am_pm_index=0;
+	//g_print("Alarm set for %02d:%02d.\n", m_alarm_hour, m_alarm_min);
+	config_write();	//save alarm values
+}
 
 /**
  * @brief button callbk function to set up the alarm UI
  * @param button The GtkButton that triggered the callback. 
- * @param user_data the GtkWindow
+ * @param user_data (unused)
  */
- 
- static void callbk_alarm_button(GtkButton *button, gpointer user_data)
+static void callbk_alarm_button(GtkButton *button, gpointer user_data)
 {
-	GtkWidget *window = user_data;
+	GtkWidget *window =user_data;
 	GtkWidget *alarm_window;
 	alarm_window = gtk_window_new(); 
 	gtk_window_set_title(GTK_WINDOW(alarm_window), "Set Alarm");
-	gtk_window_set_default_size(GTK_WINDOW(alarm_window), 400, 150);
+	gtk_window_set_default_size (GTK_WINDOW (alarm_window),400, 150);
 	gtk_window_set_transient_for(GTK_WINDOW(alarm_window), GTK_WINDOW(window));
   	gtk_window_set_modal(GTK_WINDOW(alarm_window), TRUE);
+  	 
+	GtkWidget *label_alarm_status = gtk_label_new("");
 		
-	// Alarm Time Selection
+	if(m_alarm_on){		
+		char *alarm_str ="Alarm On ";	
+	    char* hour_str = g_strdup_printf("%02d",m_alarm_hour);
+	    char* min_str = g_strdup_printf("%02d",m_alarm_min);
+	    alarm_str = g_strconcat(alarm_str,hour_str,":",min_str,NULL);		
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
+		g_free(hour_str);
+		g_free(min_str);
+		g_free(alarm_str);
+	}
+	else{
+		gtk_label_set_text(GTK_LABEL(label_alarm_status), "Alarm Off");
+	}		
+    // Alarm Time Selection
 	GtkWidget *hbox_alarm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new("Set Alarm:"));
-
-    // Convert 24-hour format back to 12-hour for the spin button display
-    int display_hour = m_alarm_hour;
-    int display_am_pm_index = 0; // 0 for AM, 1 for PM
-
-    if (display_hour >= 12) {
-        display_am_pm_index = 1; // PM
-        if (display_hour > 12) {
-            display_hour -= 12;
-        }
-    } else {
-        display_am_pm_index = 0; // AM
-        if (display_hour == 0) {
-            display_hour = 12; // 12 AM
-        }
-    }
-
-	GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_hour), display_hour);
+	//GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);//12 hour
+	GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(0, 23, 1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_hour), m_alarm_hour);
 	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_hour);
 	gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new(":"));
 	GtkWidget *spin_button_alarm_min = gtk_spin_button_new_with_range(0, 59, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_min), m_alarm_min);	
 	gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_min);
-
-	// Use GtkDropDown for AM/PM selection
-	GtkStringList *am_pm_list = gtk_string_list_new(NULL);
-	gtk_string_list_append(am_pm_list, "AM");
-	gtk_string_list_append(am_pm_list, "PM");
-	GtkWidget *am_pm_dropdown = gtk_drop_down_new(G_LIST_MODEL(am_pm_list), NULL);
-    gtk_drop_down_set_selected(GTK_DROP_DOWN(am_pm_dropdown), display_am_pm_index);
-	gtk_box_append(GTK_BOX(hbox_alarm), am_pm_dropdown);
-	
 	
 	GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-
-	GtkWidget *label_alarm_status = gtk_label_new("");
-		
-    char *am_pm_str = (m_am_pm_index == 0) ? "AM" : "PM";
 	
-	char* hour_str = g_strdup_printf("%02d", display_hour);
-	char* min_str = g_strdup_printf("%02d", m_alarm_min);
-	char* pid_str = g_strdup_printf("%d", spawned_pid);
-	
-	char* alarm_str = g_strconcat("Alarm Time ", hour_str, ":", min_str, " ", am_pm_str, "     PID = ", pid_str, NULL);
-	
-	gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
-	g_free(hour_str);
-	g_free(min_str);
-	g_free(pid_str);
-	g_free(alarm_str);
-	
-	//// Spawn Alarm Button
-	GtkWidget *set_alarm_button = gtk_button_new_with_label("Spawn Alarm");
-	g_signal_connect(set_alarm_button, "clicked", G_CALLBACK(callbk_set_alarm), alarm_window);
+	//// Set and Cancel Buttons
+	GtkWidget *set_alarm_button = gtk_button_new_with_label("Set Alarm");
+	g_signal_connect(set_alarm_button, "clicked", G_CALLBACK(callbk_set_alarm), label_alarm_status);
 	gtk_box_append(GTK_BOX(vbox_buttons), set_alarm_button);
-	
-	g_object_set_data(G_OBJECT(set_alarm_button), "label-alarm-status-key", label_alarm_status);	
+		
 	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-hour-key", spin_button_alarm_hour);
 	g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-min-key", spin_button_alarm_min);	
-	g_object_set_data(G_OBJECT(set_alarm_button), "am-pm-dropdown-key", am_pm_dropdown);
+	
+	GtkWidget *cancel_button = gtk_button_new_with_label("Cancel Alarm");
+	g_signal_connect(cancel_button, "clicked", G_CALLBACK(callbk_cancel_alarm), label_alarm_status);
+	gtk_box_append(GTK_BOX(vbox_buttons), cancel_button);
 	
 	gtk_box_append(GTK_BOX(vbox_buttons), label_alarm_status);
 
@@ -1526,84 +1426,11 @@ static void callbk_set_alarm(GtkButton *button, gpointer user_data)
 	gtk_box_append(GTK_BOX(vbox_layout), hbox_alarm);
 	gtk_box_append(GTK_BOX(vbox_layout), vbox_buttons);
 	
-	gtk_window_set_child (GTK_WINDOW(alarm_window), vbox_layout);		
+	gtk_window_set_child (GTK_WINDOW (alarm_window), vbox_layout);		
 		
 	gtk_window_present(GTK_WINDOW (alarm_window));
 }
- 
-//static void callbk_alarm_button(GtkButton *button, gpointer user_data)
-//{
-	//GtkWidget *window =user_data;
-	//GtkWidget *alarm_window;
-	//alarm_window = gtk_window_new(); 
-	//gtk_window_set_title(GTK_WINDOW(alarm_window), "Set Alarm");
-	//gtk_window_set_default_size (GTK_WINDOW (alarm_window),400, 150);
-	//gtk_window_set_transient_for(GTK_WINDOW(alarm_window), GTK_WINDOW(window));
-  	//gtk_window_set_modal(GTK_WINDOW(alarm_window), TRUE);
-		
-	////spin_button_alarm_hour = gtk_spin_button_new_with_range(0, 23, 1);
-	//// Using a 12-hour clock:
-    //// Alarm Time Selection
-	//GtkWidget *hbox_alarm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	//gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new("Set Alarm:"));
-	//GtkWidget *spin_button_alarm_hour = gtk_spin_button_new_with_range(1, 12, 1);
-	//gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_hour), m_alarm_hour);
-	//gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_hour);
-	//gtk_box_append(GTK_BOX(hbox_alarm), gtk_label_new(":"));
-	//GtkWidget *spin_button_alarm_min = gtk_spin_button_new_with_range(0, 59, 1);
-	//gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_alarm_min), m_alarm_min);	
-	//gtk_box_append(GTK_BOX(hbox_alarm), spin_button_alarm_min);
 
-	//// Use GtkDropDown for AM/PM selection
-	//GtkStringList *am_pm_list = gtk_string_list_new(NULL);
-	//gtk_string_list_append(am_pm_list, "AM");
-	//gtk_string_list_append(am_pm_list, "PM");
-	//GtkWidget *am_pm_dropdown = gtk_drop_down_new(G_LIST_MODEL(am_pm_list), NULL);
-	//gtk_drop_down_set_selected(GTK_DROP_DOWN(am_pm_dropdown), m_am_pm_index);
-	//gtk_box_append(GTK_BOX(hbox_alarm), am_pm_dropdown);
-	
-	
-	//GtkWidget *vbox_buttons = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-
-	//GtkWidget *label_alarm_status = gtk_label_new("");
-		
-	
-    //char *am_pm_str="";
-	//if(m_am_pm_index == 0) am_pm_str="AM";
-	//else  am_pm_str="PM"; 
-	
-	//char *alarm_str ="Alarm Time ";	
-	//char* hour_str = g_strdup_printf("%02d",m_alarm_hour);
-	//char* min_str = g_strdup_printf("%02d",m_alarm_min);
-	//char* pid_str = g_strdup_printf("%d",spawned_pid);
-	////g_print("Child process spawned with PID: %d\n", spawned_pid);
-	
-	//alarm_str = g_strconcat(alarm_str,hour_str,":",min_str," ",am_pm_str,"     PID = ",pid_str, NULL);		
-	//gtk_label_set_text(GTK_LABEL(label_alarm_status), alarm_str);
-	//g_free(alarm_str);
-		
-	
-	////// Spawn Alarm Button
-	//GtkWidget *set_alarm_button = gtk_button_new_with_label("Spawn Alarm");
-	//g_signal_connect(set_alarm_button, "clicked", G_CALLBACK(callbk_set_alarm), alarm_window);
-	//gtk_box_append(GTK_BOX(vbox_buttons), set_alarm_button);
-	
-	//g_object_set_data(G_OBJECT(set_alarm_button), "label-alarm-status-key", label_alarm_status);	
-	//g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-hour-key", spin_button_alarm_hour);
-	//g_object_set_data(G_OBJECT(set_alarm_button), "spin-alarm-min-key", spin_button_alarm_min);	
-	//g_object_set_data(G_OBJECT(set_alarm_button), "am-pm-dropdown-key", am_pm_dropdown);
-	
-	//gtk_box_append(GTK_BOX(vbox_buttons), label_alarm_status);
-
-	//GtkWidget *vbox_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	//gtk_box_append(GTK_BOX(vbox_layout), hbox_alarm);
-	//gtk_box_append(GTK_BOX(vbox_layout), vbox_buttons);
-	
-	//gtk_window_set_child (GTK_WINDOW (alarm_window), vbox_layout);		
-		
-	//gtk_window_present(GTK_WINDOW (alarm_window));
-	
-//}
 
 //======================================================================
 
@@ -3257,9 +3084,9 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.5");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.5.6");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2025");
-	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar (Integral Speech Synthesizer)");
+	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);
 	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about_dialog),"https://github.com/crispinprojects/");
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about_dialog),"Talk Calendar Website");
@@ -4459,6 +4286,15 @@ static gboolean update_time_label(gpointer data)
     time_str = g_date_time_format(now, "%H:%M");
     
     gtk_label_set_text(GTK_LABEL(label), time_str); 
+    
+    if(current_hour==m_alarm_hour && current_min==m_alarm_min && current_sec==0 && m_alarm_on)
+    {			
+		//play the alarm signal in a thread
+		GTask* task = g_task_new(NULL, NULL, alarm_task_callbk, NULL);	
+		//GTask* task = g_task_new(NULL, NULL, NULL, NULL);		
+	    g_task_run_in_thread(task, play_alarm_audio_async);     
+	    g_object_unref(task);
+    }
      
     
 	g_free(time_str);

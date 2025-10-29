@@ -22,7 +22,7 @@ A screenshot of Talk Calendar is shown below.
 
 ## BASH Script Installer
 
-The easiest way to install Talk Calendar on a traditional Intel X86 PC with either Debian 13 or Ubuntu 24.04 (or above) is to use the BASH script installer from the terminal. The Talk Calendar installer is found in the installers directory in the download. 
+The easiest way to install Talk Calendar  is to use the BASH script installer from the terminal. The Talk Calendar installer is found in the installers directory in the download. There are two installers one for a traditional Intel X86 PC with either Debian 13 or Ubuntu 24.04 (or above) and the other for ARM64 Raspberry Pi Trixie OS.
 
 To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
 
@@ -36,7 +36,7 @@ To uninstall Talk Calendar run the script below
 ./uninstall-talkcalendar
 ```
 
-One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed locally into the directory "./local/bin". The installer has been tested with Debian 13 (Trixie) and Ubuntu 24.04.
+One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed locally into the directory "./local/bin". The installer has been tested with Debian 13 (Trixie), Ubuntu 24.04 and the latest Raspberry Pi Trixie OS (using a RPi 500). 
 
 ## Calendar Interface
 
@@ -74,7 +74,7 @@ t = speak time
 ### Set Alarm
 ![](talkcalendar-alarm.png)
 
-When an alarm is set with Talk Calendar a separate child process, the alarm timer process, is spawned. Spawning a process in an operating system means creating a new child process from an existing parent process (Talk Calendar is the parent process and the timer alarm is the child). These both run concurrently. This means that if Talk Calendar is closed the alarm will still be active and beep at the required time unless it is terminated by using the system monitor program. The Process ID (PID) which uniquely identifies the active alarm timer process is displayed by opening the alarm dialog again after the alarm process has been spawned. You use this PID if you want to terminate the alarm timer process using the system monitor. If you reset the timer the old timer is killed and a new PID is created.
+The alarm feature now uses a clock timer. The alarm time is set using a 24 hour value. Talk Calendar has to be running for the alarm timer to remain active. However, if Talk Calendar is closed the timer state is saved so restarting Talk Calendar will reactivate the alarm timer.
 
 
 ## Dark Theme
@@ -181,8 +181,6 @@ To run Talk Calendar from the terminal use
 ```
 ./talkcalendar
 ```
-
-
 ## Compile Notes
 
 The Talk Calendar 0.5 series is being developed using both Debian 13 Trixie and Ubuntu 24.04. Debian 13 uses GTK 4.18 while Ubuntu 24.04 uses GTK 4.14. The Talk Calendar 0.5 series uses its own internal speech synthesizer.The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8 while Talk Calendar 0.4 series used GTK 4.14.
@@ -226,11 +224,7 @@ It appears that GTK5 will continue to be a general-purpose toolkit but likely to
 
 ### Building on Raspberry Pi
 
-[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/) and like the Ubuntu Desktop 25.04 (ARM 64-bit) can be installed using the official Raspberry Pi Imager on RPi 4/400 and RPi5/550 boards with 4GB or above. Both support recent versions of GTK4 the prerequisite for Talk Calendar. I have successfully compiled Talk Calendar on a RPi 500 with the Ubuntu 25.04 OS. See screenshot below.
-
-![](talkcalendar-ARM64.png)
-
-Canonical also provide Ubuntu [images](https://canonical.com/blog/ubuntu-developer-images-now-available-for-orangepi-rv2-a-low-cost-risc-v-sbc) for RISC-V single board computers (SBCs) such as the OrangePi RV2. Although I have not been able to test one of these boards I expect that it should be possible to compile Talk Calendar on a RISC-V board using Ubuntu RISC-V OS provided GTK 4.14 or above is supported. 
+[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/). I have successfully compiled Talk Calendar on a RPi 500 and provided an installer for the latest Raspberry Pi Trixie OS. 
 
 ### Building on Fedora
 
