@@ -1,6 +1,6 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates and event times and summary words.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, event summary words and event times.
 
 Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
 
@@ -18,25 +18,45 @@ A screenshot of Talk Calendar is shown below.
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
 * built-in speech synthesizer
+* built-in alarm feature
 * Sqlite3 database used to store events
 
-## BASH Script Installer
+## Install
 
-The easiest way to install Talk Calendar  is to use the BASH script installer from the terminal. The Talk Calendar installer is found in the installers directory in the download. There are two installers one for a traditional Intel X86 PC with either Debian 13 or Ubuntu 24.04 (or above) and the other for ARM64 Raspberry Pi Trixie OS.
+Pre-built binaries of the latest version of Talk Calendar for x86 Debian/Ubuntu and ARM64 Raspberry Pi 5/500 computers are available and can be downloaded from the binary directory. These have been built using C and GTK 4.18. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+```
+chmod +x talkcalendar
+./talkcalendar
+```
+To install Talk Calendar locally copy the  "org.gtk.talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
 
-To install Talk Calendar run the installer script as shown below and follow the on-screen instructions.
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. For example, the executable path for a Raspberry Pi with the default user name "pi" would be "Exec=/home/pi/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
 
 ```
-./install-talkcalendar.sh
+[Desktop Entry]
+Version=0.5.6
+Type=Application
+Name=Talk Calendar
+Comment=Talking calendar
+Icon=/home/your_user_name/Software/talkcalendar/calendar.png
+Exec=/home/your_user_name/Software/talkcalendar/talkcalendar
+Path=/home/your_user_name/Software/talkcalendar
+X-GNOME-UsesNotifications=true
+Categories=Office;
+MimeType=text/calendar;
+StartupNotify=true
+Name[en_GB]=TalkCalendar
 ```
 
-To uninstall Talk Calendar run the script below
+Copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.local/share/applications/***. To do this you can use your graphical file manager or the terminal command below.
 
 ```
-./uninstall-talkcalendar
+cp org.gtk.talkcalendar.desktop /home/your_user_name/.local/share/applications
 ```
 
-One advantage of using a BASH script installer is that you can open and view (inspect) the code with a standard Text Editor to see exactly what is occurring. The Talk Calendar binary is installed locally into the directory "./local/bin". The installer has been tested with Debian 13 (Trixie), Ubuntu 24.04 and the latest Raspberry Pi Trixie OS (using a RPi 500). 
+Again change "your_user_name" to your user name e.g. "pi". Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
+
+You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". With most GTK desktops you can right click on the Talk Calendar menu entry and then select "Add to Launcher" to add it to the system taskbar.
 
 ## Calendar Interface
 
@@ -224,7 +244,7 @@ It appears that GTK5 will continue to be a general-purpose toolkit but likely to
 
 ### Building on Raspberry Pi
 
-[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/). I have successfully compiled Talk Calendar on a RPi 500 and provided an installer for the latest Raspberry Pi Trixie OS. 
+[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/). I have successfully compiled Talk Calendar on a Raspberry Pi 500 using the latest Trixie OS and provided a binary and desktop file in the download.
 
 ### Building on Fedora
 
