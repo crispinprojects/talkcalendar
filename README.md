@@ -11,26 +11,22 @@ A screenshot of Talk Calendar is shown below.
 ## Core Features
 
 * built with C and GTK4 for GTK based desktops
-* Graphical user interface with month-view calendar with event tooltips
-* traditional menu and keybindings 
-* event day and today colour preferences 
-* dark colour scheme mode
+* month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
 * built-in speech synthesizer
-* built-in alarm feature
 * Sqlite3 database used to store events
 
 ## Install
 
-Pre-built binaries of the latest version of Talk Calendar for x86 Debian/Ubuntu and ARM64 Raspberry Pi 5/500 computers are available and can be downloaded from the binary directory. These have been built using C and GTK 4.18. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+Pre-built binaries of the latest version of Talk Calendar for x86 Debian/Ubuntu computers is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
 To install Talk Calendar locally copy the  "org.gtk.talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
 
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. For example, the executable path for a Raspberry Pi with the default user name "pi" would be "Exec=/home/pi/Software/talkcalendar/talkcalendar". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
 
 ```
 [Desktop Entry]
@@ -54,57 +50,28 @@ Copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.local/share/app
 cp org.gtk.talkcalendar.desktop /home/your_user_name/.local/share/applications
 ```
 
-Again change "your_user_name" to your user name e.g. "pi". Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
+Again change "your_user_name" to your user name. Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
 
-You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". With most GTK desktops you can right click on the Talk Calendar menu entry and then select "Add to Launcher" to add it to the system taskbar.
+You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". 
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" menu item or press Ctrl+N. To edit an event, select it in day view panel and then either select the "edit event" menu item or press Ctrl+E. Likewise to delete an event select it in the day view panel and use the "delete event" menu item or press the delete key. 
+Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" header icon button. To edit an event, select it in day view panel and then select the "edit event" header icon button. Likewise to delete an event select it in the day view panel and use the "delete event" icon header button. 
 
 Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
 Pressing F1 invokes the information window which can also be selected from the menu using the Help->Information menu item. The information window shows the keyboard shortcuts, how many records are in the calendar database, the Sqlite version being used on the system, the desktop font and scale factor and the status of the speech synthesizer. The About dialog displays the Talk Calendar version number.
 
+Press the spacebar to speak events for the selected day. Press the T-key to speak the current time.
+
 ### New Event
 ![](talkcalendar-new-event.png)
-
-### Calendar Tooltips
-![](talkcalendar-tooltip.png)
 
 ### Preferences
 ![](talkcalendar-preferences.png)
 
-You can change the today and event colours by clicking on the colour buttons and using the colour picker.
-
-![](talkcalendar-colour.png)
-
 ### Information (F1)
 ![](talkcalendar-info.png)
-
-The keyboard shortcuts for creating, editing and deleting events are shown below.
-
-```
-CONTROL+N = new event
-CONTROL+E = edit selected event
-DELETE = delete selected event
-t = speak time
-```
-
-### Set Alarm
-![](talkcalendar-alarm.png)
-
-The alarm feature now uses a clock timer. The alarm time is set using a 24 hour value. Talk Calendar has to be running for the alarm timer to remain active. However, if Talk Calendar is closed the timer state is saved so restarting Talk Calendar will reactivate the alarm timer.
-
-
-## Dark Theme
-
-You can select a dark colour scheme from the preferences dialog. This uses a dark background with white text on the user interface elements. You can change the today and event colours to suit the dark theme.
-
-![](talkcalendar-dark-theme.png)
-
-
-## Font, Colour, Icons
 
 ### Font
 
@@ -121,10 +88,6 @@ sudo apt install gnome-tweaks
 GNOME Tweaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
 
 Xfce uses its own "Appearance" settings window which allows the default font to be changed and so you don't need to install Tweaks.
-
-### Colour
-
-The today and event calendar colours are set using the colour buttons in the preferences dialog. 
 
 ### Events Database
 
@@ -153,15 +116,16 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Updating
 
-To update from the Talk Calendar 0.4 series to the 0.5 series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
+To update from the Talk Calendar 0.5 series to the 0.6 series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
 
 ## Speech Synthesis
 
-Talk Calendar uses it own built-in speech synthesizer coded from scratch to read out the date, time and event summary words. The number of event words recognised is constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service", "radio reminder", "television reminder", etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. 
+Talk Calendar uses it own built-in speech synthesizer coded from scratch to read out the date, time and event summary words. The diphone speech synthesizer used with the 0.5 series of Talk Calendar has been replaced with a ADPCM (Adaptive Differential Pulse Code Modulation) synthesizer in an effort to improve voice prosody, emotion and clarity. 
 
-Talk Calendar uses the diphone speech synthesizer method. Speech is synthesised by concatenating pre-recorded segments of speech called [diphones](https://en.wikipedia.org/wiki/Diphone). A small pronouncing dictionary is used to convert a word into it a diphone pronunciation. I have been using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict?in=C+M+U+Dictionary) to look up the phoneme pronunciation  of a word and then work out the diphone construction.
+The Talk Calendar speech synthesizer has a "limited event word vocabulary" constrained to common generic words used to describe a personal calendar event such as *anniversary, appointment, birthday, cafe, car, dentist, doctor, driver, family, funeral, holiday, hospital, meeting, party, payment, reminder, restaurant, service, task, television, travel, visit, wedding, work*. You can use two or more words for the event summary such as "birthday party", "dentist appointment", "car service", "radio reminder", "television reminder", etc. I have been adding some common English first names to the dictionary so that it is possible to readout a first name and birthday e.g. "Fred birthday". However, many first names have not yet been implemented and so this feature is far from complete. If an event word is not recognised then it is skipped over. 
 
-The voice used by Talk Calendar is derivative work based on the diphone collection created by Alan W Black and Kevin Lenzo which is free for use for any purpose (commercial or otherwise) and subject to the light restrictions [detailed here](https://github.com/hypnaceae/DiphoneSynth/blob/master/diphones_license.txt). I have used the same licence for the voice hex arrays that I have created. There is information about recording your own diphones [here](http://festvox.org/bsv/x2401.html) and in the speech synthesis lecture by Professor Alan W Black [here](https://www.youtube.com/watch?v=eDjtEsOvouM&t=1459s). 
+The code for my older diphone speech synthesizer can be found [here](https://github.com/crispinprojects/diphone-talker). I also explored developing a Klatt synthesizer from scratch but unfortunately the audio quality of the output is very poor and sounds like a buzzing robot. You can find the code for my Klatt synthesizer [here](https://github.com/crispinprojects/klatt-synthesizer).
+
 
 ### Building on Debian 13 and Ubuntu 24.04 (x86 Hardware)
 
@@ -174,7 +138,6 @@ sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
 ```
-
 To check the installed Sqlite 3 version use the command below.
 
 ```
@@ -201,50 +164,12 @@ To run Talk Calendar from the terminal use
 ```
 ./talkcalendar
 ```
-## Compile Notes
-
-The Talk Calendar 0.5 series is being developed using both Debian 13 Trixie and Ubuntu 24.04. Debian 13 uses GTK 4.18 while Ubuntu 24.04 uses GTK 4.14. The Talk Calendar 0.5 series uses its own internal speech synthesizer.The Talk Calendar 0.3 series was developed using Debian 12 which uses GTK 4.8 while Talk Calendar 0.4 series used GTK 4.14.
-
-A model view design has been used based around a CalendarEvent type which is subclass of GObject. This allows the use of GListStore which is an array-like list implementation. A GListStore is a concrete implementation of the GListModel interface. GListView is used to display data from the model.
-
-With GTK 4.12 onwards the GtkFileDialog API is no longer signal based but callback based using an asynchronous pattern. This allows an asynchronous, non-blocking function to be structured in a way similar to an ordinary synchronous function. File dialog windows to export and import ical files (for backup purposes) have been implemented using this approach and this code is not compatible with GTK 4.8 (Debian 12). 
-
-GTask allows a task to be called inside a thread and is now used to play audio rather than the previous approach which used GThread and GMutex. With GTK4 it appears that the preferred way to perform work in a thread is to use GTask. The code now uses [g_task_run_in_thread()](https://docs.gtk.org/gio/method.Task.run_in_thread.html) so that audio is played in a separate background thread. The function g_task_run_in_thread() turns a synchronous operation into an asynchronous one, by running it in a thread. Apparently, GTask maintains a thread pool that is based on the number of CPUs available (i.e. supports multiple CPU-cores). 
-
-Talk Calendar uses a GTK4 custom calendar which allows both visual markers and tooltips to be applied. A dark theme can be used with the today and event colours changed using the colour buttons in the preferences dialog.
-
-The latest version  of Talk Calendar (0.5 series) can be used with Ubuntu 24.04, Debian 13 (but not Debian 12 for the reasons discussed above) and Fedora 41 and above.
 
 ## GTK4 vs libadwaita
 
 With the latest GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently within the GNOME desktop environment. The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy to allow other desktop environments (Xfce, Cinnamon, MATE) to develop and use GTK4 applications.
 
-Talk Calendar is a GTK4 application and is not a libadwaita application. The means that it is not GNOME HIG compliant and so accent colours are not supported when using Debian 13 Trixie GNOME. I have developed a small libadwaita Calendar demo as shown in the screenshot below to demonstrate the use of accent colours on Debian 13 GNOME. 
-
-![](debian13-accent-colour.png)
-
-However, the application would not run on a default [Xfce4 Wayland](https://github.com/crispinprojects/xfce4-wayland) desktop without installing libadwaita and supporting libraries. Depending on your system setup this can be done using the commands below but other libraries may be needed. 
-
-```
-sudo apt update
-sudo apt install libadwaita-1-0
-```
-
-Even when I got the libadwaita calendar demo to run on Debian 13 Xfce only the Debian default system colours (dark blue/light blue) were displayed as there is no accent colours dialog. 
-
-Debian 13 Trixie (and Ubuntu) based distros have the GTK4 runtime installed by default. This means that Talk Calendar just runs without installing libadwaita.
-
-Talk Calendar has not been rewritten as a libadwaita application using the GNOME HIG philosophy. Although a Talk Calendar libadwaita application would run on the GNOME desktop it would not run on other GTK desktops such as Xfce with out installing supporting libraries. Xfce and other GTK desktops have not officially adopted the GNOME HIG philosophy as they maintain their own system dialogs (e.g. Appearance dialog) and ecosystem. 
-
-The GNOME HIG discourages the [use of preferences](https://wiki.gnome.org/Design(2f)HIG(2f)Planning(2f)Configuration.html) saying "using preferences as a band-aid is the root of much UI evil" and then "As far as possible, applications should be designed in order to not require manual configuration". Talk Calendar does allow users to change colour and theme preferences and choose other display options and so it is not GNOME HIG compliant in this respect. Sorry about that.
-
-Talk Calendar supports a dark theme which can be selected using the preferences dialog. The today and event day colours to be changed to suit the dark colour scheme using the colour picker so that the user can select their own [accent colours](https://www.bbc.co.uk/homes/design/colour_wheel.shtml). The dark theme worked on an [Xfce Wayland desktop](https://github.com/crispinprojects/xfce4-wayland).
-
-It appears that GTK5 will continue to be a general-purpose toolkit but likely to be Wayland only with web technologies used for styling. Assuming GTK5 remains a general toolkit other desktop environments such as Xfce, Cinnamon, MATE etc. will be able to use it to develop Wayland applications and apply their own themes and design. However, as GNOME drives changes in GTK that align with its GNOME HIG philosophy, the more difficult it may become for other desktop environments to use GTK applications without adopting libadwaita. 
-
-### Building on Raspberry Pi
-
-[Raspberry Pi](https://www.raspberrypi.com/software/) have released a new [Raspberry Pi OS based on Debian Trixie](https://www.raspberrypi.com/news/trixie-the-new-version-of-raspberry-pi-os/). I have successfully compiled Talk Calendar on a Raspberry Pi 500 using the latest Trixie OS and provided a binary and desktop file in the download.
+Talk Calendar is a GTK4 application and is not a libadwaita application. The means that it is not GNOME HIG compliant and so accent colours are not supported when using Debian 13 Trixie GNOME. However, because it is a standard GTK4 application you can use it with desktops such as XFCE.
 
 ### Building on Fedora
 
