@@ -1,6 +1,6 @@
 /* dbmanager.h
  *
- * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,8 +52,6 @@ CalendarEvent* db_get_event_by_id(sqlite3 *db, int id);
 // Retrieves all events for a specific day.
 // The caller is responsible for freeing the GArray and the CalendarEvent objects within it.
 GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int day);
-
-GArray* db_get_all_events_year_month(sqlite3 *db, int year, int month);
 
 int  db_get_number_day_events(sqlite3 *db, int year, int month, int day);
 

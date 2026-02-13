@@ -56,7 +56,7 @@ You can now run Talk Calendar Calendar from the system menu. It is located in th
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" header icon button. To edit an event, select it in day view panel and then select the "edit event" header icon button. Likewise to delete an event select it in the day view panel and use the "delete event" icon header button. 
+Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" menu item  or press Ctrl+N. To edit an event, select it in day view panel and then select the "edit event" menu item or press Ctrl+E. Likewise to delete an event select it in the day view panel and use the "delete event" menu item. 
 
 Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 

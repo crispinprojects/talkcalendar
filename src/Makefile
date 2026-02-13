@@ -3,9 +3,9 @@
 CC ?= gcc
 PKGCONFIG = $(shell which pkg-config)
 CFLAGS = $(shell $(PKGCONFIG) --cflags gtk4)
-LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3
+LIBS = $(shell $(PKGCONFIG) --libs gtk4) -lsqlite3 -lasound -lm
 
-SRC = main.c calendarevent.c dbmanager.c synthesizer.c
+SRC = main.c customcalendar.c calendarevent.c dbmanager.c diphone.c dictionary.c wavcat.c wavplay.c alarm.c
 
 OBJS = $(SRC:.c=.o)
 
