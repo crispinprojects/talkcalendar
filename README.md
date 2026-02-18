@@ -24,7 +24,10 @@ chmod +x talkcalendar
 ./talkcalendar
 ```
 
-***Speech engine:*** Talk Calendar requires espeak-ng to be installed. On Debian/Ubuntu, run 
+## Speech engine 
+
+Talk Calendar requires espeak-ng to be installed. On Debian/Ubuntu, run 
+
 ```
 sudo apt install espeak-ng.
 ```
@@ -33,19 +36,15 @@ On Fedora, run
 sudo dnf install espeak-ng.
 ```
 
-If using a GTK desktop like GNOME you will need to install Qt runtime libraries. With Debian install the following package.
+## Desktop File
 
-```
- sudo apt install qt6-base-dev 
-```
+To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs. 
 
-To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
-
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. In this example it is assumed that local applications are installed in a folder called Software (/home/your_user_name/Software). Some people use a folder called "Programs". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
 
 ```
 [Desktop Entry]
-Version=0.6.0
+Version=0.6.1
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -68,6 +67,8 @@ cp talkcalendar.desktop /home/your_user_name/.local/share/applications
 Again change "your_user_name" to your user name. Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
 
 You can now run Talk Calendar Calendar from the system menu. It should be located in the "Office Category". 
+
+You can also copy your modified  "talkcalendar.desktop" to ~/.config/autostart so that Talk Calendar starts up when the computer is switched on.
 
 ## Calendar Interface
 
@@ -114,15 +115,21 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 To update from the Talk Calendar 0.5 series to the 0.6 series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
 
-## Note for GNOME/GTK Users: 
+## Note for GNOME Users
 
-To make Talk Calendar match your system theme, it is recommended to install the adwaita-qt6 theme engine:
+To scale Talk Calendar to match the GNOME theme write a run application BASH script as shown below.
 
 ```
-sudo apt install adwaita-qt6 (Debian)
+#!/bin/bash
+QT_SCALE_FACTOR=1.5  /path/to/software/talkcalendar
 ```
+
+QT_SCALE_FACTOR is an environment variable used to adjust the size of user interface elements based on the display's pixel density. QT_SCALE_FACTOR values greater than one increases the size of UI elements. For example, a QT_SCALE_FACTOR of 2.0 will double the size of components.
+
+With Debian you can install the adwaita-qt6 theme engine and Qt runtime libraries as shown below.
 ```
- sudo dnf install adwaita-qt6 (Fedora)
+sudo apt install adwaita-qt6
+sudo apt install qt6-base-dev 
 ```
 
 ### Source Code 
@@ -143,7 +150,9 @@ To build Talk Calendar from source you need install the following packages. You 
 
 ```
 sudo apt update
-sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-base-dev-tools espeak-ng
+sudo apt install build-essential cmake ninja-build
+sudo apt install qt6-base-dev qt6-base-dev-tools
+sudo apt install espeak-ng
 ```
 
 ## Compile the Project
@@ -163,6 +172,7 @@ With Fedora you need to install the following packages to compile Talk Calendar.
 sudo dnf groupinstall "Development Tools" "C Development Tools and Libraries"
 sudo dnf install cmake gcc-cpp
 sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
+sudo dnf install espeak-ng
 
 ```
 

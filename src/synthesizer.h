@@ -12,7 +12,6 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 
-
 class Synthesizer : public QObject {
     Q_OBJECT
 public:
@@ -22,9 +21,7 @@ public:
     void stop();
     QString getDatePhrase(const QDate &date);
     QString getTimePhrase(int hour, int minute, bool isAllDay);
-    //file checks
-    bool directoryExists(QString path);
-    bool fileExists(QString path);
+
 
 private:
 

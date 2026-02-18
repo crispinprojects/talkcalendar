@@ -60,8 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
         onDateClicked(ui->mainCalendar->selectedDate()); // Change this from onDateSelected
     });
 
-    // organization and app name to define settings file
-    QSettings settings("HobbyProjects", "TalkCalendar");
+    QSettings settings; //automatically uses organization and app name from main.cpp
     m_talk = settings.value("talk", true).toBool(); // 'true' is the default if not found
     m_talk_startup = settings.value("talk_startup", true).toBool();  
     m_talk_location = settings.value("talk_location", false).toBool();
@@ -620,8 +619,8 @@ void MainWindow::on_actionPreferences_triggered()
         m_eventColor = dialog.eventColor();
         m_priorityColor = dialog.priorityColor();
 
-        // Save everything to QSettings
-        QSettings settings("MyHobbyProjects", "TalkCalendar");
+        // Save everything to QSettings        
+        QSettings settings; // automatically uses the names from main.cpp
         settings.setValue("talk", m_talk);
         settings.setValue("talk_startup", m_talk_startup);
         settings.setValue("talk_location", m_talk_location);

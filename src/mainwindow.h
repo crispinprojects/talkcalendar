@@ -23,7 +23,7 @@
 #include "calendarevent.h"
 #include "synthesizer.h"
 
-#define PROJECT_VERSION "0.6.0"
+#define PROJECT_VERSION "0.6.1"
 
 struct ParsedDate {
     int year, month, day, hour, minute;
