@@ -1,7 +1,26 @@
+/*
+ *
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GNU Lesser General Public License v2.1
+ */
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
-ConfigDialog::ConfigDialog(bool talk, bool startup, bool location, bool upcoming, int days,
+ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, int days, int tempo,
                            QColor eventCol, QColor priorityCol, QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
 {
@@ -14,9 +33,10 @@ ConfigDialog::ConfigDialog(bool talk, bool startup, bool location, bool upcoming
     // Initialize UI check boxes and spin box
     ui->checkTalk->setChecked(talk);
     ui->checkTalkStartup->setChecked(startup);
-    ui->checkLocation->setChecked(location);
+    ui->checkDispatcher->setChecked(espeak);
     ui->checkUpcoming->setChecked(upcoming);
     ui->spinUpcomingDays->setValue(days);
+    ui->spinTempo->setValue(tempo);
 
     // Set the initial button colors so user sees the current choice
     ui->btnEventColor->setStyleSheet(QString("background-color: %1").arg(m_currentEventColor.name()));
@@ -37,8 +57,8 @@ bool ConfigDialog::startupEnabled() const
 { return ui->checkTalkStartup->isChecked();
 }
 
-bool ConfigDialog::locationEnabled() const
-{ return ui->checkLocation->isChecked();
+bool ConfigDialog::espeakEnabled() const
+{ return ui->checkDispatcher->isChecked();
 }
 
 bool ConfigDialog::upcomingEnabled() const {
@@ -47,6 +67,10 @@ bool ConfigDialog::upcomingEnabled() const {
 
 int ConfigDialog::upcomingDays() const {
     return ui->spinUpcomingDays->value();
+}
+
+int ConfigDialog::tempo() const {
+    return ui->spinTempo->value();
 }
 
 ConfigDialog::~ConfigDialog()
@@ -87,8 +111,9 @@ void ConfigDialog::on_btnReset_clicked()
     // Optional: Reset other settings too
     ui->checkTalk->setChecked(true);
     ui->checkTalkStartup->setChecked(true);
-     ui->checkLocation->setChecked(false);
+     ui->checkDispatcher->setChecked(false);
     ui->checkUpcoming->setChecked(true);
     ui->spinUpcomingDays->setValue(3);
+    ui->spinTempo->setValue(17);
 }
 

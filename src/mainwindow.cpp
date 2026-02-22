@@ -1,3 +1,22 @@
+/*
+ *
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GNU Lesser General Public License v2.1
+ */
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "configdialog.h"
@@ -28,7 +47,13 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     // Setup synthesizer
-    m_synthesizer = new Synthesizer(this);
+    m_diphone = new Diphone();
+    m_engine = new Synthesizer(this);
+    m_voiceDict = new Dictionary(this);
+    //m_tempo=1.7f;
+    m_tempo=17;
+
+    m_dispatcher = new Dispatcher();
 
     // Initial UI State
     ui->btnDelete->setEnabled(false);
@@ -62,10 +87,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     QSettings settings; //automatically uses organization and app name from main.cpp
     m_talk = settings.value("talk", true).toBool(); // 'true' is the default if not found
-    m_talk_startup = settings.value("talk_startup", true).toBool();  
-    m_talk_location = settings.value("talk_location", false).toBool();
+    m_talk_startup = settings.value("talk_startup", true).toBool();
+    m_espeak = settings.value("espeak", false).toBool();
     m_upcoming = settings.value("upcoming", true).toBool();
     m_upcoming_days = settings.value("upcoming_days", 3).toInt();
+    m_tempo = settings.value("tempo", 17).toInt();
 
     // load the colours. If they don't exist yet, use defaults.
     m_eventColor = QColor(settings.value("colors/event", "#ffff00").toString()); // Default Yellow
@@ -78,37 +104,45 @@ MainWindow::MainWindow(QWidget *parent)
 
     QList<CalendarEvent> events = getEventsForDate(today); //
     updateEventListUI(events); //populate the list view visually WITHOUT speaking
-    // qDebug()<<"constructor: m_talk = "<<m_talk;
-    // qDebug()<<"constructor: m_talk_startup = "<<m_talk_startup;
-    // qDebug()<<"constructor: m_talk_location = "<<m_talk_location;
-    // qDebug()<<"constructor: m_upcoming = "<<m_upcoming;
 
     if (m_talk && m_talk_startup) {
-        QString welcome = "Talk Calendar. ";
+        QString welcome = "Talk Calendar ";
 
+        QString datePhrase = m_voiceDict->getDatePhrase(today)+ " ";
+        welcome.append(datePhrase);
         // Add Today's Events
         if (!events.isEmpty()) {
 
             for (const CalendarEvent &ev : events) {
                 // time phrase
-                QString timePhrase = m_synthesizer->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay);
+                QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay);
                 if (ev.m_isAllDay) {
-                    welcome += ev.m_summary + ". ";
-                    if(m_talk_location) welcome += ev.m_location + ". ";
+                    welcome.append(ev.m_summary);
+                    welcome.append(" ");
                 } else {
-                    welcome += QString("%1 at %2. ").arg(ev.m_summary, timePhrase);
-                    if(m_talk_location) welcome += ev.m_location + ". ";
+                    welcome.append(ev.m_summary);
+                    welcome.append(" ");
+                    welcome.append(timePhrase);
+                    welcome.append(" ");
                 }
             }
 
-        } else {
-            welcome += "No events scheduled for today. ";
+        } else
+        {
+            //welcome.append("No events ");
+             welcome.append(" ");
         }
 
         // Add Upcoming Events
         welcome += getUpcomingEventsPhrase();
-
-        m_synthesizer->speak(welcome);
+        //qDebug()<<"welcome = "<<welcome;
+        if(m_espeak) {
+            m_dispatcher->eSpeaker(welcome);
+        }
+        else
+        {
+        m_engine->speak(welcome,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+        }
     }
 
 }
@@ -252,22 +286,39 @@ QList<CalendarEvent> MainWindow::loadEventsForDate(const QDate &date) {
 
 // onDateClicked Function
 void MainWindow::onDateClicked(const QDate &date) {
+
     QList<CalendarEvent> events = getEventsForDate(date);
-    updateEventListUI(events);    
+    updateEventListUI(events);
     if (m_talk) {
-        QString phrase = m_synthesizer->getDatePhrase(date) + ". ";
+        QString phrase = m_voiceDict->getDatePhrase(date)+ " ";
         for (const CalendarEvent &ev : events) {
-            // Re-adding time phrase logic so you hear "at 10:30 am"
-            QString timePhrase = m_synthesizer->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay);
+             QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay)+ " ";
             if (ev.m_isAllDay) {
-                phrase += ev.m_summary + ". ";
-                if(m_talk_location) phrase += ev.m_location + ". ";
+                phrase.append(ev.m_summary);
+                phrase.append(" ");
             } else {
-                phrase += QString("%1 at %2. ").arg(ev.m_summary, timePhrase);
-                if(m_talk_location) phrase += ev.m_location + ". ";
+                phrase.append(timePhrase);
+                phrase.append(" ");
+                phrase.append(ev.m_summary);
+                phrase.append(" ");
+            }            
+            if(m_espeak)
+            {
+                phrase.append(ev.m_description);
+                phrase.append(" ");
+                phrase.append(ev.m_location);
+                phrase.append(" ");
             }
+        }       
+
+        if(m_espeak) {
+            m_dispatcher->eSpeaker(phrase);
         }
-        m_synthesizer->speak(phrase);
+        else
+        {
+            m_engine->speak(phrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+        }
+
     }
 }
 
@@ -512,19 +563,31 @@ void MainWindow::onCalendarPageChanged() {
 
 
 void MainWindow::onEventClicked(QListWidgetItem *item) {
-    if (!item) return;
-
-    //qDebug()<<" event clicked";
+    if (!item) return;   
 
     int eventId = item->data(Qt::UserRole).toInt();
     CalendarEvent ev = getEventById(eventId);
 
     // build sentence
-    QString timePhrase = m_synthesizer->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay);
-    QString fullSentence = QString("%1. %2").arg(ev.m_summary, timePhrase);
-    if(m_talk_location) fullSentence  += ev.m_location + ". ";
-    //qDebug() << "Speaking:" << fullSentence; // debugging
-    m_synthesizer->speak(fullSentence);
+    QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay)+ " ";
+    QString fullSentence="";
+    fullSentence.append(timePhrase);
+    fullSentence.append(" ");
+    fullSentence.append(ev.m_summary);
+    fullSentence.append(" ");
+
+    if(m_espeak) {
+        fullSentence.append(ev.m_description);
+        fullSentence.append(" ");
+        fullSentence.append(ev.m_location);
+        fullSentence.append(" ");
+        m_dispatcher->eSpeaker(fullSentence);
+    }
+    else
+    {
+        m_engine->speak(fullSentence,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+    }
+
 }
 
 QList<CalendarEvent> MainWindow::getEventsForDate(const QDate &date) {
@@ -605,15 +668,17 @@ CalendarEvent MainWindow::getEventById(int id) {
 void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
-    ConfigDialog dialog(m_talk, m_talk_startup, m_talk_location, m_upcoming, m_upcoming_days,
+    ConfigDialog dialog(m_talk, m_talk_startup, m_espeak, m_upcoming, m_upcoming_days, m_tempo,
                         m_eventColor, m_priorityColor, this);
 
     if (dialog.exec() == QDialog::Accepted) {
         m_talk = dialog.talkEnabled();
         m_talk_startup = dialog.startupEnabled();
-        m_talk_location=dialog.locationEnabled();
+        m_espeak=dialog.espeakEnabled();
         m_upcoming = dialog.upcomingEnabled();
         m_upcoming_days = dialog.upcomingDays();
+        m_tempo = dialog.tempo();
+        //m_tempo = static_cast<float>(tempo) / 10.0f;
 
         // Retrieve the new colors from the dialog
         m_eventColor = dialog.eventColor();
@@ -623,9 +688,11 @@ void MainWindow::on_actionPreferences_triggered()
         QSettings settings; // automatically uses the names from main.cpp
         settings.setValue("talk", m_talk);
         settings.setValue("talk_startup", m_talk_startup);
-        settings.setValue("talk_location", m_talk_location);
+        settings.setValue("espeak", m_espeak);
         settings.setValue("upcoming", m_upcoming);
         settings.setValue("upcoming_days", m_upcoming_days);
+        settings.setValue("tempo",m_tempo);
+
 
         m_eventColor = dialog.eventColor();
         m_priorityColor = dialog.priorityColor();
@@ -634,7 +701,7 @@ void MainWindow::on_actionPreferences_triggered()
         settings.setValue("colors/event", m_eventColor.name());
         settings.setValue("colors/priority", m_priorityColor.name());
 
-        // Refresh the calendar to show the new colors immediately
+        // refresh the calendar to show the new colors immediately
         updateCalendarHighlights();
     }
 }
@@ -679,15 +746,20 @@ QString MainWindow::getUpcomingEventsPhrase() {
 
             if (evDate > today && evDate <= endDate) {
                 QString summary = query.value("summary").toString();
-                QString datePhrase = m_synthesizer->getDatePhrase(evDate);               
-                upcomingPhrase += QString("%1 on %2. ").arg(summary, datePhrase);
+                //summary.append(" ");
+                QString datePhrase = m_voiceDict->getDatePhrase(evDate);
+                datePhrase.append(" ");
+                upcomingPhrase += QString("%1 on %2 ").arg(summary, datePhrase);
                 count++;
             }
         }
     }
 
     if (count > 0) {
-        return QString("You have %1 up coming events. %2").arg(QString::number(count), upcomingPhrase);
+        QString countStr =m_voiceDict->getCardinalStr(count);
+        //countStr.append(" ");
+        return QString("You have %1 up coming events %2").arg(countStr, upcomingPhrase);
+        //return QString("You have %1 up coming events. %2").arg(QString::number(count), upcomingPhrase);
     }
     return "";
 }
@@ -714,8 +786,6 @@ CalendarEvent MainWindow::getEventFromQuery(const QSqlQuery &query) {
         query.value("is_priority").toInt()
         );
 }
-
-
 
 void MainWindow::performSearch(const QString &summarySearch, const QString &locationSearch) {
     QList<CalendarEvent> results;
@@ -752,7 +822,7 @@ void MainWindow::performSearch(const QString &summarySearch, const QString &loca
             QString word = (results.size() == 1) ? "event" : "events";
             msg =" Found "+countStr + " " + word;
         }
-        if(m_talk) m_synthesizer->speak(msg);
+
     }
 }
 
@@ -763,9 +833,7 @@ void MainWindow::on_actionSearch_triggered()
 
     if (dialog.exec() == QDialog::Accepted) {
         QString summary = dialog.getSummary();
-        QString location = dialog.getLocation();
-        //qDebug()<<"search summary: " <<summary;
-        //qDebug()<<"search location: " <<location;
+        QString location = dialog.getLocation();       
         // execute search and populate the main list view (click another date to clear)
         performSearch(summary, location);
     }
@@ -787,18 +855,23 @@ void MainWindow::on_eventList_itemDoubleClicked(QListWidgetItem *item) {
 }
 
 void MainWindow::talkCurrentTime() {
-    // Force stop current speech immediately
-    m_synthesizer->stop();
 
-    // Get current time
-    QTime now = QTime::currentTime();
+    int hour = QTime::currentTime().hour();
+    int minute = QTime::currentTime().minute();    
+    QString timePhrase =m_voiceDict->getTimePhrase(hour, minute, false);
 
-    // get the time phrase
-    // passing 'false' for isAllDay
-    QString timePhrase = m_synthesizer->getTimePhrase(now.hour(), now.minute(), false);
+    QString speakTimePhrase ="The time is ";
+    speakTimePhrase.append(timePhrase);
+    qDebug()<<"speak time phrase "<<speakTimePhrase;
 
-    // Speak time
-    m_synthesizer->speak(" The time is. "+timePhrase);
+    if(m_espeak) {
+        m_dispatcher->eSpeaker(speakTimePhrase);
+    }
+    else
+    {
+        m_engine->speak(speakTimePhrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+    }
+
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -813,10 +886,11 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionInformation_triggered() {
     // custom version number
     QString msg = QString("Talk Calendar Version: %1\n").arg(PROJECT_VERSION);
+    QString diphoneVersion = QString("Diphone Synthesizer Version: %1\n").arg(DIPHONE_VERSION);
+    msg.append(diphoneVersion);
 
     // Qt version
     msg.append(QString("Qt Version: %1\n").arg(qVersion()));
-
     // 3. espeak status
     bool hasEspeak = !QStandardPaths::findExecutable("espeak").isEmpty() ||
                      !QStandardPaths::findExecutable("espeak-ng").isEmpty();

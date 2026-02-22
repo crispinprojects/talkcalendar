@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>341</height>
+    <width>427</width>
+    <height>328</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,20 +33,6 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="labelLocation">
-         <property name="text">
-          <string>Location</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineLocation"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
         <widget class="QLabel" name="labelDescription">
          <property name="text">
           <string>Description</string>
@@ -55,6 +41,20 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineDescription"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="labelLocation">
+         <property name="text">
+          <string>Location</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineLocation"/>
        </item>
       </layout>
      </item>

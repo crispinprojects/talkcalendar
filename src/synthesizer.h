@@ -1,34 +1,61 @@
+/*
+ *
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GNU Lesser General Public License v2.1
+ */
 #ifndef SYNTHESIZER_H
 #define SYNTHESIZER_H
 
 #include <QObject>
-#include <QString>
-#include <QStringList>
 #include <QVector>
+#include <QStringList>
 #include <QFile>
-#include <QHash>
 #include <QProcess>
-#include <QStandardPaths>
-#include <QMessageBox>
+#include <QCoreApplication>
+//#include <QHash>
+//#include <QMessageBox>
 #include <QStandardPaths>
 
-class Synthesizer : public QObject {
+//#include "diphone.h" // Needed for DiphoneEntry and finding diphones
+#include "dictionary.h"
+
+class Synthesizer : public QObject
+{
     Q_OBJECT
 public:
     explicit Synthesizer(QObject *parent = nullptr);
-    void speak(const QString &text);  
-    bool isTalking();
-    void stop();
-    QString getDatePhrase(const QDate &date);
-    QString getTimePhrase(int hour, int minute, bool isAllDay);
 
+    // The main vocoder logic
+    QVector<int16_t> vocoder(const QStringList &diphones, float tempoFactor);
+
+    void speak(const QString &text, Dictionary *dict, float tempo);
+
+
+    // File handling and playback
+    void saveAndPlay(const QVector<int16_t> &buffer);
 
 private:
+    // Internal helper for WAV files
+    void writeWavHeader(QFile *file, int dataSize);
 
-    QProcess *speechProcess;
-    QString speechProcessName;    
-    QString getOrdinal(int day);
 
+    //QString getOrdinal(int day);
+
+    // signals:
 };
 
-#endif
+#endif // SYNTHESIZER_H

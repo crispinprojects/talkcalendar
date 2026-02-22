@@ -14,27 +14,17 @@ A screenshot of Talk Calendar is shown below.
 * month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
+* built-in speech synthesizer
 * Sqlite3 database used to store events
 
 ## Pre-built binary
 
-A pre-built binary of the latest version of Talk Calendar for x86 Debian Trixie and Ubuntu computers is available and can be downloaded from the binary directory. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built binary of the latest version of Talk Calendar for x86 Linux computers is available and can be downloaded from the binary directory. This has been tested using Debian Trixie KDE.  Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
 
-## Speech engine 
-
-Talk Calendar requires espeak-ng to be installed. On Debian/Ubuntu, run 
-
-```
-sudo apt install espeak-ng.
-```
-On Fedora, run 
-```
-sudo dnf install espeak-ng.
-```
 
 ## Desktop File
 
@@ -44,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.6.1
+Version=0.6.2
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -113,7 +103,22 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Updating
 
-To update from the Talk Calendar 0.5 series to the 0.6 series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
+To update from the Talk Calendar 0.5 series to the 0.6 series export the current calendar to an ical file and then import it into the new version of Talk Calendar. The Talk Calendar 0.6 series uses Qt 6.
+
+
+## Speech Synthesizer 
+
+Talk calendar has a built-in concatenative diphone speech synthesizer which uses an Overlap-Add (OLA) vocoder. This has been coded from scratch to read out the date, time and event summary words. This is work in progress and will be updated to add new features and functionality. You can find out more on how I developed the Talk Calendar speech synthesizer [here](https://github.com/crispinprojects/diphone-talker). The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples.
+
+Because my diphone speech synthesizer is experimental and work-in-progress you can use espeak instead by selecting the option in the preferences dialog. This requires that espeak-ng is installed separately as Talk Calendar simply acts a speech dispatcher when the espeak preference is selected. On Debian/Ubuntu, run 
+
+```
+sudo apt install espeak-ng.
+```
+On Fedora, run 
+```
+sudo dnf install espeak-ng.
+```
 
 ## Note for GNOME Users
 
@@ -141,7 +146,6 @@ The source code is found in the src directory. It is being developed and tested 
 Talk Calendar requires the following system dependencies to run and speak:
 
 * **Qt 6.5+** (Core, Gui, Widgets, Sql)
-* **espeak-ng** (Speech Synthesis engine)
 * **SQLite 3** (Database storage)
 
 ### Installation on Debian 13 / Ubuntu 24.04 (x86 Hardware)
@@ -152,7 +156,6 @@ To build Talk Calendar from source you need install the following packages. You 
 sudo apt update
 sudo apt install build-essential cmake ninja-build
 sudo apt install qt6-base-dev qt6-base-dev-tools
-sudo apt install espeak-ng
 ```
 
 ## Compile the Project
@@ -172,8 +175,6 @@ With Fedora you need to install the following packages to compile Talk Calendar.
 sudo dnf groupinstall "Development Tools" "C Development Tools and Libraries"
 sudo dnf install cmake gcc-cpp
 sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
-sudo dnf install espeak-ng
-
 ```
 
 ## Versioning
