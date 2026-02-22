@@ -114,7 +114,14 @@ QVector<int16_t> Synthesizer::vocoder(const QStringList &diphones, float tempoFa
     return output;
 }
 
+
 void Synthesizer::saveAndPlay(const QVector<int16_t> &buffer) {
+    // Stop any currently playing audio
+    if (m_audioProcess && m_audioProcess->state() == QProcess::Running) {
+        m_audioProcess->kill();
+        m_audioProcess->waitForFinished();
+    }
+
     QString path = QCoreApplication::applicationDirPath() + "/diphone_out.wav";
     QFile file(path);
 
@@ -122,7 +129,10 @@ void Synthesizer::saveAndPlay(const QVector<int16_t> &buffer) {
         writeWavHeader(&file, buffer.size() * sizeof(int16_t));
         file.write(reinterpret_cast<const char*>(buffer.data()), buffer.size() * sizeof(int16_t));
         file.close();
-        QProcess::startDetached("aplay", {path});
+
+        // Start new playback
+        m_audioProcess = new QProcess(this);
+        m_audioProcess->start("aplay", {path});
     }
 }
 

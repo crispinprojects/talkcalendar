@@ -51,9 +51,7 @@ public:
 private:
     // Internal helper for WAV files
     void writeWavHeader(QFile *file, int dataSize);
-
-
-    //QString getOrdinal(int day);
+    QProcess* m_audioProcess = nullptr;
 
     // signals:
 };
