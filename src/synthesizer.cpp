@@ -1,5 +1,5 @@
 /*
- *
+ * synthesizer.cpp
  * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,25 @@
  * SPDX-License-Identifier: GNU Lesser General Public License v2.1
  */
 
-
 #include "synthesizer.h"
 #include "diphone.h" // Needed for DiphoneEntry and finding diphones
 #include <cmath>
 //#include <algorithm>
 
+/**
+ * @brief Synthesizer constructor.
+ * @param parent Optional QObject parent (default nullptr).
+ */
 Synthesizer::Synthesizer(QObject *parent) : QObject(parent) {
 
 }
 
-
-
+/**
+ * @brief Generates spoken audio from a text string using the provided dictionary and tempo.
+ * @param text The input text to be spoken.
+ * @param dict Pointer to the Dictionary instance for diphone lookup or generation.
+ * @param tempo Tempo factor (value between 1.0 – 2.0 where 10 = 1.0).
+ */
 void Synthesizer::speak(const QString &text, Dictionary *dict, float tempo) {
     QStringList words = text.toLower().split(" ", Qt::SkipEmptyParts);
     QStringList allDiphones;
@@ -40,7 +47,7 @@ void Synthesizer::speak(const QString &text, Dictionary *dict, float tempo) {
             allDiphones.append(dict->getDiphones(word));
         } else {
             // otherwise autogenerate word diphone sequences on the fly
-            allDiphones.append(dict->convertToDiphones(word));
+            allDiphones.append(dict->transcribeWord(word));
         }
     }
     if (!allDiphones.isEmpty()) {
@@ -49,8 +56,12 @@ void Synthesizer::speak(const QString &text, Dictionary *dict, float tempo) {
     }
 }
 
-// This the OLA algorithm is acting as the vocoder
-// taking "information" (the diphones) and generating the final audio samples
+/**
+ * @brief Vocoder that converts a list of diphone names into raw PCM samples.
+ * @param diphones List of diphone identifiers to synthesize.
+ * @param tempoFactor Tempo scaling factor (e.g., 1.0 = normal speed).
+ * @return Vector of signed 16‑bit audio samples ready for playback.
+ */
 QVector<int16_t> Synthesizer::vocoder(const QStringList &diphones, float tempoFactor) {
     QVector<int16_t> output;
     const int FRAME_SIZE = 160;
@@ -114,7 +125,10 @@ QVector<int16_t> Synthesizer::vocoder(const QStringList &diphones, float tempoFa
     return output;
 }
 
-
+/**
+ * @brief Writes the generated audio buffer to a WAV file and plays it back.
+ * @param buffer Vector of signed 16‑bit PCM samples produced by the vocoder.
+ */
 void Synthesizer::saveAndPlay(const QVector<int16_t> &buffer) {
     // Stop any currently playing audio
     if (m_audioProcess && m_audioProcess->state() == QProcess::Running) {
@@ -136,6 +150,11 @@ void Synthesizer::saveAndPlay(const QVector<int16_t> &buffer) {
     }
 }
 
+/**
+ * @brief Writes a minimal RIFF/WAV header to the given file.
+ * @param file Pointer to an open QFile for writing.
+ * @param dataSize Size of the audio data in bytes (excluding header).
+ */
 void Synthesizer::writeWavHeader(QFile *file, int dataSize) {
     file->write("RIFF", 4);
     int fileSize = 36 + dataSize;
@@ -158,5 +177,3 @@ void Synthesizer::writeWavHeader(QFile *file, int dataSize) {
     file->write("data", 4);
     file->write(reinterpret_cast<char*>(&dataSize), 4);
 }
-
-

@@ -44,8 +44,8 @@
 #include "diphone.h"
 #include "dispatcher.h"
 
-#define PROJECT_VERSION "0.6.3"
-#define DIPHONE_VERSION "0.1.1"
+#define PROJECT_VERSION "0.6.4"
+
 
 struct ParsedDate {
     int year, month, day, hour, minute;

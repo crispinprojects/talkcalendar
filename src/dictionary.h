@@ -31,15 +31,15 @@ class Dictionary : public QObject
 public:
     explicit Dictionary(QObject *parent = nullptr);
 
-    void init();
-    void initializeMappings();
+    void loadLexicon();
+    void setupG2PRules();
     QString getTimePhrase(int hour, int minute, bool isAllDay);
     QString getDatePhrase(const QDate &date);
     QString getOrdinalStr(int day);
     QString getCardinalStr(int number);
     bool contains(const QString &word) const;
     QStringList getDiphones(const QString &word) const;
-    QStringList convertToDiphones(const QString& word);
+    QStringList transcribeWord(const QString& word);
 
 private:
 
@@ -51,6 +51,7 @@ private:
     bool isVowel(QChar c) const;
     QString getPhoneticSound(QChar c) const;
     QStringList buildDiphoneList(const QStringList& phonemes);
+    bool isVowelPhoneme(const QString& p);
 
     // signals:
 };

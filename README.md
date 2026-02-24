@@ -34,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.6.2
+Version=0.6.4
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -108,9 +108,65 @@ To update from the Talk Calendar 0.5 series to the 0.6 series export the current
 
 ## Speech Synthesizer 
 
-Talk calendar has a built-in concatenative diphone speech synthesizer which uses an Overlap-Add (OLA) vocoder. This has been coded from scratch to read out the date, time and event summary words. This is work in progress and will be updated to add new features and functionality. You can find out more on how I developed the Talk Calendar speech synthesizer [here](https://github.com/crispinprojects/diphone-talker). The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples.
+Talk calendar has a built-in concatenative diphone speech synthesizer. This has been coded from scratch to read out the date, time and event summary words. 
 
-Because my diphone speech synthesizer is experimental and work-in-progress you can use espeak instead by selecting the option in the preferences dialog. This requires that espeak-ng is installed separately as Talk Calendar simply acts a speech dispatcher when the espeak preference is selected. On Debian/Ubuntu, run 
+The Talk Calendar speech engine uses a multi-stage Grapheme-to-Phoneme (G2P) pipeline to transform raw calendar text into audible speech.  
+
+### The Processing Pipeline
+
+1. Pre-processing is used to converts dates and times into spoken words (e.g. "Tuesday twenty-fourth February").
+2. Lexicon Lookup: The engine first checks pre-defined diphone sequences for common calendar words, months and numbers.
+3. Rule-Based Transcription: If the word is not in the lexicon lookup, the G2P engine applies linguistic rules to determine the sounds.
+4. Diphone Concatenation: Phonemes are split into diphones (transitions) and stitched together from the audio database.
+     
+### Core Linguistic Rules
+The engine mimics English phonics through several logic layers:
+
+1.  The "Magic E" Rule: The engine looks ahead. If it finds a Vowel + Consonant + E pattern (like in Phone or Home), it changes the short vowel sound to a long vowel.
+2. Consonant Clusters: It scans for multi-letter graphemes before individual letters.
+
+		◦ th -> /th/
+     	◦ tion ->/sh/ /ah/ /n/
+     	◦ ph -> /f/
+
+3.  Soft C and G: Logic is applied to change the hard /k/ (Cat) to a soft /s/ (Office) or a hard /g/ (Gold) to a soft /jh/ (Garage) when followed by e, i, or y.
+4. Vowel Teams: Pairs like oa, ee, and ea are identified as single long-vowel phonemes to prevent the engine from reading individual letters
+
+
+Talk Calendar speech engine is work-in-progress and will be updated as I develop new features and functionality. You can find out more about diphone concatenation and the diphones used for this project [here](https://github.com/crispinprojects/diphone-talker). Currently, a diphone Overlap-Add (OLA) vocoder is used. The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples. New vocabulary and unique pronunciations will be added to the Lexicon as I come across them.
+
+## Speech Synthesis Technology Comparison
+
+The Talk Calendar speech engine is extremely lightweight able to run on low-power hardware without a GPU. Below is a table which shows how it compares with other speech engines.
+
+| Engine / System | Synthesis Type | Text Processing (G2P) | Architecture | Target |
+| :--- | :--- | :--- | :--- | :--- |
+| **Talk Calendar** | Concatenative (Diphone) | Rule-based + Lexicon | C++ / Qt | Embedded / Lightweight |
+| **eSpeak-NG** | Formant (Klatt) | Rule-based | C | Ultra-low footprint |
+| **Festival** | Unit Selection | Scheme / Lexicon | C++ / Lisp | Research / Unix |
+| **Flite** | Diphone | Compiled G2P Trees | C | Mobile / IoT |
+| **Piper** | Neural (VITS) | Phonemizer (ML) | C++ / Python | Modern High-Quality |
+
+***Definitions:***
+
+***Concatenative (Diphone):*** Splicing together transitions between sounds. 
+
+***Formant (Klatt):*** Generating sound mathematically using a sound source and filters to mimic a human voice. 
+
+***Unit Selection:*** Like diphone concaentation, but uses other types of speech units in addition to diphones such as whole words or phrases and so requires a massive database.
+
+***Neural:*** Uses AI (Deep Learning) to predict the waveform.
+
+***Phonemizer:*** modern name for a Grapheme-to-Phoneme (G2P) engine that turns "Hello" into /həˈloʊ/.
+
+Talk Calendar uses a concatenative diphone approach. Unlike "unit selection" which requires gigabytes of voice data, or "neural" systems that require a GPU, the diphone concatenation method provides a balance of intelligible speech with a very small memory footprint, making it ideal for the Talk Calendar project.
+
+Piper is a very interesting speech engine. For what I understand a neural network is used as the synthesizer which has been trained on thousands of hours of human audio. Piper takes the phonemes and mathematically predicts the raw audio waveform based on probability. Samples from the Piper speech system can be heard [here](https://rhasspy.github.io/piper-samples/).
+
+
+## eSpeak
+
+Because the Talk Calendar speech synthesizer is experimental and work-in-progress you can use espeak instead by selecting the option in the preferences dialog. This requires that espeak-ng is installed separately as Talk Calendar simply acts a speech dispatcher when the espeak preference is selected. On Debian/Ubuntu, run 
 
 ```
 sudo apt install espeak-ng.
@@ -160,11 +216,11 @@ sudo apt install qt6-base-dev qt6-base-dev-tools
 
 ## Compile the Project
 
-    1. Launch Qt Creator.
-    2. Open Talk Calendar Project ( File > Open Project).
-    3. Make sure the build system is CMake (this is the modern standard).
-    4. Kits: make sure "Desktop Qt 6.x.x" kit is selected
-    5. Build and run
+1. Launch Qt Creator.
+2. Open Talk Calendar Project ( File > Open Project).
+3. Make sure the build system is CMake (this is the modern standard).
+4. Kits: make sure "Desktop Qt 6.x.x" kit is selected
+5.  Build and run
     
     
 ### Building on Fedora
@@ -176,6 +232,18 @@ sudo dnf groupinstall "Development Tools" "C Development Tools and Libraries"
 sudo dnf install cmake gcc-cpp
 sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
 ```
+
+## Gtk vs Qt
+
+With the Talk Calendar 0.6 series I have moved away from using the GTk4 GUI toolkit to using Qt6. When I moved the project from Gtk3 to Gtk4 I had issues with  the GtkCalendar component specifically with marking a calendar date which would have an event. I got around this by creating my own custom calendar component  which used css classes which allowed dates with events to be marked with a colour set by the user. My custom calendar uses features which are now going to be depreciated with Gtk 5. As explained in this [article](https://docs.gtk.org/gtk4/migrating-4to5.html) cell renderers are going away, local stylesheets are going away, non-standard CSS extensions are going away, color expressions are going away, chooser interfaces are going away along with many other depreciations. This would have meant another major rewrite of the Talk Calendar Gtk4 application when moving to Gtk5. 
+
+There is another issue with Gtk application development. With the latest GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently within the GNOME desktop environment. What this means is that the styling of a Gtk applcation is now effectively outsourced to libadwaita. I have developed a small libadwaita Calendar demo as shown in the screenshot below to demonstrate the use of accent colours on Debian 13 GNOME. 
+
+![](debian13-accent-colour.png)
+
+The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy. With the release of Debian 13 Trixie GNOME I started to develop a Gtk4 Talk Calendar application using GtkCalendar only to find that when I tried to run this with the KDE desktop calendar day markings for events were not displayed. When I used my own custom calendar they were displayed indicating it maybe due to libadwaita. Perhaps I needed to install some Qt to libadwaita library which I could not find but it was at this point I decided to switch to Qt 6. I also found that the libadwaita Calendar demo did not run on the Xfce desktop environment without installing libadwaita and supporting libraries which is rather pointless as Xfce uses its own theming system.
+
+I know I am only a hobby programmer but I have never been happy with the idea of outsourcing the way an application should look to an external library such as libawaita. However, this is the direction of travel with GNOME. Moving to Qt 6 was a difficult decision because so many of the major Linux distributions such as Debian, Ubuntu, Fedora etc. use GNOME (and by implication Gtk) by default. However, Qt applications run within GNOME as well as with KDE and other Qt based desktops.
 
 ## Versioning
 
@@ -189,7 +257,7 @@ sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
 
 Active and under development.
 
-## Acknowledgements
+## Web Links
 
 * [Debian](https://www.debian.org/)
 

@@ -23,11 +23,16 @@
 Dictionary::Dictionary(QObject *parent)
     : QObject{parent}
 {
-    initializeMappings(); // Fill the maps FIRST
-    init();               // Then generate the dictionary
+    setupG2PRules(); // Fill the maps FIRST
+    loadLexicon();               // Then generate the dictionary
 }
 
-void Dictionary::initializeMappings() {
+/**
+ * @brief Sets up the core Grapheme-to-Phoneme (G2P) mapping rules.
+ * @details Initializes maps for basic consonants, vowel clusters (teams),
+ * and R-controlled vowels used by the transcription engine.
+ */
+void Dictionary::setupG2PRules() {
     // Basic Consonants (Every letter must be accounted for)
     m_consonantMap['b'] = "b";  m_consonantMap['c'] = "k";  m_consonantMap['d'] = "d";
     m_consonantMap['f'] = "f";  m_consonantMap['g'] = "g";  m_consonantMap['h'] = "hh";
@@ -61,7 +66,6 @@ void Dictionary::initializeMappings() {
     m_vowelClusterMap["or"] = "ao";
 }
 
-
 bool Dictionary::isVowel(QChar c) const {
     QString vowels = "aeiouy";
     return vowels.contains(c.toLower());
@@ -89,128 +93,211 @@ QString Dictionary::getPhoneticSound(QChar c) const {
     return "pau"; // Fallback
 }
 
-QStringList Dictionary::convertToDiphones(const QString& word)
+
+
+/**
+ * @brief The primary Rule-Based Grapheme-to-Phoneme (G2P) engine.
+ * @param word The input string to be synthesized.
+ * @return A QStringList containing the generated diphone sequence.
+ * @details This method applies a multi-pass approach: exception lookup,
+ * cluster identification, magic-e logic, and finally diphone building.
+ */
+QStringList Dictionary::transcribeWord(const QString& word)
 {
     QString cleaned = word.toLower().trimmed();
     if (cleaned.isEmpty()) return QStringList();
 
-    // --- 1. THE GOLDEN EXCEPTIONS (Prioritize high-priority calendar words) ---
-    static QMap<QString, QStringList> exceptions;
-    if (exceptions.isEmpty()) {
-        exceptions["the"] = {"dh", "ah"};        // Fixes "the"
-        exceptions["is"] = {"ih", "z"};          // Fixes "is" (z sound)
-        exceptions["of"] = {"ah", "v"};
-        exceptions["school"] = {"s", "k", "uw", "l"};
-        exceptions["cafe"] = {"k", "ae", "f", "ey"};
-        exceptions["pilates"] = {"p", "ih", "l", "aa", "t", "iy", "s"}; // User custom
-        exceptions["special"] = {"s", "p", "eh", "sh", "ao", "l"};
-        exceptions["office"] = {"ao", "f", "ih", "s"};
-        exceptions["insurance"] = {"ih", "n", "sh", "er", "ae", "n", "s"};
-        exceptions["water"] = {"w", "ao", "t", "er"};
-        exceptions["all"] = {"ao", "l"};
-        exceptions["good"] = {"g", "uh", "d"};
-        exceptions["health"] = {"hh", "eh", "l", "th"};
-        exceptions["walk"] = {"w", "ao", "k"};
-        exceptions["radio"] = {"r", "ey", "d", "iy", "ow"};
-        exceptions["premier"] = {"p", "r", "eh", "m", "iy", "er"};
-        exceptions["venue"] = {"v", "eh", "n", "y", "uw"};
-        exceptions["travelodge"] = {"t", "r", "ae", "v", "eh", "l", "l", "ao", "jh"}; // Treated as two parts
-        exceptions["high"] = {"hh", "ay"};
-        exceptions["off"] = {"ao", "f"};
-        exceptions["you"] = {"y", "uw"};
-        exceptions["eye"] = {"ay"};
-        exceptions["hage"] = {"hh", "ey", "g"}; // to sound like Hague
-        exceptions["business"] = {"b", "ih", "z", "n", "ah", "s"};
-        exceptions["orchestra"] = {"ao", "k", "eh", "s", "t", "r", "ae"};
-        exceptions["cafe"] = {"k", "ae", "f", "ey"}; // Force the E to be heard
-        exceptions["have"] = {"hh", "ae", "v"};      // 'Have' doesn't follow Magic E
-        exceptions["my"] = {"m", "ay"};
+    //QString cleaned = word.toLower().trimmed();
+    if (cleaned == "postoffice") {
+        QStringList part1 = transcribeWord("post");
+        QStringList part2 = transcribeWord("office");
+        return part1 + part2; // Combine the results
     }
 
-    if (exceptions.contains(cleaned)) {
-        return buildDiphoneList(exceptions[cleaned]);
+
+    // Then split the string and process each word separately.
+
+    // --- 1. THE GOLDEN EXCEPTIONS (Irregular words that break all rules) ---
+    static QMap<QString, QStringList> exceptions;
+    if (exceptions.isEmpty()) {
+
+        //A words;
+        exceptions["all"] = {"ao", "l"};
+        //B words
+        exceptions["baby"] = {"b", "eh", "iy", "b", "iy"};
+        exceptions["break"] = {"b", "r", "ey", "ey", "k"}; // Irregular 'ea'
+        exceptions["business"] = {"b", "ih", "z", "n", "ah", "s"};
+        //C words
+        exceptions["cafe"] = {"k", "ae", "f", "ey"}; // Force the E to be heard
+        //D words
+        //E words
+        exceptions["education"] = {"eh","jh","ah","k","eh","iy","sh","ah","n"};
+        exceptions["eye"] = {"ay"};
+        //F words
+        //G words
+        exceptions["garage"] = {"g", "ae", "r", "aa", "aa", "jh"};
+        exceptions["good"] = {"g", "uh", "d"};
+        //H words
+        exceptions["hage"] = {"hh", "ey", "g"}; // test word to sound like Hague
+        exceptions["have"] = {"hh", "ae", "v"};      // 'Have' doesn't follow Magic E
+        exceptions["health"] = {"hh", "eh", "l", "th"};
+        exceptions["high"] = {"hh", "ay"};
+        //I words
+        //exceptions["information"] = {"ih", "n","f","uh","r", "m","eh","iy", "sh","ah","n"};
+        exceptions["insurance"] = {"ih", "n", "sh", "er", "ae", "n", "s"};
+        exceptions["is"] = {"ih", "z"};          // Fixes "is" (z sound)
+        //J words
+        exceptions["jeweler"] = {"jh", "uw","ah","l","uh","r"};
+        //K words
+        //L words
+        //M mords
+        exceptions["message"] = {"m", "eh", "s", "ih", "jh"};
+        //exceptions["my"] = {"m", "ay"};
+        //N words
+        exceptions["notable"] = {"n", "ao","uh","t","ah", "b", "ah","l"};
+        exceptions["notification"] = {"n", "ow","ow","t","ah", "f", "ah","k", "ey","ey","sh","ah","n"};
+        //O words
+        exceptions["of"] = {"ah", "v"};
+        exceptions["off"] = {"ao", "f"};
+        exceptions["office"] = {"ao", "f", "ih", "s"};
+        exceptions["orchestra"] = {"ao", "k", "eh", "s", "t", "r", "ae"};
+        //P words
+        exceptions["pilates"] = {"p", "ih", "l", "aa", "t", "iy", "s"};
+        exceptions["premier"] = {"p", "r", "eh", "m", "iy", "er"};
+        exceptions["present"] = {"p", "r", "eh", "z", "eh", "n", "t"};
+        exceptions["purchase"] = {"p", "er", "ch", "ah", "s"};
+
+        //Q words
+        //R words
+        exceptions["radio"] = {"r", "ey", "d", "iy", "ow"};
+        //S words
+        exceptions["school"] = {"s", "k", "uw", "l"};
+        exceptions["seminar"] = {"s", "eh", "eh", "m", "ah", "n","aa","aa","r", "r"};
+        exceptions["society"] = {"s", "ow", "s", "ay", "ay", "ih","t","iy"};
+        exceptions["special"] = {"s", "p", "eh", "sh", "ao", "l"};
+        exceptions["station"] = {"s", "t", "ey", "ey", "sh", "ah", "n"};
+        //T words
+        exceptions["tax"] = {"t", "ae","ae","k","s"};
+        exceptions["taxi"] = {"t", "ae","ae","k","s","iy"};
+        exceptions["the"] = {"dh", "ah"};
+        exceptions["travelodge"] = {"t", "r", "ae", "v", "eh", "l", "l", "ao", "jh"}; // Treated as two parts
+        //U words
+        //exceptions["uncle"] = {"ah", "ng", "k", "ah", "l"};
+        //V words
+        exceptions["venue"] = {"v", "eh", "n", "y", "uw"};
+        //W words
+        exceptions["walk"] = {"w", "ao", "k"};
+        exceptions["water"] = {"w", "ao", "t", "er"};
+        //X words
+        //Y words
+        exceptions["you"] = {"y", "uw"};
+        //Z words
     }
+    if (exceptions.contains(cleaned)) return buildDiphoneList(exceptions[cleaned]);
 
     // --- 2. ABBREVIATIONS ---
     if (cleaned == "mr") cleaned = "mister";
-    if (cleaned == "mrs") cleaned = "missus";
-    if (cleaned == "dr") cleaned = "doctor";
-    if (cleaned == "st") cleaned = "saint";
+    else if (cleaned == "mrs") cleaned = "missus";
 
-    // --- 3. PHONEME GENERATION ---
     QStringList phonemes;
-    int rootLen = cleaned.length();
-    if (cleaned.endsWith("s") && cleaned.length() > 3) rootLen -= 1;
-
     for (int i = 0; i < cleaned.length(); ++i) {
         QChar current = cleaned[i];
         QString two = cleaned.mid(i, 2);
         QString three = cleaned.mid(i, 3);
+        QString four = cleaned.mid(i, 4);
         QChar next = (i + 1 < cleaned.length()) ? cleaned[i + 1] : QChar();
         QChar afterNext = (i + 2 < cleaned.length()) ? cleaned[i + 2] : QChar();
 
-        // --- CLUSTERS (Must come before single letters) ---
+        // --- A. START OF WORD RULES ---
+        // if (i == 0 && current == 'u' && !isVowel(next.toLatin1())) {
+        //     phonemes << "y" << "uw"; continue; // Fixes: User, University
+        // }
+
+        // --- A. START OF WORD RULES ---
+        // Only use "y-uw" if it looks like "User", "Unit", "Use"
+        // (U + Consonant + Vowel)
+        if (i == 0 && current == 'u' && !isVowel(next.toLatin1()) && isVowel(afterNext.toLatin1())) {
+            phonemes << "y" << "uw";
+            continue;
+        }
+
+        // --- B. LONG CLUSTERS (4 & 3 letters) ---
+        if (four == "tion" || four == "sion") { phonemes << "sh" << "ah" << "n"; i += 3; continue; }
+        if (three == "igh") { phonemes << "ay" << "ay"; i += 2; continue; }
+
+        // --- C. CONSONANT CLUSTERS ---
+        if (two == "ph") { phonemes << "f"; i++; continue; }
         if (two == "th") { phonemes << "th"; i++; continue; }
-        if (two == "ch") { phonemes << "ch"; i++; continue; }
         if (two == "sh") { phonemes << "sh"; i++; continue; }
-        if (two == "ng") { phonemes << "ng"; i++; continue; }
+        if (two == "ch") { phonemes << "ch"; i++; continue; }
         if (two == "qu") { phonemes << "k" << "w"; i++; continue; }
-        if (two == "ck") { phonemes << "k"; i++; continue; }
-        if (two == "dg") { phonemes << "jh"; i++; continue; } // Fixes "lodge"
+        if (two == "dg") { phonemes << "jh"; i++; continue; }
 
-        // --- VOWELS ---
-        if (two == "ee" || two == "ea") { phonemes << "iy"; i++; continue; }
-        if (two == "ay" || two == "ai") { phonemes << "ey"; i++; continue; }
-        if (two == "oo") { phonemes << "uw"; i++; continue; }
-        if (three == "igh") { phonemes << "ay"; i += 2; continue; }
+        // --- D. VOWEL TEAMS ---
+        if (two == "oa") { phonemes << "ow" << "ow"; i++; continue; }
+        if (two == "ee" || two == "ea") { phonemes << "iy" << "iy"; i++; continue; }
+        if (two == "oo") { phonemes << "uh"; i++; continue; } // Short 'oo' for 'good'
 
-        // --- MAGIC E (Simplified: vowel + consonant + e) ---
-        // Removed the strict "rootLen" check to catch "driver" and "valentine" better
+        // --- E. SPECIAL CONTEXTS (W, X, Y) ---
+        if (current == 'w' && next == 'a') { phonemes << "w" << "ao"; i++; continue; }
+        if (current == 'x') { phonemes << "k" << "s"; continue; }
+        if (current == 'y') {
+            if (i == cleaned.length() - 1) {
+                if (cleaned.length() <= 3) phonemes << "ay" << "ay"; // my
+                else phonemes << "iy"; // baby
+            } else { phonemes << "y"; }
+            continue;
+        }
+
+        // --- F. MAGIC E (e.g., Phone, Home, Quote) ---
         if (isVowel(current.toLatin1()) && !next.isNull() && !isVowel(next.toLatin1()) && afterNext == 'e') {
             if (current == 'a') phonemes << "ey";
-            else if (current == 'i') phonemes << "ay"; // Fixes "time" and "valentine"
+            else if (current == 'i') phonemes << "ay";
             else if (current == 'o') phonemes << "ow";
             else if (current == 'u') phonemes << "uw";
             else phonemes << getPhoneticSound(current.toLatin1());
             continue;
         }
 
-        // --- SOFT C / G ---
+        // --- G. SOFT C / G ---
         if (current == 'c' && (next == 'e' || next == 'i' || next == 'y')) { phonemes << "s"; continue; }
         if (current == 'g' && (next == 'e' || next == 'i' || next == 'y')) { phonemes << "jh"; continue; }
 
-        // --- SILENT E (Safety: only if word is long enough) ---
-        if (i == cleaned.length() - 1 && current == 'e' && cleaned.length() > 3) {
-            continue;
-        }
+        // --- H. SILENT E ---
+        if (i == cleaned.length() - 1 && current == 'e' && cleaned.length() > 3) continue;
 
-        // --- DEFAULT ---
+        // --- I. DEFAULT ---
         phonemes << getPhoneticSound(current.toLatin1());
     }
 
-    // --- 4. CLEAN UP & DURATION ---
+    // Deduplicate and Duration logic...
+
+    // --- 4. DEDUPLICATE CONSONANTS ONLY ---
     QStringList cleanPhonemes;
     for (int i = 0; i < phonemes.size(); ++i) {
-        // Deduplicate double consonants (ll, ss, tt)
-        if (i > 0 && phonemes[i] == phonemes[i-1] && !isVowel(cleaned[i].toLatin1())) {
-            continue;
-        }
+        if (i > 0 && phonemes[i] == phonemes[i-1] && !isVowelPhoneme(phonemes[i])) continue;
         cleanPhonemes << phonemes[i];
     }
 
-    // Double vowels for duration
-    if (!cleanPhonemes.isEmpty()) {
-        QString last = cleanPhonemes.last();
-        if (last == "ae" || last == "ey" || last == "iy" || last == "ow" || last == "uw" || last == "ay" || last == "aa") {
-            cleanPhonemes.append(last);
-        }
-    }
+    QStringList result = buildDiphoneList(cleanPhonemes);
+    qDebug() << "Word:" << word << "Phonemes:" << cleanPhonemes;
+    return result;
 
-    return buildDiphoneList(cleanPhonemes);
-    // QStringList result = buildDiphoneList(cleanPhonemes);
-    // qDebug() << "Word:" << word << "Phonemes:" << cleanPhonemes << "Diphones:" << result;
-    // return result;
+
+    //return buildDiphoneList(cleanPhonemes);
 }
+
+/**
+ * @brief Determines if a specific phoneme string represents a vowel sound.
+ * @param p The phoneme string (e.g., "ae", "iy").
+ * @return True if the phoneme is a vowel.
+ */
+bool Dictionary::isVowelPhoneme(const QString& p)
+{
+    static QStringList vowels = {"ae", "ey", "iy", "ow", "uw", "ay", "aa", "ah", "uh", "ao", "oy", "aw"};
+    return vowels.contains(p);
+}
+
 
 QStringList Dictionary::buildDiphoneList(const QStringList& phonemes)
 {
@@ -221,16 +308,18 @@ QStringList Dictionary::buildDiphoneList(const QStringList& phonemes)
         result << phonemes[i] + "_" + phonemes[i+1];
     }
     result << phonemes.last() + "_pau";
+    qDebug() << result; //Keep for debugging
     return result;
 }
 
-//=============================================================================
-
-
-void Dictionary::init() {
+/**
+ * @brief Populates the internal lexicon with pre-defined diphone sequences.
+ * @details This handles common calendar words, months and numbers
+ *  to ensure 100% accuracy for the most frequent terms.
+ */
+void Dictionary::loadLexicon() {
     m_data.clear();
-    // phonetic word dictionary
-    // database of words with their diphone transcriptions
+    //Phonetic Word Dictionary: A database of words with their diphone transcriptions
     //days of week
     m_data["monday"] = {"pau_m", "m_ah", "ah_n", "n_d", "d_ey", "ey_pau"};
     m_data["tuesday"] = {"pau_t", "t_uw", "uw_z", "z_d", "d_ey", "ey_pau"};
@@ -256,7 +345,9 @@ void Dictionary::init() {
     //day ordinals
     m_data["first"] = {"pau_f", "f_er", "er_s", "s_t", "t_pau"};
     m_data["second"] = {"pau_s", "s_eh", "eh_k", "k_ah", "ah_n", "n_d", "d_pau"};
-    m_data["third"] = {"pau_th", "th_er", "er_d", "d_pau"};
+    //m_data["third"] = {"pau_th", "th_er", "er_d", "d_pau"};
+    m_data["third"] = {"pau_th", "th_er", "er_er", "er_d", "d_pau"};
+
     m_data["fourth"] = {"pau_f", "f_ao", "ao_r", "r_th", "th_pau"};
     m_data["fifth"] = {"pau_f", "f_ih", "ih_f", "f_th", "th_pau"};
     m_data["sixth"] = {"pau_s", "s_ih", "ih_k", "k_s", "s_th", "th_pau"};
@@ -285,6 +376,7 @@ void Dictionary::init() {
     m_data["twenty-ninth"] = {"pau_t", "t_w", "w_eh", "eh_n", "n_t", "t_iy", "iy_n", "n_ay", "ay_n", "n_th", "th_pau"};
     m_data["thirtieth"] = {"pau_th", "th_er", "er_er", "er_t", "t_iy", "iy_eh", "eh_eh", "eh_th", "th_pau"};
     m_data["thirty-first"] = {"pau_th", "th_er", "er_t", "t_iy","iy_f", "f_er", "er_s", "s_t", "t_pau"};
+
 
     // The Time Suffixes
     m_data["am"] = {"pau_ey", "ey_eh", "eh_m", "m_pau"};
@@ -322,22 +414,25 @@ void Dictionary::init() {
     m_data["thirty"] = {"pau_th", "th_er", "er_t", "t_iy"};
     m_data["forty"]    = {"pau_f", "f_ao", "ao_r", "r_t", "t_iy", "iy_pau"};
     m_data["fifty"]    = {"pau_f", "f_ih", "ih_f", "f_t", "t_iy", "iy_pau"};
+    //TODO
+    //m_data["eightieth"] = {"pau_eh", "ey_ey", "ey_t", "t_iy", "iy_ih", "ih_th", "th_pau"};
+    //m_data["eighty"] = {"pau_eh", "eh_iy", "iy_t", "t_iy", "iy_pau"};
+    //m_data["hundred"] = {"pau_hh", "hh_ah", "ah_n", "n_d", "d_r", "r_ah", "ah_d", "d_pau"};
+    //m_data["hundredth"] = {"pau_hh", "hh_ah", "ah_n", "n_d", "d_r", "r_ah", "ah_d", "d_th", "th_pau"};
+
 
     //AM/PM
     m_data["am"]   = {"pau_ey", "ey_eh", "eh_m", "m_pau"};
     m_data["pm"]   = {"pau_p", "p_iy", "iy_eh", "eh_m", "m_pau"};
     m_data["o"]    = {"pau_ow", "ow_ow", "ow_pau"};
 
-    //Talk Calendar   
-    m_data["talk"] = {"pau_t", "t_aa", "aa_aa", "aa_k", "k_pau"};   
+    //Talk Calendar
+    m_data["talk"] = {"pau_t", "t_aa", "aa_aa", "aa_k", "k_pau"};
     m_data["calendar"] = {"pau_k", "k_ae", "ae_l", "l_ah", "ah_n", "n_d", "d_er", "er_pau"};
-    //other calendar event words autogenerated on the fly
 
 }
 
-//===========================================================================
-// Helpers
-//===========================================================================
+
 
 bool Dictionary::contains(const QString &word) const {
     return m_data.contains(word);
@@ -347,6 +442,11 @@ QStringList Dictionary::getDiphones(const QString &word) const {
     return m_data.value(word, QStringList()); // Returns empty list if not found
 }
 
+/**
+ * @brief Normalizes an integer day into its ordinal word form.
+ * @param day The day of the month (1-31).
+ * @return A string such as "first", "second", etc.
+ */
 QString Dictionary::getOrdinalStr(int day)
 {
     static const QStringList ordinals = {
@@ -367,6 +467,11 @@ QString Dictionary::getOrdinalStr(int day)
     return ""; // Return empty if date is invalid
 }
 
+/**
+ * @brief Converts an integer day into its cardinal word form for speech
+ * @param number The number (1-59) as 59 minutes
+ * @return A string such as "one", "two", etc.
+ */
 QString Dictionary::getCardinalStr(int number)
 {
     static const QStringList cardinals = {
@@ -389,6 +494,10 @@ QString Dictionary::getCardinalStr(int number)
     return ""; // Return empty if date is invalid
 }
 
+/**
+ * @brief Converts a QDate.
+ * @return A formatted string like "tuesday twenty-fourth february"
+ */
 QString Dictionary::getDatePhrase(const QDate &date)
 {
     QString dayName = date.toString("dddd").toLower();
@@ -407,6 +516,16 @@ QString Dictionary::getDatePhrase(const QDate &date)
 
     return datePhrase;
 }
+
+
+
+/**
+ * @brief Converts a 24-hour time into a natural language phrase.
+ * @param hour The hour (0-23).
+ * @param minute The minute (0-59).
+ * @param isAllDay Flag to bypass time generation for all-day events.
+ * @return A formatted string like "ten o five am".
+ */
 QString Dictionary::getTimePhrase(int hour, int minute, bool isAllDay)
 {
     //if (isAllDay) return "all day";

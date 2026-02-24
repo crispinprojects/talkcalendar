@@ -1,5 +1,5 @@
 /*
- *
+ * mainWindow.cpp
  * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,10 @@
 #include <QTextStream>
 #include <QTimeZone>
 
+/**
+ * @brief MainWindow constructor.
+ * @param parent The parent widget (default nullptr).
+ */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -115,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent)
 
             for (const CalendarEvent &ev : events) {
                 // time phrase
-                QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay);
+                QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay)+ " ";
                 if (ev.m_isAllDay) {
                     welcome.append(ev.m_summary);
                     welcome.append(" ");
@@ -130,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent)
         } else
         {
             //welcome.append("No events ");
-             welcome.append(" ");
+            welcome.append(" ");
         }
 
         // Add Upcoming Events
@@ -141,18 +145,25 @@ MainWindow::MainWindow(QWidget *parent)
         }
         else
         {
-        m_engine->speak(welcome,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+            m_engine->speak(welcome,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
         }
+
     }
 
 }
 
+/**
+ * @brief MainWindow destructor.
+ */
 MainWindow::~MainWindow() {
     delete ui;
 }
 
+/**
+ * @brief Creates the events table if it does not already exist.
+ */
 void MainWindow::initDatabase() {
-    QSqlQuery query;    
+    QSqlQuery query;
     query.exec("CREATE TABLE IF NOT EXISTS events ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "summary TEXT, "
@@ -168,6 +179,10 @@ void MainWindow::initDatabase() {
                ");");
 }
 
+/**
+ * @brief Updates the event list widget with the provided events.
+ * @param events List of CalendarEvent objects to display.
+ */
 void MainWindow::updateEventListUI(const QList<CalendarEvent> &events) {
     ui->eventList->clear();
     for (const CalendarEvent &e : events) {
@@ -193,7 +208,7 @@ void MainWindow::updateEventListUI(const QList<CalendarEvent> &events) {
         }
 
         if (!e.m_location.isEmpty()) {
-            //qDebug()<<"updateEventListUI: location = "<<  e.m_location;
+            //qDebug<<"updateEventListUI: location = "<<  e.m_location;
             displayText += ", " + e.m_location ;
 
         }
@@ -203,6 +218,9 @@ void MainWindow::updateEventListUI(const QList<CalendarEvent> &events) {
     }
 }
 
+/**
+ * @brief Highlights dates on the calendar that have events.
+ */
 void MainWindow::updateCalendarHighlights() {
     ui->mainCalendar->setDateTextFormat(QDate(), QTextCharFormat());
 
@@ -243,7 +261,11 @@ void MainWindow::updateCalendarHighlights() {
     }
 }
 
-
+/**
+ * @brief Loads all events for a given date from the database.
+ * @param date The QDate to query events for.
+ * @return List of CalendarEvent objects.
+ */
 QList<CalendarEvent> MainWindow::loadEventsForDate(const QDate &date) {
     QList<CalendarEvent> events;
     QSqlQuery query;
@@ -269,14 +291,14 @@ QList<CalendarEvent> MainWindow::loadEventsForDate(const QDate &date) {
                 query.value("start_day").toInt(),      // 7
                 query.value("start_hour").toInt(),     // 8
                 query.value("start_min").toInt(),      // 9
-                query.value("end_year").toInt(),       // 10
-                query.value("end_month").toInt(),      // 11
-                query.value("end_day").toInt(),        // 12
-                query.value("end_hour").toInt(),       // 13
-                query.value("end_min").toInt(),        // 14
-                recType,                               // 15 (recurrenceType)
-                query.value("is_allday").toInt(),      // 16
-                query.value("is_priority").toInt()     // 17
+                query.value("end_year").toInt(),       //10
+                query.value("end_month").toInt(),      //11
+                query.value("end_day").toInt(),        //12
+                query.value("end_hour").toInt(),       //13
+                query.value("end_min").toInt(),        //14
+                recType,                               //15 (recurrenceType)
+                query.value("is_allday").toInt(),      //16
+                query.value("is_priority").toInt()     //17
                 // NO MORE REMINDER ARGUMENTS HERE
                 ));
         }
@@ -284,7 +306,10 @@ QList<CalendarEvent> MainWindow::loadEventsForDate(const QDate &date) {
     return events;
 }
 
-// onDateClicked Function
+/**
+ * @brief Handles a click on a date in the calendar widget.
+ * @param date The QDate that was clicked.
+ */
 void MainWindow::onDateClicked(const QDate &date) {
 
     QList<CalendarEvent> events = getEventsForDate(date);
@@ -292,7 +317,7 @@ void MainWindow::onDateClicked(const QDate &date) {
     if (m_talk) {
         QString phrase = m_voiceDict->getDatePhrase(date)+ " ";
         for (const CalendarEvent &ev : events) {
-             QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay)+ " ";
+            QString timePhrase = m_voiceDict->getTimePhrase(ev.m_startHour, ev.m_startMin, ev.m_isAllDay)+ " ";
             if (ev.m_isAllDay) {
                 phrase.append(ev.m_summary);
                 phrase.append(" ");
@@ -301,7 +326,7 @@ void MainWindow::onDateClicked(const QDate &date) {
                 phrase.append(" ");
                 phrase.append(ev.m_summary);
                 phrase.append(" ");
-            }            
+            }
             if(m_espeak)
             {
                 phrase.append(ev.m_description);
@@ -309,7 +334,7 @@ void MainWindow::onDateClicked(const QDate &date) {
                 phrase.append(ev.m_location);
                 phrase.append(" ");
             }
-        }       
+        }
 
         if(m_espeak) {
             m_dispatcher->eSpeaker(phrase);
@@ -322,6 +347,11 @@ void MainWindow::onDateClicked(const QDate &date) {
     }
 }
 
+/**
+ * @brief Parses an iCalendar date string into a ParsedDate structure.
+ * @param icalStr The iCal date string to parse.
+ * @return ParsedDate containing year, month, day, hour, minute and validity flag.
+ */
 ParsedDate MainWindow::parseICalDate(const QString &icalStr) {
     ParsedDate result;
     QString cleanStr = icalStr.section(';', 0, 0).trimmed();
@@ -351,7 +381,9 @@ ParsedDate MainWindow::parseICalDate(const QString &icalStr) {
     return result;
 }
 
-
+/**
+ * @brief Imports events from an iCalendar (.ics/.ical) file into the database.
+ */
 void MainWindow::on_actionImport_iCal_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Import iCal", "", "iCalendar Files (*.ics *.ical);;All Files (*)");
     if (fileName.isEmpty()) return;
@@ -426,6 +458,9 @@ void MainWindow::on_actionImport_iCal_triggered() {
     onDateClicked(ui->mainCalendar->selectedDate());
 }
 
+/**
+ * @brief Exports all events from the database to an iCalendar (.ics/.ical) file.
+ */
 void MainWindow::on_actionExport_iCal_triggered() {
     QString fileName = QFileDialog::getSaveFileName(this, "Export iCal", "", "iCalendar Files (*.ics *.ical)");
     if (fileName.isEmpty()) return;
@@ -478,6 +513,9 @@ void MainWindow::on_actionExport_iCal_triggered() {
     QMessageBox::information(this, "Export", "Calendar exported successfully.");
 }
 
+/**
+ * @brief Slot invoked when the 'New Event' button is clicked.
+ */
 void MainWindow::on_btnNewEvent_clicked() {
     QDate selectedDate = ui->mainCalendar->selectedDate();
     EventEditorDialog dialog(selectedDate, nullptr, this);
@@ -488,6 +526,9 @@ void MainWindow::on_btnNewEvent_clicked() {
     }
 }
 
+/**
+ * @brief Slot invoked when the 'Delete' button is clicked.
+ */
 void MainWindow::on_btnDelete_clicked() {
     QListWidgetItem *item = ui->eventList->currentItem();
     if (!item) return;
@@ -500,11 +541,14 @@ void MainWindow::on_btnDelete_clicked() {
 
         if (query.exec()) {
             onDateClicked(ui->mainCalendar->selectedDate());
-            updateCalendarHighlights(); // Refresh highlights after deleting
+            updateCalendarHighlights(); // Refresh the dots after deleting
         }
     }
 }
 
+/**
+ * @brief Helper that opens the editor for the currently selected event.
+ */
 void MainWindow::editSelectedEvent() {
     QListWidgetItem *item = ui->eventList->currentItem();
     if (!item) return;
@@ -519,17 +563,25 @@ void MainWindow::editSelectedEvent() {
     }
 }
 
+/**
+ * @brief Slot invoked when the 'Edit Event' button is clicked.
+ */
 void MainWindow::on_btnEditEvent_clicked() {
     editSelectedEvent();
 }
 
-
+/**
+ * @brief Handles a double click on an event list item by opening the editor.
+ * @param item The QListWidgetItem that was double‑clicked.
+ */
 void MainWindow::handleEventDoubleClicked(QListWidgetItem *item) {
     Q_UNUSED(item);
     editSelectedEvent();
 }
 
-
+/**
+ * @brief Slot invoked when the 'Clear All' button is clicked.
+ */
 void MainWindow::on_btnClearAll_clicked() {
     // confirmation Dialog
     QMessageBox::StandardButton reply;
@@ -541,7 +593,7 @@ void MainWindow::on_btnClearAll_clicked() {
         QSqlQuery query;
         if (query.exec("DELETE FROM events")) {
             onDateClicked(ui->mainCalendar->selectedDate());
-            updateCalendarHighlights();
+            updateCalendarHighlights(); // Refresh highlights after deleting
             QMessageBox::information(this, "Success", "Database cleared.");
         } else {
             qDebug() << "Delete All Error:" << query.lastError().text();
@@ -549,21 +601,29 @@ void MainWindow::on_btnClearAll_clicked() {
     }
 }
 
+/**
+ * @brief Goes to today's date in the calendar.
+ */
 void MainWindow::goToToday() {
     ui->mainCalendar->setSelectedDate(QDate::currentDate());
     // Trigger the update for the event list below the calendar
-    onDateClicked(QDate::currentDate());   
+    onDateClicked(QDate::currentDate());
 }
 
-
+/**
+ * @brief Clears the event list and updates highlights when the calendar page changes.
+ */
 void MainWindow::onCalendarPageChanged() {
     ui->eventList->clear();
     updateCalendarHighlights(); // Refresh the dots for the new month
 }
 
-
+/**
+ * @brief Slot invoked when an event list item is clicked to speak its details.
+ * @param item The QListWidgetItem that was clicked.
+ */
 void MainWindow::onEventClicked(QListWidgetItem *item) {
-    if (!item) return;   
+    if (!item) return;
 
     int eventId = item->data(Qt::UserRole).toInt();
     CalendarEvent ev = getEventById(eventId);
@@ -590,6 +650,11 @@ void MainWindow::onEventClicked(QListWidgetItem *item) {
 
 }
 
+/**
+ * @brief Retrieves all events for a given date.
+ * @param date The QDate to query.
+ * @return List of CalendarEvent objects matching the date.
+ */
 QList<CalendarEvent> MainWindow::getEventsForDate(const QDate &date) {
     QList<CalendarEvent> events;
     QSqlQuery query;
@@ -633,6 +698,11 @@ QList<CalendarEvent> MainWindow::getEventsForDate(const QDate &date) {
     return events;
 }
 
+/**
+ * @brief Retrieves a single event by its database ID.
+ * @param id The event's unique identifier.
+ * @return CalendarEvent object, or an empty one if not found.
+ */
 CalendarEvent MainWindow::getEventById(int id) {
     QSqlQuery query;
     query.prepare("SELECT * FROM events WHERE id = :id");
@@ -664,7 +734,9 @@ CalendarEvent MainWindow::getEventById(int id) {
     return CalendarEvent(); // Return an empty event if not found
 }
 
-
+/**
+ * @brief Slot invoked when the Preferences action is triggered.
+ */
 void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
@@ -684,7 +756,7 @@ void MainWindow::on_actionPreferences_triggered()
         m_eventColor = dialog.eventColor();
         m_priorityColor = dialog.priorityColor();
 
-        // Save everything to QSettings        
+        // Save everything to QSettings
         QSettings settings; // automatically uses the names from main.cpp
         settings.setValue("talk", m_talk);
         settings.setValue("talk_startup", m_talk_startup);
@@ -706,6 +778,10 @@ void MainWindow::on_actionPreferences_triggered()
     }
 }
 
+/**
+ * @brief Builds a phrase summarising upcoming events.
+ * @return A string containing information about upcoming events, or an empty string if none.
+ */
 QString MainWindow::getUpcomingEventsPhrase() {
 
     //qDebug()<<"m_upcoming = "<<m_upcoming;
@@ -764,6 +840,11 @@ QString MainWindow::getUpcomingEventsPhrase() {
     return "";
 }
 
+/**
+ * @brief Extracts a CalendarEvent from the current QSqlQuery row.
+ * @param query The QSqlQuery positioned at the desired record.
+ * @return CalendarEvent object constructed from the row data.
+ */
 CalendarEvent MainWindow::getEventFromQuery(const QSqlQuery &query) {
     int recType = query.value("recurrence_type").toInt();
     return CalendarEvent(
@@ -776,17 +857,18 @@ CalendarEvent MainWindow::getEventFromQuery(const QSqlQuery &query) {
         query.value("start_day").toInt(),
         query.value("start_hour").toInt(),
         query.value("start_min").toInt(),
-        query.value("end_year").toInt(),
-        query.value("end_month").toInt(),
-        query.value("end_day").toInt(),
-        query.value("end_hour").toInt(),
-        query.value("end_min").toInt(),
-        recType,
+        0,0,0,0,0, // end times (placeholders)
+        query.value("recurrence_type").toInt(),
         query.value("is_allday").toInt(),
         query.value("is_priority").toInt()
         );
 }
 
+/**
+ * @brief Performs a search for events by summary and/or location.
+ * @param summarySearch Search string for the event summary (may be empty).
+ * @param locationSearch Search string for the event location (may be empty).
+ */
 void MainWindow::performSearch(const QString &summarySearch, const QString &locationSearch) {
     QList<CalendarEvent> results;
     QSqlQuery query;
@@ -815,7 +897,7 @@ void MainWindow::performSearch(const QString &summarySearch, const QString &loca
             //qDebug()<<"search speech msg = "<<msg;
         }
 
-        if (results.isEmpty()) {           
+        if (results.isEmpty()) {
             msg = "no events found.";
         } else {
             QString countStr = QString::number(results.size());
@@ -826,19 +908,25 @@ void MainWindow::performSearch(const QString &summarySearch, const QString &loca
     }
 }
 
-
+/**
+ * @brief Slot invoked when the Search action is triggered.
+ */
 void MainWindow::on_actionSearch_triggered()
 {
     SearchDialog dialog(this);
 
     if (dialog.exec() == QDialog::Accepted) {
         QString summary = dialog.getSummary();
-        QString location = dialog.getLocation();       
+        QString location = dialog.getLocation();
         // execute search and populate the main list view (click another date to clear)
         performSearch(summary, location);
     }
 }
 
+/**
+ * @brief Slot invoked when an event list item is double‑clicked during a search.
+ * @param item The QListWidgetItem that was double‑clicked.
+ */
 void MainWindow::on_eventList_itemDoubleClicked(QListWidgetItem *item) {
     if (!item) return;
     int id = item->data(Qt::UserRole).toInt();
@@ -854,10 +942,13 @@ void MainWindow::on_eventList_itemDoubleClicked(QListWidgetItem *item) {
     }
 }
 
+/**
+ * @brief Announces the current time via speech.
+ */
 void MainWindow::talkCurrentTime() {
 
     int hour = QTime::currentTime().hour();
-    int minute = QTime::currentTime().minute();    
+    int minute = QTime::currentTime().minute();
     QString timePhrase =m_voiceDict->getTimePhrase(hour, minute, false);
 
     QString speakTimePhrase ="The time is ";
@@ -874,6 +965,9 @@ void MainWindow::talkCurrentTime() {
 
 }
 
+/**
+ * @brief Slot invoked when the About action is triggered.
+ */
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox msgBox(this);
@@ -883,11 +977,12 @@ void MainWindow::on_actionAbout_triggered()
     msgBox.exec();
 }
 
+/**
+ * @brief Slot invoked when the Information action is triggered.
+ */
 void MainWindow::on_actionInformation_triggered() {
     // custom version number
     QString msg = QString("Talk Calendar Version: %1\n").arg(PROJECT_VERSION);
-    QString diphoneVersion = QString("Diphone Synthesizer Version: %1\n").arg(DIPHONE_VERSION);
-    msg.append(diphoneVersion);
 
     // Qt version
     msg.append(QString("Qt Version: %1\n").arg(qVersion()));
@@ -901,11 +996,17 @@ void MainWindow::on_actionInformation_triggered() {
     QMessageBox::information(this, "System Info", msg);
 }
 
+/**
+ * @brief Slot invoked when the Exit action is triggered.
+ */
 void MainWindow::on_actionExit_triggered()
 {
     QApplication::quit();
 }
 
+/**
+ * @brief Slot invoked when the Easter Calculator action is triggered.
+ */
 void MainWindow::on_actionEaster_Calculator_triggered()
 {
     EasterDialog dialog(this);
@@ -913,4 +1014,3 @@ void MainWindow::on_actionEaster_Calculator_triggered()
         // qDebug()<<"Easter calculator";
     }
 }
-
