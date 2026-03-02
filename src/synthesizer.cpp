@@ -42,14 +42,11 @@ void Synthesizer::speak(const QString &text, Dictionary *dict, float tempo) {
     QStringList allDiphones;
 
     for (const QString &word : words) {
-        if (dict->contains(word)) {
-            // Use manual overrides if they exist
-            allDiphones.append(dict->getDiphones(word));
-        } else {
-            // otherwise autogenerate word diphone sequences on the fly
-            allDiphones.append(dict->transcribeWord(word));
-        }
+        // transcribe word to diphone sequence
+        allDiphones.append(dict->transcribeWordDecisionTree(word));
+
     }
+
     if (!allDiphones.isEmpty()) {
         QVector<int16_t> audio = vocoder(allDiphones, tempo);
         saveAndPlay(audio);

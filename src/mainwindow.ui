@@ -6,9 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
-    <height>500</height>
+    <width>638</width>
+    <height>525</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>14</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>Talk Calendar</string>
@@ -21,6 +26,11 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QPushButton" name="btnNewEvent">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>New Event</string>
           </property>
@@ -28,6 +38,11 @@
         </item>
         <item>
          <widget class="QPushButton" name="btnEditEvent">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Edit Event</string>
           </property>
@@ -35,6 +50,11 @@
         </item>
         <item>
          <widget class="QPushButton" name="btnDelete">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Delete Event</string>
           </property>
@@ -42,6 +62,11 @@
         </item>
         <item>
          <widget class="QPushButton" name="btnClearAll">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>Clear All</string>
           </property>
@@ -50,12 +75,24 @@
        </layout>
       </item>
       <item>
-       <widget class="QCalendarWidget" name="mainCalendar"/>
+       <widget class="QCalendarWidget" name="mainCalendar">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
     <item row="1" column="0">
-     <widget class="QListWidget" name="eventList"/>
+     <widget class="QListWidget" name="eventList">
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -64,8 +101,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>542</width>
-     <height>36</height>
+     <width>638</width>
+     <height>38</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -100,40 +137,80 @@
    <property name="text">
     <string>Import iCal</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionExport_iCal">
    <property name="text">
     <string>Export iCal</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionSearch">
    <property name="text">
     <string>Search</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionInformation">
    <property name="text">
     <string>Information</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
   </action>
   <action name="actionEaster_Calculator">
    <property name="text">
     <string>Easter Calculator</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
   </action>
  </widget>

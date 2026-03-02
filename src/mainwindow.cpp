@@ -96,10 +96,23 @@ MainWindow::MainWindow(QWidget *parent)
     m_upcoming = settings.value("upcoming", true).toBool();
     m_upcoming_days = settings.value("upcoming_days", 3).toInt();
     m_tempo = settings.value("tempo", 17).toInt();
+    m_font_size = settings.value("font_size", 14).toInt();
 
     // load the colours. If they don't exist yet, use defaults.
     m_eventColor = QColor(settings.value("colors/event", "#ffff00").toString()); // Default Yellow
     m_priorityColor = QColor(settings.value("colors/priority", "#9370db").toString()); // Default Purple
+
+
+    // Commonly recommended font families for Qt6 C++ applications
+    // include "Helvetica," "Arial," and "Times New Roman," as they are widely supported
+    // and provide good readability.
+    // Using system fonts can ensure better compatibility across different platforms.
+
+    // Set the global font for the application
+    QFont appFont("Arial", m_font_size); // Specify font family and size
+    QApplication::setFont(appFont);
+    ui->mainCalendar->setFont(appFont);
+    ui->eventList->setFont(appFont);
 
     //  Startup Actions
     QDate today = QDate::currentDate();
@@ -740,7 +753,7 @@ CalendarEvent MainWindow::getEventById(int id) {
 void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
-    ConfigDialog dialog(m_talk, m_talk_startup, m_espeak, m_upcoming, m_upcoming_days, m_tempo,
+    ConfigDialog dialog(m_talk, m_talk_startup, m_espeak, m_upcoming, m_upcoming_days, m_tempo, m_font_size,
                         m_eventColor, m_priorityColor, this);
 
     if (dialog.exec() == QDialog::Accepted) {
@@ -749,6 +762,7 @@ void MainWindow::on_actionPreferences_triggered()
         m_espeak=dialog.espeakEnabled();
         m_upcoming = dialog.upcomingEnabled();
         m_upcoming_days = dialog.upcomingDays();
+        m_font_size=dialog.fontSize();
         m_tempo = dialog.tempo();
         //m_tempo = static_cast<float>(tempo) / 10.0f;
 
@@ -763,6 +777,7 @@ void MainWindow::on_actionPreferences_triggered()
         settings.setValue("espeak", m_espeak);
         settings.setValue("upcoming", m_upcoming);
         settings.setValue("upcoming_days", m_upcoming_days);
+        settings.setValue("font_size", m_font_size);
         settings.setValue("tempo",m_tempo);
 
 
@@ -772,6 +787,13 @@ void MainWindow::on_actionPreferences_triggered()
         //existing settings.setValue() calls
         settings.setValue("colors/event", m_eventColor.name());
         settings.setValue("colors/priority", m_priorityColor.name());
+
+        QFont appFont("Arial", m_font_size); // Specify font family and size
+        QApplication::setFont(appFont);
+
+        ui->mainCalendar->setFont(appFont);
+        ui->eventList->setFont(appFont);
+
 
         // refresh the calendar to show the new colors immediately
         updateCalendarHighlights();
@@ -953,7 +975,7 @@ void MainWindow::talkCurrentTime() {
 
     QString speakTimePhrase ="The time is ";
     speakTimePhrase.append(timePhrase);
-    qDebug()<<"speak time phrase "<<speakTimePhrase;
+    //qDebug()<<"speak time phrase "<<speakTimePhrase;
 
     if(m_espeak) {
         m_dispatcher->eSpeaker(speakTimePhrase);

@@ -44,7 +44,7 @@
 #include "diphone.h"
 #include "dispatcher.h"
 
-#define PROJECT_VERSION "0.6.4"
+#define PROJECT_VERSION "0.6.5"
 
 
 struct ParsedDate {
@@ -117,6 +117,7 @@ private:
     bool m_upcoming;
     int m_upcoming_days;
     int m_tempo;
+    int m_font_size;
     QColor m_eventColor;
     QColor m_priorityColor;
 

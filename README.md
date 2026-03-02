@@ -34,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.6.4
+Version=0.6.5
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -116,24 +116,18 @@ The Talk Calendar speech engine uses a multi-stage Grapheme-to-Phoneme (G2P) pip
 
 1. Pre-processing is used to converts dates and times into spoken words (e.g. "Tuesday twenty-fourth February").
 2. Lexicon Lookup: The engine first checks pre-defined diphone sequences for common calendar words, months and numbers.
-3. Rule-Based Transcription: If the word is not in the lexicon lookup, the G2P engine applies linguistic rules to determine the sounds.
+3. Statistical Inference (Machine Learning): If the word is not in the lexicon, the engine uses a trained CART (Classification and Regression Tree) model. This model was trained on the 134,000-word [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict#about) to automatically discover and apply phonetic patterns (like the "Magic E" or soft "C") to unknown words. The Decision Tree ensures that the Talk Calendar speech engine never "breaks" when it sees a word it does not know. It will always make the best statistical guess.
 4. Diphone Concatenation: Phonemes are split into diphones (transitions) and stitched together from the audio database.
      
-### Core Linguistic Rules
-The engine mimics English phonics through several logic layers:
+### Learned Phonetic Patterns
 
-1.  The "Magic E" Rule: The engine looks ahead. If it finds a Vowel + Consonant + E pattern (like in Phone or Home), it changes the short vowel sound to a long vowel.
-2. Consonant Clusters: It scans for multi-letter graphemes before individual letters.
+Instead of manually writing rules, the Talk Calendar engine uses Machine Learning to "understand" English [phonics](https://sounds-write.co.uk/what-are-phonemes-and-graphemes/). By analyzing the CMUdict dataset, the decision tree model discovered patterns such as:
 
-		◦ th -> /th/
-     	◦ tion ->/sh/ /ah/ /n/
-     	◦ ph -> /f/
+* Context-Sensitive Vowels: Automatically identifying "Magic E" patterns to switch between short and long vowel sounds.
+* Digraph Detection: Recognizing multi-letter clusters like th, sh, and ph as single phonetic units.
+* Grapheme-to-Phoneme Mapping: Predicting the pronunciation of names and rare words based on statistical probability.
 
-3.  Soft C and G: Logic is applied to change the hard /k/ (Cat) to a soft /s/ (Office) or a hard /g/ (Gold) to a soft /jh/ (Garage) when followed by e, i, or y.
-4. Vowel Teams: Pairs like oa, ee, and ea are identified as single long-vowel phonemes to prevent the engine from reading individual letters
-
-
-Talk Calendar speech engine is work-in-progress and will be updated as I develop new features and functionality. You can find out more about diphone concatenation and the diphones used for this project [here](https://github.com/crispinprojects/diphone-talker). Currently, a diphone Overlap-Add (OLA) vocoder is used. The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples. New vocabulary and unique pronunciations will be added to the Lexicon as I come across them.
+The Talk Calendar speech engine is work-in-progress and will be updated as I develop new features and functionality. You can find out more about diphone concatenation and the diphones used for this project [here](https://github.com/crispinprojects/diphone-talker). Currently, a diphone Overlap-Add (OLA) vocoder is used. The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples. New vocabulary and unique pronunciations will be added to the Lexicon as I come across them.
 
 ## Speech Synthesis Technology Comparison
 
@@ -141,7 +135,7 @@ The Talk Calendar speech engine is extremely lightweight able to run on low-powe
 
 | Engine / System | Synthesis Type | Text Processing (G2P) | Architecture | Target |
 | :--- | :--- | :--- | :--- | :--- |
-| **Talk Calendar** | Concatenative (Diphone) | Rule-based + Lexicon | C++ / Qt | Embedded / Lightweight |
+| **Talk Calendar** | Concatenative (Diphone) | Trained Decision Trees (ML) | C++ / Qt | Embedded / Lightweight |
 | **eSpeak-NG** | Formant (Klatt) | Rule-based | C | Ultra-low footprint |
 | **Festival** | Unit Selection | Scheme / Lexicon | C++ / Lisp | Research / Unix |
 | **Flite** | Diphone | Compiled G2P Trees | C | Mobile / IoT |
@@ -159,10 +153,6 @@ The Talk Calendar speech engine is extremely lightweight able to run on low-powe
 
 ***Phonemizer:*** modern name for a Grapheme-to-Phoneme (G2P) engine that turns "Hello" into /həˈloʊ/.
 
-Talk Calendar uses a concatenative diphone approach. Unlike "unit selection" which requires gigabytes of voice data, or "neural" systems that usually require a GPU, the diphone concatenation method provides a balance of intelligible speech with a very small memory footprint, making it ideal for the Talk Calendar project.
-
-Piper is a very interesting speech engine. For what I understand a neural network is used as the synthesizer which has been trained on thousands of hours of human audio. Piper takes the phonemes and mathematically predicts the raw audio waveform based on probability. Samples from the Piper speech system can be heard [here](https://rhasspy.github.io/piper-samples/).
-
 
 ## eSpeak
 
@@ -176,22 +166,6 @@ On Fedora, run
 sudo dnf install espeak-ng.
 ```
 
-## Note for GNOME Users
-
-To scale Talk Calendar to match the GNOME theme write a run application BASH script as shown below.
-
-```
-#!/bin/bash
-QT_SCALE_FACTOR=1.5  /path/to/software/talkcalendar
-```
-
-QT_SCALE_FACTOR is an environment variable used to adjust the size of user interface elements based on the display's pixel density. QT_SCALE_FACTOR values greater than one increases the size of UI elements. For example, a QT_SCALE_FACTOR of 2.0 will double the size of components.
-
-With Debian you can install the adwaita-qt6 theme engine and Qt runtime libraries as shown below.
-```
-sudo apt install adwaita-qt6
-sudo apt install qt6-base-dev 
-```
 
 ### Source Code 
 

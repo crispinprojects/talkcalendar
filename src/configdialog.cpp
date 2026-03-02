@@ -20,7 +20,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
-ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, int days, int tempo,
+ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, int days, int tempo, int fontSize,
                            QColor eventCol, QColor priorityCol, QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
 {
@@ -37,6 +37,7 @@ ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, 
     ui->checkUpcoming->setChecked(upcoming);
     ui->spinUpcomingDays->setValue(days);
     ui->spinTempo->setValue(tempo);
+    ui->spinFontSize->setValue(fontSize);
 
     // Set the initial button colors so user sees the current choice
     ui->btnEventColor->setStyleSheet(QString("background-color: %1").arg(m_currentEventColor.name()));
@@ -67,6 +68,10 @@ bool ConfigDialog::upcomingEnabled() const {
 
 int ConfigDialog::upcomingDays() const {
     return ui->spinUpcomingDays->value();
+}
+
+int ConfigDialog::fontSize() const {
+    return ui->spinFontSize->value();
 }
 
 int ConfigDialog::tempo() const {
@@ -115,5 +120,6 @@ void ConfigDialog::on_btnReset_clicked()
     ui->checkUpcoming->setChecked(true);
     ui->spinUpcomingDays->setValue(3);
     ui->spinTempo->setValue(17);
+    ui->spinFontSize->setValue(14);
 }
 
