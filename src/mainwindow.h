@@ -39,12 +39,13 @@
 #include <QTimeZone>
 #include <QShortcut>
 #include <QSettings>
+#include <QCloseEvent>
 #include "calendarevent.h"
 #include "synthesizer.h"
 #include "diphone.h"
-#include "dispatcher.h"
 
-#define PROJECT_VERSION "0.6.5"
+
+#define PROJECT_VERSION "0.6.6"
 
 
 struct ParsedDate {
@@ -88,6 +89,10 @@ private slots:
     void on_actionInformation_triggered();
     void on_actionExit_triggered();
     void on_actionEaster_Calculator_triggered();
+    void on_actionHome_triggered();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
@@ -96,7 +101,7 @@ private:
     Dictionary *m_voiceDict;
     Synthesizer *m_engine;
 
-    Dispatcher *m_dispatcher;
+
 
     QList<CalendarEvent> loadEventsForDate(const QDate &date);
     QList<CalendarEvent> getEventsForDate(const QDate &date);
@@ -112,11 +117,18 @@ private:
 
     //config
     bool m_talk;
-    bool m_talk_startup;
-    bool m_espeak;
+    bool m_talk_startup;    
     bool m_upcoming;
     int m_upcoming_days;
     int m_tempo;
+
+    int m_window_x;
+    int m_window_y;
+    int m_window_width;
+    int m_window_height;
+
+    int m_font_scale=1;
+
     int m_font_size;
     QColor m_eventColor;
     QColor m_priorityColor;

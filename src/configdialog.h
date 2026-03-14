@@ -33,14 +33,13 @@ class ConfigDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, int days, int tempo, int fontSize,
+    explicit ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
                           QColor eventCol, QColor priorityCol, QWidget *parent = nullptr);
     ~ConfigDialog();
 
     // Getters for MainWindow to read back the results
     bool talkEnabled() const;
-    bool startupEnabled() const;
-    bool espeakEnabled() const;
+    bool startupEnabled() const;   
     bool upcomingEnabled() const;
     int upcomingDays() const;
     int fontSize() const;

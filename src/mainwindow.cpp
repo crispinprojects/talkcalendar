@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
     //m_tempo=1.7f;
     m_tempo=17;
 
-    m_dispatcher = new Dispatcher();
+
 
     // Initial UI State
     ui->btnDelete->setEnabled(false);
@@ -92,11 +92,23 @@ MainWindow::MainWindow(QWidget *parent)
     QSettings settings; //automatically uses organization and app name from main.cpp
     m_talk = settings.value("talk", true).toBool(); // 'true' is the default if not found
     m_talk_startup = settings.value("talk_startup", true).toBool();
-    m_espeak = settings.value("espeak", false).toBool();
+
     m_upcoming = settings.value("upcoming", true).toBool();
     m_upcoming_days = settings.value("upcoming_days", 3).toInt();
     m_tempo = settings.value("tempo", 17).toInt();
     m_font_size = settings.value("font_size", 14).toInt();
+
+    m_window_x=settings.value("window_x",0).toInt();
+    m_window_y=settings.value("window_y",0).toInt();
+    m_window_width=settings.value("window_width",640).toInt();
+    m_window_height=settings.value("window_height",480).toInt();
+
+    // qDebug() << "Constructor" << m_window_width << "x" << m_window_height
+    //          << "Position: (" << m_window_x << ", " << m_window_y << ")";
+
+    resize(m_window_width, m_window_height);
+    move(m_window_x, m_window_y);
+
 
     // load the colours. If they don't exist yet, use defaults.
     m_eventColor = QColor(settings.value("colors/event", "#ffff00").toString()); // Default Yellow
@@ -108,8 +120,13 @@ MainWindow::MainWindow(QWidget *parent)
     // and provide good readability.
     // Using system fonts can ensure better compatibility across different platforms.
 
+    QFont defaultFont = QApplication::font();
+    //qDebug() << "Default Font:" << defaultFont.family() << "Size:" << defaultFont.pointSize();
+
+
     // Set the global font for the application
-    QFont appFont("Arial", m_font_size); // Specify font family and size
+    //QFont appFont("Arial", m_font_size); // Specify font family and size
+    QFont appFont(defaultFont.family(), m_font_size); // Specify font family and size
     QApplication::setFont(appFont);
     ui->mainCalendar->setFont(appFont);
     ui->eventList->setFont(appFont);
@@ -153,13 +170,8 @@ MainWindow::MainWindow(QWidget *parent)
         // Add Upcoming Events
         welcome += getUpcomingEventsPhrase();
         //qDebug()<<"welcome = "<<welcome;
-        if(m_espeak) {
-            m_dispatcher->eSpeaker(welcome);
-        }
-        else
-        {
-            m_engine->speak(welcome,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
-        }
+        m_engine->speak(welcome,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+
 
     }
 
@@ -339,23 +351,11 @@ void MainWindow::onDateClicked(const QDate &date) {
                 phrase.append(" ");
                 phrase.append(ev.m_summary);
                 phrase.append(" ");
-            }
-            if(m_espeak)
-            {
-                phrase.append(ev.m_description);
-                phrase.append(" ");
-                phrase.append(ev.m_location);
-                phrase.append(" ");
-            }
+            }           
         }
 
-        if(m_espeak) {
-            m_dispatcher->eSpeaker(phrase);
-        }
-        else
-        {
-            m_engine->speak(phrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
-        }
+         m_engine->speak(phrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
+
 
     }
 }
@@ -648,18 +648,8 @@ void MainWindow::onEventClicked(QListWidgetItem *item) {
     fullSentence.append(" ");
     fullSentence.append(ev.m_summary);
     fullSentence.append(" ");
+    m_engine->speak(fullSentence,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
 
-    if(m_espeak) {
-        fullSentence.append(ev.m_description);
-        fullSentence.append(" ");
-        fullSentence.append(ev.m_location);
-        fullSentence.append(" ");
-        m_dispatcher->eSpeaker(fullSentence);
-    }
-    else
-    {
-        m_engine->speak(fullSentence,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
-    }
 
 }
 
@@ -753,13 +743,12 @@ CalendarEvent MainWindow::getEventById(int id) {
 void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
-    ConfigDialog dialog(m_talk, m_talk_startup, m_espeak, m_upcoming, m_upcoming_days, m_tempo, m_font_size,
+    ConfigDialog dialog(m_talk, m_talk_startup, m_upcoming, m_upcoming_days, m_tempo, m_font_size,
                         m_eventColor, m_priorityColor, this);
 
     if (dialog.exec() == QDialog::Accepted) {
         m_talk = dialog.talkEnabled();
-        m_talk_startup = dialog.startupEnabled();
-        m_espeak=dialog.espeakEnabled();
+        m_talk_startup = dialog.startupEnabled();        
         m_upcoming = dialog.upcomingEnabled();
         m_upcoming_days = dialog.upcomingDays();
         m_font_size=dialog.fontSize();
@@ -773,8 +762,7 @@ void MainWindow::on_actionPreferences_triggered()
         // Save everything to QSettings
         QSettings settings; // automatically uses the names from main.cpp
         settings.setValue("talk", m_talk);
-        settings.setValue("talk_startup", m_talk_startup);
-        settings.setValue("espeak", m_espeak);
+        settings.setValue("talk_startup", m_talk_startup);       
         settings.setValue("upcoming", m_upcoming);
         settings.setValue("upcoming_days", m_upcoming_days);
         settings.setValue("font_size", m_font_size);
@@ -788,9 +776,11 @@ void MainWindow::on_actionPreferences_triggered()
         settings.setValue("colors/event", m_eventColor.name());
         settings.setValue("colors/priority", m_priorityColor.name());
 
-        QFont appFont("Arial", m_font_size); // Specify font family and size
+        QFont defaultFont = QApplication::font();
+        // Set the global font for the application
+        QFont appFont(defaultFont.family(), m_font_size); // Specify font family and size
+        //QFont appFont("Arial", m_font_size); // Specify font family and size
         QApplication::setFont(appFont);
-
         ui->mainCalendar->setFont(appFont);
         ui->eventList->setFont(appFont);
 
@@ -975,15 +965,8 @@ void MainWindow::talkCurrentTime() {
 
     QString speakTimePhrase ="The time is ";
     speakTimePhrase.append(timePhrase);
-    //qDebug()<<"speak time phrase "<<speakTimePhrase;
-
-    if(m_espeak) {
-        m_dispatcher->eSpeaker(speakTimePhrase);
-    }
-    else
-    {
-        m_engine->speak(speakTimePhrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
-    }
+    //qDebug()<<"speak time phrase "<<speakTimePhrase;   
+    m_engine->speak(speakTimePhrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
 
 }
 
@@ -1008,11 +991,17 @@ void MainWindow::on_actionInformation_triggered() {
 
     // Qt version
     msg.append(QString("Qt Version: %1\n").arg(qVersion()));
-    // 3. espeak status
-    bool hasEspeak = !QStandardPaths::findExecutable("espeak").isEmpty() ||
-                     !QStandardPaths::findExecutable("espeak-ng").isEmpty();
 
-    msg.append(hasEspeak ? "espeak installed" : "espeak not installed");
+    //font information
+    QFont defaultFont = QApplication::font();
+    //qDebug() << "Default Font:" << defaultFont.family() << "Size:" << defaultFont.pointSize();
+    msg.append("System Font: ");
+    msg.append(defaultFont.family());
+    msg.append("\n");
+    //msg.append(QString("System Font Size: %1\n").arg(defaultFont.pointSize()));
+
+    msg.append(QString("Talk Calendar Font Size: %1\n").arg(m_font_size));
+
 
     // Show message box
     QMessageBox::information(this, "System Info", msg);
@@ -1023,7 +1012,36 @@ void MainWindow::on_actionInformation_triggered() {
  */
 void MainWindow::on_actionExit_triggered()
 {
-    QApplication::quit();
+   close(); //trigger the closeEvent() method
+}
+
+void MainWindow:: closeEvent(QCloseEvent *event)
+{
+    // Get window geometry before closing
+    QRect geometry = this->geometry();
+    int width = geometry.width();
+    int height = geometry.height();
+    int x = geometry.x();
+    int y = geometry.y();
+
+    // qDebug() << "Window closing - Size:" << width << "x" << height
+    //          << "Position: (" << x << ", " << y << ")";
+
+
+    m_window_x=x;
+    m_window_y=y;
+    m_window_width=width;
+    m_window_height=height;
+
+    // Save window geometry to config before closing
+    QSettings settings; // automatically uses the names from main.cpp
+    settings.setValue("window_x", m_window_x);
+    settings.setValue("window_y", m_window_y);
+    settings.setValue("window_width", m_window_width);
+    settings.setValue("window_height", m_window_height);
+
+
+    QMainWindow::closeEvent(event);
 }
 
 /**
@@ -1036,3 +1054,11 @@ void MainWindow::on_actionEaster_Calculator_triggered()
         // qDebug()<<"Easter calculator";
     }
 }
+
+void MainWindow::on_actionHome_triggered()
+{
+    // qDebug()<<"Goto current date";
+    ui->mainCalendar->setSelectedDate(QDate::currentDate());
+    onDateClicked(QDate::currentDate());
+}
+

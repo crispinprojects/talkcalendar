@@ -20,7 +20,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
-ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, int days, int tempo, int fontSize,
+ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
                            QColor eventCol, QColor priorityCol, QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
 {
@@ -32,8 +32,7 @@ ConfigDialog::ConfigDialog(bool talk, bool startup, bool espeak, bool upcoming, 
 
     // Initialize UI check boxes and spin box
     ui->checkTalk->setChecked(talk);
-    ui->checkTalkStartup->setChecked(startup);
-    ui->checkDispatcher->setChecked(espeak);
+    ui->checkTalkStartup->setChecked(startup);    
     ui->checkUpcoming->setChecked(upcoming);
     ui->spinUpcomingDays->setValue(days);
     ui->spinTempo->setValue(tempo);
@@ -56,10 +55,6 @@ bool ConfigDialog::talkEnabled() const {
 
 bool ConfigDialog::startupEnabled() const
 { return ui->checkTalkStartup->isChecked();
-}
-
-bool ConfigDialog::espeakEnabled() const
-{ return ui->checkDispatcher->isChecked();
 }
 
 bool ConfigDialog::upcomingEnabled() const {
@@ -115,8 +110,7 @@ void ConfigDialog::on_btnReset_clicked()
 
     // Optional: Reset other settings too
     ui->checkTalk->setChecked(true);
-    ui->checkTalkStartup->setChecked(true);
-     ui->checkDispatcher->setChecked(false);
+    ui->checkTalkStartup->setChecked(true);   
     ui->checkUpcoming->setChecked(true);
     ui->spinUpcomingDays->setValue(3);
     ui->spinTempo->setValue(17);

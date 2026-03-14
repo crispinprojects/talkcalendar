@@ -19,22 +19,26 @@ A screenshot of Talk Calendar is shown below.
 
 ## Pre-built binary
 
-A pre-built binary of the latest version of Talk Calendar for x86 Linux computers is available and can be downloaded from the binary directory. This has been tested using Debian Trixie KDE.  Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built binary of the latest version of Talk Calendar for x86 Linux computers and ARM64 Raspberry Pi 5 computers are available and can be downloaded from the binary directory.  Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
+The x86 binary has been tested with Debian Trixie KDE. With Raspberry Pi OS you need to install the Qt6 base libraries to run the Talk Calendar ARM64 binary. This is done suing the terminal command below. 
 
+```
+sudo apt install  qt6-base-dev
+```
 
 ## Desktop File
 
 To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs. 
 
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. In this example it is assumed that local applications are installed in a folder called Software (/home/your_user_name/Software). Some people use a folder called "Programs". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. In this example it is assumed that local applications are installed in a folder called Software (/home/your_user_name/Software). Some people use a folder called "Programs". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so it is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
 
 ```
 [Desktop Entry]
-Version=0.6.5
+Version=0.6.6
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -110,24 +114,29 @@ To update from the Talk Calendar 0.5 series to the 0.6 series export the current
 
 Talk calendar has a built-in concatenative diphone speech synthesizer. This has been coded from scratch to read out the date, time and event summary words. 
 
-The Talk Calendar speech engine uses a multi-stage Grapheme-to-Phoneme (G2P) pipeline to transform raw calendar text into audible speech.  
+The Talk Calendar speech engine uses a multi-stage Grapheme-to-Phoneme (G2P) pipeline to transform raw calendar text into audible speech.
 
 ### The Processing Pipeline
 
-1. Pre-processing is used to converts dates and times into spoken words (e.g. "Tuesday twenty-fourth February").
-2. Lexicon Lookup: The engine first checks pre-defined diphone sequences for common calendar words, months and numbers.
-3. Statistical Inference (Machine Learning): If the word is not in the lexicon, the engine uses a trained CART (Classification and Regression Tree) model. This model was trained on the 134,000-word [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict#about) to automatically discover and apply phonetic patterns (like the "Magic E" or soft "C") to unknown words. The Decision Tree ensures that the Talk Calendar speech engine never "breaks" when it sees a word it does not know. It will always make the best statistical guess.
+1. Pre-processing is used to convert dates and times into spoken words (e.g. "Tuesday twenty-fourth February").
+2. Lexicon Lookup: The first stage checks pre-defined diphone sequences for common calendar words, months and numbers.
+3. Custom Decision Tree Grapheme-to-Phoneme (G2P) engine: For other words the second stage converts strings of characters (graphemes) into phonetic sounds (phonemes). 
 4. Diphone Concatenation: Phonemes are split into diphones (transitions) and stitched together from the audio database.
      
 ### Learned Phonetic Patterns
 
-Instead of manually writing rules, the Talk Calendar engine uses Machine Learning to "understand" English [phonics](https://sounds-write.co.uk/what-are-phonemes-and-graphemes/). By analyzing the CMUdict dataset, the decision tree model discovered patterns such as:
+At the heart of the Talk Calendar speech engine is a custom decision tree based  **Grapheme-to-Phoneme (G2P)** engine written in C++ and Qt. The job of the G2P engine is to transcribe a word into a phoneme sequence. For example, it would transcribe the word "hello" into the phonemes  HH AH L OW. This is The [ARPAbet](https://en.wikipedia.org/wiki/ARPABET) phonetic transcription for the word "hello".  ARPABET symbols are used by **The CMU Pronouncing Dictionary** and you can look up the pronunciation for a word or phrase in the [CMUdict here](http://www.speech.cs.cmu.edu/cgi-bin/cmudict).
+
+I trained the decision tree using statistical inference which is a form of machine learning using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict#about) which is a pronunciation corpus containing 134,000 words and their phoneme transcriptions. So the decision tree was trained on all on the 134,000 words and I ended up with what I believe is called a a trained CART (Classification and Regression Tree) model. The idea is to predict the pronunciation of words based on statistical probability. By analyzing the whole CMUdict dataset, the decision tree model discovered patterns such as:
 
 * Context-Sensitive Vowels: Automatically identifying "Magic E" patterns to switch between short and long vowel sounds.
 * Digraph Detection: Recognizing multi-letter clusters like th, sh, and ph as single phonetic units.
-* Grapheme-to-Phoneme Mapping: Predicting the pronunciation of names and rare words based on statistical probability.
 
-The Talk Calendar speech engine is work-in-progress and will be updated as I develop new features and functionality. You can find out more about diphone concatenation and the diphones used for this project [here](https://github.com/crispinprojects/diphone-talker). Currently, a diphone Overlap-Add (OLA) vocoder is used. The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples. New vocabulary and unique pronunciations will be added to the Lexicon as I come across them.
+However, this was not perfect and I had to modify a number of the decision tree functions using hand written rules to improve English word pronunciations. I also had to add word exceptions with hand-crafted word to phoneme transcriptions. The Talk Calendar speech engine should never "break" when it sees a word it does not know as the decision tree will always make the best statistical guess. That is the G2P engine always make an effort of pronouncing an unknown word based on the decision tree rules.
+
+I have also experimented with using a neural network to learn how to "pronounce" English words by developing a G2P neural network. You can find more details on the progress of this work [here](https://github.com/crispinprojects/g2p-neural-network).
+
+The Talk Calendar speech engine will be updated as I develop new features and functionality. New vocabulary and unique pronunciations will be added to the lexicon (i.e. the word to phoneme mapping) as I come across them. You can find out more about diphone concatenation and the diphones used for this project [here](https://github.com/crispinprojects/diphone-talker). Currently, a diphone Overlap-Add (OLA) vocoder is used. The vocoder is the component responsible for taking "information" (the diphones) and generating the final audio samples. 
 
 ## Speech Synthesis Technology Comparison
 
@@ -147,29 +156,16 @@ The Talk Calendar speech engine is extremely lightweight able to run on low-powe
 
 ***Formant (Klatt):*** Generating sound mathematically using a sound source and filters to mimic a human voice. 
 
-***Unit Selection:*** Like diphone concatenation, but uses other types of speech units in addition to diphones such as whole words or phrases and so requires a massive database.
+***Unit Selection:*** Like diphone concatenation, but uses other types of speech units in addition to diphones such as whole words or phrases and so requires a much larger searchable database.
 
-***Neural:*** Uses AI (Deep Learning) to predict the waveform.
+***Neural (VITS):*** Advanced neural network models, specifically trained with VITS (Variational Inference Text-to-Speech) for producing natural-sounding voices 
 
-***Phonemizer:*** modern name for a Grapheme-to-Phoneme (G2P) engine that turns "Hello" into /həˈloʊ/.
-
-
-## eSpeak
-
-Because the Talk Calendar speech synthesizer is experimental and work-in-progress you can use espeak instead by selecting the option in the preferences dialog. This requires that espeak-ng is installed separately as Talk Calendar simply acts a speech dispatcher when the espeak preference is selected. On Debian/Ubuntu, run 
-
-```
-sudo apt install espeak-ng.
-```
-On Fedora, run 
-```
-sudo dnf install espeak-ng.
-```
+***Phonemizer:*** modern name for a Grapheme-to-Phoneme (G2P) engine that turns "hello" into /HH AH L OW/.
 
 
 ### Source Code 
 
-The source code is found in the src directory. It is being developed and tested using Debian 13 Trixie KDE.
+The source code is found in the src directory. It is being developed and tested using Debian 13 Trixie KDE but you can compile the project using Raspberry Pi OS.
 
 ## Dependencies
 
@@ -178,14 +174,15 @@ Talk Calendar requires the following system dependencies to run and speak:
 * **Qt 6.5+** (Core, Gui, Widgets, Sql)
 * **SQLite 3** (Database storage)
 
-### Installation on Debian 13 / Ubuntu 24.04 (x86 Hardware)
+### Build on Debian 13 / Ubuntu 24.04 / Raspberry Pi OS
 
-To build Talk Calendar from source you need install the following packages. You need to install C++ (build essential), Qt 6 development library/ tools and CMake integration package for Debian.
+To build Talk Calendar from source you need install C++ (build essential), Qt 6 development library/tools and the CMake/Ninja packages as shown below. 
 
 ```
 sudo apt update
 sudo apt install build-essential cmake ninja-build
 sudo apt install qt6-base-dev qt6-base-dev-tools
+sudo apt install qtcreator
 ```
 
 ## Compile the Project
@@ -194,7 +191,7 @@ sudo apt install qt6-base-dev qt6-base-dev-tools
 2. Open Talk Calendar Project ( File > Open Project).
 3. Make sure the build system is CMake (this is the modern standard).
 4. Kits: make sure "Desktop Qt 6.x.x" kit is selected
-5.  Build and run
+5. Build and run
     
     
 ### Building on Fedora

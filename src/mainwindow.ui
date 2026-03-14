@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>525</height>
+    <height>530</height>
    </rect>
   </property>
   <property name="font">
@@ -120,6 +120,7 @@
     <addaction name="actionPreferences"/>
     <addaction name="actionSearch"/>
     <addaction name="actionEaster_Calculator"/>
+    <addaction name="actionHome"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -211,6 +212,11 @@
     <font>
      <pointsize>14</pointsize>
     </font>
+   </property>
+  </action>
+  <action name="actionHome">
+   <property name="text">
+    <string>Today (Home Key)</string>
    </property>
   </action>
  </widget>
