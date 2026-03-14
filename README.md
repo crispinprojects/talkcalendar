@@ -30,6 +30,8 @@ The x86 binary has been tested with Debian Trixie KDE. With Raspberry Pi OS you 
 sudo apt install  qt6-base-dev
 ```
 
+The Qt 6 base libraries are installed on Debian GNOME and Fedora but you may have to install them on some other GTK based distributions.
+
 ## Desktop File
 
 To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs. 
@@ -127,7 +129,7 @@ The Talk Calendar speech engine uses a multi-stage Grapheme-to-Phoneme (G2P) pip
 
 At the heart of the Talk Calendar speech engine is a custom decision tree based  **Grapheme-to-Phoneme (G2P)** engine written in C++ and Qt. The job of the G2P engine is to transcribe a word into a phoneme sequence. For example, it would transcribe the word "hello" into the phonemes  HH AH L OW. This is The [ARPAbet](https://en.wikipedia.org/wiki/ARPABET) phonetic transcription for the word "hello".  ARPABET symbols are used by **The CMU Pronouncing Dictionary** and you can look up the pronunciation for a word or phrase in the [CMUdict here](http://www.speech.cs.cmu.edu/cgi-bin/cmudict).
 
-I trained the decision tree using statistical inference which is a form of machine learning using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict#about) which is a pronunciation corpus containing 134,000 words and their phoneme transcriptions. So the decision tree was trained on all on the 134,000 words and I ended up with what I believe is called a a trained CART (Classification and Regression Tree) model. The idea is to predict the pronunciation of words based on statistical probability. By analyzing the whole CMUdict dataset, the decision tree model discovered patterns such as:
+I trained the decision tree using statistical inference which is a form of machine learning using the [CMU Pronouncing Dictionary](http://www.speech.cs.cmu.edu/cgi-bin/cmudict#about) as the pronunciation corpus. This contains 134,000 words and their phoneme transcriptions. The decision tree was trained on all 134,000 words and I ended up with what I believe is called a a trained CART (Classification and Regression Tree) model. The idea is to predict the pronunciation of words based on statistical probability. By analysing the whole CMUdict dataset, the decision tree model discovered patterns such as:
 
 * Context-Sensitive Vowels: Automatically identifying "Magic E" patterns to switch between short and long vowel sounds.
 * Digraph Detection: Recognizing multi-letter clusters like th, sh, and ph as single phonetic units.
@@ -204,17 +206,6 @@ sudo dnf install cmake gcc-cpp
 sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
 ```
 
-## Gtk vs Qt
-
-With the Talk Calendar 0.6 series I have moved away from using the Gtk 4 GUI toolkit to using Qt 6. When I moved the project from Gtk 3 to Gtk 4 I had issues with  the GtkCalendar component specifically with marking a calendar date which would have an event. I got around this by creating my own custom calendar component  which used css classes which allowed dates with events to be marked with a colour set by the user. My custom calendar uses features which are now going to be depreciated with Gtk 5. As explained in this [article](https://docs.gtk.org/gtk4/migrating-4to5.html) cell renderers are going away, local stylesheets are going away, non-standard CSS extensions are going away, color expressions are going away, chooser interfaces are going away along with many other depreciations. This would have meant another major rewrite of the Talk Calendar Gtk 4 application when moving to Gtk 5. 
-
-There is another issue with Gtk application development. With the latest GNOME changes it appears that only applications built with libadwaita (the default Adwaita theme for GNOME based desktops) respect system-wide accent colours. The libadwaita library is built on top of GTK 4 and provides widgets that adhere to the [GNOME Human Interface Guidelines HIG](https://developer.gnome.org/hig/). It is used by GNOME developers to ensure that applications look and behave consistently within the GNOME desktop environment. What this means is that the styling of a Gtk application is now effectively outsourced to libadwaita. I have developed a small libadwaita Calendar demo as shown in the screenshot below to demonstrate the use of accent colours on Debian 13 GNOME. 
-
-![](debian13-accent-colour.png)
-
-The separation between GTK (the core toolkit) and libadwaita (the GNOME design language implementation) appears to be a deliberate strategy. With the release of Debian 13 Trixie GNOME I started to develop a Gtk4 Talk Calendar application using GtkCalendar. However, when I tried to run this with the KDE desktop the calendar day markings for events were not displayed. When I used my own custom calendar they were displayed indicating it may be due to libadwaita. Perhaps I needed to install some libadwaita library for Qt which I could not find but it was at this point I decided to switch to Qt 6. I also found that the libadwaita Calendar demo did not run on the Xfce desktop environment without installing libadwaita and supporting libraries which is rather pointless as Xfce uses its own theming system.
-
-I know this is only hobby project but I have never been happy with the idea of outsourcing the way an application should look to an external library such as libawaita. However, this is the direction of travel with GNOME. Moving to Qt 6 was a difficult decision because so many of the major Linux distributions such as Debian, Ubuntu, Fedora etc. use GNOME (and by implication Gtk) by default. However, Qt applications run within GNOME as well as with KDE and other Qt based desktops.
 
 ## Versioning
 
