@@ -45,7 +45,7 @@
 #include "diphone.h"
 
 
-#define PROJECT_VERSION "0.6.6"
+#define PROJECT_VERSION "0.6.7"
 
 
 struct ParsedDate {
@@ -132,6 +132,8 @@ private:
     int m_font_size;
     QColor m_eventColor;
     QColor m_priorityColor;
+
+    bool m_bluetooth;
 
 };
 #endif // MAINWINDOW_H

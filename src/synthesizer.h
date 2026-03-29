@@ -30,7 +30,6 @@
 //#include <QMessageBox>
 #include <QStandardPaths>
 
-//#include "diphone.h" // Needed for DiphoneEntry and finding diphones
 #include "dictionary.h"
 
 class Synthesizer : public QObject
@@ -44,16 +43,23 @@ public:
 
     void speak(const QString &text, Dictionary *dict, float tempo);
 
+    // Bluetooth speaker flag
+    void setBluetoothEnabled(bool enabled);
+    bool getBluetoothEnabled() const;
 
+    // Check if bluez-alsa-utils is installed
+    static bool isBlueZAlsaInstalled();
     // File handling and playback
     void saveAndPlay(const QVector<int16_t> &buffer);
+
+signals:
+    void bluetoothStatusChanged(bool enabled);
 
 private:
     // Internal helper for WAV files
     void writeWavHeader(QFile *file, int dataSize);
     QProcess* m_audioProcess = nullptr;
-
-    // signals:
+    bool  bluetoothEnabled = false;  // Default to false
 };
 
 #endif // SYNTHESIZER_H

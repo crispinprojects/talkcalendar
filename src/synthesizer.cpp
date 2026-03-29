@@ -143,7 +143,14 @@ void Synthesizer::saveAndPlay(const QVector<int16_t> &buffer) {
 
         // Start new playback
         m_audioProcess = new QProcess(this);
-        m_audioProcess->start("aplay", {path});
+
+        if (bluetoothEnabled) {
+            // Bluetooth speakers
+            m_audioProcess->start("aplay", {"-D", "bluealsa", path});
+        } else {
+            // No bluetooth
+            m_audioProcess->start("aplay", {path});
+        }
     }
 }
 
@@ -173,4 +180,29 @@ void Synthesizer::writeWavHeader(QFile *file, int dataSize) {
     file->write(reinterpret_cast<char*>(&bps), 2);
     file->write("data", 4);
     file->write(reinterpret_cast<char*>(&dataSize), 4);
+}
+
+// Setter and getter methods
+void Synthesizer::setBluetoothEnabled(bool enabled) {
+    if (bluetoothEnabled != enabled) {
+        bluetoothEnabled = enabled;
+        emit bluetoothStatusChanged(enabled);
+    }
+}
+
+bool Synthesizer::getBluetoothEnabled() const {
+    return bluetoothEnabled;
+}
+
+/**
+ * @brief Checks if bluez-alsa-utils package is installed
+ * @return true if installed, false otherwise
+ */
+bool Synthesizer::isBlueZAlsaInstalled() {
+    QProcess process;
+    process.start("dpkg", {"-l"});
+    process.waitForFinished();
+
+    QString output = process.readAllStandardOutput();
+    return output.contains("bluez-alsa-utils");
 }

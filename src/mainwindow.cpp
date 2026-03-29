@@ -98,6 +98,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_tempo = settings.value("tempo", 17).toInt();
     m_font_size = settings.value("font_size", 14).toInt();
 
+    m_bluetooth = settings.value("bluetooth", false).toBool();
+    m_engine->setBluetoothEnabled(m_bluetooth);
+
     m_window_x=settings.value("window_x",0).toInt();
     m_window_y=settings.value("window_y",0).toInt();
     m_window_width=settings.value("window_width",640).toInt();
@@ -744,7 +747,7 @@ void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
     ConfigDialog dialog(m_talk, m_talk_startup, m_upcoming, m_upcoming_days, m_tempo, m_font_size,
-                        m_eventColor, m_priorityColor, this);
+                        m_eventColor, m_priorityColor, m_bluetooth, this);
 
     if (dialog.exec() == QDialog::Accepted) {
         m_talk = dialog.talkEnabled();
@@ -753,6 +756,7 @@ void MainWindow::on_actionPreferences_triggered()
         m_upcoming_days = dialog.upcomingDays();
         m_font_size=dialog.fontSize();
         m_tempo = dialog.tempo();
+        m_bluetooth = dialog.bluetoothEnabled();
         //m_tempo = static_cast<float>(tempo) / 10.0f;
 
         // Retrieve the new colors from the dialog
@@ -768,6 +772,11 @@ void MainWindow::on_actionPreferences_triggered()
         settings.setValue("font_size", m_font_size);
         settings.setValue("tempo",m_tempo);
 
+
+         // Bluetooth speakers
+        //qDebug() << "m_bluetooth = "<<m_bluetooth;
+        settings.setValue("bluetooth",m_bluetooth);
+        m_engine->setBluetoothEnabled(m_bluetooth);
 
         m_eventColor = dialog.eventColor();
         m_priorityColor = dialog.priorityColor();
@@ -1001,6 +1010,18 @@ void MainWindow::on_actionInformation_triggered() {
     //msg.append(QString("System Font Size: %1\n").arg(defaultFont.pointSize()));
 
     msg.append(QString("Talk Calendar Font Size: %1\n").arg(m_font_size));
+
+    //Check for bluetooth speakers
+    // Check if package is installed
+    if (Synthesizer::isBlueZAlsaInstalled()) {
+        //qDebug() << "bluez-alsa-utils is installed";
+        msg.append("Bluetooth: bluez-alsa-utils is installed ");
+        msg.append("\n");
+    } else {
+        //qDebug() << "bluez-alsa-utils is NOT installed";
+        msg.append("Bluetooth: bluez-alsa-utils is NOT installed ");
+        msg.append("\n");
+    }
 
 
     // Show message box

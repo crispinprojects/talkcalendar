@@ -32,6 +32,8 @@ sudo apt install  qt6-base-dev
 
 The Qt 6 base libraries are installed on Debian GNOME and Fedora but you may have to install them on some other GTK based distributions.
 
+***Note:*** The Raspberry Pi does not have a coin-battery-powered ‘Real Time Clock’ (RTC) module by default as used by laptop and desktop computers. The Raspberry Pi updates the time automatically from the global ntp (network time protocol) servers. This can be a problem when there is no network connection as a Real-Time Clock (RTC) keeps track of the current time and date when the device is powered off. This functionality is needed by calendar and other scheduling applications. The Raspberry Pi 5 has a Real-Time Clock (RTC) connector which can be used to fit a RTC battery case compatible with Raspberry Pi 5 to maintain accurate time without needing an internet connection.
+
 ## Desktop File
 
 To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs. 
@@ -106,6 +108,26 @@ You should backup your events by using the File->Export iCal menu item. If you t
 ### Recurring Events
 
 The only recurring event type that is currently supported by Talk Calendar is yearly. This is required for events such as birthdays and anniversaries. The parser uses icalendar [RRULE](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html) to determine if an event is yearly (e.g. birthday).
+
+## Bluetooth Speakers
+
+To use Bluetooth speakers with Debian and Raspberry Pi OS you need to install the “bluez-alsa-utils” package as shown below.
+
+```
+sudo apt install bluez-alsa-utils
+```
+To check if it is already installed use.
+
+```
+dpkg -l | grep bluez-alsa-utils > /dev/null 2>&1 && echo "Installed" || echo "Not installed"
+
+```
+You can also check if the "bluez-alsa-utils" package is installed using using the Help->Information menu item.
+
+There is an option to enable Bluetooth speakers in the preferences window if these are paired to your system.
+
+Bluetooth functionality is experimental but I have tested it with my Raspberry Pi 5 with a set of Bluetooth speakers paired to it and this works.
+
 
 ## Updating
 

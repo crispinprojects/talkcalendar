@@ -34,7 +34,7 @@ class ConfigDialog : public QDialog
 
 public:
     explicit ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
-                          QColor eventCol, QColor priorityCol, QWidget *parent = nullptr);
+                          QColor eventCol, QColor priorityCol, bool bluetooth, QWidget *parent = nullptr);
     ~ConfigDialog();
 
     // Getters for MainWindow to read back the results
@@ -44,6 +44,7 @@ public:
     int upcomingDays() const;
     int fontSize() const;
     int tempo() const;
+    bool bluetoothEnabled() const;
     QColor eventColor() const { return m_currentEventColor; }
     QColor priorityColor() const { return m_currentPriorityColor; }
 

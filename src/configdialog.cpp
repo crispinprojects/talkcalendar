@@ -21,7 +21,7 @@
 #include "ui_configdialog.h"
 
 ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
-                           QColor eventCol, QColor priorityCol, QWidget *parent)
+                           QColor eventCol, QColor priorityCol, bool bluetooth, QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
@@ -37,6 +37,7 @@ ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int
     ui->spinUpcomingDays->setValue(days);
     ui->spinTempo->setValue(tempo);
     ui->spinFontSize->setValue(fontSize);
+    ui->checkBluetooth->setChecked(bluetooth);
 
     // Set the initial button colors so user sees the current choice
     ui->btnEventColor->setStyleSheet(QString("background-color: %1").arg(m_currentEventColor.name()));
@@ -51,6 +52,10 @@ void ConfigDialog::on_btnSave_clicked()
 // Add getter methods
 bool ConfigDialog::talkEnabled() const {
     return ui->checkTalk->isChecked();
+}
+
+bool ConfigDialog::bluetoothEnabled() const {
+    return ui->checkBluetooth->isChecked();
 }
 
 bool ConfigDialog::startupEnabled() const
@@ -108,10 +113,11 @@ void ConfigDialog::on_btnReset_clicked()
     ui->btnEventColor->setStyleSheet(QString("background-color: %1").arg(m_currentEventColor.name()));
     ui->btnPriorityColor->setStyleSheet(QString("background-color: %1").arg(m_currentPriorityColor.name()));
 
-    // Optional: Reset other settings too
+    // Reset other settings
     ui->checkTalk->setChecked(true);
     ui->checkTalkStartup->setChecked(true);   
     ui->checkUpcoming->setChecked(true);
+    ui->checkBluetooth->setChecked(false);
     ui->spinUpcomingDays->setValue(3);
     ui->spinTempo->setValue(17);
     ui->spinFontSize->setValue(14);
