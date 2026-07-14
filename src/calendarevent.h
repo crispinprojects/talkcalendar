@@ -1,77 +1,92 @@
-#ifndef CALENDAREVENT_H
-#define CALENDAREVENT_H
+/* calendarevent.h
+ *
+ * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+#pragma once
 
-#include <QString>
-#include <QMetaType>
+#include <glib-object.h>
 
-struct CalendarEvent {
-    // Constructor with default values
-    CalendarEvent(int id = 0,
-          const QString &summary = QString(),
-          const QString &location = QString(),
-          const QString &description = QString(),
-          int startYear = 2026,
-          int startMonth = 2,
-          int startDay = 12,
-          int startHour = 9,
-          int startMin = 0,
-          int endYear = 2026,
-          int endMonth = 2,
-          int endDay = 12,
-          int endHour = 10,
-          int endMin = 0,
-          int recurrenceType = 0,
-          int isAllDay = 0,
-          int isPriority = 0);
 
-    // Member Variables
-    int m_id;
-    QString m_summary;
-    QString m_location;
-    QString m_description;
-    int m_startYear;
-    int m_startMonth;
-    int m_startDay;
-    int m_startHour;
-    int m_startMin;
-    int m_endYear;
-    int m_endMonth;
-    int m_endDay;
-    int m_endHour;
-    int m_endMin;
-    int m_recurrenceType; // 0=None, 4=Yearly
-    int m_isAllDay;
-    int m_isPriority;
+G_BEGIN_DECLS
 
-    // Equals operator for list searching
-    bool operator==(const CalendarEvent &other) const;
-};
+#define CALENDAR_TYPE_EVENT (calendar_event_get_type ())
 
-inline CalendarEvent::CalendarEvent(int id, const QString &summary, const QString &location, const QString &description, int startYear, int startMonth, int startDay, int startHour, int startMin, int endYear, int endMonth, int endDay, int endHour, int endMin, int recurrenceType, int isAllDay, int isPriority)
-    : m_id(id),
-    m_summary(summary),
-    m_location(location),
-    m_description(description),
-    m_startYear(startYear),
-    m_startMonth(startMonth),
-    m_startDay(startDay),
-    m_startHour(startHour),
-    m_startMin(startMin),
-    m_endYear(endYear),
-    m_endMonth(endMonth),
-    m_endDay(endDay),
-    m_endHour(endHour),
-    m_endMin(endMin),
-    m_recurrenceType(recurrenceType),
-    m_isAllDay(isAllDay),
-    m_isPriority(isPriority)
-{
-}
+G_DECLARE_FINAL_TYPE (CalendarEvent, calendar_event, CALENDAR, EVENT, GObject)
 
-inline bool CalendarEvent::operator==(const CalendarEvent &other) const {
-    return (this->m_id == other.m_id);
-}
+//getters and setters
 
-Q_DECLARE_METATYPE(CalendarEvent);
+gint calendar_event_get_eventid(CalendarEvent *self);
+void calendar_event_set_eventid(CalendarEvent *self, gint event_id);
 
-#endif // CALENDAREVENT_H
+const gchar* calendar_event_get_summary(CalendarEvent *self);
+void calendar_event_set_summary(CalendarEvent *self, const gchar* summary);
+
+const gchar* calendar_event_get_location(CalendarEvent *self);
+void calendar_event_set_location(CalendarEvent *self, const gchar* location);
+
+const gchar* calendar_event_get_description(CalendarEvent *self);
+void calendar_event_set_description(CalendarEvent *self, const gchar* description);
+
+gint calendar_event_get_start_year(CalendarEvent *self);
+void calendar_event_set_start_year(CalendarEvent *self, gint start_year);
+
+gint calendar_event_get_start_month(CalendarEvent *self);
+void calendar_event_set_start_month(CalendarEvent *self, gint start_month);
+
+gint calendar_event_get_start_day(CalendarEvent *self);
+void calendar_event_set_start_day(CalendarEvent *self, gint start_day);
+
+gint calendar_event_get_start_hour(CalendarEvent *self);
+void calendar_event_set_start_hour(CalendarEvent *self, gint start_hour);
+
+gint calendar_event_get_start_min(CalendarEvent *self);
+void calendar_event_set_start_min(CalendarEvent *self, gint start_min);
+
+
+gint calendar_event_get_end_year(CalendarEvent *self);
+void calendar_event_set_end_year(CalendarEvent *self, gint end_year);
+
+gint calendar_event_get_end_month(CalendarEvent *self);
+void calendar_event_set_end_month(CalendarEvent *self, gint end_month);
+
+gint calendar_event_get_end_day(CalendarEvent *self);
+void calendar_event_set_end_day(CalendarEvent *self, gint end_day);
+
+gint calendar_event_get_end_hour(CalendarEvent *self);
+void calendar_event_set_end_hour(CalendarEvent *self, gint end_hour);
+
+gint calendar_event_get_end_min(CalendarEvent *self);
+void calendar_event_set_end_min(CalendarEvent *self, gint end_min);
+
+
+gint calendar_event_get_is_yearly(CalendarEvent *self);
+void calendar_event_set_is_yearly(CalendarEvent *self, gint is_yearly);
+
+gint calendar_event_get_is_allday(CalendarEvent *self);
+void calendar_event_set_is_allday(CalendarEvent *self, gint is_allday);
+
+//gint calendar_event_get_is_multiday(CalendarEvent *self);
+//void calendar_event_set_is_multiday(CalendarEvent *self, gint is_multiday);
+
+gint calendar_event_get_is_priority(CalendarEvent *self);
+void calendar_event_set_is_priority(CalendarEvent *self, gint is_priority);
+
+
+G_END_DECLS
+
+
