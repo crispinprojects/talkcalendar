@@ -250,7 +250,7 @@ int db_delete_all_events(sqlite3 *db) {
  * @brief Retrieves a single event from the database by its ID.
  * @param db A pointer to the database handle.
  * @param id The ID of the event to retrieve.
- * @return A new CalendarEvent struct on success, NULL if not found or on failure.
+ * @return A nedb_get_all_events CalendarEvent struct on success, NULL if not found or on failure.
  */
 CalendarEvent* db_get_event_by_id(sqlite3 *db, int id) {
     const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
@@ -297,6 +297,68 @@ GArray* db_get_all_events_year_month_day(sqlite3 *db, int year, int month, int d
     sqlite3_finalize(stmt);
     return events_array;
 }
+
+//=====================================================================
+
+//======================================================================
+// Get events for month year (with isYearly)
+//======================================================================
+//GArray* db_get_all_events_year_month(sqlite3 *db, int year, int month)
+//{
+	
+	 //const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      //"start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      //"end_min, is_yearly, is_allday, is_priority FROM events WHERE (start_year = ? OR is_yearly = 1) AND start_month = ? ORDER BY start_hour, start_min asc";
+    
+    ////const char *sql = "SELECT * FROM EVENTS WHERE (STARTYEAR = '%i' OR ISYEARLY = '%i') AND STARTMONTH = '%i'", year, 1, month
+    
+    //sqlite3_stmt *stmt;
+    //int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    //if (rc != SQLITE_OK) {
+        //g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        //return NULL;
+    //}
+    //sqlite3_bind_int(stmt, 1, year);
+    //sqlite3_bind_int(stmt, 2, month);  
+
+    //GArray *events_array = g_array_new(FALSE, FALSE, sizeof(CalendarEvent*));
+    //while (sqlite3_step(stmt) == SQLITE_ROW) {
+        //CalendarEvent* event = create_event_from_query(stmt);
+        //g_array_append_vals(events_array, &event, 1);
+    //}
+    //sqlite3_finalize(stmt);
+    //return events_array;
+//}
+
+
+GPtrArray* db_get_all_events_year_month(sqlite3 *db, int year, int month)
+{
+    const char *sql = "SELECT id, summary, location, description, start_year, start_month, "
+                      "start_day, start_hour, start_min, end_year, end_month, end_day, end_hour, "
+                      "end_min, is_yearly, is_allday, is_priority FROM events WHERE (start_year = ? OR is_yearly = 1) AND start_month = ? ORDER BY start_hour, start_min asc";
+    
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        g_warning("Failed to prepare statement: %s", sqlite3_errmsg(db));
+        return NULL;
+    }
+    sqlite3_bind_int(stmt, 1, year);
+    sqlite3_bind_int(stmt, 2, month);  
+
+    // Create a pointer array that automatically calls g_object_unref on its elements when freed
+    GPtrArray *events_array = g_ptr_array_new_with_free_func(g_object_unref);
+    
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        CalendarEvent* event = create_event_from_query(stmt);
+        g_ptr_array_add(events_array, event);
+    }
+    
+    sqlite3_finalize(stmt);
+    return events_array;
+}
+
+
 
 //=====================================================================
 //int  db_get_number_day_events2(sqlite3 *db, int year, int month, int day)
@@ -347,7 +409,7 @@ int  db_get_number_day_events(sqlite3 *db, int year, int month, int day)
 
 //======================================================================
 /**
- * @brief Retrieves all events from the database 
+ * @brief Retrievdb_get_all_events_year_monthes all events from the database 
  * @param db A pointer to the database handle.
  * @return GArray containing all events
  */

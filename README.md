@@ -14,47 +14,20 @@ A screenshot of Talk Calendar is shown below.
 * month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
-* system command to local speech engine
+* built-in speech synthesizer
 * Sqlite3 database used to store events
 
 ## Install
 
-Pre-built binaries of the latest version of Talk Calendar for x86 Debian/Ubuntu computers is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+Pre-built binaries of the latest version of Talk Calendar for x86 Debian Trixie GTK4 desktops is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18 and tested using Debian Trixie with the XFCE desktop. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
-For speech output you need to ensure that my speech synthesizer engine program called [speak](https://github.com/crispinprojects/speak)  is located in the same directory as the Talk Calendar executable.
-
-To install Talk Calendar locally copy the  "org.gtk.talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
-
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
-
+Alternatively you can use the bash installer found in the binary director. Just run the terminal command below.
 ```
-[Desktop Entry]
-Version=0.7.0
-Type=Application
-Name=Talk Calendar
-Comment=Talking calendar
-Icon=/home/your_user_name/Software/talkcalendar/calendar.png
-Exec=/home/your_user_name/Software/talkcalendar/talkcalendar
-Path=/home/your_user_name/Software/talkcalendar
-X-GNOME-UsesNotifications=true
-Categories=Office;
-MimeType=text/calendar;
-StartupNotify=true
-Name[en_GB]=TalkCalendar
+./install-talkcalendar.sh 
 ```
-
-Copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.local/share/applications/***. To do this you can use your graphical file manager or the terminal command below.
-
-```
-cp org.gtk.talkcalendar.desktop /home/your_user_name/.local/share/applications
-```
-
-Again change "your_user_name" to your user name. Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
-
-You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". 
 
 ## Calendar Interface
 
@@ -81,18 +54,6 @@ Press the spacebar to speak events for the selected day. Press the T-key to spea
 ### Information (F1)
 ![](talkcalendar-info.png)
 
-### Font
-
-Apparently you should now use ***system settings*** rather that in-app settings with GNOME based desktops and GTK4 applications.
-
-Consequently, font, font size and text scaling are no longer changed from within Talk Calendar but done at the ***system level***. One way to do this with the GNOME desktop and the Ubuntu Desktop is to use the GNOME Tweaks tool which is installed as shown below.
- 
-```
-sudo apt install gnome-tweaks
-```
-GNOME Tweaks can also be used to add Talk Calendar to the startup applications. Talk Calendar can then read out the date and any day events when the computer is switched on.
-
-Xfce uses its own "Appearance" settings window which allows the default font to be changed and so you don't need to install Tweaks.
 
 ### Events Database
 
@@ -102,16 +63,7 @@ Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQ
 
 Talk Calendar allows a personal calendar to be exported as an iCalendar file. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be modified using a standard text editor. 
 
-The export to icalendar file does not currently support time zones and so the DTSTART and DTEND properties contain dates with local time and have no reference to a time zone. For example, the following represents an event starting on January, 1st, 2024 at 11.30am and ending at 2pm.
-
-```
-DTSTART:20240101T113000
-DTEND:20240101T140000
-```
-
-You should backup your events by using the File->Export menu item which will create an "events.ical" file in the working directory (keep this safe and make another copy if necessary). If you then corrupt your database, you can clear all events and then use the File->Import to restore exported events. This assumes that the "events.ical" file is in the current working directory. If you completely corrupt your Sqlite database called calendar.db then rename it and restart Talk Calendar which will create a new empty database and restore into this.
-
-The icalendar import parser allows the date and local time to be imported and checks if a time zone has been specified using the [TZID](https://icalendar.org/iCalendar-RFC-5545/3-2-19-time-zone-identifier.html) property. A file chooser dialog is used to allow the file to be chosen by the user as shown below. File filters can be used.
+You should backup your events by using the File->Export menu item which will create an "talkcalendar.ical" file. A file chooser dialog is used to allow the file to be located in a chosen directory
 
 The parser will be updated with new features in future releases.
 
@@ -121,15 +73,28 @@ The only recurring event type that is currently supported by Talk Calendar is ye
 
 ## Updating
 
-To update from a previous version of Talk Calendar export the current calendar to an ical file and then import it into the new version of Talk Calendar.
+To update from a previous version of Talk Calendar export the current calendar to an ical file and then import it into the new version of Talk Calendar. Always keep a backup copy of the Talk Calendar database called talkcalendar.db.
 
 ## Speech Synthesis
 
-Talk Calendar uses my local speech synthesizer engine called [speak](https://github.com/crispinprojects/speak) which is  a lightweight G2P speech engine coded from scratch. With the Talk Calendar 0.7 series the speech synthesizer code has been separated out into its own project. The speak executable should be located in the Talk Calendar executable directory as the system command is use to call speak when text-to-speech is required. The system method allows a Linux command to be run from within a C program.
+Talk Calendar uses it own internal speech synthesizer engine. It is a lightweight G2P speech engine coded from scratch. You can find out more about how I developed this speach engine [here](https://github.com/crispinprojects/speak).
+
+## Installer
+
+The bash script installer can be used to install talk Calendar locally in directory ./local/bin. To install Talk Calendar just run the terminal command below.
+```
+./install-talkcalendar.sh 
+```
+To uninstall Talk Calendar run:
+```
+uninstall-talkcalendar.sh
+```
 
 ### Building on Debian 13 and Ubuntu 24.04 (x86 Hardware)
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
+
+Talk Calendar has been developed using Debian Trixie and the XFCE desktop (X11 backend). However, I have tested it with the GNOME desktop (Wayland) and it works fine.
 
 ```
 sudo apt install build-essential
@@ -194,6 +159,51 @@ or
 dnf list gtk4-devel
 ```
 
+## Advanced
+
+### How to check which GTK4 libraries installed
+
+```
+apt list --installed "libgtk-4*"
+```
+On my Debian XFCE system I get the following.
+```
+libgtk-4-1/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
+libgtk-4-bin/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
+libgtk-4-common/stable,now 4.18.6+ds-2 all [installed,automatic]
+libgtk-4-dev/stable,now 4.18.6+ds-2 amd64 [installed]
+libgtk-4-media-gstreamer/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
+```
+Make sure you have all of these to run Talk calendar.
+
+###  GtkCalendar gtk_calendar_mark_day may fail on GNOME but works on XFCE?
+
+The function gtk_calendar_mark_day may fail because of a major layout architecture difference between X11 (XFCE) and Wayland (GNOME) environments. 
+
+The gtk_calendar_mark_day only applies the visual CSS marker to the GtkCalendar internal date grid if the widget is realised (meaning it has allocated physical screen space and drawn its sub-nodes).
+
+* On XFCE (X11 Backend): The display pipeline forces synchronous window mapping. When you create the window, the widgets build their layout almost instantly before the code processes the next lines. The calendar exists structurally, so gtk_calendar_mark_day succeeds.
+
+* On GNOME (Wayland Backend): Wayland uses completely asynchronous window configuration. When gtk_window_present is called, the window and its internal nodes are scheduled to draw, but they are not created instantly. If you call gtk_calendar_mark_day immediately after creating the widget, the calendar’s internal day sub-nodes do not exist yet, causing the call to be silently ignored.
+
+I have attempted to fix this rendering bug across all desktop environments by delaying the gtk_calendar_mark_day function until after the calendar widget emits its map or realise signal. I do not think this issue is a libawaita problem but I could be wrong.
+
+### Libadwaita
+
+To check for Libadwaita on Debian use:
+
+```
+dpkg -l | grep libadwaita
+```
+This gives:
+```
+gir1.2-adw-1:amd64  GObject introspection files for libadwaita
+libadwaita-1-0:amd64  (the core runtime package)
+```
+Libadwaita is not used by XFCE (X11). XFCE is built on GTK3 and handles window decorations and global themes via X11 (xfwm4) using the selected XFCE theme. If you run a standard, vanilla GTK4 application (like Talk Calendar), it will attempt to respect the XFCE design settings.
+
+An application explicitly built with libadwaita (GNOME Text Editor) completely bypasses XFCE and X11 theming protocols. Libadwaita forces its own hardcoded GNOME stylesheet ("Adwaita") and layout onto the window canvas. Because libadwaita overrides client-side decorations, running a libadwaita app under XFCE (X11) can result in a broken visual layout. This is the main reason why I have developed Talk Calendar as a generic GTK4 application without libadwaita. I use and test Talk Calendar using Debian Trixie with Xfce. Debian Trixie is the latest stable release of the Debian operating system, featuring Xfce 4.20 as its desktop environment. Xfce is known for being lightweight, fast and can be customised to look like a traditional desktop.
+
 ## Versioning
 
 [SemVer](http://semver.org/) is used for versioning. The version number has the form 0.0.0 representing major, minor and bug fix changes.
@@ -224,9 +234,11 @@ Active and under development.
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [speak speech engine](https://github.com/crispinprojects/speak)
+* [speech engine](https://github.com/crispinprojects/speak)
 
 * [Debian](https://www.debian.org/)
+
+* [XFCE](https://xfce.org/)
 
 * [Fedora](https://fedoraproject.org/)
 
