@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which can read out calendar events.
 
-The Calendar GUI has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (Ubuntu Desktop, GNOME, XFCE, Cinnamon etc.). 
+The Calendar GUI has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (XFCE, GNOME, Ubuntu Desktop, Cinnamon etc.). 
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -19,23 +19,23 @@ A screenshot of Talk Calendar is shown below.
 
 ## Install
 
-Pre-built binaries of the latest version of Talk Calendar for x86 Debian Trixie GTK4 desktops is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18 and tested using Debian Trixie with the XFCE desktop. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GTK4 desktops is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18 and tested using Debian Trixie with the [XFCE](https://xfce.org/) desktop. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
-Alternatively you can use the bash installer found in the binary director. Just run the terminal command below.
+Alternatively you can use the bash installer found in the binary directory. Just run the terminal command below to install Talk Calendar locally.
 ```
 ./install-talkcalendar.sh 
 ```
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and either select the "new event" header icon button. To edit an event, select it in day view panel and then select the "edit event" header icon button. Likewise to delete an event select it in the day view panel and use the "delete event" icon header button. 
+Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and  select the "new event" menu item of press Ctrl+N. To edit an event, select it in day view panel and then select the "edit event" menu item o Ctrl+E . Likewise to delete an event select it in the day view panel and use the "delete event" menu item or the DELETE key. 
 
 Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
-Pressing F1 invokes the information window which can also be selected from the menu using the Help->Information menu item. The information window shows the keyboard shortcuts, how many records are in the calendar database, the Sqlite version being used on the system, the desktop font and scale factor and the status of the speech synthesizer. The About dialog displays the Talk Calendar version number.
+Pressing F1 invokes the information window which can also be selected from the menu using the Help->Information menu item. The information window shows the keyboard shortcuts, how many records are in the calendar database and the Sqlite version being used on the system. The About dialog displays the Talk Calendar version number.
 
 Press the spacebar to speak events for the selected day. Press the T-key to speak the current time. Some Talk Calendar screenshot are shown below.
 
@@ -63,9 +63,7 @@ Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQ
 
 Talk Calendar allows a personal calendar to be exported as an iCalendar file. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be modified using a standard text editor. 
 
-You should backup your events by using the File->Export menu item which will create an "talkcalendar.ical" file. A file chooser dialog is used to allow the file to be located in a chosen directory
-
-The parser will be updated with new features in future releases.
+You should backup your events by using the File->Export menu item which by default will create an "talkcalendar.ical" file but the name can be changed. A file chooser dialog is used to allow the file to be located in a chosen directory
 
 ### Recurring Events
 
@@ -77,11 +75,11 @@ To update from a previous version of Talk Calendar export the current calendar t
 
 ## Speech Synthesis
 
-Talk Calendar uses it own internal speech synthesizer engine. It is a lightweight G2P speech engine coded from scratch. You can find out more about how I developed this speach engine [here](https://github.com/crispinprojects/speak).
+Talk Calendar uses it own internal speech synthesizer engine. It is a lightweight G2P speech engine coded from scratch. You can find out more about how I developed this speech engine [here](https://github.com/crispinprojects/speak).
 
 ## Installer
 
-The bash script installer can be used to install talk Calendar locally in directory ./local/bin. To install Talk Calendar just run the terminal command below.
+The bash script installer can be used to install talk Calendar locally in the directory ./local/bin. To install Talk Calendar just run the terminal command below.
 ```
 ./install-talkcalendar.sh 
 ```
@@ -190,7 +188,7 @@ I have attempted to fix this rendering bug across all desktop environments by de
 
 ### Libadwaita
 
-To check for Libadwaita on Debian use:
+To check for libadwaita on Debian use:
 
 ```
 dpkg -l | grep libadwaita
