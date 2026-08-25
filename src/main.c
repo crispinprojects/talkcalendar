@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+#include <adwaita.h> //migrate talk calendar to use libadwaita
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gstdio.h>  //needed for g_mkdir
@@ -65,6 +66,8 @@ static void callbk_import(GSimpleAction *action, GVariant *parameter, gpointer u
 void import_ical_file(gpointer user_data);
 static void file_open_response (GObject *source, GAsyncResult *result, void *user_data);
 
+//CSS
+static void apply_custom_calendar_css (void);
 //calendar callbks
 
 static void callbk_calendar_day_selected(GtkCalendar *calendar, gpointer user_data);
@@ -119,7 +122,7 @@ static void callbk_listview (GtkListView *list, guint position, gpointer unused)
 static void callbk_setup_listitem (GtkListItemFactory *factory,GtkListItem *list_item);
 static void callbk_bind_listitem (GtkListItemFactory *factory, GtkListItem *list_item);
 
-static GMenu *create_menu(const GtkApplication *app); 
+
 
 char* get_time_str(int hour, int min);
 
@@ -2513,10 +2516,9 @@ static void callbk_search_events(GtkButton *button, gpointer user_data)
 	
 	if (clean_search_str != NULL) {
        
-        // free the memory that was allocated by the function
-        // to prevent a memory leak.
+        // free str  memory to prevent a memory leak.
         free(clean_search_str);
-        clean_search_str = NULL; // Best practice to set the pointer to NULL after freeing.
+        clean_search_str = NULL; // Best practice to set the pointer to NULL after freeing
     }
 }
 
@@ -2730,9 +2732,6 @@ static void callbk_set_preferences(GtkButton *button, gpointer  user_data)
 	}
 	
 	config_write();	//save preferences
-			
-	//GListStore *store =g_object_get_data(G_OBJECT(calendar), "calendar-store-key");
-
 	gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
@@ -2867,8 +2866,8 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_window_set_transient_for(GTK_WINDOW(about_dialog),GTK_WINDOW(window));
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
-	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (GTK4)");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.7.1");
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (GTK4/Adwaita)");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.7.2");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2026");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);
@@ -3194,7 +3193,6 @@ static void speak_time(gint hour, gint min)
     g_object_unref(task);    
 }
 
-//======================================================================
 
 //======================================================================
 //list view
@@ -3222,7 +3220,7 @@ static void update_store(GtkCalendar *calendar, gpointer user_data)
         for (guint i = 0; i < events_for_day->len; i++) {
             CalendarEvent* event = g_array_index(events_for_day, CalendarEvent*, i);            
             g_list_store_append(G_LIST_STORE(store),event);    
-            g_object_unref(event); // Free the GObject
+            g_object_unref(event); // Free the GObject  
         }
         g_array_free(events_for_day, TRUE); // Free the array
     } else {
@@ -3373,97 +3371,34 @@ static void callbk_shutdown(GtkWindow *window, gpointer user_data)
 	}
 }
 
-//======================================================================
-static GMenu *create_menu(const GtkApplication *app) 
-{		
-	GMenu *menu;
-    GMenu *file_menu;   
-    GMenu *event_menu;
-    GMenu *calendar_menu;
-    GMenu *help_menu;
-    GMenuItem *item;
-
-	menu =g_menu_new();
-	file_menu =g_menu_new();	
-	event_menu =g_menu_new();
-	calendar_menu =g_menu_new();
-	help_menu =g_menu_new();
-	
-	//File items	
-	item =g_menu_item_new("Export", "app.export");
-	g_menu_append_item(file_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Import", "app.import");
-	g_menu_append_item(file_menu,item);
-	g_object_unref(item);
-	
-	item = g_menu_item_new("Quit", "app.quit");
-    g_menu_append_item(file_menu, item);
-    g_object_unref(item);
-		
-	//Event items
-	item =g_menu_item_new("New Event", "app.newevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Edit Selected Event", "app.editevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Delete Selected Event", "app.deleteevent");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Delete All Events", "app.deleteall");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Speak", "app.speak");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Search", "app.search");
-	g_menu_append_item(event_menu,item);
-	g_object_unref(item);
-	
-	//Calendar items
-	item =g_menu_item_new("Go To Today", "app.home");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Speak Time", "app.speaktime");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-		
-	item =g_menu_item_new("Calculate Easter", "app.easter");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("Preferences", "app.preferences");
-	g_menu_append_item(calendar_menu,item);
-	g_object_unref(item);	
-		
-	//Help items
-	item =g_menu_item_new("Information", "app.info");
-	g_menu_append_item(help_menu,item);
-	g_object_unref(item);
-	
-	item =g_menu_item_new("About", "app.about");
-	g_menu_append_item(help_menu,item);
-	g_object_unref(item);
-	
-	g_menu_append_submenu(menu, "File", G_MENU_MODEL(file_menu));
-    g_object_unref(file_menu);   
-    g_menu_append_submenu(menu, "Event", G_MENU_MODEL(event_menu));
-    g_object_unref(event_menu);
-    g_menu_append_submenu(menu, "Calendar", G_MENU_MODEL(calendar_menu));
-    g_object_unref(calendar_menu);
-    g_menu_append_submenu(menu, "Help", G_MENU_MODEL(help_menu));
-    g_object_unref(help_menu);
+static void apply_custom_calendar_css (void)
+{
+    GtkCssProvider *provider = gtk_css_provider_new ();
     
-    return menu;
+    // Targets day numbers marked with gtk_calendar_mark_day()
+    // and styles them using Libadwaita's system accent color
+    const char *css = 
+        "calendar day.marked {"
+        "  background-color: var(--accent-bg-color);"
+        "  color: var(--accent-fg-color);"
+        "  border-radius: 99px;"
+        "  font-weight: bold;"
+        "}";
+
+    gtk_css_provider_load_from_string (provider, css);
+
+    // Attach CSS globally to the display
+    gtk_style_context_add_provider_for_display (
+        gdk_display_get_default (),
+        GTK_STYLE_PROVIDER (provider),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+    );
+
+    g_object_unref (provider);
 }
+
+//======================================================================
+
 
 /*
  * On XFCE (X11 Backend): The display pipeline forces synchronous window mapping. 
@@ -3490,242 +3425,214 @@ static void callbk_calendar_initial_map (GtkWidget *widget, gpointer user_data) 
     set_marks_on_calendar(GTK_CALENDAR(widget));
 }
 
-//======================================================================
-static void activate (GtkApplication *app, gpointer  user_data)
+
+static void activate (GtkApplication *app, gpointer user_data)
 {
-	GtkWidget *window;	
-	GMenu *menu;	
-	GtkWidget *calendar;
-	GtkWidget *label_date; //display selected date
-	GtkWidget *scrolled_window;
-	GtkWidget *paned;	
-	GtkWidget *box;	
-	GtkWidget *box_listview;
-	GtkWidget *box_calendar;
-		
-	GtkListItemFactory *factory;
-	GListModel *model;
-	GtkSingleSelection *selection;
-	GtkWidget *list_view;
-		
-	
-	const gchar *home_accels[2] = { "Home", NULL };	
-	const gchar *speak_accels[2] = { "space", NULL };	
-	const gchar *speaktime_accels[2] = {"t", NULL };
-	const gchar *newevent_accels[2] = {"<Ctrl>n", NULL };	
-	const gchar *editevent_accels[2] = {"<Ctrl>e", NULL };		
-	const gchar *delete_accels[2] = {"Delete", NULL };
-	const gchar *info_accels[2] = {"F1", NULL };	
-	const gchar * preferences_accels[2] = { "<Ctrl><Alt>P", NULL };
-	const gchar * quit_accels[2] = { "<Ctrl>Q", NULL };
-		
-		
-	window = gtk_application_window_new(app);
-	gtk_window_set_title (GTK_WINDOW(window), "Talk Calendar");		
-	gtk_window_set_default_size (GTK_WINDOW(window), m_window_width, m_window_height);
-	
-	g_signal_connect(window, "destroy", G_CALLBACK(callbk_shutdown), NULL);
-	
-	//setup selected date label
-	label_date = gtk_label_new("");
-	gtk_label_set_xalign(GTK_LABEL(label_date), 0.5);
-	
-		
-	GListStore *store=NULL;
-	store = g_list_store_new(G_TYPE_OBJECT);
-	selection = gtk_single_selection_new(G_LIST_MODEL(store));
-	gtk_single_selection_set_autoselect(selection,FALSE);
-	
-	factory = gtk_signal_list_item_factory_new ();
+    // Accelerators
+    const gchar *home_accels[2]        = { "Home", NULL };    
+    const gchar *speak_accels[2]       = { "space", NULL };   
+    const gchar *speaktime_accels[2]   = { "t", NULL };
+    const gchar *newevent_accels[2]    = { "<Ctrl>n", NULL }; 
+    const gchar *editevent_accels[2]   = { "<Ctrl>e", NULL };        
+    const gchar *delete_accels[2]      = { "Delete", NULL };
+    const gchar *info_accels[2]        = { "F1", NULL };    
+    const gchar *preferences_accels[2] = { "<Ctrl><Alt>P", NULL };
+    const gchar *quit_accels[2]        = { "<Ctrl>Q", NULL }; 
+
+    // Create Window & Libadwaita Header Bar
+    AdwApplicationWindow *window = ADW_APPLICATION_WINDOW (adw_application_window_new (app));
+    gtk_window_set_title (GTK_WINDOW (window), "Talk Calendar");
+    gtk_window_set_default_size (GTK_WINDOW (window), m_window_width, m_window_height);
+
+    GtkWidget *header_bar = adw_header_bar_new ();
+    adw_header_bar_set_title_widget (ADW_HEADER_BAR (header_bar), 
+                                     adw_window_title_new ("Talk Calendar", NULL));
+
+    // Assemble Toolbar View
+    GtkWidget *toolbar_view = adw_toolbar_view_new ();
+    adw_toolbar_view_add_top_bar (ADW_TOOLBAR_VIEW (toolbar_view), header_bar);
+
+    // Labels, Store, Factories & ListView
+    GtkWidget *label_date = gtk_label_new ("");
+    gtk_label_set_xalign (GTK_LABEL (label_date), 0.5);
+
+    GListStore *store = g_list_store_new (G_TYPE_OBJECT);
+    GtkSingleSelection *selection = gtk_single_selection_new (G_LIST_MODEL (store));
+    gtk_single_selection_set_autoselect (selection, FALSE);
+
+    GtkListItemFactory *factory = gtk_signal_list_item_factory_new ();
     g_signal_connect (factory, "setup", G_CALLBACK (callbk_setup_listitem), NULL);
     g_signal_connect (factory, "bind", G_CALLBACK (callbk_bind_listitem), NULL);
 
-	list_view = gtk_list_view_new(GTK_SELECTION_MODEL (selection),factory);
-	g_signal_connect (list_view, "activate", G_CALLBACK (callbk_listview), NULL);	
-	gtk_list_view_set_show_separators (GTK_LIST_VIEW(list_view),TRUE);	
-	
-	//setup GTK Calendar
-	calendar =gtk_calendar_new();
-	// FORCE marking to delay until Wayland mapping loop completes:
-	g_signal_connect(calendar, "map", G_CALLBACK(callbk_calendar_initial_map), NULL);
+    GtkWidget *list_view = gtk_list_view_new (GTK_SELECTION_MODEL (selection), factory);
+    g_signal_connect (list_view, "activate", G_CALLBACK (callbk_listview), NULL);
+    gtk_list_view_set_show_separators (GTK_LIST_VIEW (list_view), TRUE);
+ 
+    // Calendar Setup
+    GtkWidget *calendar = gtk_calendar_new ();
+    g_signal_connect (calendar, "map", G_CALLBACK (callbk_calendar_initial_map), NULL);
+    g_signal_connect (GTK_CALENDAR (calendar), "day-selected", G_CALLBACK (callbk_calendar_day_selected), label_date);    
+    g_signal_connect (GTK_CALENDAR (calendar), "next-month", G_CALLBACK (callbk_calendar_next_month), label_date);
+    g_signal_connect (GTK_CALENDAR (calendar), "prev-month", G_CALLBACK (callbk_calendar_prev_month), label_date);
+    g_signal_connect (GTK_CALENDAR (calendar), "next-year", G_CALLBACK (callbk_calendar_next_year), label_date);
+    g_signal_connect (GTK_CALENDAR (calendar), "prev-year", G_CALLBACK (callbk_calendar_prev_year), label_date);
 
-	g_signal_connect(GTK_CALENDAR(calendar), "day-selected", G_CALLBACK(callbk_calendar_day_selected),label_date);	
-	g_signal_connect(GTK_CALENDAR(calendar), "next-month", G_CALLBACK(callbk_calendar_next_month), label_date);
-	g_signal_connect(GTK_CALENDAR(calendar), "prev-month", G_CALLBACK(callbk_calendar_prev_month), label_date);
-	g_signal_connect(GTK_CALENDAR(calendar), "next-year", G_CALLBACK(callbk_calendar_next_year), label_date);
-	g_signal_connect(GTK_CALENDAR(calendar), "prev-year", G_CALLBACK(callbk_calendar_prev_year), label_date);
-	
-	
-	GDateTime* cal_date;  
-	cal_date = gtk_calendar_get_date(GTK_CALENDAR(calendar));
-	
-	m_start_day = g_date_time_get_day_of_month(cal_date);
-	m_start_month =g_date_time_get_month(cal_date);
-	m_start_year=g_date_time_get_year(cal_date);
-	//g_print("Date is : %d-%d-%d \n", m_start_day, m_start_month,m_start_year);		
-	
-	update_date_label(GTK_CALENDAR(calendar), label_date);	
-	
-	
-	scrolled_window = gtk_scrolled_window_new();	
-	gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scrolled_window),list_view);
-	   
+    GDateTime *cal_date = gtk_calendar_get_date (GTK_CALENDAR (calendar));    
+    m_start_day   = g_date_time_get_day_of_month (cal_date);
+    m_start_month = g_date_time_get_month (cal_date);
+    m_start_year  = g_date_time_get_year (cal_date);
+    g_date_time_unref (cal_date);
+
+    update_date_label (GTK_CALENDAR (calendar), label_date);    
+
+    // Layout Containers
+    GtkWidget *scrolled_window = gtk_scrolled_window_new ();    
+    gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (scrolled_window), list_view);
+
     gtk_widget_set_hexpand (GTK_WIDGET (list_view), TRUE);
     gtk_widget_set_vexpand (GTK_WIDGET (list_view), TRUE);
+    gtk_widget_set_halign (list_view, GTK_ALIGN_FILL);     
 
-    gtk_widget_set_halign(list_view, GTK_ALIGN_FILL); 
-	//gtk_widget_set_valign(list_view, GTK_ALIGN_FILL);
-	
-	box_listview =gtk_box_new(GTK_ORIENTATION_VERTICAL,1);	
-	gtk_box_append(GTK_BOX(box_listview), scrolled_window); 
-	
-	box_calendar =gtk_box_new(GTK_ORIENTATION_VERTICAL,1);	
-	gtk_box_append(GTK_BOX(box_calendar), label_date);	
-	gtk_box_append(GTK_BOX(box_calendar), calendar); 
-	gtk_widget_set_vexpand (calendar, TRUE);
+    GtkWidget *box_listview = gtk_box_new (GTK_ORIENTATION_VERTICAL, 1);    
+    gtk_box_append (GTK_BOX (box_listview), scrolled_window);  
+
+    GtkWidget *box_calendar = gtk_box_new (GTK_ORIENTATION_VERTICAL, 1);    
+    gtk_box_append (GTK_BOX (box_calendar), label_date);    
+    gtk_box_append (GTK_BOX (box_calendar), calendar);  
+    gtk_widget_set_vexpand (calendar, TRUE);
     gtk_widget_set_hexpand (calendar, TRUE);
-    gtk_widget_set_halign(calendar, GTK_ALIGN_FILL); //alignment
-    
-    //GTK_ALIGN_FILL, GTK_ALIGN_START, GTK_ALIGN_END, GTK_ALIGN_CENTER, GTK_ALIGN_BASELINE (was GTK_ALIGN_BASELINE_FILL)
-	
-	g_object_set_data(G_OBJECT(calendar), "calendar-window-key",window);
-	g_object_set_data(G_OBJECT(calendar), "calendar-store-key",store);
-	
-	g_object_set_data(G_OBJECT(window), "window-store-key",store);
-	g_object_set_data(G_OBJECT(window), "window-calendar-key",calendar);
-	
-	g_object_set_data(G_OBJECT(store), "store-window-key",window);
-	g_object_set_data(G_OBJECT(store), "store-calendar-key",calendar);
-	
-	g_object_set_data(G_OBJECT(selection), "selection-window-key",window);
-	g_object_set_data(G_OBJECT(selection), "selection-calendar-key",calendar);
-	g_object_set_data(G_OBJECT(selection), "selection-label-key",label_date);
-	
-	g_object_set_data(G_OBJECT(window), "window-label-date-key",label_date);
-	
-	//Actions	
-	//File actions
-	GSimpleAction *export_action;
-	export_action=g_simple_action_new("export",NULL); //app.export
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(export_action));
-	g_signal_connect(export_action, "activate",  G_CALLBACK(callbk_export), window);
-	
-	GSimpleAction *import_action;
-	import_action=g_simple_action_new("import",NULL); //app.import
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(import_action)); 
-	g_signal_connect(import_action, "activate",  G_CALLBACK(callbk_import), window);
-	
-	GSimpleAction *quit_action = g_simple_action_new("quit", NULL); //app.quit
-    g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(quit_action));
-    g_signal_connect(quit_action, "activate", G_CALLBACK(callbk_quit), window); 
-		
-	//Actions
-	
-	//New event
-	GSimpleAction *newevent_action;	
-	newevent_action=g_simple_action_new("newevent",NULL); //app.newevent
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(newevent_action));	
-	g_signal_connect(newevent_action, "activate",  G_CALLBACK(callbk_new_event), store);	
-	
-	//Edit Event
-	GSimpleAction *editevent_action;	
-	editevent_action=g_simple_action_new("editevent",NULL); //app.editevent
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(editevent_action)); 	
-	g_signal_connect(editevent_action, "activate",  G_CALLBACK(callbk_edit_event), selection);	
-	
-	//Delete Event
-	GSimpleAction *deleteevent_action;	
-	deleteevent_action=g_simple_action_new("deleteevent",NULL); //app.deleteevent
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(deleteevent_action)); //make visible	
-	g_signal_connect(deleteevent_action, "activate",  G_CALLBACK(callbk_delete_event), selection);
-	
-	//Delete all
-	GSimpleAction *deleteall_action;
-	deleteall_action=g_simple_action_new("deleteall",NULL); //app.deleteall
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(deleteall_action)); //make visible
-	g_signal_connect(deleteall_action, "activate",  G_CALLBACK(callbk_delete_all), window);
-	
-	//Calendar home
-	GSimpleAction *home_action;	
-	home_action=g_simple_action_new("home",NULL); //app.home
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(home_action)); //make visible	
-	g_signal_connect(home_action, "activate",  G_CALLBACK(callbk_calendar_home), window);
-	
-	//Calendar search	
-	GSimpleAction *search_action;
-	search_action=g_simple_action_new("search",NULL); //app.search
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(search_action)); //make visible
-	g_signal_connect(search_action, "activate",  G_CALLBACK(callbk_search), window);
-	
-	//Calendar easter
-	GSimpleAction *easter_action;
-	easter_action=g_simple_action_new("easter",NULL); //app.easter
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(easter_action)); //make visible
-	g_signal_connect(easter_action, "activate",  G_CALLBACK(callbk_easter), window);
-	
-	
-	//Preferences	
-	GSimpleAction *preferences_action;
-	preferences_action=g_simple_action_new("preferences",NULL); //app.preferences
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(preferences_action)); //make visible
-	g_signal_connect(preferences_action, "activate",  G_CALLBACK(callbk_preferences), window);	
-		
-	GSimpleAction *info_action;
-	info_action=g_simple_action_new("info",NULL); //app.info
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(info_action)); //make visible
-	g_signal_connect(info_action, "activate",  G_CALLBACK(callbk_info), window);
-	
-	GSimpleAction *about_action;
-	about_action=g_simple_action_new("about",NULL); //app.about
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(about_action)); //make visible
-	g_signal_connect(about_action, "activate",  G_CALLBACK(callbk_about), window);
-	
-	GSimpleAction *speak_action;	
-	speak_action=g_simple_action_new("speak",NULL); //app.speak
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(speak_action)); //make visible	
-	g_signal_connect(speak_action, "activate",  G_CALLBACK(callbk_speak), window);
-	
-	GSimpleAction *speaktime_action;	
-	speaktime_action=g_simple_action_new("speaktime",NULL); //app.speaktime
-	g_action_map_add_action(G_ACTION_MAP(app), G_ACTION(speaktime_action)); //make visible	
-	g_signal_connect(speaktime_action, "activate",  G_CALLBACK(callbk_speaktime), window);
-		
-	set_marks_on_calendar(GTK_CALENDAR(calendar));
-	update_calendar(GTK_CALENDAR(calendar), GTK_LABEL(label_date));	
-	update_store(GTK_CALENDAR(calendar), store);
-	
-	
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.home", home_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speak", speak_accels);	
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.newevent", newevent_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.editevent", editevent_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.deleteevent", delete_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.info", info_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.preferences", preferences_accels);
-	gtk_application_set_accels_for_action(GTK_APPLICATION(app),"app.speaktime",speaktime_accels);
-	
-	menu=create_menu(app);	
-	gtk_application_set_menubar (app,G_MENU_MODEL(menu));
-    gtk_application_window_set_show_menubar(GTK_APPLICATION_WINDOW(window), TRUE);
-	
-	
-	if(m_talk && m_talk_at_startup) {
-		speak_events();		
-	}
-	
-	
-	paned = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
-    gtk_paned_set_start_child(GTK_PANED(paned), box_calendar);
-    gtk_paned_set_end_child(GTK_PANED(paned), box_listview);
-    
-    //Note initial width height values m_window_width=800 and m_window_height=600     
-    // set initial divider position (in pixels)
-    int divider_position =450; // 
-    gtk_paned_set_position(GTK_PANED(paned),divider_position);	
-	gtk_window_set_child (GTK_WINDOW (window), paned);		
-	
-	gtk_window_present(GTK_WINDOW (window));	
-}
+    gtk_widget_set_halign (calendar, GTK_ALIGN_FILL);
+
+    // Context and Data Key Bindings
+    g_object_set_data (G_OBJECT (calendar),  "calendar-window-key",     window);
+    g_object_set_data (G_OBJECT (calendar),  "calendar-store-key",      store);    
+    g_object_set_data (G_OBJECT (window),    "window-store-key",        store); 
+    g_object_set_data (G_OBJECT (window),    "window-calendar-key",     calendar);    
+    g_object_set_data (G_OBJECT (store),     "store-window-key",        window);
+         
+    g_object_set_data (G_OBJECT (store),     "store-calendar-key",      calendar);    
+    g_object_set_data (G_OBJECT (selection), "selection-window-key",    window);
+    g_object_set_data (G_OBJECT (selection), "selection-calendar-key",  calendar);
+    g_object_set_data (G_OBJECT (selection), "selection-label-key",     label_date);    
+    g_object_set_data (G_OBJECT (window),    "window-label-date-key",   label_date);
+
+    // 6. Application Actions Registration
+    struct {
+        const char *name;
+        GCallback callback;
+        gpointer user_data;
+    } actions[] = {
+        { "export",      G_CALLBACK (callbk_export),              window },
+        { "import",      G_CALLBACK (callbk_import),              window },
+        { "quit",        G_CALLBACK (callbk_quit),                window },
+        { "newevent",    G_CALLBACK (callbk_new_event),           store },
+        { "editevent",   G_CALLBACK (callbk_edit_event),          selection },
+        { "deleteevent", G_CALLBACK (callbk_delete_event),        selection },
+        { "deleteall",   G_CALLBACK (callbk_delete_all),          window },
+        { "home",        G_CALLBACK (callbk_calendar_home),       window },
+        { "search",      G_CALLBACK (callbk_search),              window },
+        { "easter",      G_CALLBACK (callbk_easter),              window },
+        { "preferences", G_CALLBACK (callbk_preferences),         window },
+        { "info",        G_CALLBACK (callbk_info),                window },
+        { "about",       G_CALLBACK (callbk_about),               window },
+        { "speak",       G_CALLBACK (callbk_speak),               window },
+        { "speaktime",   G_CALLBACK (callbk_speaktime),           window }
+    };
+
+    for (size_t i = 0; i < G_N_ELEMENTS (actions); i++) {
+        GSimpleAction *action = g_simple_action_new (actions[i].name, NULL);
+        g_signal_connect (action, "activate", actions[i].callback, actions[i].user_data);
+        g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (action));
+        g_object_unref (action);
+    }
+
+    // Set marks & update calendar
+    set_marks_on_calendar (GTK_CALENDAR (calendar));
+    update_calendar (GTK_CALENDAR (calendar), GTK_LABEL (label_date));    
+    update_store (GTK_CALENDAR (calendar), store);
+
+    // 7. Accelerators
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.home",        home_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.speak",       speak_accels);    
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.newevent",    newevent_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.editevent",   editevent_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.deleteevent", delete_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.info",        info_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.preferences", preferences_accels);
+    gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.speaktime",   speaktime_accels);
+
+    // 8. Build Hamburger Menu
+    GMenu *menu = g_menu_new ();
+    GMenu *section;
+
+    section = g_menu_new ();
+    g_menu_append (section, "Export", "app.export");     
+    g_menu_append (section, "Import", "app.import");     
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+    g_object_unref (section);
+
+    section = g_menu_new ();
+    g_menu_append (section, "New Event", "app.newevent");     
+    g_menu_append (section, "Edit Event", "app.editevent");     
+    g_menu_append (section, "Delete Event", "app.deleteevent");     
+    g_menu_append (section, "Delete All", "app.deleteall");     
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+    g_object_unref (section);
+
+    GMenu *tools_menu = g_menu_new ();
+    GMenuItem *item = g_menu_item_new ("Calculate Easter", "app.easter");
+    g_menu_append_item (tools_menu, item);
+    g_object_unref (item);
+
+    item = g_menu_item_new ("Search", "app.search");
+    g_menu_append_item (tools_menu, item);
+    g_object_unref (item);
+
+    g_menu_append_submenu (menu, "Tools", G_MENU_MODEL (tools_menu));
+    g_object_unref (tools_menu);
+
+    section = g_menu_new ();
+    g_menu_append (section, "Speak", "app.speak");
+    g_menu_append (section, "Speak Time", "app.speaktime");
+    g_menu_append (section, "Preferences", "app.preferences");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+    g_object_unref (section); 
+
+    section = g_menu_new ();
+    g_menu_append (section, "Information", "app.info");
+    g_menu_append (section, "About", "app.about");
+    g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
+    g_object_unref (section);
+
+    GtkWidget *menu_button = gtk_menu_button_new ();
+    gtk_widget_set_tooltip_text (menu_button, "Menu");
+    gtk_menu_button_set_icon_name (GTK_MENU_BUTTON (menu_button), "open-menu-symbolic");         
+    gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), G_MENU_MODEL (menu));
+    g_object_unref (menu);
+
+    adw_header_bar_pack_end (ADW_HEADER_BAR (header_bar), menu_button);
+
+    // 9. Startup Operations
+    if (m_talk && m_talk_at_startup) {
+        speak_events ();        
+    }
+
+    // 10. Paned & Content Assembly
+    GtkWidget *paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
+    gtk_paned_set_start_child (GTK_PANED (paned), box_calendar);
+    gtk_paned_set_end_child (GTK_PANED (paned), box_listview);
+    gtk_paned_set_position (GTK_PANED (paned), 450);
+
+    adw_toolbar_view_set_content (ADW_TOOLBAR_VIEW (toolbar_view), paned);
+    adw_application_window_set_content (window, toolbar_view);
+
+    // 11. Connect Signals and Present Window   
+    g_signal_connect (window, "destroy", G_CALLBACK (callbk_shutdown), NULL);
+    gtk_window_present (GTK_WINDOW (window));
+
+	//selection,factory and store  must stay alive for the entire lifespan of the window.
+
+} 
 
 /**
  * @brief The main function, which initializes the application and runs it.
@@ -3751,9 +3658,11 @@ int main (int  argc, char **argv)
         g_critical("Failed to create global dictionary");
         db_close(db_handle);
         return 1;
-    }
-    
-    GtkApplication *app = gtk_application_new ("org.gtk.talkcalendar", G_APPLICATION_DEFAULT_FLAGS);	
+    }    
+   
+    // Initialize Adwaita application
+    AdwApplication *app = adw_application_new ("org.gtk.talkcalendar", G_APPLICATION_DEFAULT_FLAGS);
+	
     g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
     status = g_application_run (G_APPLICATION (app), argc, argv);
     g_object_unref (app);

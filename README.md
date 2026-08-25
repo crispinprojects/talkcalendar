@@ -2,7 +2,7 @@
 
 Talk Calendar is a personal desktop calendar for Linux which can read out calendar events.
 
-The Calendar GUI has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, XFCE, Cinnamon etc.). 
+The Calendar GUI has been developed using C, [GTK4](https://docs.gtk.org/gtk4/) and Adwaita for the GNOME and Ubuntu desktops. Adwaita is the  official default design language, user interface style, and widget library (libadwaita) for the GNOME Desktop Environment. 
 
 A screenshot of Talk Calendar is shown below. 
 
@@ -10,7 +10,7 @@ A screenshot of Talk Calendar is shown below.
 
 ## Core Features
 
-* built with C and GTK4 for GTK based desktops
+* built with C and GTK4, Adwaita for GNOME and Ubuntu desktops
 * month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
@@ -19,7 +19,7 @@ A screenshot of Talk Calendar is shown below.
 
 ## Install
 
-A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GTK4 desktops is available and can be downloaded from the binary directory. This have been built using C and GTK 4.18 and tested using Debian Trixie with the [GNOME](https://www.gnome.org/) and  [XFCE](https://xfce.org/) desktops. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GNOME  and Ubuntu desktops is available and can be downloaded from the binary directory. This have been built and tested using Debian Trixie with the [GNOME](https://www.gnome.org/) desktop. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
@@ -33,12 +33,12 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.5.6
+Version=0.7.2
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
 Icon=/home/your_user_name/Software/talkcalendar/calendar.png
-Exec=env GTK_THEME=Default /home/your_user_name/Software/talkcalendar/talkcalendar
+Exec=/home/your_user_name/Software/talkcalendar/talkcalendar
 Path=/home/your_user_name/Software/talkcalendar
 X-GNOME-UsesNotifications=true
 Categories=Office;
@@ -63,7 +63,7 @@ You can also copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.co
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and  select the "new event" menu item of press Ctrl+N. To edit an event, select it in day view panel and then select the "edit event" menu item o Ctrl+E . Likewise to delete an event select it in the day view panel and use the "delete event" menu item or the DELETE key. 
+Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and select the "new event" menu item or press Ctrl+N. To edit an event, select it in day view panel and then select the "edit event" menu item or press Ctrl+E. Likewise to delete an event select it in the day view panel and use the "delete event" menu item or the DELETE key. 
 
 Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
@@ -85,6 +85,13 @@ Press the spacebar to speak events for the selected day. Press the T-key to spea
 
 ### Information (F1)
 ![](talkcalendar-info.png)
+
+
+### Accent Colour
+
+The Talk Calendar Adwaita version makes use of accent colour which is set using GNOME settings.
+
+![](gnome-settings-accent-colour.png)
 
 
 ### Events Database
@@ -113,15 +120,23 @@ Talk Calendar uses it own internal speech synthesizer engine. It is a lightweigh
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
-Talk Calendar has been developed using Debian Trixie and tested with the GNOME (Wayland backend) with the XFCE (X11 backend) desktops. See the section below regarding fixing the GtkCalendar gtk_calendar_mark_day issue.
+Talk Calendar has been developed using Debian Trixie and tested with the GNOME (Wayland backend).
 
 ```
+sudo apt update
 sudo apt install build-essential
 sudo apt install libgtk-4-dev
 sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
+sudo apt install libadwaita-1-dev
 ```
+To check the libadwaita version use the command line below.
+
+```
+pkg-config --modversion libadwaita-1 
+```
+
 To check the installed Sqlite 3 version use the command below.
 
 ```
@@ -148,6 +163,15 @@ To run Talk Calendar from the terminal use
 ```
 ./talkcalendar
 ```
+
+Note that the Talk Calendar Makefile now uses the libadwaita library.
+
+
+### GTK4 version of Talk Calendar
+
+I have retained the source code for the GTK 4 only version of Talk Calendar which can be found in the directory called src-gtk. This is compiled in the same way using the Makefile provided and and can be used with desktops such as XFCE which do not use libadwaita. The main.c file for the Adwaita version of Talk Calendar uses  #include <adwaita.h> while the raw GTK 4 version does not.
+
+
 ### Building on Fedora
 
 With Fedora you need to install the following packages to compile Talk Calendar.
@@ -159,6 +183,7 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 sudo dnf install sqlite-devel
+sudo dnf install libadwaita-devel
 ```
 
 To check the installed Sqlite 3 version use the command below.
@@ -178,30 +203,6 @@ or
 dnf list gtk4-devel
 ```
 
-## Advanced
-
-### How to check which GTK4 libraries installed
-
-```
-apt list --installed "libgtk-4*"
-```
-On my Debian XFCE system I get the following.
-```
-libgtk-4-1/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
-libgtk-4-bin/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
-libgtk-4-common/stable,now 4.18.6+ds-2 all [installed,automatic]
-libgtk-4-dev/stable,now 4.18.6+ds-2 amd64 [installed]
-libgtk-4-media-gstreamer/stable,now 4.18.6+ds-2 amd64 [installed,automatic]
-```
-Make sure you have all of these to run Talk calendar.
-
-### GtkCalendar gtk_calendar_mark_day may fail on GNOME (Wayland) but works on XFCE?
-
-XFCE Environment: Uses XSettings and standard GTK theme engines that broadly expose widget CSS selectors. gtk_calendar_mark_day() injects standard .marked state classes or CSS nodes that traditional themes style visibly.
-
-GNOME Wayland Environment: Relies heavily on native GTK4/Libadwaita rendering rules. GNOME ignores traditional settings.ini or XSettings fallback styling, and modern Adwaita stylesheets in GTK4 have completely redesigned or omitted distinct background highlights for generic day marks in favour of custom-designed shell elements.
-
-To inject an environment variable directly within a desktop shortcut configuration, you use the standard core utility wrapper env. Using Exec=env GTK_THEME=Default in the desktop file spawns an independent environment shell context so that GTK4 falls back directly to its compiled engine baseline layout—internally referred to as the Default theme stylesheet. In this generic stylesheet, the calendar element contains full fallback parameters for .marked days (such as explicit coloured background padding or borders), making the calendar marks draw on screen exactly as required across all desktop environments natively.
 
 ## Versioning
 
@@ -229,18 +230,20 @@ Active and under development.
 
 * [Gio API](https://docs.gtk.org/gio/index.html)
 
+* [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/)
+
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [speech engine](https://github.com/crispinprojects/speak)
-
-* [Debian](https://www.debian.org/)
-
-* [XFCE](https://xfce.org/)
+* [My Speech Engine](https://github.com/crispinprojects/speak)
 
 * [GNOME](https://www.gnome.org/)
 
-* [Fedora](https://fedoraproject.org/)
+* [XFCE](https://xfce.org/)
+
+* [Debian](https://www.debian.org/)
 
 * [Ubuntu](https://ubuntu.com/download/desktop)
+
+* [Fedora](https://fedoraproject.org/)
