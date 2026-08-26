@@ -223,7 +223,21 @@ or
 ```
 dnf list gtk4-devel
 ```
+## GNOME Desktop Extensions (Creating Traditional Desktop Interface)
 
+GNOME extensions can be used to create a traditional desktop interface. Dash to Panel is an extension for the GNOME desktop environment that creates a taskbar similar to that found in other desktops. App Menu is an extension that displays a list of applications available for the user to launch. It organises applications into categorises.
+
+You need to install the GNOME extension manager using the software centre and then search for and install the "Dash to Panel" and "App Menu" extensions.
+
+![](gnome-extensions-manager.png)
+
+The App Menu extension needs the gir1.2-gmenu package installed which is used for creating menus.
+
+```
+sudo apt install gir1.2-gmenu-3.0
+suso apt install gnome-menus
+```
+The gir1.2-gmenu  package provides GObject introspection data for the GNOME menu library, which is part of the GNOME implementation of the freedesktop menu specification. It is used by applications to interact with the desktop menu system in GNOME environments.
 
 ## Versioning
 
