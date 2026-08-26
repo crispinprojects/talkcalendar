@@ -25,7 +25,25 @@ chmod +x talkcalendar
 ./talkcalendar
 ```
 
-## Desktop File
+## BASH Script Installer
+
+The easiest way to install Talk Calendar locally on  Debian GNOME or Ubuntu Adwaita distros is to use the BASH script installer from the terminal. This is found in the binary directory in the download. 
+
+To install Talk Calendar simply run the installer script as shown below and follow the on-screen instructions.
+
+```
+./install-talkcalendar.sh
+```
+
+To uninstall Talk Calendar run the script below
+
+```
+./uninstall-talkcalendar
+```
+
+You can open the BASH script installer using a Text Editor to view the code. One advantage of using a BASH script installer is that the code can be inspected to show exactly what is occurring. 
+
+## Manually Install Using Desktop File
 
 To install Talk Calendar locally create a  "org.gtk.talkcalendar.desktop" desktop file as shown below and copy it into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. 
 
@@ -169,8 +187,11 @@ Note that the Talk Calendar Makefile now uses the libadwaita library.
 
 ### GTK4 version of Talk Calendar
 
-I have retained the source code for the GTK 4 only version of Talk Calendar which can be found in the directory called src-gtk. This is compiled in the same way using the Makefile provided and and can be used with desktops such as XFCE which do not use libadwaita. The main.c file for the Adwaita version of Talk Calendar uses  #include <adwaita.h> while the raw GTK 4 version does not.
-
+I have retained the source code for the GTK 4 only version of Talk Calendar which can be found in the directory called src-gtk. This is compiled in the same way using the Makefile provided and and can be used with desktops such as XFCE which do not use libadwaita. The main.c file for the Adwaita version of Talk Calendar uses 
+```
+#include <adwaita.h> 
+```
+while the raw GTK 4 version does not.
 
 ### Building on Fedora
 
