@@ -1,16 +1,16 @@
 # Talk Calendar
 
-Talk Calendar is a personal desktop calendar for Linux which can read out calendar events.
+Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, event summary words and event times.
 
-The Calendar GUI has been developed using C, [GTK4](https://docs.gtk.org/gtk4/) and Adwaita for the GNOME and Ubuntu desktops. Adwaita is the  official default design language, user interface style, and widget library (libadwaita) for the GNOME Desktop Environment. 
+Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, XFCE, Cinnamon etc.). 
 
-A screenshot of Talk Calendar is shown below. 
+A screenshot of Talk Calendar is shown below.  
 
 ![](talkcalendar.png)
 
 ## Core Features
 
-* built with C and GTK4, Adwaita for GNOME and Ubuntu desktops
+* built with C and GTK4 for GNOME and Ubuntu desktops
 * month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
@@ -25,33 +25,16 @@ chmod +x talkcalendar
 ./talkcalendar
 ```
 
-## BASH Script Installer
-
-The easiest way to install Talk Calendar locally on  Debian GNOME or Ubuntu Adwaita distros is to use the BASH script installer from the terminal. This is found in the binary directory in the download. 
-
-To install Talk Calendar simply run the installer script as shown below and follow the on-screen instructions.
-
-```
-./install-talkcalendar.sh
-```
-
-To uninstall Talk Calendar run the script below
-
-```
-./uninstall-talkcalendar
-```
-
-You can open the BASH script installer using a Text Editor to view the code. One advantage of using a BASH script installer is that the code can be inspected to show exactly what is occurring. 
-
 ## Manually Install Using Desktop File
 
-To install Talk Calendar locally create a  "org.gtk.talkcalendar.desktop" desktop file as shown below and copy it into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. 
+To install Talk Calendar locally copy the  "org.gtk.talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
 
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify the "org.gtk.talkcalendar.desktop" file  shown below by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+
 
 ```
 [Desktop Entry]
-Version=0.7.2
+Version=0.8.0
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -77,7 +60,6 @@ Again change "your_user_name" to your user name. Note that ***.local*** is a hid
 
 You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". 
 
-You can also copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.config/autostart/*** hidden directory to make Talk Calendar run when you start a new desktop session.
 
 ## Calendar Interface
 
@@ -104,14 +86,6 @@ Press the spacebar to speak events for the selected day. Press the T-key to spea
 ### Information (F1)
 ![](talkcalendar-info.png)
 
-
-### Accent Colour
-
-The Talk Calendar Adwaita version makes use of accent colour which is set using GNOME settings.
-
-![](gnome-settings-accent-colour.png)
-
-
 ### Events Database
 
 Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQLite is a small, fast and full-featured SQL database engine written in C. 
@@ -132,13 +106,14 @@ To update from a previous version of Talk Calendar export the current calendar t
 
 ## Speech Synthesis
 
-Talk Calendar uses it own internal speech synthesizer engine. It is a lightweight G2P speech engine coded from scratch. You can find out more about how I developed this speech engine [here](https://github.com/crispinprojects/speak).
+Talk Calendar uses it own internal speech synthesizer engine. The diphone speech synthesizer has been replaced with my original word concatenation speech engine
+coded using word voice recordings. However, my diphone speech engine  can still be found found [here](https://github.com/crispinprojects/speak).
 
 ### Building on Debian 13 and Ubuntu 24.04 (x86 Hardware)
 
 To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
 
-Talk Calendar has been developed using Debian Trixie and tested with the GNOME (Wayland backend).
+Talk Calendar has been developed using Debian Trixie and tested with the GNOME (Wayland backend) and XFCE (X11 backend).
 
 ```
 sudo apt update
@@ -147,12 +122,6 @@ sudo apt install libgtk-4-dev
 sudo apt install libasound2-dev
 sudo apt install sqlite3
 sudo apt install libsqlite3-dev
-sudo apt install libadwaita-1-dev
-```
-To check the libadwaita version use the command line below.
-
-```
-pkg-config --modversion libadwaita-1 
 ```
 
 To check the installed Sqlite 3 version use the command below.
@@ -182,16 +151,11 @@ To run Talk Calendar from the terminal use
 ./talkcalendar
 ```
 
-Note that the Talk Calendar Makefile now uses the libadwaita library.
 
 
-### GTK4 version of Talk Calendar
+### LibAdwaita
 
-I have retained the source code for the GTK 4 only version of Talk Calendar which can be found in the directory called src-gtk. This is compiled in the same way using the Makefile provided and and can be used with desktops such as XFCE which do not use libadwaita. The main.c file for the Adwaita version of Talk Calendar uses 
-```
-#include <adwaita.h> 
-```
-while the raw GTK 4 version does not.
+I have dropped the libadwaita version of Talk Calendar as I was running into some memory management issues which I do not fully understand at the moment. It is probably something I am doing wrong. Also I could not find a way to use tooltips with GtkCalendar using overlays and libadwaita. I have gone back to using just raw GTK4 and my original custom calendar bypassing libadwaita themes. Desktops such as XFCE  do not use libadwaita themes.
 
 ### Building on Fedora
 
@@ -204,7 +168,6 @@ sudo dnf install gtk4-devel-docs
 sudo dnf install glib-devel
 sudo dnf install alsa-lib-devel
 sudo dnf install sqlite-devel
-sudo dnf install libadwaita-devel
 ```
 
 To check the installed Sqlite 3 version use the command below.
@@ -223,13 +186,33 @@ or
 ```
 dnf list gtk4-devel
 ```
+
+## Autostart Talk Calendar
+
+To make Talk Calendar run when you start a new desktop session create a "org.gtk.talkcalendar.desktop" file as shown below and copy it to the  ***~/.config/autostart/*** hidden directory. Where it says "your_user_name" replace this with you login name.
+
+```
+[Desktop Entry]
+Version=0.8.0
+Type=Application
+Name=Talk Calendar
+Comment=Talking calendar
+Icon=/home/your_user_name/Software/talkcalendar/calendar.png
+Exec=sh -c "sleep 1 && cd /home/your_user_name/Software/talkcalendar && ./talkcalendar"
+X-GNOME-UsesNotifications=true
+Categories=Office;
+MimeType=text/calendar;
+StartupNotify=true
+Name[en_GB]=TalkCalendar
+```
+
+Notice that this script bypasses the Path= key at startup with the Exec= line explicitly forcing the  Talk Calendar application to change to its proper working directory before launching. I found this to be particularly important when using the XFCE desktop environment due to the  inconsistent handling of the PATH = key. The sleep command inside your Exec line is used to create a short delay at startup. This gives the desktop components, audio drivers, and notification services plenty of time to fully load. The  && in the Exec line ensures the next command only runs after the sleep timer successfully finishes.
+
 ## GNOME Desktop Extensions (Creating Traditional Desktop Interface)
 
 GNOME extensions can be used to create a traditional desktop interface. Dash to Panel is an extension for the GNOME desktop environment that creates a taskbar similar to that found in other desktops. App Menu is an extension that displays a list of applications available for the user to launch. It organises applications into categorises.
 
 You need to install the GNOME extension manager using the software centre and then search for and install the "Dash to Panel" and "App Menu" extensions.
-
-![](gnome-extensions-manager.png)
 
 The App Menu extension needs the gir1.2-gmenu package installed which is used for creating menus.
 
@@ -265,13 +248,11 @@ Active and under development.
 
 * [Gio API](https://docs.gtk.org/gio/index.html)
 
-* [Adwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/)
-
 * [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
 
 * [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
 
-* [My Speech Engine](https://github.com/crispinprojects/speak)
+* [My Diphone Speech Engine](https://github.com/crispinprojects/speak)
 
 * [GNOME](https://www.gnome.org/)
 
