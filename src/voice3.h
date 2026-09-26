@@ -1,6 +1,7 @@
 /* VOICE3
  *
  * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
+ * Word recordings using my voice.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

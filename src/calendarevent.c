@@ -1,6 +1,6 @@
 /* calendarevent.c
  *
- * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +19,33 @@
  */
 #include "calendarevent.h"
 
-
 struct _CalendarEvent
 {
-    GObject parent_instance; //parent
-    gint    eventid; //field
-    gchar* summary; //field
-    gchar* location; //field
-    gchar* description; //field
+    GObject parent_instance; 
+    gint    eventid; 
+    gchar*  summary; 
+    gchar*  location; 
+    gchar*  description; 
 
-    gint    startyear; //field
-    gint    startmonth; //field
-    gint    startday; //field
-    gint    starthour; //field
-    gint    startmin; //field
+    gint    startyear; 
+    gint    startmonth; 
+    gint    startday; 
+    gint    starthour; 
+    gint    startmin; 
 
-    gint    endyear; //field
-    gint    endmonth; //field
-    gint    endday; //field
-    gint    endhour; //field
-    gint    endmin; //field
+    gint    endyear; 
+    gint    endmonth; 
+    gint    endday; 
+    gint    endhour; 
+    gint    endmin; 
 
-    gint    isyearly; //field
-    gint    isallday; //field   
-    gint    ispriority; //field  
+    gint    isyearly; 
+    gint    isallday;   
+    gint    ispriority; 
 };
 
 G_DEFINE_TYPE (CalendarEvent, calendar_event, G_TYPE_OBJECT);
-//G_DEFINE_FINAL_TYPE(CalendarEvent, calendar_event, G_TYPE_OBJECT)
-//======================================================================
-/**
- * @brief Initialize the CalendarEvent object.
- * @param self The CalendarEvent instance.
- */
+
 enum {
     PROP_0,
     PROP_EVENTID,
@@ -73,95 +67,79 @@ enum {
     PROP_ISPRIORITY,  
     LAST_PROP
 };
-
 static GParamSpec *properties[LAST_PROP];
 
-/**
- * @brief Get the instance properties.
- * @param object The GObject instance.
- * @param prop_id The property ID.
- * @param value The value to get.
- * @param pspec The parameter specification.
- */
 static void calendar_event_get_property(GObject *object,
                                         guint   prop_id,
                                         GValue  *value,
                                         GParamSpec *pspec)
 {
-    CalendarEvent *self =(CalendarEvent *)object;
-
+    CalendarEvent *self = (CalendarEvent *)object;
     switch (prop_id)
     {
         case PROP_EVENTID:
-             g_value_set_int(value, calendar_event_get_eventid(self)); //boxing
+            g_value_set_int(value, calendar_event_get_eventid(self));
             break;
         case PROP_SUMMARY:
-            g_value_set_string(value, calendar_event_get_summary(self)); //boxing
+            // Use static string setters to pass the reference without duplicating memory on the heap!
+            g_value_set_static_string(value, calendar_event_get_summary(self));
             break;
-         case PROP_LOCATION:
-            g_value_set_string(value, calendar_event_get_location(self)); //boxing
+        case PROP_LOCATION:
+            // Use static string setters to pass the reference without duplicating memory on the heap!
+            g_value_set_static_string(value, calendar_event_get_location(self));
             break;
-         case PROP_DESCRIPTION:
-            g_value_set_string(value, calendar_event_get_description(self)); //boxing
+        case PROP_DESCRIPTION:
+            // Use static string setters to pass the reference without duplicating memory on the heap!
+            g_value_set_static_string(value, calendar_event_get_description(self));
             break;
-         case PROP_STARTYEAR:
-             g_value_set_int(value, calendar_event_get_start_year(self)); //boxing
+        case PROP_STARTYEAR:
+            g_value_set_int(value, calendar_event_get_start_year(self));
             break;
-          case PROP_STARTMONTH:
-             g_value_set_int(value, calendar_event_get_start_month(self)); //boxing
+        case PROP_STARTMONTH:
+            g_value_set_int(value, calendar_event_get_start_month(self));
             break;
-         case PROP_STARTDAY:
-             g_value_set_int(value, calendar_event_get_start_day(self)); //boxing
+        case PROP_STARTDAY:
+            g_value_set_int(value, calendar_event_get_start_day(self));
             break;
-         case PROP_STARTHOUR:
-             g_value_set_int(value, calendar_event_get_start_hour(self)); //boxing
+        case PROP_STARTHOUR:
+            g_value_set_int(value, calendar_event_get_start_hour(self));
             break;
         case PROP_STARTMIN:
-             g_value_set_int(value, calendar_event_get_start_min(self)); //boxing
+            g_value_set_int(value, calendar_event_get_start_min(self));
             break;
-
-         case PROP_ENDYEAR:
-             g_value_set_int(value, calendar_event_get_end_year(self)); //boxing
+        case PROP_ENDYEAR:
+            g_value_set_int(value, calendar_event_get_end_year(self));
             break;
-          case PROP_ENDMONTH:
-             g_value_set_int(value, calendar_event_get_end_month(self)); //boxing
+        case PROP_ENDMONTH:
+            g_value_set_int(value, calendar_event_get_end_month(self));
             break;
-         case PROP_ENDDAY:
-             g_value_set_int(value, calendar_event_get_end_day(self)); //boxing
+        case PROP_ENDDAY:
+            g_value_set_int(value, calendar_event_get_end_day(self));
             break;
-         case PROP_ENDHOUR:
-             g_value_set_int(value, calendar_event_get_end_hour(self)); //boxing
+        case PROP_ENDHOUR:
+            g_value_set_int(value, calendar_event_get_end_hour(self));
             break;
         case PROP_ENDMIN:
-             g_value_set_int(value, calendar_event_get_end_min(self)); //boxing
+            g_value_set_int(value, calendar_event_get_end_min(self));
             break;
-
-         case PROP_ISYEARLY:
-             g_value_set_int(value, calendar_event_get_is_yearly(self)); //boxing
+        case PROP_ISYEARLY:
+            g_value_set_int(value, calendar_event_get_is_yearly(self));
             break;
-          case PROP_ISALLDAY:
-             g_value_set_int(value, calendar_event_get_is_allday(self)); //boxing
+        case PROP_ISALLDAY:
+            g_value_set_int(value, calendar_event_get_is_allday(self));
             break;                     
-         case PROP_ISPRIORITY:
-             g_value_set_int(value, calendar_event_get_is_priority(self)); //boxing
+        case PROP_ISPRIORITY:
+            g_value_set_int(value, calendar_event_get_is_priority(self));
             break;
     }
 }
 
-/**
- * @brief Set the instance properties.
- * @param self The CalendarEvent instance.
- * @param prop_id The property ID.
- * @param value The value to set.
- * @param pspec The parameter specification.
- */
 static void calendar_event_set_property(GObject *object,
                                         guint   prop_id,
                                         const GValue  *value,
                                         GParamSpec *pspec)
 {
-    CalendarEvent *self =(CalendarEvent *)object;
-
+    CalendarEvent *self = (CalendarEvent *)object;
     switch (prop_id)
     {
         case PROP_EVENTID:
@@ -170,199 +148,136 @@ static void calendar_event_set_property(GObject *object,
         case PROP_SUMMARY:
             calendar_event_set_summary(self, g_value_get_string(value));
             break;
-         case PROP_LOCATION:
+        case PROP_LOCATION:
             calendar_event_set_location(self, g_value_get_string(value));
             break;
-         case PROP_DESCRIPTION:
+        case PROP_DESCRIPTION:
             calendar_event_set_description(self, g_value_get_string(value));
             break;
-          case PROP_STARTYEAR:
+        case PROP_STARTYEAR:
             calendar_event_set_start_year(self, g_value_get_int(value));
             break;
-          case PROP_STARTMONTH:
+        case PROP_STARTMONTH:
             calendar_event_set_start_month(self, g_value_get_int(value));
             break;
-         case PROP_STARTDAY:
+        case PROP_STARTDAY:
             calendar_event_set_start_day(self, g_value_get_int(value));
             break;
         case PROP_STARTHOUR:
             calendar_event_set_start_hour(self, g_value_get_int(value));
             break;
-         case PROP_STARTMIN:
+        case PROP_STARTMIN:
             calendar_event_set_start_min(self, g_value_get_int(value));
             break;
-         case PROP_ENDYEAR:
+        case PROP_ENDYEAR:
             calendar_event_set_end_year(self, g_value_get_int(value));
             break;
-          case PROP_ENDMONTH:
+        case PROP_ENDMONTH:
             calendar_event_set_end_month(self, g_value_get_int(value));
             break;
-         case PROP_ENDDAY:
+        case PROP_ENDDAY:
             calendar_event_set_end_day(self, g_value_get_int(value));
             break;
         case PROP_ENDHOUR:
             calendar_event_set_end_hour(self, g_value_get_int(value));
             break;
-         case PROP_ENDMIN:
+        case PROP_ENDMIN:
             calendar_event_set_end_min(self, g_value_get_int(value));
             break;
-
-            case PROP_ISYEARLY:
+        case PROP_ISYEARLY:
             calendar_event_set_is_yearly(self, g_value_get_int(value));
             break;
-          case PROP_ISALLDAY:
+        case PROP_ISALLDAY:
             calendar_event_set_is_allday(self, g_value_get_int(value));
             break;                  
-         case PROP_ISPRIORITY:
+        case PROP_ISPRIORITY:
             calendar_event_set_is_priority(self, g_value_get_int(value));
-            break;       
-
+            break; 
     }
 }
 
-/**
- * @brief Class initialization function.
- * @param klass The CalendarEventClass instance.
- */
+// Implement finalize destructor path to release raw string heap allocations!
+static void calendar_event_finalize(GObject *object)
+{
+    CalendarEvent *self = (CalendarEvent *)object;
+    
+    g_clear_pointer(&self->summary, g_free);
+    g_clear_pointer(&self->location, g_free);
+    g_clear_pointer(&self->description, g_free);
+
+    // Hand execution over to the parent object destructor
+    G_OBJECT_CLASS(calendar_event_parent_class)->finalize(object);
+}
+
 static void calendar_event_class_init (CalendarEventClass *klass)
 {
-    //make class constructor static meaning not available outside this class
+    GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
-    GObjectClass *object_class =G_OBJECT_CLASS(klass);
-
-    //override these
     object_class->get_property = calendar_event_get_property;
     object_class->set_property = calendar_event_set_property;
+    
+    //Override and register the finalize destruction routine
+    object_class->finalize     = calendar_event_finalize;
 
-    //properties
     properties[PROP_EVENTID] =
-    g_param_spec_int("eventid",
-                     "eventid",
-                     "The event id",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
-
+    g_param_spec_int("eventid", "eventid", "The event id", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_SUMMARY] =
-    g_param_spec_string("summary",
-                        "Summary",
-                        "The event summary",
-                        NULL,
-                        (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-
+    g_param_spec_string("summary", "Summary", "The event summary", NULL, (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     properties[PROP_LOCATION] =
-    g_param_spec_string("location",
-                        "Location",
-                        "The event location",
-                        NULL,
-                        (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    g_param_spec_string("location", "Location", "The event location", NULL, (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     properties[PROP_DESCRIPTION] =
-    g_param_spec_string("description",
-                        "Description",
-                        "The event description",
-                        NULL,
-                        (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    g_param_spec_string("description", "Description", "The event description", NULL, (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     properties[PROP_STARTYEAR] =
-    g_param_spec_int("startyear",
-                     "startyear",
-                     "The event start year",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("startyear", "startyear", "The event start year", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_STARTMONTH] =
-    g_param_spec_int("startmonth",
-                     "startmonth",
-                     "The event start month",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("startmonth", "startmonth", "The event start month", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_STARTDAY] =
-    g_param_spec_int("startday",
-                     "startday",
-                     "The event start day",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("startday", "startday", "The event start day", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_STARTHOUR] =
-    g_param_spec_int("starthour",
-                     "starthour",
-                     "The event start hour",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("starthour", "starthour", "The event start hour", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_STARTMIN] =
-    g_param_spec_int("startmin",
-                     "startmin",
-                     "The event start minute",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("startmin", "startmin", "The event start minute", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ENDYEAR] =
-    g_param_spec_int("endyear",
-                     "endyear",
-                     "The event end year",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("endyear", "endyear", "The event end year", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ENDMONTH] =
-    g_param_spec_int("endmonth",
-                     "endmonth",
-                     "The event end month",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("endmonth", "endmonth", "The event end month", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ENDDAY] =
-    g_param_spec_int("endday",
-                     "endday",
-                     "The event end day",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("endday", "endday", "The event end day", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ENDHOUR] =
-    g_param_spec_int("endhour",
-                     "endhour",
-                     "The event end hour",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("endhour", "endhour", "The event end hour", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ENDMIN] =
-    g_param_spec_int("endmin",
-                     "endmin",
-                     "The event end minute",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("endmin", "endmin", "The event end minute", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ISYEARLY] =
-    g_param_spec_int("isyearly",
-                     "isyearly",
-                     "The event repeats yearly",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
+    g_param_spec_int("isyearly", "isyearly", "The event repeats yearly", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ISALLDAY] =
-    g_param_spec_int("isallday",
-                     "isallday",
-                     "This is an all day event",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
- 		
+    g_param_spec_int("isallday", "isallday", "This is an all day event", 0, G_MAXINT, 0, G_PARAM_READWRITE);
+
     properties[PROP_ISPRIORITY] =
-    g_param_spec_int("ispriority",
-                     "ispriority",
-                     "The event has high priority",
-                     0,G_MAXINT,0,
-                     G_PARAM_READWRITE);
-     
+    g_param_spec_int("ispriority", "ispriority", "The event has high priority", 0, G_MAXINT, 0, G_PARAM_READWRITE);
+ 
     g_object_class_install_properties(object_class, LAST_PROP, properties);
 }
-//======================================================================
+
 static void calendar_event_init (CalendarEvent *self)
-{  
-	//leave empty
+{ 
+    // leave empty
 }
+
 
 /**
  * @brief Finalize the CalendarEvent object.

@@ -1,6 +1,6 @@
 /* customcalendar.h
  *
- * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@ GDK_AVAILABLE_IN_ALL GType custom_calendar_get_type(void) G_GNUC_CONST;
 
 GDK_AVAILABLE_IN_ALL void custom_calendar_update (CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL void custom_calendar_goto_today (CustomCalendar *calendar);
+
+GDK_AVAILABLE_IN_ALL void custom_calendar_goto_dmy(CustomCalendar *calendar, int day, int month, int year);
 
 GDK_AVAILABLE_IN_ALL void custom_calendar_select_day(CustomCalendar *calendar, guint dday, guint month, guint year);
 

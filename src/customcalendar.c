@@ -1,6 +1,6 @@
 /* customcalendar.c
  *
- * Copyright 2025 Alan Crispin <crispinalan@gmail.com>
+ * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 
 //====================================================================
 // GTK4  Month View Calendar
-// Author: Alan Crispin <crispinalan@gmail.com>
-// Date: July 2025
+// Author: Alan Crispin
+// Date: July 2025 (updated Sept 2026)
 // Month View Calendar with tooltips for the Talk Calendar Project
 //====================================================================
 #include <glib.h>
@@ -136,10 +136,14 @@ static GParamSpec *properties[LAST_PROP];
  * @param self The CustomCalendar instance.
  * @param colour_str The color string (e.g., "rgb(221,160,221)").
  */
-void custom_calendar_set_today_colour(CustomCalendar *self, const gchar* colour_str)
+
+void custom_calendar_set_today_colour (CustomCalendar *self, const gchar* colour_str)
 {
+    g_return_if_fail(CUSTOM_IS_CALENDAR(self));
+    
     if (g_strcmp0(self->today_colour, colour_str) != 0) {
         g_free((gchar*)self->today_colour);
+        // Duplicate safely here, but ensure the GObject property installation matches
         self->today_colour = g_strdup(colour_str);
         update_css_providers(self);
     }
@@ -157,15 +161,16 @@ const gchar* custom_calendar_get_today_colour(CustomCalendar *self){
  * @param self The CustomCalendar instance.
  * @param colourname The color string.
  */
-void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colourname)
+void custom_calendar_set_event_colour (CustomCalendar *self, const gchar* colourname)
 {
+    g_return_if_fail(CUSTOM_IS_CALENDAR(self));
+    
     if (g_strcmp0(self->event_colour, colourname) != 0) {
         g_free((gchar*)self->event_colour);
         self->event_colour = g_strdup(colourname);
         update_css_providers(self);
     }
 }
-
 /**
  * @brief Gets the color for event days.
  * @param self The CustomCalendar instance.
@@ -184,7 +189,6 @@ void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_toolt
 {
     self->show_tooltips = show_tooltips;
 }
-
 /**
  * @brief Sets a property on the object.
  * @param object The GObject instance.
@@ -216,7 +220,6 @@ static void custom_calendar_set_property(GObject *object,
             break;
     }
 }
-
 /**
  * @brief Gets a property from the object.
  * @param object The GObject instance.
@@ -252,26 +255,53 @@ static void custom_calendar_get_property(GObject *object,
  * @brief Frees resources when the object is disposed.
  * @param object The GObject instance.
  */
+
 static void custom_calendar_dispose(GObject *object)
 {
-    CustomCalendar *calendar = CUSTOM_CALENDAR(object);
+    CustomCalendar *calendar = CUSTOM_CALENDAR (object);
+    //  Disconnect style providers from the global display surface context
+    GdkDisplay *display = gdk_display_get_default();
+    if (display) {
+        if (calendar->provider_today) {
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_today));
+        }
+        if (calendar->provider_event) {
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_event));
+        }
+        if (calendar->provider_none_month_day) {
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_none_month_day));
+        }
+        if (calendar->provider_frame) {
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_frame));
+        }
+    }
+    //  Unparent child layout widgets safely 
     g_clear_pointer(&calendar->date, g_date_time_unref);
     g_clear_pointer(&calendar->header, gtk_widget_unparent);
     g_clear_pointer(&calendar->grid, gtk_widget_unparent);
+    //  Clear local objects referencing allocations
     g_clear_pointer(&calendar->provider_today, g_object_unref);
     g_clear_pointer(&calendar->provider_event, g_object_unref);
     g_clear_pointer(&calendar->provider_none_month_day, g_object_unref);
     g_clear_pointer(&calendar->provider_frame, g_object_unref);
-
-    for (int i = 0; i < 32; i++) {
-        g_free(calendar->tooltip_array[i]);
+    //  Free internal tooltip data  
+    if (calendar->tooltip_array) {
+        for (int i = 0; i < 32; i++) {
+            g_free(calendar->tooltip_array[i]);
+        }
+        g_clear_pointer(&calendar->tooltip_array, g_free);
     }
-    g_clear_pointer(&calendar->tooltip_array, g_free);
-
     G_OBJECT_CLASS(custom_calendar_parent_class)->dispose(object);
 }
 
-
+static void custom_calendar_finalize(GObject *object)
+{
+    CustomCalendar *calendar = CUSTOM_CALENDAR(object);
+    // Free the heap allocated property strings initialized via g_strdup 
+    g_free((gchar *)calendar->today_colour);
+    g_free((gchar *)calendar->event_colour);
+    G_OBJECT_CLASS(custom_calendar_parent_class)->finalize(object);
+}
 /**
  * @brief Class initialization function.
  * @param klass The CustomCalendarClass instance.
@@ -283,6 +313,8 @@ static void custom_calendar_class_init(CustomCalendarClass *klass)
     widget_class = (GtkWidgetClass *)klass;
 
     object_class->dispose = custom_calendar_dispose;
+    object_class->finalize = custom_calendar_finalize; // 
+    
 
     object_class->set_property = custom_calendar_set_property;
     object_class->get_property = custom_calendar_get_property;
@@ -375,11 +407,14 @@ void custom_calendar_initialise_tooltip_array(CustomCalendar *calendar)
 {
     for (int i = 0; i < 32; i++)
     {
-        g_free(calendar->tooltip_array[i]);
-        calendar->tooltip_array[i] = g_strdup("");
+        // Safe check: Free the previous text memory block if one was active
+        if (calendar->tooltip_array[i] != NULL) {
+            g_free(calendar->tooltip_array[i]);
+        }
+        // Initialize to NULL. No heap allocations are wasted on empty cells!
+        calendar->tooltip_array[i] = NULL;
     }
 }
-
 /**
  * @brief Appends a new tooltip string to a specific day's tooltip.
  * @param calendar The CustomCalendar instance.
@@ -391,11 +426,17 @@ void custom_calendar_set_tooltip_str(CustomCalendar *calendar, int day, char* to
     if (day >= 1 && day <= 31)
     {
         char* old_tooltip_str = calendar->tooltip_array[day];
-        calendar->tooltip_array[day] = g_strconcat(old_tooltip_str, "\n", tooltip_str, NULL);
-        g_free(old_tooltip_str);
+        
+        // If old_tooltip_str is NULL, there is no text yet. Perform a clean copy!
+        if (old_tooltip_str == NULL) {
+            calendar->tooltip_array[day] = g_strdup(tooltip_str);
+        } else {
+            // Only concatenate with a newline if previous event text already exists
+            calendar->tooltip_array[day] = g_strconcat(old_tooltip_str, "\n", tooltip_str, NULL);
+            g_free(old_tooltip_str); // Free the intermediate step
+        }
     }
 }
-
 /**
  * @brief Gets whether tooltips are shown.
  * @param self The CustomCalendar instance.
@@ -470,29 +511,32 @@ gboolean custom_calendar_get_day_is_marked(CustomCalendar *calendar, guint day)
  * @param day The day of the month.
  * @param month The month (1-12).
  * @param year The year.
- * @return A newly allocated string with the weekday name.
+ * @return A static read-only string literal pointer. DO NOT FREE THIS RESULT!
  */
-static char* get_day_of_week(int day, int month, int year)
+static const char* get_day_of_week(int day, int month, int year)
 {
-    char* weekday_str = "unknown";
+    const char* weekday_str = "unknown";
     GDate* day_date = g_date_new_dmy(day, month, year);
+    
     if (day_date) {
         GDateWeekday weekday = g_date_get_weekday(day_date);
         switch(weekday)
         {
-            case G_DATE_MONDAY: weekday_str = "Monday"; break;
-            case G_DATE_TUESDAY: weekday_str = "Tuesday"; break;
+            case G_DATE_MONDAY:    weekday_str = "Monday";    break;
+            case G_DATE_TUESDAY:   weekday_str = "Tuesday";   break;
             case G_DATE_WEDNESDAY: weekday_str = "Wednesday"; break;
-            case G_DATE_THURSDAY: weekday_str = "Thursday"; break;
-            case G_DATE_FRIDAY: weekday_str = "Friday"; break;
-            case G_DATE_SATURDAY: weekday_str = "Saturday"; break;
-            case G_DATE_SUNDAY: weekday_str = "Sunday"; break;
+            case G_DATE_THURSDAY:  weekday_str = "Thursday";  break;
+            case G_DATE_FRIDAY:    weekday_str = "Friday";    break;
+            case G_DATE_SATURDAY:  weekday_str = "Saturday";  break;
+            case G_DATE_SUNDAY:    weekday_str = "Sunday";    break;
             default: break;
         }
         g_date_free(day_date);
     }
-    return g_strdup(weekday_str);
+    // Optimized: Return the raw static literal pointer directly (no g_strdup heap allocations)
+    return weekday_str; 
 }
+
 
 /**
  * @brief Calculates the first day of the month.
@@ -670,27 +714,30 @@ int custom_calendar_get_year(CustomCalendar *calendar)
  */
 static void update_date_labels(CustomCalendar *calendar)
 {
-    char* weekday_str = get_day_of_week(calendar->day, calendar->month, calendar->year);
+    // Now points safely directly to read-only string segment literals
+    const char* weekday_str = get_day_of_week(calendar->day, calendar->month, calendar->year);
     char* date_str = g_strdup_printf(" %s %d %s %d",
                                      weekday_str,
                                      calendar->day,
                                      monthname[calendar->month - 1],
                                      calendar->year);
-
+                                     
     PangoAttrList *bold_attr = pango_attr_list_new();
     pango_attr_list_insert(bold_attr, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
     gtk_label_set_attributes(GTK_LABEL(calendar->date_label), bold_attr);
     gtk_label_set_label(GTK_LABEL(calendar->date_label), date_str);
     pango_attr_list_unref(bold_attr);
-
+    
     gtk_label_set_label(GTK_LABEL(calendar->month_label), monthname[calendar->month - 1]);
+    
     char* year_str = g_strdup_printf("%d", calendar->year);
     gtk_label_set_label(GTK_LABEL(calendar->year_label), year_str);
-
-    g_free(weekday_str);
+    
+    // REMOVED g_free(weekday_str) since it's a static literal now!
     g_free(date_str);
     g_free(year_str);
 }
+
 
 /**
  * @brief Updates the day grid with correct day numbers, formatting, and tooltips.
@@ -720,7 +767,7 @@ static void update_day_grid(CustomCalendar *calendar)
             gtk_widget_remove_css_class(label, "none-month-day");
             gtk_widget_add_css_class(label, "calframe");
 
-            // Fix: Populate calendar->days for all grid cells
+            // Populate calendar->days for all grid cells
             calendar->days[y][x] = aday;
 
             if (aday > 0 && aday <= days_in_month) {
