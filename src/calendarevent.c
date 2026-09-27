@@ -19,32 +19,48 @@
  */
 #include "calendarevent.h"
 
+/**
+ * @brief The main structure definition for the CalendarEvent object instance.
+ * 
+ * This object serves as a pure data model tracking all metadata associated with 
+ * a single scheduled appointment or reminder item. Because it inherits from GObject 
+ * directly, it handles no rendering logic but manages owned heap strings that must 
+ * be cleanly freed on destruction.
+ */
 struct _CalendarEvent
 {
-    GObject parent_instance; 
-    gint    eventid; 
-    gchar*  summary; 
-    gchar*  location; 
-    gchar*  description; 
-
-    gint    startyear; 
-    gint    startmonth; 
-    gint    startday; 
-    gint    starthour; 
-    gint    startmin; 
-
-    gint    endyear; 
-    gint    endmonth; 
-    gint    endday; 
-    gint    endhour; 
-    gint    endmin; 
-
-    gint    isyearly; 
-    gint    isallday;   
-    gint    ispriority; 
+    GObject parent_instance;    /**< The parent GObject instance layout structure. */
+    
+    /* Identification Mapping Keys */
+    gint    eventid;            /**< Unique database primary key identifier for the event entry. */
+    
+    /* Textual Event Properties (Owned Heap Memory Strings) */
+    gchar*  summary;            /**< Brief title string representing the event header. */
+    gchar*  location;           /**< Optional physical address or venue description string. */
+    gchar*  description;        /**< Long-form optional detailed notes text block string. */
+    
+    /* Chronological Structure Elements: Start Boundaries */
+    gint    startyear;          /**< Four-digit starting calendar year integer. */
+    gint    startmonth;         /**< Starting numeric month integer value (1-12). */
+    gint    startday;           /**< Starting day of the month integer value (1-31). */
+    gint    starthour;          /**< Starting hour component matching a 24-hour cycle (0-23). */
+    gint    startmin;           /**< Starting minute timestamp component offset (0-59). */
+    
+    /* Chronological Structure Elements: End Boundaries */
+    gint    endyear;            /**< Four-digit terminal target year integer. */
+    gint    endmonth;           /**< Terminal target numeric month integer value (1-12). */
+    gint    endday;             /**< Terminal target day of the month integer value (1-31). */
+    gint    endhour;            /**< Terminal hour component matching a 24-hour cycle (0-23). */
+    gint    endmin;             /**< Terminal minute timestamp component offset (0-59). */
+    
+    /* Boolean Processing Directives (Mapped to C Bit integers) */
+    gint    isyearly;           /**< Evaluation flag evaluating to TRUE if this item recurs every calendar year cycle. */
+    gint    isallday;           /**< Evaluation flag evaluating to TRUE if this event skips raw hourly timestamp checks. */
+    gint    ispriority;         /**< Evaluation flag evaluating to TRUE if this event commands higher display prominence rules. */
 };
 
 G_DEFINE_TYPE (CalendarEvent, calendar_event, G_TYPE_OBJECT);
+
 
 enum {
     PROP_0,
@@ -69,12 +85,28 @@ enum {
 };
 static GParamSpec *properties[LAST_PROP];
 
+/**
+ * @brief Intercepts and processes property read requests for a CalendarEvent instance.
+ * 
+ * This internal GObject engine callback maps public `g_object_get()` requests to the 
+ * respective data accessor functions. For string-type properties (`summary`, `location`, 
+ * and `description`), it utilizes `g_value_set_static_string` to expose thread-safe, 
+ * copy-free read access to internal buffers without incurring additional allocation overhead.
+ *
+ * @param object  The generic GObject pointer (cast internally to CalendarEvent).
+ * @param prop_id The property identification token assigned during class_init.
+ * @param value   The destination GValue container where property contents are boxed.
+ * @param pspec   The metadata parameter specification tracking this property field.
+ * 
+ * @return void
+ */
 static void calendar_event_get_property(GObject *object,
                                         guint   prop_id,
                                         GValue  *value,
                                         GParamSpec *pspec)
 {
     CalendarEvent *self = (CalendarEvent *)object;
+
     switch (prop_id)
     {
         case PROP_EVENTID:
@@ -89,7 +121,7 @@ static void calendar_event_get_property(GObject *object,
             g_value_set_static_string(value, calendar_event_get_location(self));
             break;
         case PROP_DESCRIPTION:
-            // Use static string setters to pass the reference without duplicating memory on the heap!
+            // Use static string setters to pass the if-bounds reference without duplicating memory on the heap!
             g_value_set_static_string(value, calendar_event_get_description(self));
             break;
         case PROP_STARTYEAR:
@@ -131,15 +163,34 @@ static void calendar_event_get_property(GObject *object,
         case PROP_ISPRIORITY:
             g_value_set_int(value, calendar_event_get_is_priority(self));
             break;
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+            break;
     }
 }
 
+/**
+ * @brief Intercepts and processes property write requests for a CalendarEvent instance.
+ * 
+ * This internal GObject engine callback maps standard `g_object_set()` requests to the 
+ * respective data mutator/setter functions. For string inputs (`summary`, `location`, 
+ * and `description`), the values extracted from the generic GValue are safely passed 
+ * downstream, where your class setters handle copying or string duplicating routines.
+ *
+ * @param object  The generic GObject pointer (cast internally to CalendarEvent).
+ * @param prop_id The property identification token assigned during class_init.
+ * @param value   The source GValue container holding the input payload.
+ * @param pspec   The metadata parameter specification tracking this property field.
+ * 
+ * @return void
+ */
 static void calendar_event_set_property(GObject *object,
                                         guint   prop_id,
                                         const GValue  *value,
                                         GParamSpec *pspec)
 {
     CalendarEvent *self = (CalendarEvent *)object;
+
     switch (prop_id)
     {
         case PROP_EVENTID:
@@ -193,14 +244,31 @@ static void calendar_event_set_property(GObject *object,
         case PROP_ISPRIORITY:
             calendar_event_set_is_priority(self, g_value_get_int(value));
             break; 
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+            break;
     }
 }
 
-// Implement finalize destructor path to release raw string heap allocations!
+
+/**
+ * @brief Performs final heap memory deallocation before a CalendarEvent object is destroyed.
+ * 
+ * This function functions as the explicit instance destructor for the data model. 
+ * It is guaranteed by GObject to execute exactly once when the reference count drops to zero. 
+ * It cleanly clears and frees the heap-allocated string properties (`summary`, `location`, 
+ * and `description`) using safe pointer wiping to prevent memory leaks, before chaining up 
+ * to the parent class's finalize handler.
+ *
+ * @param object The GObject instance undergoing terminal finalisation.
+ * 
+ * @return void
+ */
 static void calendar_event_finalize(GObject *object)
 {
     CalendarEvent *self = (CalendarEvent *)object;
     
+    // Safely clear and deallocate dynamic heap string buffers
     g_clear_pointer(&self->summary, g_free);
     g_clear_pointer(&self->location, g_free);
     g_clear_pointer(&self->description, g_free);
@@ -209,14 +277,45 @@ static void calendar_event_finalize(GObject *object)
     G_OBJECT_CLASS(calendar_event_parent_class)->finalize(object);
 }
 
+
+/**
+ * @brief Class initialization function for the CalendarEvent data model.
+ * 
+ * Configures the class-wide structures, overrides base GObject lifecycle handlers, 
+ * and registers all data properties required to describe a calendar event. This function 
+ * executes exactly once when the class type is first referenced at runtime.
+ * 
+ * ### Overridden Methods
+ * - `get_property`: Intercepts property value read requests.
+ * - `set_property`: Intercepts property value write requests.
+ * - `finalize`: Cleans up dynamic heap string buffers during object destruction.
+ * 
+ * ### Installed Properties
+ * - `eventid` (integer): Database identifier.
+ * - `summary` (string): Title/headline text of the event.
+ * - `location` (string): Venue or physical coordinates text.
+ * - `description` (string): Detailed body notes or description text.
+ * - `startyear` / `endyear` (integer): Boundary years for the event lifespan.
+ * - `startmonth` / `endmonth` (integer): Boundary months (1-12).
+ * - `startday` / `endday` (integer): Boundary days (1-31).
+ * - `starthour` / `endhour` (integer): Boundary hours (0-23).
+ * - `startmin` / `endmin` (integer): Boundary minutes (0-59).
+ * - `isyearly` (integer): Flag tracking annual recurrence definitions.
+ * - `isallday` (integer): Flag indicating time-agnostic daily boundaries.
+ * - `ispriority` (integer): Flag sorting display precedence hierarchy.
+ *
+ * @param klass A pointer to the CalendarEventClass layout structure.
+ * 
+ * @return void
+ */
 static void calendar_event_class_init (CalendarEventClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
     object_class->get_property = calendar_event_get_property;
-    object_class->set_property = calendar_event_set_property;
+    object_class->set_property = calendar_event_set_property;    
     
-    //Override and register the finalize destruction routine
+    // Override and register the finalize destruction routine
     object_class->finalize     = calendar_event_finalize;
 
     properties[PROP_EVENTID] =
@@ -268,14 +367,25 @@ static void calendar_event_class_init (CalendarEventClass *klass)
     g_param_spec_int("isallday", "isallday", "This is an all day event", 0, G_MAXINT, 0, G_PARAM_READWRITE);
 
     properties[PROP_ISPRIORITY] =
-    g_param_spec_int("ispriority", "ispriority", "The event has high priority", 0, G_MAXINT, 0, G_PARAM_READWRITE);
- 
+    g_param_spec_int("ispriority", "ispriority", "The event has high priority", 0, G_MAXINT, 0, G_PARAM_READWRITE); 
+
     g_object_class_install_properties(object_class, LAST_PROP, properties);
 }
 
+/**
+ * @brief Instance initialization function for a CalendarEvent object.
+ * 
+ * Serves as the instance-level constructor. Because GObject guarantees all instance 
+ * structures are zero-filled out-of-the-box (`NULL` pointers and numerical zeroes), 
+ * no explicit variable population is required here.
+ *
+ * @param self A pointer to the newly allocated CalendarEvent instance.
+ * 
+ * @return void
+ */
 static void calendar_event_init (CalendarEvent *self)
-{ 
-    // leave empty
+{
+    /* Intentionally left empty as zero-allocation initialization is handled by GObject */
 }
 
 
@@ -291,8 +401,6 @@ static void calendar_event_dispose(GObject *object)
     g_clear_pointer(&self->description, g_free);
     G_OBJECT_CLASS(calendar_event_parent_class)->dispose(object);
 }
-
-
 
 /**
  * @brief Get the event ID.

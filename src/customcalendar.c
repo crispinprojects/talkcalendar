@@ -60,46 +60,68 @@ typedef struct _CustomCalendarClass CustomCalendarClass;
 typedef struct _CustomCalendarPrivate CustomCalendarPrivate;
 
 /**
- * @brief The main structure for the CustomCalendar widget.
+ * @brief The main structure definition for the CustomCalendar widget instance.
+ * 
+ * This structure maintains the state data, child layout hierarchy elements, 
+ * day arrays, color configs, and active CSS styling providers for the calendar instance.
  */
 struct _CustomCalendar
 {
-    GtkWidget widget; //parent
-    GtkWidget *header; //navigation header
-    GtkWidget *btn_next_month;
-    GtkWidget *month_label;
-    GtkWidget *btn_prev_month;
-    GtkWidget *date_label;
-    GtkWidget *btn_next_year;
-    GtkWidget *year_label;
-    GtkWidget *btn_prev_year;
+    GtkWidget parent_instance;              /**< The parent GtkWidget instance layout. */
 
-    GtkWidget *grid; //calendar grid layout
-    GtkWidget *monday_label;
-    GtkWidget *tuesday_label;
-    GtkWidget *wednesday_label;
-    GtkWidget *thursday_label;
-    GtkWidget *friday_label;
-    GtkWidget *saturday_label;
-    GtkWidget *sunday_label;
-    GtkWidget *day_number_labels[6][7];
-    GDateTime *date;
-    int day;
-    int month;
-    int year;
-    int day_month[6][7];
-    int days[6][7];
-    gchar** tooltip_array;
-    int num_marked_days;
-    int marked_day[32];
-    const gchar* today_colour;
-    const gchar* event_colour;
-    gboolean show_tooltips;
-    GtkCssProvider *provider_today;
-    GtkCssProvider *provider_event;
-    GtkCssProvider *provider_none_month_day;
-    GtkCssProvider *provider_frame;
+    /* Sub-Layout Elements: Header Navigation */
+    GtkWidget *header;                      /**< Box container layout mapping the top navigation bar. */
+    GtkWidget *btn_next_month;              /**< Iconic button navigation tracking forward one month page. */
+    GtkWidget *month_label;                 /**< Context label text displaying the active written month. */
+    GtkWidget *btn_prev_month;              /**< Iconic button navigation tracking backward one month page. */
+    GtkWidget *date_label;                  /**< Context label tracking auxiliary numeric system date markers. */
+    GtkWidget *btn_next_year;               /**< Iconic button navigation tracking forward one calendar year. */
+    GtkWidget *year_label;                  /**< Context label text displaying the active numeric four-digit year. */
+    GtkWidget *btn_prev_year;               /**< Iconic button navigation tracking backward one calendar year. */
+
+    /* Sub-Layout Elements: Calendar Grid */
+    GtkWidget *grid;                        /**< Core GtkGrid layout structuring the daily matrix fields. */
+    GtkWidget *monday_label;                /**< Weekday label mapping pointer tracking Monday header columns. */
+    GtkWidget *tuesday_label;               /**< Weekday label mapping pointer tracking Tuesday header columns. */
+    GtkWidget *wednesday_label;             /**< Weekday label mapping pointer tracking Wednesday header columns. */
+    GtkWidget *thursday_label;              /**< Weekday label mapping pointer tracking Thursday header columns. */
+    GtkWidget *friday_label;                /**< Weekday label mapping pointer tracking Friday header columns. */
+    GtkWidget *saturday_label;              /**< Weekday label mapping pointer tracking Saturday header columns. */
+    GtkWidget *sunday_label;                /**< Weekday label mapping pointer tracking Sunday header columns. */
+    GtkWidget *day_number_labels[6][7];    /**< Matrix map containing label pointers displaying individual date numeric keys. */
+
+    /* Chronological Processing Tracking State */
+    GDateTime *date;                        /**< Core unreffable date tracking context window instance. */
+    int day;                                /**< Active target numerical calendar selected day integer. */
+    int month;                              /**< Active target numerical calendar selected month integer. */
+    int year;                               /**< Active target numerical calendar selected year integer. */
+    int day_month[6][7];                    /**< Matrix mapping showing chronological day associations across layout grids. */
+    int days[6][7];                         /**< Matrix mapping containing calculated month day integers (allows negatives/overflows for padding). */
+
+    /* Internal Data Matrix Maps & Array States */
+    gchar** tooltip_array;                  /**< Owned heap array of allocated strings (`g_new`/`g_free`) storing tooltip popups for days 1-31. */
+    int num_marked_days;                    /**< Counter keeping track of the total number of standard active calendar event markers. */
+    int marked_day[32];                     /**< Boolean integer flags array identifying indices tracking active standard events. */
+    int num_notable_days;                   /**< Counter keeping track of the total number of active holiday calendar notable markers. */
+    int notable_day[32];                    /**< Boolean integer flags array identifying indices tracking active holiday markers. */
+
+    /* Custom Configurable Styling Properties (Owned Heap Memory Strings) */
+    const gchar* today_colour;              /**< Target string property spec holding CSS markup for the active current date box. */
+    const gchar* event_colour;              /**< Target string property spec holding CSS markup for structural event boxes. */
+    const gchar* notable_colour;            /**< Target string property spec holding CSS markup for identifying calendar holidays. */
+    gboolean show_tooltips;                 /**< Flag state identifying whether hover popup operations are visible. */
+
+    /* Dynamic CSS Application Layout Providers */
+    GtkCssProvider *provider_today;         /**< Reference tracked style stylesheet context map for current date highlights. */
+    GtkCssProvider *provider_event;         /**< Reference tracked style stylesheet context map for active standard events. */
+    GtkCssProvider *provider_notable;       /**< Reference tracked style stylesheet context map for active holiday items. */
+    GtkCssProvider *provider_none_month_day;/**< Reference tracked style stylesheet context map dimming non-active padding days. */
+    GtkCssProvider *provider_frame;         /**< Reference tracked style stylesheet context map tracing cell perimeter borders. */
+
+    /* Heap Text Suffix Property String */
+    gchar *notable_date_suffix;             /**< Dynamic owned holiday suffix string appended to text labels (e.g., "Holiday"). */
 };
+
 
 /**
  * @brief The class structure for CustomCalendar, 
@@ -125,6 +147,7 @@ enum {
     PROP_0,
     PROP_TODAYCOLOUR,
     PROP_EVENTCOLOUR,
+    PROP_NOTABLECOLOUR,
     PROP_SHOWTOOLTIPS,
     LAST_PROP
 };
@@ -180,6 +203,25 @@ const gchar* custom_calendar_get_event_colour(CustomCalendar *self){
     return self->event_colour;
 }
 
+void custom_calendar_set_notable_colour (CustomCalendar *self, const gchar* colourname)
+{
+    g_return_if_fail(CUSTOM_IS_CALENDAR(self));
+    
+    if (g_strcmp0(self->notable_colour, colourname) != 0) {
+        g_free((gchar*)self->notable_colour);
+        self->notable_colour = g_strdup(colourname);
+        update_css_providers(self);
+    }
+}
+/**
+ * @brief Gets the color for event days.
+ * @param self The CustomCalendar instance.
+ * @return The color string.
+ */
+const gchar* custom_calendar_get_notable_colour(CustomCalendar *self){
+    return self->notable_colour;
+}
+
 /**
  * @brief Sets whether to show tooltips.
  * @param self The CustomCalendar instance.
@@ -190,18 +232,25 @@ void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_toolt
     self->show_tooltips = show_tooltips;
 }
 /**
- * @brief Sets a property on the object.
- * @param object The GObject instance.
- * @param prop_id The property ID.
- * @param value The value to set.
- * @param pspec The parameter specification.
+ * @brief Sets a property on the CustomCalendar instance.
+ * 
+ * This function is an internal GObject override callback. It intercepts requests 
+ * from g_object_set() or UI builder declarations, parses the generic GValue into 
+ * the appropriate raw C type, and routes it to the matching public widget setter method.
+ *
+ * @param object  The generic GObject instance (cast internally to CustomCalendar).
+ * @param prop_id The numeric identifier assigned to the property in class_init.
+ * @param value   The generic GValue containing the input data wrapper.
+ * @param pspec   The metadata parameter specification describing the property.
+ * 
+ * @return void
  */
 static void custom_calendar_set_property(GObject *object,
                                          guint prop_id,
                                          const GValue *value,
                                          GParamSpec *pspec)
 {
-    CustomCalendar *self = (CustomCalendar *)object;
+    CustomCalendar *self = CUSTOM_CALENDAR(object);
 
     switch (prop_id)
     {
@@ -211,28 +260,39 @@ static void custom_calendar_set_property(GObject *object,
         case PROP_EVENTCOLOUR:
             custom_calendar_set_event_colour(self, g_value_get_string(value));
             break;
+        case PROP_NOTABLECOLOUR:
+            custom_calendar_set_notable_colour(self, g_value_get_string(value));
+            break;
         case PROP_SHOWTOOLTIPS:
             custom_calendar_set_show_tooltips(self, g_value_get_boolean(value));
             break;
 
         default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
             break;
     }
 }
+
 /**
- * @brief Gets a property from the object.
- * @param object The GObject instance.
- * @param prop_id The property ID.
- * @param value The value to get.
- * @param pspec The parameter specification.
+ * @brief Gets a property value from the CustomCalendar instance.
+ * 
+ * This function is an internal GObject override callback. It intercepts requests 
+ * from g_object_get(), fetches the current value via the public widget getter method, 
+ * and boxes it safely inside the provided GValue container.
+ *
+ * @param object  The generic GObject instance (cast internally to CustomCalendar).
+ * @param prop_id The numeric identifier assigned to the property in class_init.
+ * @param value   The destination GValue container where the output will be packed.
+ * @param pspec   The metadata parameter specification describing the property.
+ * 
+ * @return void
  */
 static void custom_calendar_get_property(GObject *object,
                                          guint prop_id,
                                          GValue *value,
                                          GParamSpec *pspec)
 {
-    CustomCalendar *self = (CustomCalendar *)object;
+    CustomCalendar *self = CUSTOM_CALENDAR(object);
 
     switch (prop_id)
     {
@@ -242,24 +302,36 @@ static void custom_calendar_get_property(GObject *object,
         case PROP_EVENTCOLOUR:
             g_value_set_string(value, custom_calendar_get_event_colour(self));
             break;
+        case PROP_NOTABLECOLOUR:
+            g_value_set_string(value, custom_calendar_get_notable_colour(self));
+            break;
         case PROP_SHOWTOOLTIPS:
             g_value_set_boolean(value, custom_calendar_get_show_tooltips(self));
             break;
-
+        
         default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
             break;
     }
 }
-/**
- * @brief Frees resources when the object is disposed.
- * @param object The GObject instance.
- */
 
+/**
+ * @brief Releases object references and unparents child widgets.
+ * 
+ * This method may be called multiple times during the object's destruction phase.
+ * It is responsible for safely breaking references to other GObjects (such as style providers),
+ * clearing managed time instances, and breaking the widget tree mapping by unparenting 
+ * child layouts.
+ *
+ * @param object The GObject instance undergoing resource disposal.
+ * 
+ * @return void
+ */
 static void custom_calendar_dispose(GObject *object)
 {
-    CustomCalendar *calendar = CUSTOM_CALENDAR (object);
-    //  Disconnect style providers from the global display surface context
+    CustomCalendar *calendar = CUSTOM_CALENDAR(object);
+
+    // 1. Disconnect style providers from the global display surface context
     GdkDisplay *display = gdk_display_get_default();
     if (display) {
         if (calendar->provider_today) {
@@ -268,6 +340,9 @@ static void custom_calendar_dispose(GObject *object)
         if (calendar->provider_event) {
             gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_event));
         }
+        if (calendar->provider_notable) {
+            gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_notable));
+        }
         if (calendar->provider_none_month_day) {
             gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_none_month_day));
         }
@@ -275,50 +350,95 @@ static void custom_calendar_dispose(GObject *object)
             gtk_style_context_remove_provider_for_display(display, GTK_STYLE_PROVIDER(calendar->provider_frame));
         }
     }
-    //  Unparent child layout widgets safely 
+
+    // 2. Clear referenced objects safely (handles multiple invocations gracefully)
     g_clear_pointer(&calendar->date, g_date_time_unref);
-    g_clear_pointer(&calendar->header, gtk_widget_unparent);
-    g_clear_pointer(&calendar->grid, gtk_widget_unparent);
-    //  Clear local objects referencing allocations
     g_clear_pointer(&calendar->provider_today, g_object_unref);
     g_clear_pointer(&calendar->provider_event, g_object_unref);
+    g_clear_pointer(&calendar->provider_notable, g_object_unref);
     g_clear_pointer(&calendar->provider_none_month_day, g_object_unref);
     g_clear_pointer(&calendar->provider_frame, g_object_unref);
-    //  Free internal tooltip data  
+
+    // 3. Unparent child layout widgets safely to break widget tree hierarchy
+    g_clear_pointer(&calendar->header, gtk_widget_unparent);
+    g_clear_pointer(&calendar->grid, gtk_widget_unparent);
+    
+    // Always chain up to the parent class's dispose handler
+    G_OBJECT_CLASS(custom_calendar_parent_class)->dispose(object);
+}
+
+/**
+ * @brief Performs final heap memory deallocation before object destruction.
+ * 
+ * This method is guaranteed to run exactly once at the end of the lifecycle.
+ * It tears down raw data structures, free loops, and dynamic heap properties
+ * that cannot be safely processed inside a multi-pass dispose environment.
+ *
+ * @param object The GObject instance undergoing terminal finalisation.
+ * 
+ * @return void
+ */
+static void custom_calendar_finalize(GObject *object)
+{
+    CustomCalendar *calendar = CUSTOM_CALENDAR(object);
+
+    // 1. Free internal raw heap properties
+    g_free((gchar *)calendar->today_colour);
+    g_free((gchar *)calendar->event_colour);
+    g_free((gchar *)calendar->notable_colour);
+    g_free((gchar *)calendar->notable_date_suffix);
+
+    // 2. Free internal tooltip data matrices safely
     if (calendar->tooltip_array) {
         for (int i = 0; i < 32; i++) {
             g_free(calendar->tooltip_array[i]);
         }
-        g_clear_pointer(&calendar->tooltip_array, g_free);
+        g_free(calendar->tooltip_array);
+        calendar->tooltip_array = NULL;
     }
-    G_OBJECT_CLASS(custom_calendar_parent_class)->dispose(object);
-}
 
-static void custom_calendar_finalize(GObject *object)
-{
-    CustomCalendar *calendar = CUSTOM_CALENDAR(object);
-    // Free the heap allocated property strings initialized via g_strdup 
-    g_free((gchar *)calendar->today_colour);
-    g_free((gchar *)calendar->event_colour);
+    // Always chain up to the parent class's finalize handler
     G_OBJECT_CLASS(custom_calendar_parent_class)->finalize(object);
 }
+
 /**
- * @brief Class initialization function.
- * @param klass The CustomCalendarClass instance.
+ * @brief Class initialization function for the CustomCalendar widget.
+ * 
+ * Configures the class-wide structures, hooks up base object lifecycle handlers,
+ * registers custom widget properties, and creates application signals.
+ * 
+ * ### Overridden Methods
+ * - `dispose`: Releases reference-counted objects and detaches style providers.
+ * - `finalize`: Frees internal raw heap buffers and strings.
+ * - `set_property` / `get_property`: Accessor interfaces for GObject properties.
+ * 
+ * ### Registered Properties
+ * - `todaycolour` (string): CSS background color string for the active date box.
+ * - `eventcolour` (string): CSS background color string highlighting standard event rows.
+ * - `notablecolour` (string): CSS color string dedicated to identifying calendar holiday markers.
+ * - `showtooltips` (boolean): Flag indicating whether hovering elements spawns data info text.
+ * 
+ * ### Registered Signals
+ * - `day-selected`: Dispatched when a day block is activated by a pointer action.
+ * - `next-month` / `prev-month`: Emitted when swapping chronological boundaries horizontally.
+ * - `next-year` / `prev-year`: Emitted when updating yearly calendar intervals.
+ *
+ * @param klass A pointer to the CustomCalendarClass definition layout.
+ * 
+ * @return void
  */
 static void custom_calendar_class_init(CustomCalendarClass *klass)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(klass);
-    GtkWidgetClass *widget_class;
-    widget_class = (GtkWidgetClass *)klass;
+    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(klass);
 
+    // 1. Map core lifecycle virtual method pointers
     object_class->dispose = custom_calendar_dispose;
-    object_class->finalize = custom_calendar_finalize; // 
-    
-
+    object_class->finalize = custom_calendar_finalize;
     object_class->set_property = custom_calendar_set_property;
     object_class->get_property = custom_calendar_get_property;
 
+    // 2. Define custom properties
     properties[PROP_TODAYCOLOUR] =
         g_param_spec_string("todaycolour",
                             "todaycolour",
@@ -332,6 +452,13 @@ static void custom_calendar_class_init(CustomCalendarClass *klass)
                             "colour string for an event",
                             "rgb(211,211,211)",
                             (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    
+    properties[PROP_NOTABLECOLOUR] =
+        g_param_spec_string("notablecolour",
+                            "notablecolour",
+                            "colour string for notable date",
+                            "rgb(211,21,21)",
+                            (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     properties[PROP_SHOWTOOLTIPS] =
         g_param_spec_boolean("showtooltips",
@@ -342,6 +469,7 @@ static void custom_calendar_class_init(CustomCalendarClass *klass)
 
     g_object_class_install_properties(object_class, LAST_PROP, properties);
 
+    // 3. Register layout runtime and notification signals
     custom_calendar_signals[DAY_SELECTED_SIGNAL] =
         g_signal_new("day-selected",
                      G_OBJECT_CLASS_TYPE(object_class),
@@ -387,8 +515,10 @@ static void custom_calendar_class_init(CustomCalendarClass *klass)
                      NULL,
                      G_TYPE_NONE, 0);
 
+    // 4. Declare standard layout manager for custom positioning loops
     gtk_widget_class_set_layout_manager_type(widget_class, GTK_TYPE_BOX_LAYOUT);
 }
+
 
 /**
  * @brief Creates a new CustomCalendar widget.
@@ -507,6 +637,62 @@ gboolean custom_calendar_get_day_is_marked(CustomCalendar *calendar, guint day)
 }
 
 /**
+ * @brief Resets all notable days.
+ * @param calendar The CustomCalendar instance.
+ */
+void custom_calendar_reset_notables(CustomCalendar *calendar)
+{
+    g_return_if_fail(CUSTOM_IS_CALENDAR(calendar));
+
+    for (int i = 0; i < 32; i++){
+        calendar->notable_day[i] = FALSE;
+    }
+    calendar->num_notable_days = 0;
+}
+/**
+ * @brief Marks a specific day as being notable.
+ * @param calendar The CustomCalendar instance.
+ * @param day The day number (1-31).
+ */
+void custom_calendar_mark_notable(CustomCalendar *calendar, guint day)
+{
+    g_return_if_fail(CUSTOM_IS_CALENDAR(calendar));
+
+    if (day >= 1 && day <= 31)
+    {
+        calendar->notable_day[day] = TRUE;
+        calendar->num_notable_days++;
+    }
+}
+/**
+ * @brief Unmarks a specific notable day.
+ * @param calendar The CustomCalendar instance.
+ * @param day The day number (1-31).
+ */
+void custom_calendar_unmark_notable(CustomCalendar *calendar, guint day)
+{
+    g_return_if_fail(CUSTOM_IS_CALENDAR(calendar));
+
+    if (day >= 1 && day <= 31)
+    {
+        calendar->notable_day[day] = FALSE;
+        calendar->num_notable_days--;
+    }
+}
+/**
+ * @brief Checks if a day is notable.
+ * @param calendar The CustomCalendar instance.
+ * @param day The day number (1-31).
+ * @return TRUE if the day is notable, FALSE otherwise.
+ */
+gboolean custom_calendar_get_day_is_notable(CustomCalendar *calendar, guint day)
+{
+    if (day >= 1 && day <= 31)
+        return calendar->notable_day[day];
+    return FALSE;
+}
+
+/**
  * @brief Determines the day of the week for a given date.
  * @param day The day of the month.
  * @param month The month (1-12).
@@ -536,8 +722,6 @@ static const char* get_day_of_week(int day, int month, int year)
     // Optimized: Return the raw static literal pointer directly (no g_strdup heap allocations)
     return weekday_str; 
 }
-
-
 /**
  * @brief Calculates the first day of the month.
  * @param month The month (1-12).
@@ -557,38 +741,56 @@ static int first_day_of_month(int month, int year)
             (century / 4) + (5 * century) +
             year + (year / 4)) % 7;
 }
-
-
 /**
  * @brief Initializes the CustomCalendar widget.
  * @param calendar The CustomCalendar instance.
  */
+/**
+ * @brief Instance initialization function for a CustomCalendar object.
+ * 
+ * Sets up individual instance state data properties, defaults colors on the heap, 
+ * binds standard single-click controller gestures, builds internal structural layout trees,
+ * and sets the target focus map.
+ * 
+ * This function functions closely to a standard object constructor in C++ or Qt frameworks.
+ *
+ * @param calendar A pointer to the newly allocated CustomCalendar instance.
+ * 
+ * @return void
+ */
 static void custom_calendar_init(CustomCalendar *calendar)
 {
     GtkWidget *widget = GTK_WIDGET(calendar);
-
+    
+    // 1. Initialise core date variables and internal string placeholders
+    calendar->notable_date_suffix = NULL;
     calendar->day = 0;
     calendar->month = 0;
     calendar->year = 0;
     calendar->show_tooltips = TRUE;
+    
+    // 2. Allocate the 32-element pointer array tracking custom hover labels
     calendar->tooltip_array = g_new(gchar*, 32);
-    for (int i=0; i<32; i++) {
+    for (int i = 0; i < 32; i++) {
         calendar->tooltip_array[i] = NULL;
     }
-    
     custom_calendar_initialise_tooltip_array(calendar);
     
-    // Set colour defaults and initialize CSS providers
-    calendar->today_colour = g_strdup("rgb(221,160,221)"); //plum
-    calendar->event_colour = g_strdup("rgb(211,211,211)"); //light grey
+    // 3. Duplicate fallback default color formatting specs on the heap
+    calendar->today_colour = g_strdup("rgb(221,160,221)");   // plum
+    calendar->event_colour = g_strdup("rgb(211,211,211)");   // light grey
+    calendar->notable_colour = g_strdup("rgb(211,21,21)");   // redish
     setup_css_providers(calendar);
 
+    // 4. Configure widget interaction focus flags
     gtk_widget_set_focusable(widget, TRUE);
 
+    // 5. Establish gesture tracking handlers for processing click events
     GtkGesture *gesture = gtk_gesture_click_new();
     g_signal_connect(gesture, "pressed", G_CALLBACK(custom_calendar_button_press), calendar);
-    gtk_widget_add_controller(GTK_WIDGET(calendar), GTK_EVENT_CONTROLLER(gesture));
+    gtk_widget_add_controller(widget, GTK_EVENT_CONTROLLER(gesture));
 
+    // 6. Build the layout navigation sub-header box layout map
     calendar->header = g_object_new(GTK_TYPE_BOX, "css-name", "header", NULL);
 
     calendar->btn_next_month = gtk_button_new_from_icon_name("pan-end-symbolic");
@@ -623,6 +825,7 @@ static void custom_calendar_init(CustomCalendar *calendar)
     gtk_widget_set_hexpand(calendar->date_label, TRUE);
     gtk_widget_set_vexpand(calendar->date_label, FALSE);
 
+    // Assemble the sub-components within the layout header container box
     gtk_box_append(GTK_BOX(calendar->header), calendar->btn_prev_month);
     gtk_box_append(GTK_BOX(calendar->header), calendar->month_label);
     gtk_box_append(GTK_BOX(calendar->header), calendar->btn_next_month);
@@ -631,26 +834,21 @@ static void custom_calendar_init(CustomCalendar *calendar)
     gtk_box_append(GTK_BOX(calendar->header), calendar->year_label);
     gtk_box_append(GTK_BOX(calendar->header), calendar->btn_next_year);
 
-    // GRID
+    // 7. Initialise the core date-grid mapping matrix
     calendar->grid = gtk_grid_new();
     gtk_widget_set_hexpand(calendar->grid, TRUE);
     gtk_widget_set_vexpand(calendar->grid, TRUE);
     gtk_grid_set_row_homogeneous(GTK_GRID(calendar->grid), TRUE);
     gtk_grid_set_column_homogeneous(GTK_GRID(calendar->grid), TRUE);
 
+    // Populate day of the week header markers (Row 0)
     const char *weekdays[] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
     for (int i = 0; i < 7; i++) {
         GtkWidget *label = gtk_label_new(weekdays[i]);
         gtk_grid_attach(GTK_GRID(calendar->grid), label, i, 0, 1, 1);
     }
-    calendar->monday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 0, 0);
-    calendar->tuesday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 1, 0);
-    calendar->wednesday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 2, 0);
-    calendar->thursday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 3, 0);
-    calendar->friday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 4, 0);
-    calendar->saturday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 5, 0);
-    calendar->sunday_label = gtk_grid_get_child_at(GTK_GRID(calendar->grid), 6, 0);
 
+    // Populate the 6x7 matrix of date cell string widgets (Rows 1 to 6)
     for (int y = 0; y < 6; y++)
     {
         for (int x = 0; x < 7; x++)
@@ -663,6 +861,7 @@ static void custom_calendar_init(CustomCalendar *calendar)
         }
     }
 
+    // 8. Auto-populate configuration constraints using local timezone context
     GDateTime *now = g_date_time_new_now_local();
     calendar->year = g_date_time_get_year(now);
     calendar->month = g_date_time_get_month(now);
@@ -670,13 +869,14 @@ static void custom_calendar_init(CustomCalendar *calendar)
     custom_calendar_select_day(calendar, calendar->day, calendar->month, calendar->year);
     g_date_time_unref(now);
 
-    GtkLayoutManager *box_layout = gtk_widget_get_layout_manager(GTK_WIDGET(calendar));
+    // 9. Attach children to parent widget layout tree context explicitly
+    GtkLayoutManager *box_layout = gtk_widget_get_layout_manager(widget);
     gtk_orientable_set_orientation(GTK_ORIENTABLE(box_layout), GTK_ORIENTATION_VERTICAL);
     gtk_box_layout_set_spacing(GTK_BOX_LAYOUT(box_layout), 2);
-    gtk_widget_set_parent(calendar->header, GTK_WIDGET(calendar));
-    gtk_widget_set_parent(calendar->grid, GTK_WIDGET(calendar));
+    
+    gtk_widget_set_parent(calendar->header, widget);
+    gtk_widget_set_parent(calendar->grid, widget);
 }
-
 
 /**
  * @brief Gets the current day.
@@ -697,7 +897,6 @@ int custom_calendar_get_month(CustomCalendar *calendar)
 {
     return calendar->month;
 }
-
 /**
  * @brief Gets the current year.
  * @param calendar The CustomCalendar instance.
@@ -714,14 +913,20 @@ int custom_calendar_get_year(CustomCalendar *calendar)
  */
 static void update_date_labels(CustomCalendar *calendar)
 {
-    // Now points safely directly to read-only string segment literals
     const char* weekday_str = get_day_of_week(calendar->day, calendar->month, calendar->year);
-    char* date_str = g_strdup_printf(" %s %d %s %d",
-                                     weekday_str,
-                                     calendar->day,
-                                     monthname[calendar->month - 1],
-                                     calendar->year);
-                                     
+    char* date_str = NULL;
+    
+    // If a notable date suffix is active, append it to the end of the text label
+    if (calendar->notable_date_suffix && strlen(calendar->notable_date_suffix) > 0) {
+        date_str = g_strdup_printf(" %s %d %s %d - %s",
+                                   weekday_str, calendar->day, monthname[calendar->month - 1],
+                                   calendar->year, calendar->notable_date_suffix);
+    } else {
+        date_str = g_strdup_printf(" %s %d %s %d",
+                                   weekday_str, calendar->day, monthname[calendar->month - 1],
+                                   calendar->year);
+    }
+    
     PangoAttrList *bold_attr = pango_attr_list_new();
     pango_attr_list_insert(bold_attr, pango_attr_weight_new(PANGO_WEIGHT_BOLD));
     gtk_label_set_attributes(GTK_LABEL(calendar->date_label), bold_attr);
@@ -733,15 +938,49 @@ static void update_date_labels(CustomCalendar *calendar)
     char* year_str = g_strdup_printf("%d", calendar->year);
     gtk_label_set_label(GTK_LABEL(calendar->year_label), year_str);
     
-    // REMOVED g_free(weekday_str) since it's a static literal now!
     g_free(date_str);
     g_free(year_str);
 }
-
+/**
+ * @brief Sets or updates the suffix string displayed next to notable calendar dates.
+ * 
+ * This function updates the suffix string stored within the CustomCalendar instance.
+ * It safely frees any previously allocated suffix, duplicates the new string if it 
+ * is not NULL, and immediately triggers a visual refresh of the calendar labels 
+ * to reflect the changes on the screen.
+ *
+ * @param calendar A pointer to the CustomCalendar instance. Must be a valid calendar object.
+ * @param suffix   A null-terminated string representing the text suffix to apply (e.g., "st", "nd", "Holidays"), 
+ *                 or NULL to clear the current suffix.
+ * 
+ * @return void
+ */
+void custom_calendar_set_notable_date_suffix(CustomCalendar *calendar, const char *suffix)
+{
+    g_return_if_fail(CUSTOM_IS_CALENDAR(calendar));
+    
+    // Safe memory balance replacement loop
+    g_free(calendar->notable_date_suffix);
+    calendar->notable_date_suffix = suffix ? g_strdup(suffix) : NULL;
+    
+    // Trigger an immediate labels refresh pass to paint the modifications on screen
+    update_date_labels(calendar);
+}
 
 /**
- * @brief Updates the day grid with correct day numbers, formatting, and tooltips.
- * @param calendar The CustomCalendar instance.
+ * @brief Regenerates and updates the calendar day grid with correct text, styles, and tooltips.
+ * 
+ * This core engine function handles drawing the daily calendar grid. It performs the following steps:
+ * 1. Determines the current real-world date to match against the active page view.
+ * 2. Clears previous CSS styling classes (`today`, `event`, `notable`, `none-month-day`) from cell label widgets.
+ * 3. Calculates grid positioning offsets using a Monday-first layout configuration.
+ * 4. Iterates over the 6x7 grid matrix to assign numerical text values.
+ * 5. Appends text formatting strings and custom hover tooltips based on event states.
+ * 6. Computes and renders dimmed text indicators for day boxes extending into the previous or next month.
+ *
+ * @param calendar A pointer to the active CustomCalendar instance.
+ * 
+ * @return void
  */
 static void update_day_grid(CustomCalendar *calendar)
 {
@@ -764,6 +1003,7 @@ static void update_day_grid(CustomCalendar *calendar)
             gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
             gtk_widget_remove_css_class(label, "today");
             gtk_widget_remove_css_class(label, "event");
+            gtk_widget_remove_css_class(label, "notable");
             gtk_widget_remove_css_class(label, "none-month-day");
             gtk_widget_add_css_class(label, "calframe");
 
@@ -774,10 +1014,13 @@ static void update_day_grid(CustomCalendar *calendar)
                 char* day_num_str = NULL;
                 if (aday == today_day && calendar->month == today_month && calendar->year == today_year) {
                     gtk_widget_add_css_class(label, "today");
-                    day_num_str = g_strdup_printf("<u><b>%d</b></u>", aday);
+                    day_num_str = g_strdup_printf("<u><b>%d</b></u>", aday);                    
                 } else if (calendar->marked_day[aday]) {
                     gtk_widget_add_css_class(label, "event");
                     day_num_str = g_strdup_printf("<i><b>%d</b></i><b>*</b>", aday);
+                } else if (calendar->notable_day[aday]) {
+                    gtk_widget_add_css_class(label, "notable"); 
+                    day_num_str = g_strdup_printf("%d", aday);                                      
                 } else {
                     day_num_str = g_strdup_printf("%d", aday);
                 }
@@ -812,8 +1055,22 @@ static void update_day_grid(CustomCalendar *calendar)
 }
 
 /**
- * @brief Sets up the initial CSS providers for styling.
- * @param calendar The CustomCalendar instance.
+ * @brief Dynamic CSS stylesheet generation and runtime display attachment.
+ * 
+ * Compiles runtime string definitions for CSS rules utilizing the widget's configurable 
+ * colour hex strings (`today_colour`, `event_colour`, `notable_colour`). The compiled 
+ * style sheets are registered directly onto the global fallback display context loop.
+ * 
+ * ### Applied CSS State Selectors:
+ * - `label.today`: Sets background highlights for the active current date box.
+ * - `label.event`: Modifies rows containing valid user schedule payloads.
+ * - `label.notable`: Colors visual anchors identifying marked holiday nodes.
+ * - `label.none-month-day`: Dims calendar boxes extending into adjacent months.
+ * - `label.calframe`: Generates basic border layout boundaries between cells.
+ *
+ * @param calendar A pointer to the target CustomCalendar instance to initialize.
+ * 
+ * @return void
  */
 static void setup_css_providers(CustomCalendar *calendar)
 {
@@ -828,6 +1085,12 @@ static void setup_css_providers(CustomCalendar *calendar)
     gtk_css_provider_load_from_string(calendar->provider_event, event_provider_str);
     gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(calendar->provider_event), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_free(event_provider_str);
+        
+    gchar* notable_provider_str = g_strdup_printf("label.notable {background-image: none; background-color: %s;}", calendar->notable_colour);
+    calendar->provider_notable = gtk_css_provider_new();
+    gtk_css_provider_load_from_string(calendar->provider_notable, notable_provider_str);
+    gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(calendar->provider_notable), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    g_free(notable_provider_str);
 
     const gchar* none_month_day_str = "label.none-month-day{background-image: none; font-weight: 100; opacity: 0.6;}";
     calendar->provider_none_month_day = gtk_css_provider_new();
@@ -841,8 +1104,19 @@ static void setup_css_providers(CustomCalendar *calendar)
 }
 
 /**
- * @brief Updates the CSS providers with new color strings.
- * @param calendar The CustomCalendar instance.
+ * @brief Updates the existing CSS providers with new colour strings dynamically.
+ * 
+ * This function handles changes to the widget's colour properties at runtime. 
+ * Instead of allocating new provider handles, it reuses the pre-existing fields 
+ * (`provider_today`, `provider_event`, and `provider_notable`) and hot-swaps their 
+ * stylesheets using updated colour formatting values. 
+ * 
+ * Once the styles are loaded into the provider engine, it invokes an internal 
+ * layout update request to force the widget to paint the new colours onto the display screen.
+ *
+ * @param calendar A pointer to the active CustomCalendar instance.
+ * 
+ * @return void
  */
 static void update_css_providers(CustomCalendar *calendar)
 {
@@ -853,6 +1127,10 @@ static void update_css_providers(CustomCalendar *calendar)
     gchar* event_provider_str = g_strdup_printf("label.event {background-image: none; background-color: %s;}", calendar->event_colour);
     gtk_css_provider_load_from_string(calendar->provider_event, event_provider_str);
     g_free(event_provider_str);
+    
+    gchar* notable_provider_str = g_strdup_printf("label.notable {background-image: none; background-color: %s;}", calendar->notable_colour);
+    gtk_css_provider_load_from_string(calendar->provider_notable, notable_provider_str);
+    g_free(notable_provider_str);
 
     // After updating the providers, force a redraw
     custom_calendar_update(calendar);
@@ -963,23 +1241,37 @@ void callbk_prev_year(CustomCalendar *calendar)
 }
 
 /**
- * @brief Handles button press events on the calendar grid.
- * @param gesture The GtkGestureClick object.
- * @param n_press The number of presses.
- * @param x The x-coordinate of the press.
- * @param y The y-coordinate of the press.
- * @param user_data A pointer to the CustomCalendar instance.
+ * @brief Coordinates pointer clicks on the calendar layout matrix to select days.
+ * 
+ * This callback intercepts coordinate click markers via a GtkGestureClick event controller. 
+ * It utilizes the GTK4 layout picking API to locate which specific day label widget was clicked, 
+ * queries its grid row/column mapping, and updates the object's active day, month, and year values.
+ * 
+ * If a user clicks a padded day belonging to the previous or next month page, the function 
+ * dynamically adjusts the month and year boundaries before triggering selection redraws. 
+ * Finally, it requests widget keyboard focus and broadcasts the `day-selected` signal.
+ *
+ * @param gesture  The gesture controller tracking pointer operations.
+ * @param n_press  The click count multiplier (e.g., single vs double click).
+ * @param x        The relative X coordinate pixel matching the cursor target location.
+ * @param y        The relative Y coordinate pixel matching the cursor target location.
+ * @param user_data A generic callback context pointer cast internally to CustomCalendar.
+ * 
+ * @return void
  */
 void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, double x, double y, gpointer user_data)
 {
     CustomCalendar *calendar = user_data;
     GtkWidget *widget = GTK_WIDGET(calendar);
+    
+    // Query which widget child layer occupies this absolute layout coordinate boundary
     GtkWidget *label = gtk_widget_pick(widget, x, y, GTK_PICK_DEFAULT);
 
     int row_number = -1, col_number = -1;
     int number_of_columns = 7;
     int number_of_rows = 6;
 
+    // Map the picked label widget pointer back to its internal coordinate indices
     for (int iy = 0; iy < number_of_rows; iy++) {
         for (int ix = 0; ix < number_of_columns; ix++) {
             if (label == calendar->day_number_labels[iy][ix]){
@@ -991,6 +1283,7 @@ void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, double 
         if (row_number != -1) break;
     }
 
+    // Abort early if the user clicked outside the target date label zones (e.g., padding/margins)
     if (row_number == -1 || col_number == -1) {
         return;
     }
@@ -999,6 +1292,7 @@ void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, double 
     int days_in_month = g_date_get_days_in_month(calendar->month, calendar->year);
 
     if (day_clicked <= 0) {
+        // Case A: User clicked a trailing block tracking back to the previous month page view
         int prev_month = calendar->month - 1;
         int prev_year = calendar->year;
         if (prev_month < 1) {
@@ -1012,6 +1306,7 @@ void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, double 
         calendar->month = prev_month;
         calendar->year = prev_year;
     } else if (day_clicked > days_in_month) {
+        // Case B: User clicked a leading block extending into the upcoming month page view
         int next_month = calendar->month + 1;
         int next_year = calendar->year;
         if (next_month >= 13) {
@@ -1024,13 +1319,16 @@ void custom_calendar_button_press(GtkGestureClick *gesture, int n_press, double 
         calendar->month = next_month;
         calendar->year = next_year;
     } else {
+        // Case C: Standard click fell within the limits of the current active month view
         calendar->day = day_clicked;
     }
 
+    // Force focus onto the calendar widget to handle keyboard operations correctly
     if (!gtk_widget_has_focus(widget)) {
         gtk_widget_grab_focus(widget);
     }
 
+    // Trigger visual state refreshes and notify the application lifecycle layer
     custom_calendar_select_day(calendar, calendar->day, calendar->month, calendar->year);
     g_signal_emit(calendar, custom_calendar_signals[DAY_SELECTED_SIGNAL], 0);
 }

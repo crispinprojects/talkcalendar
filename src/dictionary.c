@@ -310,6 +310,10 @@ void get_words_array(GList *speak_word_list, int word_number, unsigned char **wo
 	word_arrays[i] = (unsigned char*)and_raw;
 	word_arrays_sizes[i] = and_raw_len;
 	}
+	else if (g_strcmp0(word_str_lower, "alert") == 0) {
+	word_arrays[i] = (unsigned char*)alert_raw;
+	word_arrays_sizes[i] = alert_raw_len;
+	}
 	else if (g_strcmp0(word_str_lower, "anniversary") == 0) {
 	word_arrays[i] = (unsigned char*)anniversary_raw;
 	word_arrays_sizes[i] = anniversary_raw_len;
@@ -377,10 +381,14 @@ void get_words_array(GList *speak_word_list, int word_number, unsigned char **wo
 	else if (g_strcmp0(word_str_lower, "events") == 0) {
 	word_arrays[i] = (unsigned char*)events_raw;
 	word_arrays_sizes[i] = events_raw_len;
-	}
+	}	
 	else if (g_strcmp0(word_str_lower, "family") == 0) {
 	word_arrays[i] = (unsigned char*)family_raw;
 	word_arrays_sizes[i] = family_raw_len;
+	}
+	else if (g_strcmp0(word_str_lower, "fathers") == 0) {
+	word_arrays[i] = (unsigned char*)fathers_raw;
+	word_arrays_sizes[i] = fathers_raw_len;
 	}
 	else if (g_strcmp0(word_str_lower, "funeral") == 0) {
 	word_arrays[i] = (unsigned char*)funeral_raw;
@@ -421,6 +429,10 @@ void get_words_array(GList *speak_word_list, int word_number, unsigned char **wo
 	else if (g_strcmp0(word_str_lower, "memo") == 0) {
 	word_arrays[i] = (unsigned char*)memo_raw;
 	word_arrays_sizes[i] = memo_raw_len;
+	}
+	else if (g_strcmp0(word_str_lower, "mothers") == 0) {
+	word_arrays[i] = (unsigned char*)mothers_raw;
+	word_arrays_sizes[i] = mothers_raw_len;
 	}
 	else if (g_strcmp0(word_str_lower, "new") == 0) {
 	word_arrays[i] = (unsigned char*)new_raw;

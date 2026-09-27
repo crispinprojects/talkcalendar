@@ -130,7 +130,7 @@ sqlite3* db_open(const char *db_filename) {
 void db_close(sqlite3 *db) {
     if (db) {
         sqlite3_close(db);
-        g_print("Database connection closed.\n");
+        //g_print("Database connection closed.\n");
     }
 }
 

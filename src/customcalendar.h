@@ -45,11 +45,17 @@ GDK_AVAILABLE_IN_ALL void custom_calendar_goto_dmy(CustomCalendar *calendar, int
 
 GDK_AVAILABLE_IN_ALL void custom_calendar_select_day(CustomCalendar *calendar, guint dday, guint month, guint year);
 
-// Day Marking Functions
+// Marking up Event days
 GDK_AVAILABLE_IN_ALL void custom_calendar_mark_day (CustomCalendar *calendar, guint day);
 GDK_AVAILABLE_IN_ALL void custom_calendar_unmark_day (CustomCalendar *calendar, guint day);
 GDK_AVAILABLE_IN_ALL void custom_calendar_reset_marks (CustomCalendar *calendar);
 GDK_AVAILABLE_IN_ALL gboolean custom_calendar_get_day_is_marked (CustomCalendar *calendar, guint day);
+
+// Marking up Notable days
+GDK_AVAILABLE_IN_ALL void custom_calendar_mark_notable(CustomCalendar *calendar, guint day);
+GDK_AVAILABLE_IN_ALL void custom_calendar_unmark_notable (CustomCalendar *calendar, guint day);
+GDK_AVAILABLE_IN_ALL void custom_calendar_reset_notables (CustomCalendar *calendar);
+GDK_AVAILABLE_IN_ALL gboolean custom_calendar_get_day_is_notable (CustomCalendar *calendar, guint day);
 
 // Tooltip Functions
 GDK_AVAILABLE_IN_ALL void custom_calendar_set_tooltip_str(CustomCalendar *calendar, int day, char* title);
@@ -67,8 +73,14 @@ GDK_AVAILABLE_IN_ALL const gchar* custom_calendar_get_today_colour(CustomCalenda
 GDK_AVAILABLE_IN_ALL void custom_calendar_set_event_colour(CustomCalendar *self, const gchar* colour_str);
 GDK_AVAILABLE_IN_ALL const gchar* custom_calendar_get_event_colour(CustomCalendar *self);
 
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_notable_colour(CustomCalendar *self, const gchar* colour_str);
+GDK_AVAILABLE_IN_ALL const gchar* custom_calendar_get_notable_colour(CustomCalendar *self);
+
 GDK_AVAILABLE_IN_ALL void custom_calendar_set_show_tooltips(CustomCalendar *self, gboolean show_tooltips);
 GDK_AVAILABLE_IN_ALL gboolean custom_calendar_get_show_tooltips(CustomCalendar *self);
+
+GDK_AVAILABLE_IN_ALL void custom_calendar_set_notable_date_suffix(CustomCalendar *calendar, const char *suffix);
+
 
 // Internal Callbacks
 void callbk_next_month(CustomCalendar *calendar);

@@ -34,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.8.1
+Version=0.8.2
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -82,6 +82,9 @@ Press the spacebar to speak events for the selected day. Press the T-key to spea
 
 ### Search
 ![](talkcalendar-search.png)
+
+### Alarm
+![](talkcalendar-set-alarm.png)
 
 ### Information (F1)
 ![](talkcalendar-info.png)
@@ -189,7 +192,7 @@ To make Talk Calendar run when you start a new desktop session create a "org.gtk
 
 ```
 [Desktop Entry]
-Version=0.8.1
+Version=0.8.2
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -213,9 +216,9 @@ valgrind --leak-check=full --show-leak-kinds=definite,indirect --track-origins=y
 ```
 Most of the memory leaks that I have found relate to handling strings and I have been cleaning up the code using GString and g_string_free. Using GString and g_string_free is more convenient than using char* and g_free in GTK4 because GString automatically handles memory growth and length tracking, reducing manual buffer management errors. GString provides helper functions for appending, formatting, and manipulating strings safely.
 
-The most important line in the Valgrind memory leak summary is the "Definitely Lost" line. This means a pointer was completely overwritten or dropped, leaving memory stranded. I have managed to get Talk Calendar below 50 blocks. Research indicates that an  application built on a massive framework like GTK4, below 50  blocks is very good. The 50 blocks or so represents the underlying operating system libraries (Fontconfig loading system fonts, Pango building text metrics, and Wayland setting up the display pipeline) allocating their initial startup parameters. These never grow and so do not  hurt performance and they are automatically cleared by Linux when Talk Calendar closes.
+The most important line in the Valgrind memory leak summary is the "Definitely Lost" line. This means a pointer was completely overwritten or dropped, leaving memory stranded. I have managed to get Talk Calendar to around 50 blocks. Research indicates that an  application built on a massive framework like GTK4 around 50  blocks is very good. These represent the underlying operating system libraries (Fontconfig loading system fonts, Pango building text metrics, and Wayland setting up the display pipeline) allocating their initial startup parameters. These never grow and so do not  hurt performance and they are automatically cleared by Linux when Talk Calendar closes.
 
-I have also performed some stress tests to check for dangerous cumulative leaks which are leaks which continue to grow endlessly without bounds. For example, clicking around on the Calendar and recording the Valgrind memory leak summary and then comparing this to the baseline captured by running Talk Calendar and closing immediately. Talk Calendar hits a flat limit (approximately 64 blocks) when performing a seven day calendar click stress test which suggests that the core program memory management is mostly leak-proof. The same happens when I perform search stress test. Typically with applications with memory leaks the stress test block count would climb into the hundreds or thousands or even more.
+I have also performed some stress tests to check for dangerous cumulative leaks which are leaks which continue to grow endlessly without bounds. For example, clicking around on the Calendar and recording the Valgrind memory leak summary and then comparing this to the baseline captured by running Talk Calendar and closing immediately. Talk Calendar hits a flat limit (approximately 64 blocks) when performing a seven day calendar click stress test which suggests that the core program memory management is mostly leak-proof. The same happens when I perform search stress test. Typically with applications with memory leaks the stress test block count would climb into the many hundreds or thousands or even more.
 
 Valgrind reports some leaks from libraries associated with GTK4 (libfontconfig, libpangocairo-1.0, libpango-1.0, libgobject-2.0 etc.) which I do not fully understand at the moment.  When you see a Valgrind trace that terminates deep inside internal system libraries (like libfontconfig.so or libpango-1.0.so), it is showing internal, global font rendering and text caching tables allocated by the desktop framework layer. When GTK4 queries the Debian system font configurations or measures a text label widget layout (pango_layout_get_size), it builds a shared look-up layout table. These tables are kept alive on the heap intentionally for the entire lifetime of the running session so that the text updates remain lightning-fast. The system framework intentionally relies on the Linux OS kernel to clean up and free these static runtime blocks automatically when the Talk Calendar  program terminates. I believe they are a harmless framework overhead which can be disregarded.
 
