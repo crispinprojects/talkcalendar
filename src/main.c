@@ -38,7 +38,7 @@ static sqlite3 *db_handle = NULL;
 
 // File and directory names for configuration
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-082"
+#define CONFIG_FILENAME "talkcalendar-083"
 
 static char * m_config_file = NULL;
 //======================================================================
@@ -164,7 +164,7 @@ static gboolean m_talk_time =TRUE;
 static gboolean m_talk_event_number=FALSE;
 static gboolean m_talk_upcoming=FALSE;
 static int m_upcoming_days=7; 
-static int m_talk_rate=10000;
+static int m_talk_rate=16000;
 static gchar* m_raw_file ="/tmp/textout.raw";
 
 static gboolean m_reset_preferences=FALSE;
@@ -384,7 +384,7 @@ static void config_load_default()
     m_talk_event_number = FALSE;
     m_talk_upcoming = FALSE;
     m_upcoming_days = 7;
-    m_talk_rate = 10000;
+    m_talk_rate = 16000;
 
     m_12hour_format = TRUE;
     m_use_end_time = FALSE;
@@ -1203,8 +1203,8 @@ static void play_audio_async (GTask *task,
     
     // Capture concat cleanly to avoid dropping the pointer reference link
     gchar *full_rate_param = g_strconcat(sample_rate_str, m_sample_rate_str, NULL); 
-    
-    gchar *command_str = "aplay -c 1 -f U8";
+    gchar * command_str ="aplay -c 1 -f S16_LE";
+    //gchar *command_str = "aplay -c 1 -f U8";
     gchar *full_command = g_strconcat(command_str, " ", full_rate_param, " ", m_raw_file, NULL); 
     
     system(full_command); 
@@ -1318,8 +1318,7 @@ static void callbk_add_new_event(GtkButton *button, gpointer user_data)
 	GtkWidget *window = g_object_get_data(G_OBJECT(button), "button-add-window-key");
 	GtkWidget *calendar = g_object_get_data(G_OBJECT(button), "button-add-calendar-key");		
 	GtkWidget *label_date =g_object_get_data(G_OBJECT(window), "window-label-date-key");
-	
-		
+			
 	int start_day =GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "day-key"));
 	int start_month =GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "month-key"));
 	int start_year =GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "year-key"));
@@ -1436,7 +1435,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	char* year_str = g_strdup_printf("%d",m_start_year);
 	char* date_str="";
 	date_str= g_strconcat(date_str, day_str, "-",month_str, "-",year_str, NULL);
-		
 	
 	GtkWidget *dialog;
 	GtkWidget *button_add_event;	
@@ -1493,8 +1491,7 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	g_signal_connect (GTK_BUTTON (button_add_event),"clicked", G_CALLBACK (callbk_add_new_event),store);
 	g_object_set_data(G_OBJECT(button_add_event), "button-add-window-key",window);
 	g_object_set_data(G_OBJECT(button_add_event), "button-add-calendar-key",calendar);
-	
-	
+		
 	grid = gtk_grid_new();	
 	gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
 	
@@ -1507,7 +1504,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	label_end_time =gtk_label_new("End Time: ");		
 	spin_button_end_hour = gtk_spin_button_new(adjustment_end_hour, 1.0, 0);
 	spin_button_end_min = gtk_spin_button_new(adjustment_end_min, 1.0, 0);
-			
 	
 	//Summary dropdown		
 	label_summary = gtk_label_new("Summary: ");	
@@ -1531,7 +1527,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	check_button_isyearly = gtk_check_button_new_with_label("Is Yearly");
 	check_button_priority = gtk_check_button_new_with_label("Is High Priority");
 	
-	
 	g_object_set_data(G_OBJECT(button_add_event), "day-key",GINT_TO_POINTER(m_start_day));
 	g_object_set_data(G_OBJECT(button_add_event), "month-key",GINT_TO_POINTER(m_start_month));
 	g_object_set_data(G_OBJECT(button_add_event), "year-key",GINT_TO_POINTER(m_start_year));
@@ -1546,7 +1541,6 @@ static void callbk_new_event(GSimpleAction *action, GVariant *parameter,  gpoint
 	g_object_set_data(G_OBJECT(button_add_event), "spin-start-min-key", spin_button_start_min);
 	g_object_set_data(G_OBJECT(button_add_event), "spin-end-hour-key", spin_button_end_hour);
 	g_object_set_data(G_OBJECT(button_add_event), "spin-end-min-key", spin_button_end_min);
-		
 	
 	g_object_set_data(G_OBJECT(button_add_event), "check-button-allday-key", check_button_allday);	
 	g_object_set_data(G_OBJECT(button_add_event), "check-button-isyearly-key", check_button_isyearly);
@@ -3452,7 +3446,7 @@ static void callbk_easter(GSimpleAction *action, GVariant *parameter,  gpointer 
         m_talk              = TRUE;
         m_talk_at_startup   = FALSE;
         m_talk_event_number = FALSE;
-        m_talk_rate         = 10000;
+        m_talk_rate         = 16000;
         m_talk_upcoming     = FALSE;
         m_upcoming_days     = 7;
         m_notable_dates     = TRUE;
@@ -3559,7 +3553,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter, gpoin
     
     label_todaycolour   = gtk_label_new("Today Colour: ");
     label_eventcolour   = gtk_label_new("Event Colour: ");
-    label_notablecolour = gtk_label_new("Holiday Colour: "); // Label setup
+    label_notablecolour = gtk_label_new("Notable Colour: "); // Label setup
     
     gtk_widget_set_halign(label_todaycolour, GTK_ALIGN_START);
     gtk_widget_set_halign(label_eventcolour, GTK_ALIGN_START);
@@ -3580,7 +3574,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter, gpoin
 	label_upcoming_days = gtk_label_new("Upcoming days: ");
 	spin_button_upcoming_days = gtk_spin_button_new(adjustment_upcoming_days, 7, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_upcoming_days), m_upcoming_days);
-	GtkAdjustment *adjustment_talk_rate = gtk_adjustment_new(10000.00, 5000.00, 15000.00, 1000.0, 1000.0, 0.0);
+	GtkAdjustment *adjustment_talk_rate = gtk_adjustment_new(10000.00, 5000.00, 20000.00, 1000.0, 1000.0, 0.0);
 	label_talk_rate = gtk_label_new("Talk Rate ");
 	spin_button_talk_rate = gtk_spin_button_new(adjustment_talk_rate, 10000, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_talk_rate), m_talk_rate);
@@ -3664,7 +3658,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (GTK4)");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.8.2");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.8.3");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2026");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);
@@ -3824,8 +3818,6 @@ GArray* get_upcoming_array(int upcoming_days)
         return NULL;
     }
 }
-
-
 
 /**
  * @brief Returns a static, read-only string literal representation of a holiday.
@@ -4023,7 +4015,7 @@ static void speak_events()
                     }
                 }
             } else {
-                g_string_append(speak_gstr, "all day ");
+                //g_string_append(speak_gstr, "all day ");
             }
             
             if (summary_str) {
@@ -4522,7 +4514,7 @@ static gboolean update_time_label(gpointer data)
     {            
         // Use play_speak_str to announce your new "time reminder" word         
         g_print("time reminder fired\n");
-        play_speak_str("time reminder alert ");
+        play_speak_str("time reminder alert time reminder alert");
     }    
     g_date_time_unref(now);    
     // Explicitly return TRUE to instruct GLib to continue the second counter  
@@ -4616,8 +4608,6 @@ static void callbk_quit(GSimpleAction *action, GVariant *parameter, gpointer use
         gtk_window_close(window); 
     }
 }
-
-
 
 /**
  * @brief Helper to create menu

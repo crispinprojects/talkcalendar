@@ -11,15 +11,15 @@ A screenshot of Talk Calendar is shown below.
 ## Core Features
 
 * built with C and GTK4 for GNOME and Ubuntu desktops
-* month-view calendar
+* month-view calendar with tooltips
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
-* built-in speech synthesizer
+* built-in speech engine
 * Sqlite3 database used to store events
 
 ## Install
 
-A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GNOME  and Ubuntu desktops is available and can be downloaded from the binary directory. This have been built and tested using Debian Trixie with the [GNOME](https://www.gnome.org/) desktop. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GNOME  and Ubuntu desktops is available and can be downloaded from the binary directory. This have been built and tested using Debian Trixie with the [GNOME](https://www.gnome.org/) and [XFCE](https://xfce.org/) desktops. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
@@ -34,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.8.2
+Version=0.8.3
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -192,7 +192,7 @@ To make Talk Calendar run when you start a new desktop session create a "org.gtk
 
 ```
 [Desktop Entry]
-Version=0.8.2
+Version=0.8.3
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
