@@ -34,7 +34,7 @@ A desktop file has a .desktop extension and provides metadata about an applicati
 
 ```
 [Desktop Entry]
-Version=0.8.3
+Version=0.8.4
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar
@@ -192,7 +192,7 @@ To make Talk Calendar run when you start a new desktop session create a "org.gtk
 
 ```
 [Desktop Entry]
-Version=0.8.3
+Version=0.8.4
 Type=Application
 Name=Talk Calendar
 Comment=Talking calendar

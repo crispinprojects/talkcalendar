@@ -38,7 +38,7 @@ static sqlite3 *db_handle = NULL;
 
 // File and directory names for configuration
 #define CONFIG_DIRNAME "talkcalendar"
-#define CONFIG_FILENAME "talkcalendar-083"
+#define CONFIG_FILENAME "talkcalendar-084"
 
 static char * m_config_file = NULL;
 //======================================================================
@@ -164,7 +164,7 @@ static gboolean m_talk_time =TRUE;
 static gboolean m_talk_event_number=FALSE;
 static gboolean m_talk_upcoming=FALSE;
 static int m_upcoming_days=7; 
-static int m_talk_rate=16000;
+static int m_talk_rate=10000;
 static gchar* m_raw_file ="/tmp/textout.raw";
 
 static gboolean m_reset_preferences=FALSE;
@@ -384,7 +384,7 @@ static void config_load_default()
     m_talk_event_number = FALSE;
     m_talk_upcoming = FALSE;
     m_upcoming_days = 7;
-    m_talk_rate = 16000;
+    m_talk_rate = 10000;
 
     m_12hour_format = TRUE;
     m_use_end_time = FALSE;
@@ -1203,8 +1203,8 @@ static void play_audio_async (GTask *task,
     
     // Capture concat cleanly to avoid dropping the pointer reference link
     gchar *full_rate_param = g_strconcat(sample_rate_str, m_sample_rate_str, NULL); 
-    gchar * command_str ="aplay -c 1 -f S16_LE";
-    //gchar *command_str = "aplay -c 1 -f U8";
+    //gchar * command_str ="aplay -c 1 -f S16_LE"; //voice with 16000 sample rate
+    gchar *command_str = "aplay -c 1 -f U8"; //voice with 8000 sample rate (small)
     gchar *full_command = g_strconcat(command_str, " ", full_rate_param, " ", m_raw_file, NULL); 
     
     system(full_command); 
@@ -3446,7 +3446,7 @@ static void callbk_easter(GSimpleAction *action, GVariant *parameter,  gpointer 
         m_talk              = TRUE;
         m_talk_at_startup   = FALSE;
         m_talk_event_number = FALSE;
-        m_talk_rate         = 16000;
+        m_talk_rate         = 10000;
         m_talk_upcoming     = FALSE;
         m_upcoming_days     = 7;
         m_notable_dates     = TRUE;
@@ -3574,7 +3574,7 @@ static void callbk_preferences(GSimpleAction* action, GVariant *parameter, gpoin
 	label_upcoming_days = gtk_label_new("Upcoming days: ");
 	spin_button_upcoming_days = gtk_spin_button_new(adjustment_upcoming_days, 7, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_upcoming_days), m_upcoming_days);
-	GtkAdjustment *adjustment_talk_rate = gtk_adjustment_new(10000.00, 5000.00, 20000.00, 1000.0, 1000.0, 0.0);
+	GtkAdjustment *adjustment_talk_rate = gtk_adjustment_new(10000.00, 5000.00, 15000.00, 1000.0, 1000.0, 0.0);
 	label_talk_rate = gtk_label_new("Talk Rate ");
 	spin_button_talk_rate = gtk_spin_button_new(adjustment_talk_rate, 10000, 0);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin_button_talk_rate), m_talk_rate);
@@ -3658,7 +3658,7 @@ static void callbk_about(GSimpleAction * action, GVariant *parameter, gpointer u
 	gtk_widget_set_size_request(about_dialog, 200,200);
 	gtk_window_set_modal(GTK_WINDOW(about_dialog),TRUE);
 	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Talk Calendar (GTK4)");
-	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.8.3");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG(about_dialog), "Version 0.8.4");
 	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog),"Copyright © 2026");
 	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog),"Talking Calendar");
 	gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG(about_dialog), GTK_LICENSE_GPL_3_0);

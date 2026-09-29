@@ -20,9 +20,8 @@
 
 #include <gtk/gtk.h> 
 #include "dictionary.h"
-//#include "voice3.h"
-//#include "chipmunk.h"
-#include "voice4.h"
+#include "voice3.h"
+
 
 
 //Word dictionary
