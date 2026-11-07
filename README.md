@@ -2,95 +2,98 @@
 
 Talk Calendar is a personal desktop calendar for Linux which has some speech capability for reading out dates, event summary words and event times.
 
-Talk Calendar has been developed using C and [GTK4](https://docs.gtk.org/gtk4/) for GTK desktops (GNOME, Ubuntu Desktop, XFCE, Cinnamon etc.). 
+Talk Calendar has transitioned to using C++ and Qt 6.
 
-A screenshot of Talk Calendar is shown below.  
+A screenshot of Talk Calendar is shown below. 
 
 ![](talkcalendar.png)
 
 ## Core Features
 
-* built with C and GTK4 for GNOME and Ubuntu desktops
-* month-view calendar with tooltips
+* built with Qt 6
+* month-view calendar
 * export and import iCalendar files (backup and restore)
 * calendar tools such as calculate Easter and search for events
-* built-in speech engine
+* built-in speech synthesizer
 * Sqlite3 database used to store events
 
-## Install
+## Pre-built binary
 
-A pre-built executable binary of the latest version of Talk Calendar for x86 Debian Trixie GNOME  and Ubuntu desktops is available and can be downloaded from the binary directory. This have been built and tested using Debian Trixie with the [GNOME](https://www.gnome.org/) and [XFCE](https://xfce.org/) desktops. Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
+A pre-built binary of the latest version of Talk Calendar for x86 Linux computers and can be downloaded from the binary directory.  Once downloaded and unzipped make sure that Talk Calendar has executable permissions before running. To change permissions and run Talk Calendar from the terminal use the commands below.
 ```
 chmod +x talkcalendar
 ./talkcalendar
 ```
+The x86 binary has been tested with Debian Trixie KDE. 
 
-## Manually Install Using Desktop File
 
-To install Talk Calendar locally copy the  "org.gtk.talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
 
-A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "org.gtk.talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
+## Desktop File
 
+To install Talk Calendar locally copy the  "talkcalendar.desktop" file into in the ***~/.local/share/applications/***  directory. If the applications directory does not exist create it. You will need to modify the desktop file so that it uses your user name and the directory where you install local programs. 
+
+A desktop file has a .desktop extension and provides metadata about an application such as its name, icon, command to execute and other properties. The "talkcalendar.desktop" file is shown below. You need to modify this by using your own user name and directory locations. In this example it is assumed that local applications are installed in a folder called Software (/home/your_user_name/Software). Some people use a folder called "Programs". The Exec variable defines the command to execute when launching an application, in this case, the "talkcalendar" binary executable. The Icon variable specifies the path to the icon file associated with the application. The Path variable specifies that Talk Calendar should use this directory as its working directory and so it is where the calendar database is stored. In a .desktop file, you need to use absolute and full paths.
 
 ```
 [Desktop Entry]
-Version=0.8.4
-Type=Application
-Name=Talk Calendar
+Version=0.9.0
+Categories=Office;
+Comment[en_GB]=Talking calendar
 Comment=Talking calendar
-Icon=/home/your_user_name/Software/talkcalendar/calendar.png
 Exec=/home/your_user_name/Software/talkcalendar/talkcalendar
 Path=/home/your_user_name/Software/talkcalendar
-X-GNOME-UsesNotifications=true
-Categories=Office;
+Icon=/home/your_user_name/Software/talkcalendar/calendar.png
+GenericName[en_GB]= Talk Calendar
+GenericName=Talk Calendar
+Keywords=Calendar;
 MimeType=text/calendar;
-StartupNotify=true
 Name[en_GB]=TalkCalendar
+Name=TalkCalendar
+StartupNotify=true
+Terminal=false
+Type=Application
+X-KDE-SubstituteUID=false
 ```
 
-Modify the desktop file so that it uses your user name and the directory where you install local programs (in this case it is assumed to be /home/your_user_name/Software).
-
-Copy your modified  "org.gtk.talkcalendar.desktop" file to ***~/.local/share/applications/***. To do this you can use your graphical file manager or the terminal command below.
+Copy your modified  "talkcalendar.desktop" file to ***~/.local/share/applications/***. To do this you can use your graphical file manager or the terminal command below.
 
 ```
-cp org.gtk.talkcalendar.desktop /home/your_user_name/.local/share/applications
+cp talkcalendar.desktop /home/your_user_name/.local/share/applications
 ```
 
 Again change "your_user_name" to your user name. Note that ***.local*** is a hidden directory and you need to tick the "Show Hidden Files" option in the file explorer to display it.
 
-You can now run Talk Calendar Calendar from the system menu. It is located in the "Office Category". 
+You can now run Talk Calendar Calendar from the system menu. It should be located in the "Office Category". 
 
+You can also copy your modified  "talkcalendar.desktop" to ~/.config/autostart so that Talk Calendar starts up when the computer is switched on.
 
 ## Calendar Interface
 
-Talk Calendar uses a month view calendar with a bottom panel to display day events when a day is selected. To create a new event select a day on the calendar and select the "new event" menu item or press Ctrl+N. To edit an event, select it in day view panel and then select the "edit event" menu item or press Ctrl+E. Likewise to delete an event select it in the day view panel and use the "delete event" menu item or the DELETE key. 
+Talk Calendar uses a month view calendar with a bottom list view to display day events when a day is selected. To create a new event select a day on the calendar and then the "new event"button. To edit an event, select it in day list view and then select the "edit event" button. Likewise to delete an event select it in the day list view panel and use the "delete event" button. 
 
 Use the File->Export menu item to export a calendar as an iCalendar file for backup purposes. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be viewed and modified using a standard text editor. 
 
-Pressing F1 invokes the information window which can also be selected from the menu using the Help->Information menu item. The information window shows the keyboard shortcuts, how many records are in the calendar database and the Sqlite version being used on the system. The About dialog displays the Talk Calendar version number.
-
-Press the spacebar to speak events for the selected day. Press the T-key to speak the current time. Some Talk Calendar screenshot are shown below.
+If talk is enabled select as day on the calendar to read out the day events. Press the spacebar to speak events again for the selected day. Press the T-key to speak the current time.
 
 ### New Event
 ![](talkcalendar-new-event.png)
 
+### Edit Event
+![](talkcalendar-edit-event.png)
+
 ### Preferences
 ![](talkcalendar-preferences.png)
-
-### Calculate Easter
-![](talkcalendar-easter.png)
 
 ### Search
 ![](talkcalendar-search.png)
 
-### Alarm
-![](talkcalendar-set-alarm.png)
+Executing a search populates the main list view with the results. Just click on another calendar date to clear.
 
-### Information (F1)
+### Easter Calculator
+![](talkcalendar-easter.png)
+
+### Information
 ![](talkcalendar-info.png)
-
-### About
-![](talkcalendar-about.png)
 
 ### Events Database
 
@@ -100,141 +103,93 @@ Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQ
 
 Talk Calendar allows a personal calendar to be exported as an iCalendar file. These typically use the file extension ".ical" or ".ics". The [iCalendar standard](https://icalendar.org/) is an open standard for exchanging calendar and scheduling information between users and computers.  An icalendar file is a plain text file and so can be modified using a standard text editor. 
 
-You should backup your events by using the File->Export menu item which by default will create an "talkcalendar.ical" file but the name can be changed. A file chooser dialog is used to allow the file to be located in a chosen directory
+You should backup your events by using the File->Export iCal menu item. If you then corrupt your database, you can clear all events and then use the File->Import iCal to restore exported events. 
 
 ### Recurring Events
 
 The only recurring event type that is currently supported by Talk Calendar is yearly. This is required for events such as birthdays and anniversaries. The parser uses icalendar [RRULE](https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html) to determine if an event is yearly (e.g. birthday).
 
+## Bluetooth Speakers
+
+To use Bluetooth speakers with Debian and Raspberry Pi OS you need to install the “bluez-alsa-utils” package as shown below.
+
+```
+sudo apt install bluez-alsa-utils
+```
+To check if it is already installed use.
+
+```
+dpkg -l | grep bluez-alsa-utils > /dev/null 2>&1 && echo "Installed" || echo "Not installed"
+
+```
+You can also check if the "bluez-alsa-utils" package is installed using using the Help->Information menu item.
+
+There is an option to enable Bluetooth speakers in the preferences window if these are paired to your system.
+
+Bluetooth functionality is experimental but I have tested it with my Raspberry Pi 5 with a set of Bluetooth speakers paired to it and this works.
+
+
 ## Updating
 
-To update from a previous version of Talk Calendar export the current calendar to an ical file and then import it into the new version of Talk Calendar. Always keep a backup copy of the Talk Calendar database called talkcalendar.db.
+To update from previous Talk Calendar series export the current calendar to an ical file and then import it into the new version of Talk Calendar.
 
-## Speech Synthesis
 
-Talk Calendar uses it own internal speech synthesizer engine. The diphone speech synthesizer has been replaced with my original word concatenation speech engine coded using word voice recordings. However, my diphone speech engine  can still be found found [here](https://github.com/crispinprojects/speak).
+## Speech Synthesizer 
 
-### Building on Debian 13 and Ubuntu 24.04 (x86 Hardware)
+Talk calendar has a built-in diphone concatenation speech synthesizer. This has been coded from scratch in C++ 17 to read out the date, time and event summary words and has been ported from my [Dippo](https://github.com/crispinprojects/dippo) project. More details concerning the development of the speech synthesizer can be found on the Dippo webpage.
 
-To build Talk Calendar from source you need the gcc compiler, GTK4, GLIB, and SQLITE development libraries. You need to install the following packages.
+### Source Code 
 
-Talk Calendar has been developed using Debian Trixie and tested with the GNOME (Wayland backend) and XFCE (X11 backend).
+The source code is found in the src directory. It is being developed and tested using Debian 13 Trixie KDE but you can compile the project using Raspberry Pi OS.
+
+## Dependencies
+
+Talk Calendar requires the following system dependencies to run and speak:
+
+* **Qt 6.5+** (Core, Gui, Widgets, Sql)
+* **SQLite 3** (Database storage)
+
+### Build on Debian 13 / Ubuntu 24.04 / Raspberry Pi OS
+
+To build Talk Calendar from source you need install C++ (build essential), Qt 6 development library/tools and the CMake/Ninja packages as shown below. 
 
 ```
 sudo apt update
-sudo apt install build-essential
-sudo apt install libgtk-4-dev
-sudo apt install libasound2-dev
-sudo apt install sqlite3
-sudo apt install libsqlite3-dev
+sudo apt install build-essential cmake ninja-build
+sudo apt install qt6-base-dev qt6-base-dev-tools
+sudo apt install qtcreator
 ```
 
-To check the installed Sqlite 3 version use the command below.
+## Compile the Project
 
-```
-sqlite3 --version
-```
+1. Launch Qt Creator.
+2. Open Talk Calendar Project ( File > Open Project->CMakeFile).
+3. Make sure the build system is CMake (this is the modern standard).
+4. Kits: make sure "Desktop Qt 6.x.x" kit is selected
+5. Build and run
+    
 
-To determine which version of GTK4 is running on a Ubuntu/Debian system use the following terminal command.
+***Note:*** The Raspberry Pi does not have a coin-battery-powered ‘Real Time Clock’ (RTC) module by default as used by laptop and desktop computers. The Raspberry Pi updates the time automatically from the global ntp (network time protocol) servers. This can be a problem when there is no network connection as a Real-Time Clock (RTC) keeps track of the current time and date when the device is powered off. This functionality is needed by calendar and other scheduling applications. The Raspberry Pi 5 has a Real-Time Clock (RTC) connector which can be used to fit a RTC battery case compatible with Raspberry Pi 5 to maintain accurate time without needing an internet connection.
 
-```
-gtk4-launch --version
-```
-or
-```
-dpkg -l | grep libgtk*
-```
-Use the MAKEFILE to compile Talk Calendar. Just run "make" inside the source code folder.
-
-```
-make
-```
-
-To run Talk Calendar from the terminal use
-
-```
-./talkcalendar
-```
-
+    
 ### Building on Fedora
 
 With Fedora you need to install the following packages to compile Talk Calendar.
 
 ```
-sudo dnf install gcc make
-sudo dnf install gtk4-devel
-sudo dnf install gtk4-devel-docs
-sudo dnf install glib-devel
-sudo dnf install alsa-lib-devel
-sudo dnf install sqlite-devel
+sudo dnf groupinstall "Development Tools" "C Development Tools and Libraries"
+sudo dnf install cmake gcc-cpp
+sudo dnf install qt6-qtbase-devel qt6-qt5compat-devel qt6-qtbase-sqlite
 ```
+### GNOME/Ubuntu Desktops
 
-To check the installed Sqlite 3 version use the command below.
+You may have to install the Qt 6 base libraries on Debian GNOME, Fedora GNOME, Ubuntu GNOME and other GTK based distributions.
 
+With Debian GNOME and  Ubuntu 26.04 you need to install the the adwaita-qt6 theme engine and Qt runtime libraries to run Talk Calendar as shown below.
 ```
-sqlite3 --version
+sudo apt install adwaita-qt6
+sudo apt install qt6-base-dev 
 ```
-
-To determine which version of GTK4 is running on a Ubuntu/Debian system use the following terminal command.
-
-```
-gtk4-launch --version
-```
-or
-
-```
-dnf list gtk4-devel
-```
-
-## Autostart Talk Calendar
-
-To make Talk Calendar run when you start a new desktop session create a "org.gtk.talkcalendar.desktop" file as shown below and copy it to the  ***~/.config/autostart/*** hidden directory. Where it says "your_user_name" replace this with you login name.
-
-```
-[Desktop Entry]
-Version=0.8.4
-Type=Application
-Name=Talk Calendar
-Comment=Talking calendar
-Icon=/home/your_user_name/Software/talkcalendar/calendar.png
-Exec=sh -c "sleep 1 && cd /home/your_user_name/Software/talkcalendar && ./talkcalendar"
-X-GNOME-UsesNotifications=true
-Categories=Office;
-MimeType=text/calendar;
-StartupNotify=true
-Name[en_GB]=TalkCalendar
-```
-
-Notice that this script bypasses the Path= key at startup with the Exec= line explicitly forcing the  Talk Calendar application to change to its proper working directory before launching. I found this to be particularly important when using the XFCE desktop environment due to the  inconsistent handling of the PATH = key. The sleep command inside your Exec line is used to create a short delay at startup. This gives the desktop components, audio drivers, and notification services plenty of time to fully load. The  && in the Exec line ensures the next command only runs after the sleep timer successfully finishes.
-
-### Valgrind Testing
-
-Valgrind is a tool that monitors RAM bytes that a program such as Talk Calendar requests from the CPU. It is used to test for memory leaks. I use the following command to test Talk Calendar for memory leaks.
-
-```
-valgrind --leak-check=full --show-leak-kinds=definite,indirect --track-origins=yes ./talkcalendar
-```
-Most of the memory leaks that I have found relate to handling strings and I have been cleaning up the code using GString and g_string_free. Using GString and g_string_free is more convenient than using char* and g_free in GTK4 because GString automatically handles memory growth and length tracking, reducing manual buffer management errors. GString provides helper functions for appending, formatting, and manipulating strings safely.
-
-The most important line in the Valgrind memory leak summary is the "Definitely Lost" line. This means a pointer was completely overwritten or dropped, leaving memory stranded. I have managed to get Talk Calendar to around 50 blocks. Research indicates that an  application built on a massive framework like GTK4 around 50  blocks is very good. These represent the underlying operating system libraries (Fontconfig loading system fonts, Pango building text metrics, and Wayland setting up the display pipeline) allocating their initial startup parameters. These never grow and so do not  hurt performance and they are automatically cleared by Linux when Talk Calendar closes.
-
-I have also performed some stress tests to check for dangerous cumulative leaks which are leaks which continue to grow endlessly without bounds. For example, clicking around on the Calendar and recording the Valgrind memory leak summary and then comparing this to the baseline captured by running Talk Calendar and closing immediately. Talk Calendar hits a flat limit (approximately 64 blocks) when performing a seven day calendar click stress test which suggests that the core program memory management is mostly leak-proof. The same happens when I perform search stress test. Typically with applications with memory leaks the stress test block count would climb into the many hundreds or thousands or even more.
-
-Valgrind reports some leaks from libraries associated with GTK4 (libfontconfig, libpangocairo-1.0, libpango-1.0, libgobject-2.0 etc.) which I do not fully understand at the moment.  When you see a Valgrind trace that terminates deep inside internal system libraries (like libfontconfig.so or libpango-1.0.so), it is showing internal, global font rendering and text caching tables allocated by the desktop framework layer. When GTK4 queries the Debian system font configurations or measures a text label widget layout (pango_layout_get_size), it builds a shared look-up layout table. These tables are kept alive on the heap intentionally for the entire lifetime of the running session so that the text updates remain lightning-fast. The system framework intentionally relies on the Linux OS kernel to clean up and free these static runtime blocks automatically when the Talk Calendar  program terminates. I believe they are a harmless framework overhead which can be disregarded.
-
-## Aside: GNOME Desktop Extensions (Creating Traditional Desktop Interface)
-
-GNOME extensions can be used to create a traditional desktop interface. Dash to Panel is an extension for the GNOME desktop environment that creates a taskbar similar to that found in other desktops. App Menu is an extension that displays a list of applications available for the user to launch. It organises applications into categorises.
-
-You need to install the GNOME extension manager using the software centre and then search for and install the "Dash to Panel" and "App Menu" extensions.
-
-The App Menu extension needs the gir1.2-gmenu package installed which is used for creating menus.
-
-```
-sudo apt install gir1.2-gmenu-3.0
-suso apt install gnome-menus
-```
-The gir1.2-gmenu  package provides GObject introspection data for the GNOME menu library, which is part of the GNOME implementation of the freedesktop menu specification. It is used by applications to interact with the desktop menu system in GNOME environments.
 
 ## Versioning
 
@@ -248,32 +203,11 @@ The gir1.2-gmenu  package provides GObject introspection data for the GNOME menu
 
 Active and under development.
 
-## Acknowledgements
-
-* [GTK](https://www.gtk.org/)
-
-* GTK is a free and open-source project maintained by GNOME and an active community of contributors. GTK is released under the terms of the [GNU Lesser General Public License version 2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
-
-* [GTK4 API](https://docs.gtk.org/gtk4/index.html)
-
-* [GObject API](https://docs.gtk.org/gobject/index.html)
-
-* [Glib API](https://docs.gtk.org/glib/index.html)
-
-* [Gio API](https://docs.gtk.org/gio/index.html)
-
-* [Geany](https://www.geany.org/) is a lightweight source-code editor (version 2 now uses GTK3). [GPL v2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt)
-
-* [Sqlite](https://www.sqlite.org/index.html) is open source and in the [public domain](https://www.sqlite.org/copyright.html).
-
-* [My Diphone Speech Engine](https://github.com/crispinprojects/speak)
-
-* [GNOME](https://www.gnome.org/)
-
-* [XFCE](https://xfce.org/)
+## Web Links
 
 * [Debian](https://www.debian.org/)
 
-* [Ubuntu](https://ubuntu.com/download/desktop)
+* [Qt](https://doc.qt.io/)
 
-* [Fedora](https://fedoraproject.org/)
+* [Bluetooth Audio ALSA Backend](https://github.com/Arkq/bluez-alsa) 
+

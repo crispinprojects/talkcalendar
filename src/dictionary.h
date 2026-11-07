@@ -1,4 +1,4 @@
-/* dictionary.h
+/*
  *
  * Copyright 2026 Alan Crispin <crispinalan@gmail.com>
  *
@@ -17,10 +17,80 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
-void get_words_array(GList *speak_word_list, int word_number,unsigned char **word_arrays, unsigned int *word_arrays_sizes);
- 
-#endif//DICTIONARY_H
+#include <QObject>
+#include <QMap>
+#include <QStringList>
+#include <QDate>
+
+class Dictionary : public QObject
+{
+    Q_OBJECT
+public:
+    explicit Dictionary(QObject *parent = nullptr);
+
+    //void loadLexicon();
+    //void setupG2PRules();
+    void initializeLexicon();
+    void setupG2PRules();
+    QString getTimePhrase(int hour, int minute, bool isAllDay);
+    QString getDatePhrase(const QDate &date);
+    QString getOrdinalStr(int day);
+    QString getCardinalStr(int number);
+
+    QStringList transcribeWordDecisionTree(const QString& word);
+
+
+
+
+    //bool contains(const QString &word) const;
+    //QStringList getDiphones(const QString &word) const;
+    //QStringList transcribeWord(const QString& word);
+
+private:
+
+    QMap<QString, QStringList> m_data;
+    QMap<QChar, QString> m_consonantMap;
+    QMap<QString, QString> m_vowelClusterMap;
+    QMap<QChar, QString> m_vowelMap;
+
+    QStringList buildDiphoneList(const QStringList& phonemes);
+
+    //Decision tree
+    //c=current, p=previous, n=next nn=nextnext nnn=nextnextnext
+    // nn and nnn are LOOK-AHEAD
+
+    QString predictA(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictB(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictC(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictD(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictE(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictF(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictG(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictH(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictI(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictJ(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictK(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictL(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictM(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictN(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictO(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictP(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictQ(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictR(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictS(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictT(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictU(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictV(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictW(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictX(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictY(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+    QString predictZ(QChar p, QChar c, QChar n, QChar nn, QChar nnn);
+
+    // signals:
+};
+
+#endif // DICTIONARY_H
+
