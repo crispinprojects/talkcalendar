@@ -95,6 +95,17 @@ Executing a search populates the main list view with the results. Just click on 
 ### Information
 ![](talkcalendar-info.png)
 
+### Shortcuts
+
+```
+| Shortcut      | Action                   |
+|---------------|--------------------------|
+| `Ctrl+N`      | `New Event`              |
+| `Ctri+E`      | `Edit Selected Event`    |
+| `T Key`       | `Speak Time`             |
+| `Spacebar`    | `Speak Day Events`       |
+```
+
 ### Events Database
 
 Events are stored in an [Sqlite](https://www.sqlite.org/index.html) database. SQLite is a small, fast and full-featured SQL database engine written in C. 
