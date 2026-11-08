@@ -33,7 +33,7 @@ Dictionary::Dictionary(QObject *parent)
  *  to ensure 100% accuracy for the most frequent terms.
  */
 void Dictionary::initializeLexicon() {
-    if (!m_data.isEmpty()) return; // Only do this once!
+    if (!m_data.empty()) return; // Only do this once!
 
     //days of week
     m_data["monday"] = {"pau_m", "m_ah", "ah_n", "n_d", "d_ey", "ey_pau"};
@@ -125,7 +125,8 @@ void Dictionary::initializeLexicon() {
     // --- Decade Bases ---
     m_data["twenty"] = {"pau_t", "t_w", "w_eh", "eh_n", "n_t", "t_iy", "iy_pau"};
     m_data["thirty"]   = {"pau_th", "th_er", "er_t", "t_iy", "iy_pau"};
-    m_data["thirty"] = {"pau_th", "th_er", "er_t", "t_iy"};
+    // Fixed duplicate entry
+    //m_data["thirty"] = {"pau_th", "th_er", "er_t", "t_iy"};
     m_data["forty"]    = {"pau_f", "f_ao", "ao_r", "r_t", "t_iy", "iy_pau"};
     m_data["fifty"]    = {"pau_f", "f_ih", "ih_f", "f_t", "t_iy", "iy_pau"};
     //TODO
@@ -133,89 +134,454 @@ void Dictionary::initializeLexicon() {
     //m_data["eighty"] = {"pau_eh", "eh_iy", "iy_t", "t_iy", "iy_pau"};
     //m_data["hundred"] = {"pau_hh", "hh_ah", "ah_n", "n_d", "d_r", "r_ah", "ah_d", "d_pau"};
     //m_data["hundredth"] = {"pau_hh", "hh_ah", "ah_n", "n_d", "d_r", "r_ah", "ah_d", "d_th", "th_pau"};
-    //AM/PM
-    m_data["am"]   = {"pau_ey", "ey_eh", "eh_m", "m_pau"};
-    m_data["pm"]   = {"pau_p", "p_iy", "iy_eh", "eh_m", "m_pau"};
+
+    //time suffixes
+    m_data["amtime"]   = {"pau_ey", "ey_eh", "eh_m", "m_pau"};
+    m_data["pmtime"]   = {"pau_p", "p_iy", "iy_eh", "eh_m", "m_pau"};
     m_data["o"]    = {"pau_ow", "ow_ow", "ow_pau"};
 
-    //Talk Calendar
-    m_data["talk"] = {"pau_t", "t_aa", "aa_aa", "aa_k", "k_pau"};
-    m_data["calendar"] = {"pau_k", "k_ae", "ae_l", "l_ah", "ah_n", "n_d", "d_er", "er_pau"};
-
     //word exception list
+
+    //m_data["the"] = {"pau_dh", "dh_aa", "aa_ah", "ah_pau"};  // (ends with pau)
+    m_data["the"] = {"pau_dh", "dh_uh", "uh_pau"}; //unstressed
+    //m_data["the1"] = {"pau_dh", "dh_iy", "iy_pau"}; //stressed
+    //m_data["the2"] = {"pau_dh", "dh_iy", "iy_pau"}; //linked before vowel
+
+    m_data["is"] = {"pau_ih", "ih_z", "z_z", "z_pau"};
+    m_data["i"] = {"pau_ay", "ay_ay", "ay_pau"};
+    m_data["am"] = {"pau_ae", "ae_m", "m_pau"};
+    m_data["my"] = {"pau_m", "m_ay", "ay_ay", "ay_pau"};
+    m_data["not"] = {"pau_n", "n_aa", "aa_t", "t_pau"};
+    m_data["a"] = {"pau_ax", "ax_pau"};
+    m_data["and"] = {"pau_ae", "ae_n", "n_d", "d_pau"};
+    m_data["in"] = {"pau_ih", "ih_n", "n_pau"};
+    m_data["be"] = {"pau_b", "b_iy", "iy_pau"};
+    m_data["by"] = {"pau_b", "b_aa", "aa_iy", "iy_pau"};
+    m_data["all"] = {"pau_al", "ao_l", "l_pau"};
+    m_data["do"] = {"pau_d", "d_uw", "uw_pau"};
+    m_data["many"] = {"pau_m", "m_eh", "eh_n", "n_iy", "iy_pau"};
+    m_data["no"] = {"pau_n", "n_ao", "ao_uh", "uh_pau"};
+    m_data["of"] = {"pau_ah", "ah_v", "v_pau"};
+    m_data["on"] = {"pau_aa", "aa_aa", "aa_n", "n_n", "n_pau"};
+    m_data["or"] = {"pau_ao", "ao_r", "r_pau"};
+    m_data["that"] = {"pau_dh", "dh_ae", "ae_t", "t_pau"};
+    m_data["then"] = {"pau_dh", "dh_eh", "eh_eh", "eh_n", "n_pau"};
+    m_data["this"] = {"pau_dh", "dh_ih", "ih_s", "s_pau"};
+    m_data["to"] = {"pau_t", "t_uw", "uw_uw", "uw_pau"};
+
     //A words
+    m_data["am"] = {"pau_ae", "ae_m", "m_pau"}; // Verb: "I am dippo
     m_data["are"] = {"pau_aa", "aa_r", "r_pau"};
-    //m_data["alex"] = {"pau_ae", "ae_l", "l_ah", "ah_ks", "ks_pau"}; // Force 'ae' instead of 'ey'
-     m_data["alex"] = {"pau_ae", "ae_ae", "ae_l", "l_ah", "ah_k", "k_s", "s_pau"};
+    m_data["accountant"] = {"pau_ah", "ah_k", "k_aa", "aa_uh", "uh_n", "n_t", "t_ah", "ah_n", "n_t", "t_pau"};
+    m_data["activity"] = {"pau_ae", "ae_k", "k_t", "t_ih", "ih_ih", "ih_v", "v_ah", "ah_t", "t_iy", "iy_pau"};
+    m_data["adventure"] = {"pau", "ae", "ae_d", "d_v", "v_eh", "eh_n", "n_ch", "ch_uh", "uh_r", "r_pau"};
+    m_data["afternoon"] = {"pau_ae", "ae_ae", "ae_f", "f_t", "t_er", "pau", "er_n", "n_uw", "uw_uw", "uw_n", "n_pau"};
+    m_data["agent"] = {"pau_eh", "eh_iy", "iy_jh", "jh_ah", "ah_n", "n_t", "t_pau"};
+    m_data["agreement"] = {"pau_ah", "ah_g", "g_r", "r_iy", "iy_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["airport"] = {"pau_eh", "eh_eh", "eh_r", "r_p", "p_ao", "ao_ao", "ao_r", "r_t", "t_pau"};
+    m_data["alarm"] = {"pau_ah", "ah_l", "l_aa", "aa_r", "r_m", "m_pau"};
+    m_data["allotment"] = {"pau_ah", "ah_l", "l_aa", "aa_aa", "aa_t", "t_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["amazon"] = {"pau_ae", "ae_ae", "ae_m", "m_ah", "ah_z", "z_aa", "aa_aa", "aa_n", "n_pau"};
+    m_data["anniversary"] = {"pau_ae", "ae_ae", "ae_n", "n_ah", "ah_v", "v_er", "er_er", "er_s", "s_er", "er_iy", "iy_pau"};
+    m_data["animal"] = {"pau_ae", "ae_n", "n_ah", "ah_m", "m_ah", "ah_l", "l_pau"};
+    m_data["appointment"] = {"pau_ah", "ah_p", "p_oy", "oy_oy", "oy_n", "n_t", "t_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["archery"] = {"pau_aa", "aa_r", "r_ch", "ch_uh", "uh_r", "r_iy", "iy_pau"};
+    m_data["art"] = {"pau_aa", "aa_aa", "aa_aa", "aa_r", "r_t", "t_pau"};
+    m_data["assessment"] = {"pau_ah", "ah_s", "s_eh", "eh_eh", "eh_s", "s_m", "m_ah", "pau", "ah_n", "n_t", "t_pau"};
+    m_data["autumn"] = {"pau_ao", "ao_t", "t_ah", "ah_m", "m_pau"};
+
     //B words
     m_data["baby"] = {"pau_b", "b_eh", "eh_iy", "iy_b", "b_iy", "iy_pau"};
+    m_data["badminton"] = {"pau_b", "b_ae", "ae_d", "d_m", "m_ih", "ih_n", "n_t", "t_aa", "aa_n", "n_pau"};
+    m_data["bakery"] = {"pau_b", "b_eh", "eh_iy", "iy_k", "k_uh", "uh_r", "r_iy", "iy_pau"};
+    m_data["bank"] = {"pau_b", "b_ae", "ae_ae", "ae_ng", "ng_k", "k_pau"};
+    m_data["barber"] = {"pau_b", "b_aa", "aa_aa", "aa_r", "r_b", "b_er", "er_pau"};
+    m_data["bike"] = {"pau_b", "b_ay", "ay_ay", "ay_k", "k_pau"};
+    m_data["bin"] = {"pau_b", "b_ih", "ih_ih", "ih_n", "n_pau"};
+    m_data["bird"] = {"pau_b", "b_uh", "uh_r", "r_d", "d_pau"};
     m_data["birth"] = {"pau_b", "b_uh", "uh_r", "r_th", "th_pau"};
     m_data["birthday"] = {"pau_b", "b_er", "er_er", "er_th", "th_d", "d_ey", "ey_pau"};
+    m_data["boat"] = {"pau_b", "b_ao", "ao_uh", "uh_t", "t_pau"};
+    m_data["book"] = {"pau_b", "b_uh", "uh_k", "k_pau"};
+    m_data["bowls"] = {"pau_b", "b_ao", "ao_uh", "uh_l", "l_z", "z_pau"};
     m_data["boxing"] = {"pau_b", "b_aa", "aa_aa", "aa_k", "k_s", "s_ih", "ih_ng", "ng_pau"};
     m_data["break"] = {"pau_b", "b_r", "r_eh", "eh_iy", "iy_k", "k_pau"};
-    m_data["business"] = {"b_ih", "ih_z", "z_n", "ah ah_s", "s_pau"};    
+    m_data["breakfast"] = {"pau_b", "b__r", "r_eh", "eh_eh", "eh_k", "k_f", "f_ah", "ah_s", "s_t", "t_pau"};
+    m_data["british"] = {"pau_b", "b_r", "r_ih", "ih_t", "t_ih", "ih_sh", "sh_pau"};
+    m_data["brunch"] = {"pau_b", "b_r", "r_r", "r_ah", "ah_n", "n_n", "n_ch", "ch_ch", "ch_pau"};
+    m_data["bus"] = {"pau_b", "b_ah", "ah_ah", "ah_s", "s_s", "s_pau"};
+    m_data["business"] = {"b_ih", "ih_z", "z_n", "n_ah", "ah_s", "s_pau"};
     m_data["busy"] = {"pau_b", "b_ih", "ih_z", "z_iy", "iy_pau"};
-
+    m_data["buy"] = {"pau_b", "b_aa", "aa_iy", "iy_pau"};
+    m_data["bye"] = {"pau_b", "b_aa", "aa_iy", "iy_pau"};
 
     //C words
+    m_data["cabbie"] = {"pau_k", "k_ae", "ae_ae", "ae_b", "b_b", "b_iy", "iy_pau"};
     m_data["cafe"] = {"pau_k", "k_ah", "ah_f", "f_ey", "ey_ey"};
-    m_data["choir"] = {"pau_k", "k_w", "w_ay", "ay_er", "er_pau"};
+    m_data["calendar"] = {"pau_k", "k_ae", "ae_ae", "ae_l", "l_ah", "ah_n", "n_d", "d_er", "er_pau"};
+    m_data["call"] = {"pau_k", "k_ao", "ao_l", "l_pau"};
+    m_data["campsite"] = {"pau_k", "k_ae", "ae_m", "m_p", "p_s", "s_aa", "aa_iy", "iy_t", "t_s", "s_pau"};
+    m_data["car"] = {"pau_k", "k_aa", "aa_aa", "aa_r", "r_pau"};
+    m_data["card"] = {"pau_k", "k_aa", "aa_r", "r_d", "d_pau"};
+    m_data["care"] = {"pau_k", "k_eh", "eh_r", "r_pau"};
+    m_data["cat"] = {"pau_k", "k_ae", "ae_t", "t_pau"};
+    m_data["certificate"] = {"pau_s", "s_uh", "uh_r", "r_t", "t_ih", "ih_f", "f_ih", "ih_k", "k_ah", "ah_t", "t_pau"};
+    m_data["check"] = {"pau_ch", "ch_eh", "eh_k", "k_pau"};
+    m_data["chemist"] = {"pau_k", "k_eh", "eh_m", "m_ih", "ih_s", "s_t", "t_pau"};
+    m_data["chips"] = {"pau_ch", "ch_ih", "ih_ih", "ih_p", "p_s", "s_pau"};
+    m_data["choir"] = {"pau_k", "k_w", "w_aa", "aa_iy", "iy_uh", "uh_r", "r_pau"};
+    m_data["chore"] = {"pau_ch", "ch_ao", "ao_ao", "ao_r", "r_pau"};
+    m_data["christmas"] = {"pau_k", "k_r", "r_ih", "ih_ih", "ih_s", "s_m", "m_ah", "ah_s", "s_pau"};
+    m_data["church"] = {"pau_ch", "ch_er", "er_er", "er_ch", "ch_pau"};
+    m_data["cinema"] = {"s_ih", "ih_ih", "ih_n", "n_ah", "ah_m", "m_ah", "ah_pau"};
+    m_data["circle"] = {"pau_s", "s_uh", "uh_r", "r_k", "k_ah", "ah_l", "l_pau"};
+    m_data["circus"] = {"pau_s", "s_uh", "uh_r", "r_k", "k_ah", "ah_s", "s_pau"};
+    m_data["city"] = {"pau_s", "s_ih", "ih_t", "t_iy", "iy_pau"};
+    m_data["clean"] = {"pau_k", "k_l", "l_iy", "iy_n", "n_pau"};
+    m_data["cleaner"] = {"pau_k", "k_l", "l_iy", "iy_n", "n_uh", "uh_r", "r_pau"};
+    m_data["climbing"] = {"pau_k", "k_l", "l_aa", "aa_iy", "iy_m", "m_ih", "ih_ng", "ng_pau"};
+    m_data["clinic"] = {"pau_k", "k_l", "l_ih", "ih_ih", "ih_n", "n_ih", "ih_k", "k_pau"};
+    m_data["clock"] = {"pau_k", "k_l", "l_aa", "aa_k", "k_pau"};
+    m_data["club"] = {"pau_k", "k_l", "l_ah", "ah_b", "b_pau"};
+    m_data["coach"] = {"pau_k", "k_ow", "ow_ow", "ow_ch", "ch_ch", "ch_pau"};
+    m_data["coast"] = {"pau_k", "k_ao", "ao_uh", "uh_s", "s_t", "t_pau"};
+    m_data["cobbler"] = {"pau_k", "k_aa", "aa_aa", "aa_b", "b_b", "b__l", "l_er", "er_pau"};
+    m_data["code"] = {"pau_k", "k_ao", "ao_uh", "uh_d", "d_pau"};
+    m_data["coffee"] = {"pau_k", "k_aa", "aa_f", "f_iy", "iy_pau"};
+    m_data["collection"] = {"pau_k", "k_ah", "ah_l", "l_eh", "eh_k", "k_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["college"] = {"pau_k", "k_aa", "aa_l", "l_ih", "ih_jh", "jh_pau"};
     m_data["colonel"] = {"pau_k", "k_er", "er_n", "n_ah", "ah_l", "l_pau"};
+    m_data["coming"] = {"pau_k", "k_ah", "ah_ah", "ah_m", "m_ih", "ih_ng", "ng_pau"};
+    m_data["computer"] = {"pau_k", "k_ah", "ah_m", "m_p", "p_y", "y_uw", "uw_t", "t_uh", "uh_r", "r_pau"};
+    m_data["concert"] = {"pau_k", "k_aa", "aa_n", "n_s", "s_uh", "uh_r", "r_t", "t_pau"};
+    m_data["contact"] = {"pau_k", "k_aa", "aa_n", "n_t", "t_ae", "ae_k", "k_t", "t_pau"};
+    m_data["cottage"] = {"pau_k", "k_aa", "aa_aa", "aa_t", "t_ah", "ah_jh", "jh_pau"};
+    m_data["court"] = {"pau_k", "k_ao", "ao_r", "r_t", "t_pau"};
 
     // D words
     m_data["debt"] = {"pau_d", "d_eh", "eh_t", "t_pau"};
+    m_data["dippo"] = {"pau_d", "d_ih", "ih_p", "p_pau", "pau_ow", "ow_pau"};
     m_data["does"] = {"pau_d", "d_ah", "ah_z", "z_pau"};
+    m_data["dad"] = {"pau_d", "d_ae", "ae_ae", "ae_d", "d_pau"};
+    m_data["date"] = {"pau_d", "d_ey", "ey_ey", "ey_t", "t_pau"};
+    m_data["day"] = {"pau_d", "d_d", "d_ey", "ey_ey", "ey_pau"};
+    m_data["deadline"] = {"pau_d", "d_eh", "eh_eh", "eh_d", "d_l", "l_ay", "ay_ay", "ay_n", "n_pau"};
+    m_data["dealer"] = {"pau_d", "d_iy", "iy_l", "l_uh", "uh_r", "r_pau"};
+    m_data["death"] = {"pau_d", "d_eh", "eh_th", "th_pau"};
+    m_data["decorate"] = {"pau_d", "d_eh", "eh_k", "k_uh", "uh_r", "r_eh", "eh_iy", "iy_t", "t_pau"};
+    m_data["decorating"] = {"pau_d", "d_eh", "eh_k", "k_uh", "uh_r", "r_eh", "eh_iy", "iy_t", "t_ih", "ih_ng", "ng_pau"};
+    m_data["delivery"] = {"pau_d", "d_ih", "ih_l", "l_ih", "ih_ih", "ih_v", "v_er", "er_iy", "iy_pau"};
+    m_data["dentist"] = {"pau_d", "d_eh", "eh_eh", "eh_n", "n_t", "t_ah", "ah_s", "s_t", "t_pau"};
+    m_data["development"] = {"pau_d", "d_ih", "ih_v", "v_eh", "eh_l", "l_ah", "ah_p", "p_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["diary"] = {"pau_d", "d_aa", "aa_iy", "iy_uh", "uh_r", "r_iy", "iy_pau"};
+    m_data["dinner"] = {"pau_d", "d_ih", "ih_ih", "ih_n", "n_er", "er_pau"};
+    m_data["doctor"] = {"pau_d", "d_aa", "aa_aa", "aa_k", "k_t", "t_er", "er_pau"};
+    m_data["dog"] = {"pau_d", "d_ao", "ao_g", "g_pau"};
+    m_data["donkey"] = {"pau_d", "d_aa", "aa_ng", "ng_k", "k_iy", "iy_pau"};
+    m_data["driver"] = {"pau_d", "d_r", "r_ay", "ay_ay", "ay_v", "v_er", "er_pau"};
+    m_data["dustbin"] = {"pau_d", "d_ah", "ah_ah", "ah_s", "s_t", "t_b", "b_ih", "ih_n", "n_pau"};
 
     //E words
+    m_data["ear"] = {"pau_iy", "iy_iy", "iy_r", "r_pau"};
+    m_data["easter"] = {"pau_iy", "iy_iy", "iy_s", "s_t", "t_er", "er_pau"};
     m_data["education"] = {"pau_eh", "eh_jh", "jh_ah", "ah_k", "k_eh", "eh_iy", "iy_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["electrician"] = {"pau_ih", "ih_ih", "ih_l", "l_eh", "eh_k", "k_t", "t_r", "r_ih", "ih_ih", "ih_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["electricity"] = {"pau_ih", "ih_l", "l_eh", "eh_k", "k_t", "t_r", "r_ih", "ih_s", "s_ah", "ah_t", "t_iy", "iy_pau"};
+    m_data["engagement"] = {"pau_eh", "eh_n", "n_g", "g_eh", "eh_iy", "iy_jh", "jh_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["evening"] = {"pau_iy", "iy_iy", "iy_v", "v_n", "n_ih", "ih_ng", "ng_pau"};
     m_data["event"] = {"pau_ih", "ih_v", "v_eh", "eh_eh", "eh_n", "n_t", "t_pau"};
     m_data["events"] = {"pau_ih", "ih_v", "v_eh", "eh_n", "n_t", "t_z", "z_pau"};
     m_data["eye"] = {"pau_aa", "aa_iy", "iy_pau"};
+    //F words
+    m_data["family"] = {"pau_f", "f_ae", "ae_ae", "ae_m", "m_ah", "ah_l", "l_iy", "iy_pau"};
+    m_data["friend"] = {"pau_f", "f_r", "r_eh", "eh_eh", "eh_n", "n_d", "d_pau"};
+    m_data["funeral"] = {"pau_f", "f_y", "y_uw", "uw_uw", "uw_n", "n_er", "er_ah", "ah_l", "l_pau"};
 
     //G words
+    m_data["gallery"] = {"pau_g", "g_ae", "ae_ae", "ae_l", "l_er", "er_iy", "iy_pau"};
+    m_data["game"] = {"pau_g", "g_eh", "eh_iy", "iy_m", "m_pau"};
     m_data["garage"] = {"pau_g", "g_uh", "uh_r", "r_aa", "aa_zh", "zh_pau"};
+    m_data["garbage"] = {"pau_g", "g_aa", "aa_aa", "aa_r", "r_b", "b_ih", "ih_jh", "jh_pau"};
+    m_data["garden"] = {"pau_g", "g_aa", "aa_r", "r_d", "d_ah", "ah_n", "n_pau"};
+    m_data["gas"] = {"pau_g", "g_ae", "ae_ae", "ae_s", "s_s", "s_pau"};
+    m_data["glasses"] = {"pau_g", "g_l", "l_ae", "ae_ae", "ae_s", "s_ah", "ah_z", "z_pau"};
+    m_data["go"] = {"pau_g", "g_ao", "ao_uh", "uh_pau"};
+    m_data["golf"] = {"pau_g", "g_aa", "aa_l", "l_f", "f_pau"};
     m_data["good"] = {"pau_g", "g_uh", "uh_d", "d_pau"};
+    m_data["grandad"] = {"pau_g", "g_r", "r_ae", "ae_ae", "ae_n", "n_d", "d_ae", "ae_ae", "ae_d", "d_pau"};
+    m_data["grandfather"] = {"pau_g", "g_r", "r_ae", "ae_n", "n_d", "d_f", "f_aa", "aa_dh", "dh_uh", "uh_r", "r_pau"};
+    m_data["grandmother"] = {"pau_g", "g_r", "r_ae", "ae_n", "n_d", "d_m", "m_ah", "ah_dh", "dh_uh", "uh_r", "r_pau"};
+    m_data["granny"] = {"pau_g", "g_r", "r_ae", "ae_ae", "ae_n", "n_iy", "iy_pau"};
 
     //H words
+    m_data["hairdresser"] = {"pau_hh", "hh_eh", "eh_eh", "eh_r", "r_d", "d_r", "r_eh", "eh_eh", "eh_s", "s_er", "er_pau"};
+    m_data["happy"] = {"pau_hh", "hh_ae", "ae_p", "p_iy", "iy_pau"};
+    m_data["halloween"] = {"pau_hh", "hh_ae", "ae_ae", "ae_l", "l_ah", "ah_w", "w_iy", "iy_iy", "iy_n", "n_pau"};
+    m_data["have"] = {"pau_hh", "hh_eh", "eh_v", "v_pau"};
     m_data["health"] = {"pau_hh", "hh_eh", "eh_eh", "eh_l", "l_th", "th_pau"};
+    m_data["heating"] = {"pau_hh", "hh_iy", "iy_iy", "iy_t", "t_ih", "ih_ng", "ng_pau"};
+    m_data["hello"] = {"pau_hh", "hh_ah", "ah_l", "l_ow", "ow_ow", "ow_pau"};
+    m_data["help"] = {"pau_hh", "hh_eh", "eh_eh", "eh_l", "l_p", "p_pau"};
     m_data["high"] = {"pau_hh", "hh_aa", "aa_iy", "iy_pau"};
+    m_data["hippo"] = {"pau_hh", "hh_ih", "ih_p", "p_pau", "pau_ow", "ow_pau"};
+    m_data["hobby"] = {"pau_hh", "hh_aa", "aa_b", "b_iy", "iy_pau"};
+    m_data["hockey"] = {"pau_hh", "hh_aa", "aa_aa", "aa_k", "k_iy", "iy_pau"};
+    m_data["holiday"] = {"pau_hh", "hh_aa", "aa_aa", "aa_l", "l_ah", "ah_d", "d_ey", "ey_ey", "ey_pau"};
+    m_data["home"] = {"pau_hh", "hh_ow", "ow_ow", "ow_m", "m_pau"};
+    m_data["hospital"] = {"pau_hh", "hh_aa", "aa_aa", "aa_s", "s_p", "p_ih", "ih_ih", "ih_t", "t_ah", "ah_l", "l_pau"};
+    m_data["hotel"] = {"pau_hh", "hh_ow", "ow_t", "t_eh", "eh_eh", "eh_l", "l_pau"};
+    m_data["house"] = {"pau_hh", "hh_hh", "hh_aw", "aw_aw", "aw_s", "s_s", "s_pau"};
+    //I words
+    m_data["industry"] = {"pau_ih", "ih_n", "n_d", "d_ah", "ah_s", "s_t", "t_r", "r_iy", "iy_pau"};
+    m_data["information"] = {"pau_ih", "ih_n", "n_f", "f_uh", "uh_r", "r_m", "m_eh", "eh_iy", "iy_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["inn"] = {"pau_ih", "ih_ih", "ih_ih", "ih_n", "n_pau"};
+    m_data["insurance"] = {"pau_ih", "ih_n", "n_sh", "sh_uh", "uh_r", "r_ah", "ah_n", "n_s", "s_pau"};
+    m_data["investment"] = {"pau_ih", "ih_n", "n_v", "v_eh", "eh_s", "s_t", "t_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["invoice"] = {"pau_ih", "ih_n", "n_v", "v_ao", "ao_iy", "iy_s", "s_pau"};
+    //J words
+    m_data["jeweler"] = {"pau_jh", "jh_uw", "uw_ah", "ah_l", "l_uh", "uh_r", "r_pau"};
+    m_data["job"] = {"pau_jh", "jh_aa", "aa_aa", "aa_b", "b_b", "b_pau"};
+    m_data["journey"] = {"pau_jh", "jh_er", "er_er", "er_n", "n_iy", "iy_pau"};
+    //K words
+    m_data["king"] = {"pau_k", "k_ih", "ih_ng", "ng_pau"};
+    m_data["kingdom"] = {"pau_k", "k_ih", "ih_ng", "ng_d", "d_ah", "ah_m", "m_pau"};
+    //L words
+    m_data["laboratory"] = {"pau_l", "l_ae", "ae_b", "b_r", "r_ah", "ah_t", "t_ao", "ao_r", "r_iy", "iy_pau"};
+    m_data["last"] = {"pau_l", "l_ae", "ae_s", "s_t", "t_pau"};
+    m_data["lawyer"] = {"pau_l", "l_ao", "ao_y", "y_uh", "uh_r", "r_pau"};
+    m_data["lecture"] = {"pau_l", "l_eh", "eh_eh", "eh_k", "k_ch", "ch_er", "er_pau"};
+    m_data["lesson"] = {"pau_l", "l_eh", "eh_s", "s_ah", "ah_n", "n_pau"};
+    m_data["library"] = {"pau_l", "l_aa", "aa_iy", "iy_b", "b_r", "r_eh", "eh_r", "r_iy", "iy_pau"};
+    m_data["license"] = {"pau_l", "l_aa", "aa_iy", "iy_s", "s_ah", "ah_n", "n_s", "s_pau"};
+    m_data["lift"] = {"pau_l", "l_ih", "ih_ih", "ih_f", "f_t", "t_pau"};
+    m_data["location"] = {"pau_l", "l_ao", "ao_uh", "uh_k", "k_eh", "eh_iy", "iy_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["lodge"] = {"pau_l", "l_aa", "aa_jh"};
+    m_data["long"] = {"pau_l", "l_ao", "ao_ng"};
+    m_data["look"] = {"pau_l", "l_uh", "uh_k"};
+    m_data["lunch"] = {"pau_l", "l_ah", "ah_ah", "ah_n", "n_ch", "ch_pau"};
+
 
     //M words
-    m_data["message"] = {"pau_m", "m_eh", "eh_s", "s_ah", "ah_jh", "jh_pau"};
+    //m_data["message"] = {"pau_m", "m_eh", "eh_s", "s_ah", "ah_jh", "jh_pau"};
     m_data["my"] = {"pau_m", "m_ay", "ay_ay", "ay_pau"};
+
+    m_data["magazine"] = {"pau_m", "m_ae", "ae_g", "g_ah", "ah_z", "z_iy", "iy_n", "n_pau"};
+    m_data["magistrate"] = {"pau_m", "m_ae", "ae_jh", "jh_ah", "ah_s", "s_t", "t_r", "r_eh", "eh_iy", "iy_t", "t_pau"};
+    m_data["maintenance"] = {"pau_m", "m_ey", "ey_ey", "ey_n", "n_t", "t_ah", "ah_n", "n_ah", "ah_n", "n_s", "s_s", "s_pau"};
+    m_data["management"] = {"pau_m", "m_ae", "ae_ae", "ae_n", "n_ah", "ah_jh", "jh_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["meal"] = {"pau_m", "m_iy", "iy_iy", "iy_l", "l_pau"};
+    m_data["mechanic"] = {"pau_m", "m_ah", "ah_k", "k_ae", "ae_n", "n_ih", "ih_k", "k_pau"};
+    m_data["medical"] = {"pau_m", "m_eh", "eh_eh", "eh_d", "d_ah", "ah_k", "k_ah", "ah_l", "l_pau"};
+    m_data["meeting"] = {"pau_m", "m_iy", "iy_iy", "iy_t", "t_ih", "ih_ng", "ng_pau"};
+    m_data["meetup"] = {"pau_m", "m_iy", "iy_t", "t_pau", "pau_pau", "pau_ah", "ah_p", "p_pau"};
+    m_data["member"] = {"pau_m", "m_eh", "eh_m", "m_b", "b_uh", "uh_r", "r_pau"};
+    m_data["memo"] = {"pau_m", "m_eh", "eh_eh", "eh_m", "m_ao", "ao_uh", "uh_pau"};
+    m_data["memorandum"] = {"pau_m", "m_eh", "eh_eh", "eh_m", "m_er", "er_ae", "ae_ae", "ae_n", "n_d", "d_ah", "ah_m", "m_pau"};
+    m_data["message"] = {"pau_m", "m_eh", "eh_s", "s_ah", "ah_jh", "jh_pau"};
+    m_data["midnight"] = {"pau_m", "m_ih", "ih_d", "d_n", "n_aa", "aa_iy", "iy_t", "t_pau"};
+    m_data["month"] = {"pau_m", "m_ah", "ah_n", "n_th", "th_pau"};
+    m_data["morning"] = {"pau_m", "m_ao", "ao_ao", "ao_r", "r_n", "n_ih", "ih_ng", "ng_pau"};
+    m_data["mother"] = {"pau_m", "m_ah", "ah_ah", "ah_dh", "dh_er", "er_pau"};
+    m_data["motorcycle"] = {"pau_m", "m_ow", "ow_ow", "ow_t", "t_er", "er_s", "s_ay", "ay_ay", "ay_k", "k_ah", "ah_l", "l_pau"};
+    m_data["moving"] = {"pau_m", "m_uw", "uw_v", "v_ih", "ih_ng", "ng_pau"};
+    m_data["movie"] = {"pau_m", "m_uw", "uw_uw", "uw_v", "v_iy", "iy_pau"};
+    m_data["mum"] = {"pau_m", "m_ah", "ah_ah", "ah_m", "m_pau"};
+    m_data["music"] = {"pau_m", "m_y", "y_uw", "uw_uw", "uw_z", "z_ih", "ih_k", "k_pau"};
+
     //N words
+    m_data["name"] = {"pau_n", "n_ey", "ey_m", "m_pau"};
+    m_data["national"] = {"pau_n", "n_ae", "ae_sh", "sh_ah", "ah_n", "n_ah", "ah_l", "l_pau"};
+    m_data["neighbour"] = {"pau_n", "n_eh", "eh_iy", "iy_b", "b_uh", "uh_r", "r_pau"};
+    m_data["netflix"] = {"pau_n", "n_eh", "eh_eh", "eh_t", "t_f", "f_l", "l_ih", "ih_ih", "ih_k", "k_k", "k_pau"};
+    m_data["new"] = {"pau_n", "n_uw", "uw_uw", "uw_pau"}; // new year
+    m_data["news"] = {"pau_n", "n_uw", "uw_z", "z_pau"};
+    m_data["newspaper"] = {"pau_n", "n_uw", "uw_z", "z_p", "p_eh", "eh_iy", "iy_p", "p_uh", "uh_r", "r_pau"};
+    m_data["night"] = {"pau_n", "n_aa", "aa_iy", "iy_t", "t_pau"};
+    m_data["north"] = {"pau_n", "n_ao", "ao_r", "r_th", "th_pau"};
+    m_data["notable"] = {"pau_n", "n_ao", "ao_uh", "uh_t", "t_ah", "ah_b", "b_ah", "ah_l", "l_pau"};
     m_data["notification"] = {"pau_n", "n_ow", "ow_ow", "ow_t", "t_ah", "ah_f", "f_ah", "ah_k", "k_ey", "ey_ey", "ey_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["now"] = {"pau_n", "n_aw", "aw_aw", "aw_pau"};
+    m_data["nurse"] = {"pau_n", "n_uh", "uh_r", "r_s", "s_pau"};
+    m_data["nursery"] = {"pau_n", "n_er", "er_er", "er_s", "s_er", "er_iy", "iy_pau"};
+
 
     // O words
+    m_data["o"] = {"pau_ao", "ao_uh", "uh_ao", "ao_uh", "uh_pau"};
     m_data["once"] = {"pau_w", "w_ah", "ah_n", "n_s", "s_pau"};
+    m_data["off"] = {"pau_ao", "ao_f", "f_pau"};
+    m_data["offer"] = {"pau_ao", "ao_f", "f_uh", "uh_r", "r_pau"};
+    m_data["office"] = {"pau_ao", "ao_ao", "ao_f", "f_ah", "ah_s", "s_pau"};
+    m_data["online"] = {"pau_aa", "aa_aa", "aa_n", "n_n", "n_l", "l_aa", "aa_iy", "iy_n", "n_pau"};
+    m_data["open"] = {"pau_ao", "ao_uh", "uh_p", "p_ah", "ah_n", "n_pau"};
+    m_data["orchestra"] = {"pau_ao", "ao_r", "r_k", "k_ah", "ah_s", "s_t", "t_r", "r_ah", "ah_pau"};
+    m_data["out"] = {"pau_aa", "aa_uh", "uh_t", "t_pau"};
+    m_data["outbreak"] = {"pau_aa", "aa_uh", "uh_t", "t_b", "b_r", "r_eh", "eh_iy", "iy_k", "k_pau"};
+    m_data["outcome"] = {"pau_aa", "aa_uh", "uh_t", "t_k", "k_ah", "ah_m", "m_pau"};
+    m_data["outhouse"] = {"pau_aa", "aa_uh", "uh_t", "t_hh", "hh_aa", "aa_uh", "uh_s", "s_pau"};
+    m_data["outing"] = {"pau_aa", "aa_uh", "uh_t", "t_ih", "ih_ng", "ng_pau"};
+    m_data["over"] = {"pau_ao", "ao_uh", "uh_v", "v_uh", "uh_r", "r_pau"};
+    m_data["own"] = {"pau_ow", "ow_ow_ow_ow", "ow_n", "n_pau"};
 
     //P words
+    m_data["pancake"] = {"pau_p", "p_ae", "ae_ae", "ae_n", "n_k", "k_ey", "ey_ey", "ey_k", "k_pau"};
+    m_data["paper"] = {"pau_p", "p_eh", "eh_iy", "iy_p", "p_uh", "uh_r", "r_pau"};
+    m_data["parent"] = {"pau_p", "p_eh", "eh_r", "r_ah", "ah_n", "n_t", "t_pau"};
+    m_data["party"] = {"pau_p", "p_aa", "aa_aa", "aa_r", "r_t", "t_iy", "iy_pau"};
+    m_data["passport"] = {"pau_p", "p_ae", "ae_ae", "ae_s", "s_p", "p_ao", "ao_ao", "ao_r", "r_t", "t_pau"};
+    m_data["payment"] = {"pau_p", "p_ey", "ey_ey", "ey_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["piano"] = {"pau_p", "p_iy", "iy_ae", "ae_n", "n_ao", "ao_uh", "uh_pau"};
+    m_data["picture"] = {"pau_p", "p_ih", "ih_ih", "ih_k", "k_ch", "ch_er", "er_pau"};
     m_data["pilates"] = {"pau_p", "p_ih", "ih_ih", "ih_l", "l_aa", "aa_aa", "aa_t", "t_iy", "iy_iy", "iy_s", "s_pau"};
-    //Q words
+    m_data["point"] = {"pau_p", "p_oy", "oy_oy", "oy_n", "n_t", "t_pau"};
+    m_data["postoffice"] = {"pau_p", "p_ao", "ao_uh", "uh_s", "s_t", "t_ao", "ao_f", "f_ah", "ah_s", "s_pau"};
+    m_data["practice"] = {"pau_p", "p_r", "r_ae", "ae_k", "k_t", "t_ah", "ah_s", "s_pau"};
+    m_data["premier"] = {"pau_p", "p_r", "r_eh", "eh_m", "m_ih", "ih_ih", "ih_r", "r_pau"};
+    m_data["prescription"] = {"pau_p", "p_r", "r_ah", "ah_s", "s_k", "k_r", "r_ih", "ih_p", "p_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["present"] = {"pau_p", "p_r", "r_eh", "eh_z", "z_ah", "ah_n", "n_t", "t_pau"};
+    m_data["pressure"] = {"pau_p", "p_r", "r_eh", "eh_sh", "sh_uh", "uh_r", "r_pau"};
+    m_data["priority"] = {"pau_p", "p_r", "r_aa", "aa_iy", "iy_ao", "ao_r", "r_ah", "ah_t", "t_iy", "iy_pau"};
+    m_data["prison"] = {"pau_p", "p_r", "r_ih", "ih_z", "z_ah", "ah_n", "n_pau"};
+    m_data["private"] = {"pau_p", "p_r", "r_aa", "aa_iy", "iy_v", "v_ah", "ah_t", "t_pau"};
+    m_data["professional"] = {"pau_p", "p_r", "ah_ah", "ah_f", "f_eh", "eh_eh", "eh_sh", "sh_ah", "ah_n", "n_ah", "ah_l", "l_pau"};
+    m_data["professor"] = {"pau_p", "p_r", "ah_ah", "ah_f", "f_eh", "eh_eh", "eh_s", "s_er", "er_pau"};
+    m_data["program"] = {"pau_p", "p_r", "r_ow", "ow_ow", "ow_g", "g_r", "r_ae", "ae_ae", "ae_m", "m_pau"};
+    m_data["programme"] = {"pau_p", "p_r", "r_ow", "ow_ow", "ow_g", "g_r", "r_ae", "ae_ae", "ae_m", "m_pau"};
+    m_data["project"] = {"pau_p", "p_r", "r_aa", "aa_aa", "aa_jh", "jh_eh", "eh_k", "k_t", "t_pau"};
+    m_data["pub"] = {"pau_p", "p_ah", "ah_ah", "ah_b", "b_pau"};
+    m_data["public"] = {"pau_p", "p_ah", "ah_ah", "ah_b", "b_l", "l_ih", "ih_k", "k_pau"};
+    m_data["purchase"] = {"pau_p", "p_uh", "uh_r", "r_ch", "ch_ah", "ah_s", "s_pau"};
+
+    //Q Words
+    m_data["queen"] = {"pau_k", "k_w", "w_iy", "iy_n", "n_pau"};
+    m_data["quick"] = {"pau_k", "k_w", "w_ih", "ih_k", "k_pau"};
+    m_data["quiz"] = {"pau_k", "k_w", "w_ih", "ih_ih", "ih_z", "z_pau"};
     m_data["quote"] = {"pau_k", "k_w", "w_w", "w_ow", "ow_ow", "ow_t", "t_pau"};
+
     //R words
     m_data["radio"] = {"pau_r", "r_ey", "ey_ey", "ey_d", "d_iy", "iy_ow", "ow_ow", "ow_pau"};
+    m_data["railway"] = {"pau_r", "r_eh", "eh_iy", "iy_l", "l_w", "w_eh", "eh_iy", "iy_pau"};
+    m_data["rain"] = {"pau_r", "r_eh", "eh_iy", "iy_n", "n_pau"};
+    m_data["reminder"] = {"pau_r", "r_iy", "iy_m", "m_ay", "ay_ay", "ay_n", "n_d", "d_er", "er_pau"};
+    m_data["renewal"] = {"pau_r", "r_ih", "ih_n", "n_uw", "uw_ah", "ah_l", "l_pau"};
+    m_data["repair"] = {"pau_r", "r_ih", "ih_p", "p_eh", "eh_r", "r_pau"};
+    m_data["rest"] = {"pau_r", "r_eh", "eh_eh", "eh_s", "s_t", "t_pau"};
+    m_data["restaurant"] = {"pau_r", "r_eh", "eh_eh", "eh_s", "s_t", "t_er", "er_aa", "aa_aa", "aa_n", "n_t", "t_pau"};
+    m_data["retirement"] = {"pau_r", "r_iy", "iy_t", "t_ay", "ay_er", "er_m", "m_ah", "ah_n", "n_t", "t_pau"};
+    m_data["royal"] = {"pau_r", "r_ao", "ao_iy", "iy_ah", "ah_l", "l_pau"};
+    m_data["rugby"] = {"pau_r", "r_ah", "ah_g", "g_b", "b_iy", "iy_pau"};
 
     // S words
-    m_data["says"] = {"pau_s", "s_eh", "eh_z", "z_pau"};
+    //m_data["says"] = {"pau_s", "s_eh", "eh_z", "z_pau"};
     m_data["said"] = {"pau_s", "s_eh", "eh_d", "d_pau"};
+    m_data["saint"] = {"pau_s", "s_ey", "ey_ey", "ey_n", "n_t", "t_pau"};
+    m_data["say"] = {"pau_s", "s_eh", "eh_iy", "iy_pau"};
+    m_data["school"] = {"pau_s", "s_k", "k_uw", "uw_l", "l_pau"};
+    m_data["seaside"] = {"pau_s", "s_iy", "iy_s", "s_aa", "aa_iy", "iy_d", "d_pau"};
+    m_data["season"] = {"pau_s", "s_iy", "iy_z", "z_ah", "ah_n", "n_pau"};
+    m_data["shoe"] = {"pau_sh", "sh_uw", "uw_pau"};
+    m_data["shop"] = {"pau_sh", "sh_aa", "aa_aa", "aa_p", "p_pau"};
+    m_data["shopping"] = {"pau_sh", "sh_aa", "aa_aa", "aa_p", "p_ih", "ih_ng", "ng_pau"};
+    m_data["short"] = {"pau_sh", "sh_ao", "ao_r", "r_t", "t_pau"};
+    m_data["show"] = {"pau_sh", "sh_ow", "ow_ow", "ow_pau"};
+    m_data["small"] = {"pau_s", "s_m", "m_ao", "ao_l", "l_pau"};
+    m_data["society"] = {"pau_s", "s_ow", "ow_s", "s_ay", "ay_ay", "ay_ih", "ih_t", "t_iy", "iy_pau"};
+    m_data["special"] = {"pau_s", "s_p", "p_eh", "eh_eh", "eh_sh", "sh_ah", "ah_l", "l_pau"};
+    m_data["sport"] = {"pau_s", "s_p", "p_ao", "ao_ao", "ao_r", "r_t", "t_pau"};
+    m_data["spring"] = {"pau_s", "s_p", "p_r", "r_ih", "ih_ih", "ih_ng", "ng_pau"};
+    m_data["stag"] = {"pau_s", "s_t", "t_ae", "ae_g", "g_pau"};
+    m_data["star"] = {"pau_s", "s_t", "t_aa", "aa_r", "r_pau"};
+    m_data["start"] = {"pau_s", "s_t", "t_aa", "aa_r", "r_t", "t_pau"};
     m_data["station"] = {"pau_s", "s_t", "t_ey", "ey_ey", "ey_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["stay"] = {"pau_s", "s_t", "t_eh", "eh_iy", "iy_pau"};
+    m_data["stock"] = {"pau_s", "s_t", "t_aa", "aa_k", "k_pau"};
+    m_data["store"] = {"pau_s", "s_t", "t_ao", "ao_r", "r_pau"};
+    m_data["study"] = {"pau_s", "s_t", "t_ah", "ah_d", "d_iy", "iy_pau"};
+    m_data["summer"] = {"pau_s", "s_ah", "ah_m", "m_uh", "uh_r", "r_pau"};
+    m_data["summertime"] = {"pau_s", "s_ah", "ah_m", "m_uh", "uh_r", "r_t", "t_aa", "aa_iy", "iy_m", "m_pau"};
+    m_data["system"] = {"pau_s", "s_ih", "ih_s", "s_t", "t_ah", "ah_m", "m_pau"};
 
     //T words
+    m_data["through"] = {"pau_th", "th_r", "r_uw", "uw_pau"};
+    m_data["talk"] = {"pau_t", "t_ao", "ao_ao", "ao_k", "k_pau"};
+    m_data["task"] = {"pau_t", "t_ae", "ae_ae", "ae_s", "s_k", "k_pau"};
     m_data["tax"] = {"pau_t", "t_ae", "ae_ae", "ae_k", "k_s", "s_pau"};
     m_data["taxi"] = {"pau_t", "t_ae", "ae_ae", "ae_k", "k_s", "s_iy", "iy_pau"};
-    m_data["the"] = {"pau_dh", "dh_ah", "ah_ah", "ah_pau"};
-    m_data["through"] = {"pau_th", "th_r", "r_uw", "uw_pau"};
+    m_data["tea"] = {"pau_t", "t_t", "t_iy", "iy_iy", "iy_pau"};
+    m_data["tearoom"] = {"pau_t", "t_r", "r_uh", "uh_r", "r_uw", "uw_m", "m_pau"};
+    m_data["team"] = {"pau_t", "t_iy", "iy_m", "m_pau"};
+    m_data["telephone"] = {"pau_t", "t_eh", "eh_eh", "eh_l", "l_ah", "ah_f", "f_f", "f_ow", "ow_ow", "ow_ow", "ow_n", "n_pau"};
+    m_data["television"] = {"pau_t", "t_eh", "eh_eh", "eh_l", "l_ah", "ah_v", "v_ih", "ih_ih", "ih_zh", "zh_ah", "ah_n", "n_pau"};
+    m_data["temperature"] = {"pau_t", "t_eh", "eh_m", "m_p", "p_r", "r_ah", "ah_ch", "ch_uh", "uh_r", "r_pau"};
+    m_data["tennis"] = {"pau_t", "t_eh", "eh_n", "n_ah", "ah_s", "s_pau"};
+    m_data["test"] = {"pau_t", "t_eh", "eh_eh", "eh_s", "s_t", "t_pau"};
+    m_data["thank"] = {"pau_th", "th_ae", "ae_ng", "ng_k", "k_pau"};
+    m_data["theater"] = {"pau_th", "th_iy", "iy_iy", "iy_ey", "ey_t", "t_er", "er_pau"};
+    m_data["time"] = {"pau_t", "t_ay", "ay_ay", "ay_m", "m_pau"};
+    m_data["today"] = {"pau_t", "t_ah", "ah_d", "d_ey", "ey_ey", "ey_pau"};
+    m_data["toll"] = {"pau_t", "t_ao", "ao_uh", "uh_l", "l_pau"};
+    m_data["tomorrow"] = {"pau_t", "t_ah", "ah_m", "m_aa", "aa_r", "r_ao", "ao_uh", "uh_pau"};
+    m_data["train"] = {"pau_t", "t_r", "r_eh", "eh_iy", "iy_n", "n_pau"};
+    m_data["transport"] = {"pau_t", "t_r", "r_ae", "ae_n", "n_s", "s_p", "p_ao", "ao_r", "r_t", "t_pau"};
+    m_data["travel"] = {"pau_t", "t_r", "r_ae", "ae_ae", "ae_v", "v_ah", "ah_l", "l_pau"};
+    m_data["travelodge"] = {"pau_t", "t_r", "r_ae", "ae_ae", "ae_v", "v_ah", "ah_l", "l_aa", "aa_aa", "aa_jh", "jh_pau"};
+    m_data["trip"] = {"pau_t", "t_r", "r_ih", "ih_ih", "ih_p", "p_p", "p_pau"};
+    m_data["tunnel"] = {"pau_t", "t_ah", "ah_n", "n_ah", "ah_l", "l_pau"};
+    m_data["turn"] = {"pau_t", "t_uh", "uh_r", "r_n", "n_pau"};
+    m_data["tv"] = {"pau_t", "t_iy", "iy_iy", "iy_v", "v_iy", "iy_iy", "iy_pau"};
 
+    //U words
+    m_data["uncle"] = {"pau_ah", "ah_ah", "ah_ng", "ng_k", "k_ah", "ah_l", "l_pau"};
+    m_data["university"] = {"pau_y", "y_uw", "uw_n", "n_ah", "ah_v", "v_uh", "uh_r", "r_s", "s_ah", "ah_t", "t_iy", "iy_pau"};
+    m_data["unknown"] = {"pau_ah", "ah_n", "n_n", "n_ow", "ow_ow", "ow_n", "n_n", "n_pau"};
+    m_data["upcoming"] = {"pau_ah", "ah_p", "p_k", "k_ah", "ah_ah", "ah_m", "m_ih", "ih_ng", "ng_pau"};
+    m_data["use"] = {"pau_y", "y_uw", "uw_uw", "uw_z", "z_pau"};
+    m_data["user"] = {"pau_y", "y_uw", "uw_uw", "uw_z", "z_er", "er_pau"};
+
+    //V words
+    m_data["vacation"] = {"pau_v", "v_ey", "ey_k", "k_ey", "ey_ey", "ey_sh", "sh_ah", "ah_n", "n_pau"};
+    m_data["valentine"] = {"pau_v", "v_ae", "ae_ae", "ae_l", "l_ah", "ah_n", "n_t", "t_ay", "ay_ay", "ay_n", "n_pau"};
+    m_data["vehicle"] = {"pau_v", "v_iy", "iy_iy", "iy_hh", "hh_ih", "ih_k", "k_ah", "ah_l", "l_pau"};
     m_data["venue"] = {"pau_v", "v_eh", "eh_n", "n_y", "y_uw", "uw_pau"};
+    m_data["version"] = {"pau_v", "v_er", "er_er", "er_zh", "zh_ah", "ah_n", "n_pau"};
+    m_data["vicar"] = {"pau_v", "v_ih", "ih_k", "k_uh", "uh_r", "r_pau"};
+    m_data["vicarage"] = {"pau_v", "v_ih", "ih_k", "k_uh", "uh_r", "r_r", "r_aa", "aa_jh", "jh_pau"};
+    m_data["visit"] = {"pau_v", "v_ih", "ih_ih", "ih_z", "z_ih", "ih_t", "t_pau"};
 
     // W words
-    m_data["walk"] = {"pau_w", "w_w", "w_ao", "ao_ao", "ao_k", "k_k", "k_pau"};
     m_data["who"] = {"pau_hh", "hh_uw", "uw_pau"};
     m_data["what"] = {"pau_w", "w_ah", "ah_t", "t_pau"};
     m_data["was"] = {"pau_w", "w_ah", "ah_z", "z_pau"};
 
+    m_data["walk"] = {"pau_w", "w_w", "w_ao", "ao_ao", "ao_k", "k_k", "k_pau"};
+    m_data["warning"] = {"pau_w", "w_ao", "ao_r", "r_n", "n_ih", "ih_ng", "ng_pau"};
+    m_data["washing"] = {"pau_w", "w_aa", "aa_sh", "sh_ih", "ih_ng", "ng_pau"};
+    m_data["water"] = {"pau_w", "w_ao", "ao_ao", "ao_t", "t_er", "er_pau"};
+    m_data["way"] = {"pau_w", "w_ey", "ey_iy", "iy_pau"};
+    m_data["weather"] = {"pau_w", "w_eh", "eh_dh", "dh_uh", "uh_r", "r_pau"};
+    m_data["web"] = {"pau_w", "w_eh", "eh_eh", "eh_b", "b_b", "b_pau"};
+    m_data["wedding"] = {"pau_w", "w_eh", "eh_eh", "eh_d", "d_ih", "ih_ng", "ng_pau"};
+    m_data["week"] = {"pau_w", "w_iy", "iy_k", "k_pau"};
+    m_data["weekend"] = {"pau_w", "w_iy", "iy_k", "k_eh", "eh_n", "n_d", "d_pau"};
+    m_data["west"] = {"pau_w", "w_eh", "eh_s", "s_t", "t_pau"};
+    m_data["window"] = {"pau_w", "w_ih", "ih_n", "n_d", "d_ao", "ao_uh", "uh_pau"};
+    m_data["winter"] = {"pau_w", "w_ih", "ih_ih", "ih_n", "n_t", "t_er", "er_pau"};
+    m_data["work"] = {"pau_w", "w_uh", "uh_r", "r_k", "k_pau"};
+    m_data["workman"] = {"pau_w", "w_uh", "uh_r", "r_k", "k_m", "m_ah", "ah_n", "n_pau"};
+    m_data["world"] = {"pau_w", "w_uh", "uh_l", "l_d","d_pau"};
+
+    //Y words
     //m_data["you"] = {"pau_y", "y_uw", "uw_uw", "uw_pau"};
+    m_data["yacht"] = {"pau_y", "y_aa", "aa_aa", "aa_t", "t_pau"};
+    m_data["year"] = {"pau_y", "y_ih", "ih_ih", "ih_r", "r_pau"};
+    m_data["yearly"] = {"pau_y", "y_ih", "ih_ih", "ih_r", "r_l", "l_iy", "iy_pau"};
+    m_data["yesterday"] = {"pau_y", "y_eh", "eh_s", "s_t", "t_er", "er_d", "d_ey", "ey_pau"};
+    m_data["yodel"] = {"pau_y", "y_ao", "ao_uh", "uh_d", "d_ah", "ah_l", "l_pau"};
+    m_data["you"] = {"pau_y", "y_uw", "uw_uw", "uw_pau"};
+    m_data["youth"] = {"pau_y", "y_uw", "uw_th", "th_pau"};
+
+    //Z words
+    m_data["zone"] = {"pau_z", "z_ao", "ao_uh", "uh_n", "n_pau"};
+    m_data["zoo"] = {"pau_z", "z_uw", "uw_pau"};
 
 }
 
@@ -247,19 +613,22 @@ QStringList Dictionary::buildDiphoneList(const QStringList& phonemes)
     return result;
 }
 
-//predictA to predictZ are learned decision tree model
+
 QString Dictionary::predictA(QChar p, QChar c, QChar n, QChar nn, QChar nnn) {
-    // 1. Terminal Magic E (Lake, Bake, Fate, Ale)
-    if (n != '_' && nn == 'e' && nnn == '_') return "ey";
-
-    // 2. Common Vowel Neighbors (handled mostly by post-processor, but good for backup)
-    if (n == 'i' || n == 'y') return "ey";
-    if (n == 'r' || n == 'h' || n == 'w') return "aa";
-
-    // 3. The "Alex/Apple" logic
-    if (n == 'l' || n == 'p' || n == 'c' || n == 'd') return "ae";
-
-    // 4. Fallback
+    // Special cases where we know the pronunciation:
+    if (p == 'c' && n == 'k') return "ey";  // cake
+    if (p == 'b' && n == 'e') return "ey";  // bake
+    if (p == 'f' && n == 'a') return "eh";  // fate
+    // Magic E pattern - when 'a' is followed by a consonant and then 'e'
+    if ((n != '_' && nn == 'e' && nnn == '_')) {
+        return "ey";  // For words like cake, take
+    }
+    // Common AA patterns:
+    if (p == 'c' && n == 'r') return "aa";  // cart
+    if (n == 'r') return "aa";             // car, star
+    // Common AH patterns:
+    if (n == 'b' || n == 'd' || n == 'g') return "ah";  // about, again
+    // Default AE pattern:
     return "ae";
 }
 
@@ -280,8 +649,11 @@ QString Dictionary::predictD(QChar p, QChar c, QChar n, QChar nn, QChar nnn) {
     return "d";
 }
 
-QString Dictionary::predictE(QChar p, QChar c, QChar n, QChar nn, QChar nnn) {
-    if (n == '_') return "silent"; // <--- Add this at the VERY TOP
+
+QString Dictionary::predictE(QChar p, QChar c, QChar n, QChar nn, QChar nnn)
+{
+    Q_UNUSED(nnn);
+    if (n == '_') return "silent"; // essential
     if (n == '\'') return "ah";
     if (n == '(') return "ah";
     if (n == 'a') return "iy";
@@ -658,7 +1030,7 @@ QString Dictionary::getTimePhrase(int hour, int minute, bool isAllDay)
     QString timePhrase = "";
 
     int hour12 = (hour == 0 || hour == 12) ? 12 : hour % 12;
-    QString ampm = (hour < 12) ? "am" : "pm";
+    QString ampm = (hour < 12) ? "amtime" : "pmtime";
     // add hour words
     timePhrase.append(getCardinalStr(hour12));
     timePhrase.append(" ");
@@ -667,7 +1039,7 @@ QString Dictionary::getTimePhrase(int hour, int minute, bool isAllDay)
         timePhrase.append(ampm);
         timePhrase.append(" ");
     } else if (minute < 10) {
-        timePhrase.append(" o ");
+        timePhrase.append(" zero ");
         timePhrase.append(getCardinalStr(minute));
         timePhrase.append(" ");
         timePhrase.append(ampm);

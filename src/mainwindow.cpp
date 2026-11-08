@@ -927,7 +927,7 @@ void MainWindow::talkCurrentTime() {
 
     QString speakTimePhrase ="The time is ";
     speakTimePhrase.append(timePhrase);
-    //qDebug()<<"speak time phrase "<<speakTimePhrase;   
+    qDebug()<<"speak time phrase "<<speakTimePhrase;
     m_engine->speak(speakTimePhrase,m_voiceDict,static_cast<float>(m_tempo) / 10.0f);
 
 }
@@ -938,47 +938,53 @@ void MainWindow::talkCurrentTime() {
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox msgBox(this);
-    msgBox.setWindowTitle("Talk Calendar v090");
+    msgBox.setWindowTitle("Talk Calendar");
     msgBox.setTextFormat(Qt::RichText);
-    msgBox.setText("Talk Calendar is a desktop calendar with some speech capability. For more information go to the  <a href='https://github.com/crispinprojects/talkcalendar'>Talk Calendar website.</a> Alan Crispin (2026)");
+    msgBox.setTextInteractionFlags(Qt::TextBrowserInteraction);
+
+    QString msg =
+        "Talk Calendar is a desktop calendar with some speech capability<br>"
+        "For more information, go to the Talk Calendar webpage: "
+        "<a href=\"https://github.com/crispinprojects/talkcalendar\">"
+        "Talk Calendar website</a><br>"
+        "Alan Crispin (2026)";
+
+    msgBox.setText(msg);
     msgBox.exec();
+
 }
 
 /**
  * @brief Slot invoked when the Information action is triggered.
  */
 void MainWindow::on_actionInformation_triggered() {
-    // custom version number
-    QString msg = QString("Talk Calendar Version: %1\n").arg(PROJECT_VERSION);
+    QMessageBox box(this);
+    box.setWindowTitle("System Info");
+    box.setTextFormat(Qt::RichText);
+    QString msg = QString("<b>Talk Calendar Version: %1</b><br>").arg(PROJECT_VERSION);
+    msg.append(QString("Qt Version: %1<br>").arg(qVersion()));
 
-    // Qt version
-    msg.append(QString("Qt Version: %1\n").arg(qVersion()));
-
-    //font information
-    QFont defaultFont = QApplication::font();
-    //qDebug() << "Default Font:" << defaultFont.family() << "Size:" << defaultFont.pointSize();
     msg.append("System Font: ");
-    msg.append(defaultFont.family());
-    msg.append("\n");
-    //msg.append(QString("System Font Size: %1\n").arg(defaultFont.pointSize()));
+    QFont defaultFont = QApplication::font();
+    msg.append(defaultFont.family().toHtmlEscaped());
+    msg.append("<br>");
 
-    msg.append(QString("Talk Calendar Font Size: %1\n").arg(m_font_size));
+    msg.append(QString("Talk Calendar Font Size: %1<br>").arg(m_font_size));
 
-    //Check for bluetooth speakers
-    // Check if package is installed
-    if (Synthesizer::isBlueZAlsaInstalled()) {
-        //qDebug() << "bluez-alsa-utils is installed";
-        msg.append("Bluetooth: bluez-alsa-utils is installed ");
-        msg.append("\n");
-    } else {
-        //qDebug() << "bluez-alsa-utils is NOT installed";
-        msg.append("Bluetooth: bluez-alsa-utils is NOT installed ");
-        msg.append("\n");
-    }
+    msg.append("Bluetooth: ");
+    msg.append(Synthesizer::isBlueZAlsaInstalled()
+                   ? "bluez-alsa-utils is installed"
+                   : "bluez-alsa-utils is NOT installed");
+    msg.append("<br>");
 
+    msg.append("<b>Shortcuts</b><br>");
+    msg.append("Ctrl+N = New Event<br>");
+    msg.append("Ctrl+E = Edit Selected Event<br>");
+    msg.append("T Key = Speak Time<br>");
+    msg.append("Spacebar = Speak Selected Day Events<br>");
 
-    // Show message box
-    QMessageBox::information(this, "System Info", msg);
+    box.setText(msg);  // msg can contain HTML, e.g. "<b>Shortcuts</b><br>"
+    box.exec();
 }
 
 /**

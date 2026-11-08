@@ -95,13 +95,16 @@ Executing a search populates the main list view with the results. Just click on 
 ### Information
 ![](talkcalendar-info.png)
 
+### About
+![](talkcalendar-about.png)
+
 ### Shortcuts
 
 ```
 | Shortcut      | Action                   |
 |---------------|--------------------------|
 | `Ctrl+N`      | `New Event`              |
-| `Ctri+E`      | `Edit Selected Event`    |
+| `Ctrl+E`      | `Edit Selected Event`    |
 | `T Key`       | `Speak Time`             |
 | `Spacebar`    | `Speak Day Events`       |
 ```
@@ -169,6 +172,7 @@ sudo apt update
 sudo apt install build-essential cmake ninja-build
 sudo apt install qt6-base-dev qt6-base-dev-tools
 sudo apt install qtcreator
+sudo apt install alsa-utils
 ```
 
 ## Compile the Project
@@ -178,7 +182,13 @@ sudo apt install qtcreator
 3. Make sure the build system is CMake (this is the modern standard).
 4. Kits: make sure "Desktop Qt 6.x.x" kit is selected
 5. Build and run
-    
+
+***Note:*** Talk Calendar uses the ALSA "aplay" function to playback synthesised speech. To check your list of playback hardware devices use the command below.
+```
+aplay -l
+```
+The default hardware playback device (e.g. USB speakers) will be listed if setup correctly.
+
 
 ***Note:*** The Raspberry Pi does not have a coin-battery-powered ‘Real Time Clock’ (RTC) module by default as used by laptop and desktop computers. The Raspberry Pi updates the time automatically from the global ntp (network time protocol) servers. This can be a problem when there is no network connection as a Real-Time Clock (RTC) keeps track of the current time and date when the device is powered off. This functionality is needed by calendar and other scheduling applications. The Raspberry Pi 5 has a Real-Time Clock (RTC) connector which can be used to fit a RTC battery case compatible with Raspberry Pi 5 to maintain accurate time without needing an internet connection.
 
