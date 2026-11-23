@@ -103,6 +103,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_window_width=settings.value("window_width",640).toInt();
     m_window_height=settings.value("window_height",480).toInt();
 
+    m_week_numbers =settings.value("week-numbers", false).toBool();
+
     // qDebug() << "Constructor" << m_window_width << "x" << m_window_height
     //          << "Position: (" << m_window_x << ", " << m_window_y << ")";
 
@@ -113,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent)
     // load the colours. If they don't exist yet, use defaults.
     m_eventColor = QColor(settings.value("colors/event", "#ffff00").toString()); // Default Yellow
     m_priorityColor = QColor(settings.value("colors/priority", "#9370db").toString()); // Default Purple
+
 
 
     // Commonly recommended font families for Qt6 C++ applications
@@ -128,6 +131,12 @@ MainWindow::MainWindow(QWidget *parent)
     QFont appFont(defaultFont.family(), m_font_size); // Specify font family and size
     QApplication::setFont(appFont);
     ui->mainCalendar->setFont(appFont);
+    if(!m_week_numbers){
+    ui->mainCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    }  else
+    {
+       ui->mainCalendar->setVerticalHeaderFormat(QCalendarWidget::ISOWeekNumbers);
+    }
     ui->eventList->setFont(appFont);
 
     //  Startup Actions
@@ -699,7 +708,7 @@ CalendarEvent MainWindow::getEventById(int id) {
 void MainWindow::on_actionPreferences_triggered()
 {
     // pass existing member variables (m_eventColor, m_priorityColor) to the dialog
-    ConfigDialog dialog(m_talk, m_talk_startup, m_upcoming, m_upcoming_days, m_tempo, m_font_size,
+    ConfigDialog dialog(m_talk, m_talk_startup, m_upcoming, m_upcoming_days, m_tempo, m_font_size, m_week_numbers,
                         m_eventColor, m_priorityColor, m_bluetooth, this);
 
     if (dialog.exec() == QDialog::Accepted) {
@@ -710,6 +719,7 @@ void MainWindow::on_actionPreferences_triggered()
         m_font_size=dialog.fontSize();
         m_tempo = dialog.tempo();
         m_bluetooth = dialog.bluetoothEnabled();
+        m_week_numbers=dialog.weekNumbersEnabled();
         //m_tempo = static_cast<float>(tempo) / 10.0f;
 
         // Retrieve the new colors from the dialog
@@ -724,7 +734,7 @@ void MainWindow::on_actionPreferences_triggered()
         settings.setValue("upcoming_days", m_upcoming_days);
         settings.setValue("font_size", m_font_size);
         settings.setValue("tempo",m_tempo);
-
+        settings.setValue("week_numbers",m_week_numbers);
 
          // Bluetooth speakers
         //qDebug() << "m_bluetooth = "<<m_bluetooth;
@@ -746,6 +756,12 @@ void MainWindow::on_actionPreferences_triggered()
         ui->mainCalendar->setFont(appFont);
         ui->eventList->setFont(appFont);
 
+        if(!m_week_numbers){
+            ui->mainCalendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+        }  else
+        {
+            ui->mainCalendar->setVerticalHeaderFormat(QCalendarWidget::ISOWeekNumbers);
+        }
 
         // refresh the calendar to show the new colors immediately
         updateCalendarHighlights();

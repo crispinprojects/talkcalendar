@@ -20,8 +20,8 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
-ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
-                           QColor eventCol, QColor priorityCol, bool bluetooth, QWidget *parent)
+ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize, bool weekNumbers,
+                          QColor eventCol, QColor priorityCol, bool bluetooth, QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
@@ -38,6 +38,7 @@ ConfigDialog::ConfigDialog(bool talk, bool startup, bool upcoming, int days, int
     ui->spinTempo->setValue(tempo);
     ui->spinFontSize->setValue(fontSize);
     ui->checkBluetooth->setChecked(bluetooth);
+    ui->checkWeekNumbers->setChecked(weekNumbers);
 
     // Set the initial button colors so user sees the current choice
     ui->btnEventColor->setStyleSheet(QString("background-color: %1").arg(m_currentEventColor.name()));
@@ -54,6 +55,9 @@ bool ConfigDialog::talkEnabled() const {
     return ui->checkTalk->isChecked();
 }
 
+bool ConfigDialog::weekNumbersEnabled() const {
+    return ui->checkWeekNumbers->isChecked();
+}
 bool ConfigDialog::bluetoothEnabled() const {
     return ui->checkBluetooth->isChecked();
 }
@@ -118,6 +122,7 @@ void ConfigDialog::on_btnReset_clicked()
     ui->checkTalkStartup->setChecked(true);   
     ui->checkUpcoming->setChecked(true);
     ui->checkBluetooth->setChecked(false);
+    ui->checkWeekNumbers->setChecked(false);
     ui->spinUpcomingDays->setValue(3);
     ui->spinTempo->setValue(17);
     ui->spinFontSize->setValue(14);

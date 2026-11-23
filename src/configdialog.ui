@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>302</width>
-    <height>355</height>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -156,6 +156,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkWeekNumbers">
+       <property name="text">
+        <string>Calendar Week Numbers</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="checkBluetooth">

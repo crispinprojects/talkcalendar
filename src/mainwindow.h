@@ -43,7 +43,7 @@
 #include "calendarevent.h"
 #include "synthesizer.h"
 
-#define PROJECT_VERSION "0.9.1"
+#define PROJECT_VERSION "0.9.2"
 
 
 struct ParsedDate {
@@ -131,6 +131,7 @@ private:
     int m_font_scale=1;
 
     int m_font_size;
+    bool m_week_numbers;
     QColor m_eventColor;
     QColor m_priorityColor;
 

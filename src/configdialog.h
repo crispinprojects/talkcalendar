@@ -33,7 +33,7 @@ class ConfigDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize,
+    explicit ConfigDialog(bool talk, bool startup, bool upcoming, int days, int tempo, int fontSize, bool weekNumbers,
                           QColor eventCol, QColor priorityCol, bool bluetooth, QWidget *parent = nullptr);
     ~ConfigDialog();
 
@@ -44,6 +44,7 @@ public:
     int upcomingDays() const;
     int fontSize() const;
     int tempo() const;
+    bool weekNumbersEnabled() const;
     bool bluetoothEnabled() const;
     QColor eventColor() const { return m_currentEventColor; }
     QColor priorityColor() const { return m_currentPriorityColor; }
